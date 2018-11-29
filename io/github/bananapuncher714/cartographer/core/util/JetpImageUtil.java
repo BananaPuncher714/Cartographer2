@@ -299,6 +299,7 @@ public final class JetpImageUtil {
 		
 		for ( int y = 0; y < height; y++ ) {
 			double b = y - yo;
+			int yHeight = y * width;
 			for ( int x = 0; x < width; x++ ) {
 				double a = x - xo;
 				
@@ -306,7 +307,7 @@ public final class JetpImageUtil {
 				int yy = ( int ) ( a * sin + b * cos + yo );
 				
 				if ( xx >= 0 && xx < width && yy >= 0 && yy < height ) {
-					copy[ x + y * width ] = original[ xx + yy * width ];
+					copy[ x + yHeight ] = original[ xx + yy * width ];
 				}
 			}
 		}
