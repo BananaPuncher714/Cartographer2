@@ -398,7 +398,8 @@ public abstract class TinyProtocol {
 			Object connection = getConnection.get(getPlayerHandle.invoke(player));
 			Object manager = getManager.get(connection);
 
-			channelLookup.put(player.getName(), channel = getChannel.get(manager));
+			channelLookup.put( player.getName(), channel = getChannel.get( manager ) );
+			uuidChannelLookup.put( player.getUniqueId(), channel );
 		}
 
 		return channel;

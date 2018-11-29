@@ -4,19 +4,44 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
+import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
+import io.netty.channel.Channel;
 
 public class Cartographer extends JavaPlugin implements Listener {
+	private static Cartographer INSTANCE;
+	
+	private TinyProtocol protocol;
+	private PacketHandler handler;
+	
 	private Set< CartographerRenderer > renderers = new HashSet< CartographerRenderer >();
 	
 	@Override
 	public void onEnable() {
+		INSTANCE = this;
+		
+		handler = ReflectionUtil.getNewPacketHandlerInstance();
+		protocol = new TinyProtocol( this ) {
+			@Override
+			public Object onPacketOutAsync( Player player, Channel channel, Object packet ) {
+				return handler.onPacketInterceptOut( player, packet );
+			}
+
+			@Override
+			public Object onPacketInAsync( Player player, Channel channel, Object packet ) {
+				return handler.onPacketInterceptIn( player, packet );
+			}
+		};
+		
 		Bukkit.getPluginManager().registerEvents( this, this );
 	}
 	
@@ -35,5 +60,18 @@ public class Cartographer extends JavaPlugin implements Listener {
 		CartographerRenderer renderer = new CartographerRenderer();
 		renderers.add( renderer );
 		event.getMap().addRenderer( renderer );
+		handler.registerMap( event.getMap().getId() );
+	}
+	
+	public TinyProtocol getProtocol() {
+		return protocol;
+	}
+	
+	public PacketHandler getHandler() {
+		return handler;
+	}
+	
+	public static Cartographer getInstance() {
+		return INSTANCE;
 	}
 }

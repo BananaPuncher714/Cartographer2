@@ -287,6 +287,33 @@ public final class JetpImageUtil {
 		return scaled;
 	}
 	
+	public static byte[] rotate( byte[] original, int width, byte[] copy, double radians ) {
+		
+		int height = original.length / width;
+		
+		double cos = Math.cos( radians );
+		double sin = Math.sin( radians );
+		
+		double xo = ( width - 1 ) * .5;
+		double yo = ( height - 1 ) * .5;
+		
+		for ( int y = 0; y < height; y++ ) {
+			double b = y - yo;
+			for ( int x = 0; x < width; x++ ) {
+				double a = x - xo;
+				
+				int xx = ( int ) ( a * cos - b * sin + xo );
+				int yy = ( int ) ( a * sin + b * cos + yo );
+				
+				if ( xx >= 0 && xx < width && yy >= 0 && yy < height ) {
+					copy[ x + y * width ] = original[ xx + yy * width ];
+				}
+			}
+		}
+		
+		return copy;
+	}
+	
 	public static int overwriteColor( int baseColor, int overlay ) {
 		int a2 = overlay >> 24 & 0xFF;
 		if ( a2 == 255 ) {
