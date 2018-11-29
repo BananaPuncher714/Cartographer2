@@ -1,23 +1,38 @@
 package io.github.bananapuncher714.cartographer.core.api;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.ChunkSnapshot;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 public class ChunkLocation {
-
 	private int x, z;
+	private String worldName;
 	private World world;
+	
+	public ChunkLocation( Location location ) {
+		this( location.getWorld(), location.getBlockX() >> 4, location.getBlockZ() >> 4 );
+	}
 	
 	public ChunkLocation( World world, int x, int z ) {
 		this.x = x;
 		this.z = z;
+		this.worldName = world.getName();
 		this.world = world;
+		
 	}
 	
 	public ChunkLocation( Chunk chunk ) {
 		world = chunk.getWorld();
 		x = chunk.getX();
 		z = chunk.getZ();
+	}
+	
+	public ChunkLocation( ChunkSnapshot snapshot ) {
+		worldName = snapshot.getWorldName();
+		x = snapshot.getX();
+		z = snapshot.getZ();
 	}
 
 	public int getX() {
@@ -37,6 +52,9 @@ public class ChunkLocation {
 	}
 
 	public World getWorld() {
+		if ( world == null ) {
+			world = Bukkit.getWorld( worldName );
+		}
 		return world;
 	}
 
@@ -52,7 +70,7 @@ public class ChunkLocation {
 	public int hashCode() {
 		final int prime = 797161;
 		int result = 1;
-		result = prime * result + ( ( world == null ) ? 0 : world.hashCode() );
+		result = prime * result + ( ( worldName == null ) ? 0 : worldName.hashCode() );
 		result = prime * result + x;
 		result = prime * result + z;
 		return result;
@@ -72,11 +90,11 @@ public class ChunkLocation {
 		
 		ChunkLocation other = ( ChunkLocation ) obj;
 		
-		if ( world == null ) {
-			if ( other.world != null ) {
+		if ( worldName == null ) {
+			if ( other.worldName != null ) {
 				return false;
 			}
-		} else if ( !world.getUID().equals( other.world.getUID() ) ) {
+		} else if ( !worldName.equals( other.worldName ) ) {
 			return false;
 		}
 		
@@ -91,6 +109,6 @@ public class ChunkLocation {
 	
 	@Override
 	public String toString() {
-		return "ChunkLocation_x=" + x + "_z=" + z + "_world=" + world.getName();
+		return "ChunkLocation_x=" + x + "_z=" + z + "_world=" + worldName;
 	}
 }
