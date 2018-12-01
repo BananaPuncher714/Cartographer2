@@ -21,6 +21,7 @@ import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
+import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 public class CartographerRenderer extends MapRenderer {
 	public static final int SIZE = 1;
@@ -54,7 +55,11 @@ public class CartographerRenderer extends MapRenderer {
 					buffer[ x ] = height;
 					Material material = snapshot.getBlockData( x, height, z ).getMaterial();
 					Color color = palette.getColor( material );
-					if ( prevVal > 0 ) {
+					if ( material == Material.WATER ) {
+						int depth = BlockUtil.getWaterDepth( snapshot, x, height, z );
+						double percentage = Math.min( 1, depth / 64.0 );
+						color = JetpImageUtil.brightenColor( color, ( int ) ( percentage * - 100 ) );
+					} else if ( prevVal > 0 ) {
 						if ( prevVal == height ) {
 							color = JetpImageUtil.brightenColor( color, -10 );
 						} else if ( prevVal > height ) {
@@ -66,10 +71,10 @@ public class CartographerRenderer extends MapRenderer {
 				}
 			}
 
-			if ( cache.contains( north ) ) {
+			if ( cache.containsDataAt( north ) ) {
 				chunks.remove( north );
 			}
-			if ( cache.contains( north.setZ( north.getZ() + 2 ) ) && chunks.containsKey( north ) ) {
+			if ( cache.containsDataAt( north.setZ( north.getZ() + 2 ) ) && chunks.containsKey( north ) ) {
 				chunks.remove( north.setZ( north.getZ() - 1 ) );
 			}
 			
@@ -103,41 +108,40 @@ public class CartographerRenderer extends MapRenderer {
 				Location loc = currentLoc.clone();
 				lock.unlock();
 				if ( loc != null ) {
-					byte[] data = new byte[ 182 * 182 ];
-					for ( int rz = 0; rz < 182; rz++ ) {
-						int rzx = 182 * rz;
-						for ( int rx = 0; rx < 182; rx++ ) {
-							Location renderLoc = loc.clone().add( rx, 0, rz );
-							ChunkLocation cLocation = new ChunkLocation( renderLoc );
-
-							int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
-							int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
-
-							ChunkData chunkData = cache.getDataAt( cLocation );
-
-							registryLock.lock();
-							if ( chunkData != null ) {
-								registryLock.unlock();
-								data[ rx + rzx ] = chunkData.getData()[ xOffset + zOffset * 16 ];
-							} else if ( !rendering.contains( cLocation ) ) {
-								ChunkSnapshot snapshot = chunks.get( cLocation );
-
-								if ( snapshot == null ) {
-									continue;
-								}
-
-								rendering.add( cLocation );
-								registryLock.unlock();
-								cache.process( snapshot );
+					byte[] data = new byte[ 128 * 128 ];
+					Location[] locations = MapUtil.getLocationsAround( loc.add( 91, 0, 91 ), .5, Math.toRadians( loc.getYaw() + 180 ) );
+					for ( int index = 0; index < 128 * 128; index++ ) {
+						Location renderLoc = locations[ index ];
+						if ( renderLoc == null ) {
+							continue;
+						}
+						ChunkLocation cLocation = new ChunkLocation( renderLoc );
+						int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
+						int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
+	
+						ChunkData chunkData = cache.getDataAt( cLocation );
+	
+						registryLock.lock();
+						if ( chunkData != null ) {
+							registryLock.unlock();
+							data[ index ] = chunkData.getData()[ xOffset + zOffset * 16 ];
+						} else if ( !rendering.contains( cLocation ) ) {
+							ChunkSnapshot snapshot = chunks.get( cLocation );
+	
+							if ( snapshot == null ) {
+								continue;
 							}
+	
+							rendering.add( cLocation );
+							registryLock.unlock();
+							cache.process( snapshot );
 						}
 					}
-//					Cartographer.getInstance().getHandler().sendDataTo( id, data, null, uuid );
-					Cartographer.getInstance().getHandler().sendDataTo( id, JetpImageUtil.rotate( data, 182, new byte[ 16_384 ], 128, Math.toRadians( loc.getYaw() + 180 ) ), null, uuid );
+					Cartographer.getInstance().getHandler().sendDataTo( id, data, null, uuid );
 				}
 			}
 			try {
-				Thread.sleep( 50 );
+				Thread.sleep( 25 );
 			} catch ( InterruptedException e ) {
 			}
 		}

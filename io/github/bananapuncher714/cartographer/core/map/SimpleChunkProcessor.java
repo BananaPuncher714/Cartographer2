@@ -25,11 +25,8 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 	public ChunkData process( ChunkSnapshot snapshot ) {
 		int[] buffer = new int[ 16 ];
 		ChunkLocation north = new ChunkLocation( snapshot ).setZ( snapshot.getZ() - 1 );
-		ChunkSnapshot northSnapshot = chunks.get( north );
+		ChunkSnapshot northSnapshot = cache.getChunkSnapshotAt( north );
 		if ( northSnapshot == null ) {
-			registryLock.lock();
-			rendering.remove( north.setZ( north.getZ() + 1 ) );
-			registryLock.unlock();
 			return null;
 		}
 		for ( int i = 0; i < 16; i++ ) {
@@ -57,11 +54,11 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 			}
 		}
 
-		if ( cache.contains( north ) ) {
-			chunks.remove( north );
+		if ( cache.containsDataAt( north ) ) {
+			cache.release( north );
 		}
-		if ( cache.contains( north.setZ( north.getZ() + 2 ) ) && chunks.containsKey( north ) ) {
-			chunks.remove( north.setZ( north.getZ() - 1 ) );
+		if ( cache.containsDataAt( north.setZ( north.getZ() + 2 ) ) ) {
+			cache.release( north.setZ( north.getZ() - 1 ) );
 		}
 		
 		return new ChunkData( data );

@@ -34,19 +34,23 @@ public class MapDataCache {
 		return data.get( location );
 	}
 	
-	public boolean contains( ChunkLocation location ) {
+	public boolean containsDataAt( ChunkLocation location ) {
 		return data.containsKey( location );
 	}
 	
-	public void process( ChunkSnapshot chunk ) {
-		new Thread() {
-			@Override
-			public void run() {
-				ChunkData chunkData = provider.process( chunk );
-				if ( chunkData != null ) {
-					data.put( new ChunkLocation( chunk ), chunkData );
-				}
-			}
-		}.start();
+	public ChunkSnapshot getChunkSnapshotAt( ChunkLocation location ) {
+		return chunks.get( location );
+	}
+	
+	public void release( ChunkLocation location ) {
+		chunks.remove( location );
+	}
+	
+	public ChunkData process( ChunkSnapshot chunk ) {
+		ChunkData chunkData = provider.process( chunk );
+		if ( chunkData != null ) {
+			data.put( new ChunkLocation( chunk ), chunkData );
+		}
+		return chunkData;
 	}
 }
