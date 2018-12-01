@@ -1,9 +1,14 @@
 package io.github.bananapuncher714.cartographer.core;
 
+import java.awt.Color;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +17,10 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
+import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.core.renderer.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
@@ -22,6 +30,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	private TinyProtocol protocol;
 	private PacketHandler handler;
+	
+	private Minimap minimap;
+	
+	private MinimapPalette palette = new MinimapPalette( new Color( 0, 0, 0, 255 ) );
 	
 	private Set< CartographerRenderer > renderers = new HashSet< CartographerRenderer >();
 	
@@ -41,6 +53,18 @@ public class Cartographer extends JavaPlugin implements Listener {
 				return handler.onPacketInterceptIn( player, packet );
 			}
 		};
+		
+		FileConfiguration config = YamlConfiguration.loadConfiguration( new InputStreamReader( getResource( "data/colors-1.13.2.yml" ) ) );
+		for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
+			String[] data = config.getString( "colors." + key ).split( "\\D+" );
+			Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
+						
+			palette.setColor( Material.valueOf( key.toUpperCase() ), color );
+		}
+		
+		for ( String val : config.getStringList( "transparent-blocks" ) ) {
+			palette.addTransparentMaterial( Material.valueOf( val.toUpperCase() ) );
+		}
 		
 		Bukkit.getPluginManager().registerEvents( this, this );
 	}
@@ -69,6 +93,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	public PacketHandler getHandler() {
 		return handler;
+	}
+	
+	public MinimapPalette getPalette() {
+		return palette;
 	}
 	
 	public static Cartographer getInstance() {

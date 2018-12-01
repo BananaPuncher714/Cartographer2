@@ -287,9 +287,9 @@ public final class JetpImageUtil {
 		return scaled;
 	}
 	
-	public static byte[] rotate( byte[] original, int width, byte[] copy, double radians ) {
-		
+	public static byte[] rotate( byte[] original, int width, byte[] copy, int copyWidth, double radians ) {
 		int height = original.length / width;
+		int copyHeight = copy.length / copyWidth;
 		
 		double cos = Math.cos( radians );
 		double sin = Math.sin( radians );
@@ -297,21 +297,23 @@ public final class JetpImageUtil {
 		double xo = ( width - 1 ) * .5;
 		double yo = ( height - 1 ) * .5;
 		
-		for ( int y = 0; y < height; y++ ) {
-			double b = y - yo;
-			int yHeight = y * width;
-			for ( int x = 0; x < width; x++ ) {
-				double a = x - xo;
-				
-				int xx = ( int ) ( a * cos - b * sin + xo );
-				int yy = ( int ) ( a * sin + b * cos + yo );
-				
+		double copyXHalf = ( copyWidth - 1 ) * .5;
+		double copyYHalf = ( copyHeight - 1 ) * .5;
+		for ( int y = 0; y < copyHeight; y++ ) {
+			double b = y - copyYHalf;
+			int yHeight = y * copyWidth;
+			for ( int x = 0; x < copyWidth; x++ ) {
+				double a = x - copyXHalf;
+
+				int xx = ( int ) ( a * cos - b * sin + xo + .5 );
+				int yy = ( int ) ( a * sin + b * cos + yo + .5 );
+
 				if ( xx >= 0 && xx < width && yy >= 0 && yy < height ) {
 					copy[ x + yHeight ] = original[ xx + yy * width ];
 				}
 			}
 		}
-		
+
 		return copy;
 	}
 	
@@ -358,5 +360,32 @@ public final class JetpImageUtil {
 	    int b = ( int ) ( ( b1 + ( b2 * percent ) ) / 2 );
 	    
 	    return r << 16 | g << 8 | b;
+	}
+	
+	/**
+	 * Brightens a given color for a percent; Negative values darken the color.
+	 * 
+	 * @param c
+	 * The color to brighten.
+	 * @param percent
+	 * The percentage to brighten; Must not exceed 100 percent.
+	 * @return
+	 * The new brightened color.
+	 */
+	public static Color brightenColor( Color c, int percent ) {
+		if ( percent == 0 ) return c;
+		int r = c.getRed();
+		int g = c.getGreen();
+		int b = c.getBlue();
+		if ( percent > 0 ) {
+			int newr = r + percent * ( 255 - r ) / 100;
+			int newg = g + percent * ( 255 - g ) / 100;
+			int newb = b + percent * ( 255 - b ) / 100;
+			return new Color( newr, newg, newb );
+		}
+		int newr = r + percent * r / 100;
+		int newg = g + percent * g / 100;
+		int newb = b + percent * b / 100;
+		return new Color( newr, newg, newb );
 	}
 }

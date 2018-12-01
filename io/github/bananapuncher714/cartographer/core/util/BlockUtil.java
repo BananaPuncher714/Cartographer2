@@ -22,7 +22,7 @@ public final class BlockUtil {
 	}
 	
 	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< Material > skip ) {
-		while ( y > 0 && ( ( skip != null && skip.contains( chunk.getBlockType( x, y--, z ) ) ) || chunk.getBlockType( x, y--, z ) == Material.AIR ) );
+		while ( y > 0 && ( ( skip != null && skip.contains( chunk.getBlockType( x, y--, z ) ) ) || ( skip == null && chunk.getBlockType( x, y--, z ) == Material.AIR ) ) );
 		return y + 1;
 	}
 	

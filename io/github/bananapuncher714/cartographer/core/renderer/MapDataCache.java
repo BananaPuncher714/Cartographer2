@@ -16,12 +16,14 @@ import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
  */
 public class MapDataCache {
 	protected final Map< ChunkLocation, ChunkData > data;
+	protected final Map< ChunkLocation, ChunkSnapshot > chunks;
 	
-	ChunkDataProvider provider;
+	protected ChunkDataProvider provider;
 	
 	public MapDataCache( ChunkDataProvider provider ) {
 		this.provider = provider;
 		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
+		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
 	}
 	
 	public Map< ChunkLocation, ChunkData > getData() {
@@ -32,12 +34,18 @@ public class MapDataCache {
 		return data.get( location );
 	}
 	
+	public boolean contains( ChunkLocation location ) {
+		return data.containsKey( location );
+	}
+	
 	public void process( ChunkSnapshot chunk ) {
 		new Thread() {
 			@Override
 			public void run() {
 				ChunkData chunkData = provider.process( chunk );
-				data.put( new ChunkLocation( chunk ), chunkData );
+				if ( chunkData != null ) {
+					data.put( new ChunkLocation( chunk ), chunkData );
+				}
 			}
 		}.start();
 	}

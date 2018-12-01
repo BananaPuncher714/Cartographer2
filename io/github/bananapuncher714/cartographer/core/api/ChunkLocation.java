@@ -39,16 +39,18 @@ public class ChunkLocation {
 		return x;
 	}
 
-	public void setX( int x ) {
+	public ChunkLocation setX( int x ) {
 		this.x = x;
+		return this;
 	}
 
 	public int getZ() {
 		return z;
 	}
 
-	public void setZ( int z ) {
+	public ChunkLocation setZ( int z ) {
 		this.z = z;
+		return this;
 	}
 
 	public World getWorld() {
