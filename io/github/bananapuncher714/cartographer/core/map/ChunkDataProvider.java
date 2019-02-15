@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.renderer;
+package io.github.bananapuncher714.cartographer.core.map;
 
 import org.bukkit.ChunkSnapshot;
 

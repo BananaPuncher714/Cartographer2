@@ -6,9 +6,6 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.renderer.ChunkData;
-import io.github.bananapuncher714.cartographer.core.renderer.ChunkDataProvider;
-import io.github.bananapuncher714.cartographer.core.renderer.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
@@ -24,8 +21,9 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 	@Override
 	public ChunkData process( ChunkSnapshot snapshot ) {
 		int[] buffer = new int[ 16 ];
-		ChunkLocation north = new ChunkLocation( snapshot ).setZ( snapshot.getZ() - 1 );
+		ChunkLocation north = new ChunkLocation( snapshot ).subtract( 0, 1 );
 		ChunkSnapshot northSnapshot = cache.getChunkSnapshotAt( north );
+		// Check if the north snapshot exists for the northern border
 		if ( northSnapshot == null ) {
 			return null;
 		}
@@ -54,13 +52,6 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 			}
 		}
 
-		if ( cache.containsDataAt( north ) ) {
-			cache.release( north );
-		}
-		if ( cache.containsDataAt( north.setZ( north.getZ() + 2 ) ) ) {
-			cache.release( north.setZ( north.getZ() - 1 ) );
-		}
-		
 		return new ChunkData( data );
 	}
 }

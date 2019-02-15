@@ -2,7 +2,9 @@ package io.github.bananapuncher714.cartographer.core.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -19,24 +21,25 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author BananaPuncher714
  */
 public final class FileUtil {
-	static final int BUFFER_SIZE = 8192;
 	
 	public static void saveToFile( InputStream stream, File output, boolean force ) {
-		if ( force && output.exists() ) output.delete();
+		if ( force && output.exists() ) {
+			output.delete();
+		}
 		if ( !output.exists() ) {
 			output.getParentFile().mkdirs();
-			try {
+			try ( OutputStream outStream = new FileOutputStream( output ) ) {
 				byte[] buffer = new byte[ stream.available() ];
 			 
-			    OutputStream outStream = new FileOutputStream( output );
 			    int len;
 			    while ( ( len = stream.read( buffer ) ) > 0)  {
 		          outStream.write( buffer, 0, len );
 		        }
 		        stream.close();
-			    outStream.close();
-			} catch ( Exception exception ) {
-				exception.printStackTrace();
+			} catch ( FileNotFoundException e ) {
+				e.printStackTrace();
+			} catch ( IOException e ) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -96,7 +99,10 @@ public final class FileUtil {
 		file.delete();
 	}
 	
-	public static < T > T readObject( Class< T > clazz, File file ) {
+	public static < T extends Serializable > T readObject( Class< T > clazz, File file ) {
+		if ( !file.exists() ) {
+			return null;
+		}
 		T head = null;
 		try {
 			FileInputStream fis = new FileInputStream( file );
@@ -113,6 +119,7 @@ public final class FileUtil {
 	}
 	
 	public static void writeObject( Serializable object, File file ) {
+		file.getParentFile().mkdirs();
 		try {
 			FileOutputStream fos = new FileOutputStream( file );
 			ObjectOutputStream oos = new ObjectOutputStream( fos );

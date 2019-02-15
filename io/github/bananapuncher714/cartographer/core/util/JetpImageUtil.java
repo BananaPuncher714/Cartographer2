@@ -18,6 +18,8 @@ import org.bukkit.map.MapPalette;
  * @author jetp250
  */
 public final class JetpImageUtil {
+	private static int largest = 0;
+	
 	private JetpImageUtil() {
 	}
 	
@@ -62,6 +64,7 @@ public final class JetpImageUtil {
 				colors.add( color.getRGB() );
 			} catch ( IndexOutOfBoundsException e ) {
 				System.out.println( "Captured " + ( i - 1 ) + " colors!" );
+				largest = i - 1;
 				break;
 			}
 		}
@@ -70,18 +73,47 @@ public final class JetpImageUtil {
 		for ( int color : colors ) {
 			PALETTE[ index++ ] = color;
 		}
-		
+
 		for ( int r = 0; r < 256; r += 2 ) {
 			for ( int g = 0; g < 256; g += 2 ) {
 				for ( int b = 0; b < 256; b += 2 ) {
 					int colorIndex = r >> 1 << 14 | g >> 1 << 7 | b >> 1;
-					COLOR_MAP[ colorIndex ] = computeNearest( PALETTE, r, g, b );
+
+					int val = 0;
+					float best_distance = Float.MAX_VALUE;
+					float distance = 0;
+					int col = 0;
+					for (int i = 4; i < PALETTE.length; ++i) {
+						col = PALETTE[i];
+						int r2 = col >> 16 & 0xFF;
+						int g2 = col >> 8 & 0xFF;
+						int b2 = col & 0xFF;
+				
+						float red_avg = ( r + r2 ) * .5f;
+						int redVal = r - r2;
+						int greenVal = g - g2;
+						int blueVal = b - b2;
+						float weight_red = 2.0f + red_avg * ( 1f / 256f );
+						float weight_green = 4.0f;
+						float weight_blue = 2.0f + ( 255.0f - red_avg ) * ( 1f / 256f );
+						distance = weight_red * redVal * redVal + weight_green * greenVal * greenVal + weight_blue * blueVal * blueVal;
+				
+						if (distance < best_distance) {
+							best_distance = distance;
+							val = i;
+						}
+					}
+					COLOR_MAP[ colorIndex ] = ( byte ) val;
 				}
 			}
 		}
-		
+
 		long end = System.nanoTime();
 		System.out.println( "Initial lookup table initialized in " + ( end - start ) / 1_000_000.0 + " ms" );
+	}
+
+	public static int getLargestColorVal() {
+		return largest;
 	}
 
 	public static byte getBestColor( int rgb ) {

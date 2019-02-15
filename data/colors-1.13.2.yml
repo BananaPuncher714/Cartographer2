@@ -81,6 +81,7 @@ transparent-blocks:
 - YELLOW_SHULKER_BOX
 - ZOMBIE_HEAD
 - ZOMBIE_WALL_HEAD
+- VOID_AIR
 
 colors:
   ACACIA_DOOR: 216, 127, 51

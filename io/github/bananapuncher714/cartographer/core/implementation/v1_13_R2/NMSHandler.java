@@ -1,6 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_13_R2;
 
 import java.lang.reflect.Field;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -16,10 +18,12 @@ import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_13_R2.ChatComponentText;
 import net.minecraft.server.v1_13_R2.MapIcon;
+import net.minecraft.server.v1_13_R2.MapIcon.Type;
 import net.minecraft.server.v1_13_R2.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
 	private static Field[] MAP_FIELDS = new Field[ 9 ];
+	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
 	
 	static {
 		try {
@@ -39,6 +43,34 @@ public class NMSHandler implements PacketHandler {
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
+		
+		CURSOR_TYPES.put( MapCursor.Type.WHITE_POINTER, MapIcon.Type.PLAYER );
+		CURSOR_TYPES.put( MapCursor.Type.GREEN_POINTER, MapIcon.Type.FRAME );
+		CURSOR_TYPES.put( MapCursor.Type.RED_POINTER, MapIcon.Type.PLAYER_OFF_LIMITS );
+		CURSOR_TYPES.put( MapCursor.Type.BLUE_POINTER, MapIcon.Type.BLUE_MARKER );
+		CURSOR_TYPES.put( MapCursor.Type.WHITE_CROSS, MapIcon.Type.TARGET_X );
+		CURSOR_TYPES.put( MapCursor.Type.RED_MARKER, MapIcon.Type.RED_MARKER );
+		CURSOR_TYPES.put( MapCursor.Type.WHITE_CIRCLE, MapIcon.Type.PLAYER );
+		CURSOR_TYPES.put( MapCursor.Type.SMALL_WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_MAP );
+		CURSOR_TYPES.put( MapCursor.Type.MANSION, MapIcon.Type.MANSION );
+		CURSOR_TYPES.put( MapCursor.Type.TEMPLE, MapIcon.Type.MONUMENT );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_WHITE, MapIcon.Type.BANNER_WHITE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_ORANGE, MapIcon.Type.BANNER_ORANGE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_MAGENTA, MapIcon.Type.BANNER_MAGENTA );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIGHT_BLUE, MapIcon.Type.BANNER_LIGHT_BLUE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_YELLOW, MapIcon.Type.BANNER_YELLOW );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIME, MapIcon.Type.BANNER_LIME );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_PINK, MapIcon.Type.BANNER_PINK );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_GRAY, MapIcon.Type.BANNER_GRAY );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIGHT_GRAY, MapIcon.Type.BANNER_LIGHT_GRAY );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_CYAN, MapIcon.Type.BANNER_CYAN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_PURPLE, MapIcon.Type.BANNER_PURPLE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BLUE, MapIcon.Type.BANNER_BLUE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BROWN, MapIcon.Type.BANNER_BROWN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_GREEN, MapIcon.Type.BANNER_GREEN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_RED, MapIcon.Type.BANNER_RED );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BLACK, MapIcon.Type.BANNER_BLACK );
+		CURSOR_TYPES.put( MapCursor.Type.RED_X, MapIcon.Type.RED_X );
 	}
 
 	private final Set< Integer > maps = new TreeSet< Integer >();
@@ -54,7 +86,7 @@ public class NMSHandler implements PacketHandler {
 			for ( int index = 0; index < cursors.length; index++ ) {
 				MapCursor cursor = cursors[ index ];
 				
-				icons[ index ] = new MapIcon( MapIcon.Type.valueOf( cursor.getType().name() ), cursor.getX(), cursor.getY(), cursor.getDirection(), new ChatComponentText( cursor.getCaption() ) );
+				icons[ index ] = new MapIcon( CURSOR_TYPES.get( cursor.getType() ), cursor.getX(), cursor.getY(), cursor.getDirection(), cursor.getCaption() != null ? new ChatComponentText( cursor.getCaption() ) : null );
 			}
 		}
 		

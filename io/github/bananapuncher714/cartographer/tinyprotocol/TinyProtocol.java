@@ -394,11 +394,13 @@ public abstract class TinyProtocol {
 		Channel channel = channelLookup.get(player.getName());
 
 		// Lookup channel again
-		if (channel == null) {
+		if ( channel == null ) {
 			Object connection = getConnection.get(getPlayerHandle.invoke(player));
 			Object manager = getManager.get(connection);
 
 			channelLookup.put( player.getName(), channel = getChannel.get( manager ) );
+		}
+		if ( !uuidChannelLookup.containsKey( player.getUniqueId() ) ) {
 			uuidChannelLookup.put( player.getUniqueId(), channel );
 		}
 
@@ -425,10 +427,8 @@ public abstract class TinyProtocol {
 		return channel;
 	}
 	
-	public void removeChannel( UUID uuid ) {
-		if ( uuidChannelLookup.containsKey( uuid ) ) {
-			uuidChannelLookup.remove( uuid );
-		}
+	public void removeChannel( Player player ) {
+		uuidChannelLookup.remove( player.getUniqueId() );
 	}
 
 	/**

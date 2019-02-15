@@ -15,6 +15,13 @@ public class ChunkLocation {
 		this( location.getWorld(), location.getBlockX() >> 4, location.getBlockZ() >> 4 );
 	}
 	
+	public ChunkLocation( ChunkLocation location ) {
+		x = location.x;
+		z = location.z;
+		worldName = location.worldName;
+		world = location.world;
+	}
+	
 	public ChunkLocation( World world, int x, int z ) {
 		this.x = x;
 		this.z = z;
@@ -25,6 +32,7 @@ public class ChunkLocation {
 	
 	public ChunkLocation( Chunk chunk ) {
 		world = chunk.getWorld();
+		worldName = world.getName();
 		x = chunk.getX();
 		z = chunk.getZ();
 	}
@@ -53,6 +61,18 @@ public class ChunkLocation {
 		return this;
 	}
 
+	public ChunkLocation add( int x, int z ) {
+		this.x += x;
+		this.z += z;
+		return this;
+	}
+	
+	public ChunkLocation subtract( int x, int z ) {
+		this.x -= x;
+		this.z -= z;
+		return this;
+	}
+	
 	public World getWorld() {
 		if ( world == null ) {
 			world = Bukkit.getWorld( worldName );
@@ -62,10 +82,23 @@ public class ChunkLocation {
 
 	public void setWorld( World world ) {
 		this.world = world;
+		this.worldName = world.getName();
 	}
 	
 	public Chunk getChunk() {
 		return world.getChunkAt( x, z );
+	}
+	
+	public boolean isLoaded() {
+		return getWorld().isChunkLoaded( x, z );
+	}
+	
+	public void load() {
+		getWorld().loadChunk( getChunk() );
+	}
+	
+	public boolean exists() {
+		return getWorld().loadChunk( x, z, false );
 	}
 
 	@Override
@@ -111,6 +144,6 @@ public class ChunkLocation {
 	
 	@Override
 	public String toString() {
-		return "ChunkLocation_x=" + x + "_z=" + z + "_world=" + worldName;
+		return "ChunkLocation{x:" + x + ",z:" + z + ",world:" + worldName + "}";
 	}
 }
