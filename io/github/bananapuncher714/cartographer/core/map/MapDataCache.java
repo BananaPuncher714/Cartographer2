@@ -39,7 +39,7 @@ public class MapDataCache {
 	
 	protected ChunkDataProvider provider;
 	
-	int ticks = 0;
+	protected ChunkNotifier notifier;
 	
 	public MapDataCache( ChunkDataProvider provider ) {
 		this.provider = provider;
@@ -50,6 +50,11 @@ public class MapDataCache {
 	public MapDataCache() {
 		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
 		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
+	}
+
+	public MapDataCache setNotifier( ChunkNotifier notifier ) {
+		this.notifier = notifier;
+		return this;
 	}
 	
 	public void update() {
@@ -68,7 +73,6 @@ public class MapDataCache {
 				ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 				// Check to see if the chunk was processed properly
 				if ( chunkData != null ) {
-					data.put( location, chunkData );
 					// Check to see if the chunk loaded was forced
 					// If so, then we can remove unused chunk snapshots
 					// by determining if we already have the ChunkData for the southern chunk
@@ -86,12 +90,20 @@ public class MapDataCache {
 						// If not, then we simply mark the chunk as loaded
 						loaded.add( location );
 					}
+					iterator.remove();
+					
+					ChunkData newData = notifier != null ? notifier.onChunkProcessed( location, chunkData ) : null;
+					if ( newData != null ) {
+						data.put( location, newData );
+					} else {
+						data.put( location, chunkData );
+					}
 				} else {
 					if ( forcedLoading.contains( location ) ) {
 						addToProcessQueue( north );
 					}
+					iterator.remove();
 				}
-				iterator.remove();
 			}
 		}
 		
@@ -195,6 +207,15 @@ public class MapDataCache {
 		return data.containsKey( location );
 	}
 	
+	public void loadData( ChunkLocation location, ChunkData data ) {
+		ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
+		if ( newData != null ) {
+			this.data.put( location, newData );
+		} else {
+			this.data.put( location, data );
+		}
+	}
+	
 	public ChunkSnapshot getChunkSnapshotAt( ChunkLocation location ) {
 		return chunks.get( location );
 	}
@@ -247,6 +268,10 @@ public class MapDataCache {
 		}
 	}
 	
+	public void terminate() {
+		service.shutdown();
+	}
+	
 	protected class ChunkProcessor implements Callable< ChunkData > {
 		private final ChunkSnapshot snapshot;
 		
@@ -259,5 +284,10 @@ public class MapDataCache {
 			return provider.process( snapshot );
 		}
 		
+	}
+	
+	protected interface ChunkNotifier {
+		ChunkData onChunkLoad( ChunkLocation location, ChunkData data );
+		ChunkData onChunkProcessed( ChunkLocation location, ChunkData data );
 	}
 }

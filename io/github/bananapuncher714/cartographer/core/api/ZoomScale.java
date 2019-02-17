@@ -28,7 +28,7 @@ public enum ZoomScale {
 	public ZoomScale getLower( boolean circular ) {
 		for ( int index = 0; index < ZoomScale.values().length; index++ ) {
 			ZoomScale scale = ZoomScale.values()[ index ];
-			if ( name().equalsIgnoreCase( scale.name() ) ) {
+			if ( blocks == scale.blocks ) {
 				return ZoomScale.values()[ ( circular && index == 0 ) ? ZoomScale.values().length - 1 : Math.max( 0, index - 1 ) ];
 			}
 		}
@@ -38,11 +38,24 @@ public enum ZoomScale {
 	public ZoomScale getHigher( boolean circular ) {
 		for ( int index = 0; index < ZoomScale.values().length; index++ ) {
 			ZoomScale scale = ZoomScale.values()[ index ];
-			if ( name().equalsIgnoreCase( scale.name() ) ) {
+			if ( blocks == scale.blocks ) {
 				return ZoomScale.values()[ ( circular && index == ZoomScale.values().length - 1 ) ? 0 : Math.min( ZoomScale.values().length - 1, index + 1 ) ];
 			}
 		}
 		return null;
+	}
+	
+	public static ZoomScale getScale( double scale ) {
+		double closest = Double.MAX_VALUE;
+		ZoomScale zs = null;
+		for ( ZoomScale possibleScale : values() ) {
+			double dist = Math.abs( possibleScale.blocks - scale );
+			if ( dist < closest ) {
+				zs = possibleScale;
+				closest = dist;
+			}
+		}
+		return zs;
 	}
 	
 	public static ZoomScale getScaleFromBukkit( Scale scale ) {

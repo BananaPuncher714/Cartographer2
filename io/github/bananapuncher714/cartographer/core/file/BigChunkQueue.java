@@ -36,7 +36,6 @@ public class BigChunkQueue {
 		if ( saving.containsKey( coord ) || loading.containsKey( coord ) ) {
 			return false;
 		}
-		System.out.println( "Saving!" );
 		saving.put( coord, savingService.submit( new TaskChunkSave( getFileFor( coord ), data ) ) );
 		return true;
 	}

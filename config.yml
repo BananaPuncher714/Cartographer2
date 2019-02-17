@@ -1,9 +1,3 @@
-# Can be .5 to zoom in or 2 to zoom out
-scale: 1
-
-# Whether or not the map should rotate
-rotating: true
-
 # A list of IDs that are not allowed to become minimaps
 skip-ids:
 - 107

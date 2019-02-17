@@ -5,14 +5,17 @@ import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
 public class ChunkProcessedEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	
+
+	protected final Minimap map;
 	protected final ChunkLocation location;
 	protected ChunkData data;
 	
-	public ChunkProcessedEvent( ChunkLocation location, ChunkData chunk ) {
+	public ChunkProcessedEvent( Minimap map, ChunkLocation location, ChunkData chunk ) {
+		this.map = map;
 		this.location = location;
 		this.data = chunk;
 	}
@@ -25,6 +28,10 @@ public class ChunkProcessedEvent extends Event {
 		this.data = data;
 	}
 
+	public Minimap getMinimap() {
+		return map;
+	}
+	
 	public ChunkLocation getLocation() {
 		return location;
 	}

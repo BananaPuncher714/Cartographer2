@@ -25,11 +25,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.map.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.SimpleChunkProcessor;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
-import io.github.bananapuncher714.cartographer.core.test.IntegratedPanel;
+import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
@@ -40,20 +41,21 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private TinyProtocol protocol;
 	private PacketHandler handler;
 	
-	// TODO
-	private Minimap minimap;
-	private boolean rotating = true;
-	private double scale = 1;
+	private MinimapManager mapManager;
+	
 	private Set< Integer > invalidIds = new HashSet< Integer >();
 	
 	private MinimapPalette palette = new MinimapPalette( new Color( 0, 0, 0, 255 ) );
-	private MapDataCache cache;
 	
 	private Set< CartographerRenderer > renderers = new HashSet< CartographerRenderer >();
+	
+	private CartographerCommand command;
 	
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
+		
+		JetpImageUtil.init();
 		
 		saveDefaultConfig();
 		loadConfig();
@@ -77,6 +79,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 			}
 		};
 		
+		// TODO make this palette more customizable
 		FileConfiguration config = YamlConfiguration.loadConfiguration( new InputStreamReader( getResource( "data/colors-1.13.2.yml" ) ) );
 		for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
 			String[] data = config.getString( "colors." + key ).split( "\\D+" );
@@ -89,19 +92,21 @@ public class Cartographer extends JavaPlugin implements Listener {
 			palette.addTransparentMaterial( Material.valueOf( val.toUpperCase() ) );
 		}
 		
-		cache = new MapDataCache();
-		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, palette ) );
-//		cache.setChunkDataProvider( new RandomChunkProcessor() );
+		mapManager = new MinimapManager( this );
+		
+		command = new CartographerCommand();
+		getCommand( "cartographer" ).setExecutor( command );
+		getCommand( "cartographer" ).setTabCompleter( command );
 		
 		Bukkit.getPluginManager().registerEvents( this, this );
-		
-		minimap = new Minimap( "Test", palette, cache, new File( getDataFolder() + "/" + "test-save" ) );
 		
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 4 );
 		
 		Bukkit.getPluginManager().registerEvents( new PlayerListener(), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
+		
+		loadMaps();
 	}
 	
 	@Override
@@ -109,18 +114,27 @@ public class Cartographer extends JavaPlugin implements Listener {
 		for ( CartographerRenderer renderer : renderers ) {
 			renderer.terminate();
 		}
+		mapManager.terminate();
 	}
 	
 	private void update() {
-		minimap.update();
+		mapManager.update();
 	}
 	
 	private void loadConfig() {
 		FileConfiguration config = YamlConfiguration.loadConfiguration( new File( getDataFolder() + "/" + "config.yml" ) );
-		scale = config.getDouble( "scale" );
-		rotating = config.getBoolean( "rotating" );
 		for ( String string : config.getStringList( "skip-ids" ) ) {
 			invalidIds.add( Integer.valueOf( string ) );
+		}
+	}
+	
+	private void loadMaps() {
+		File mapDir = new File( getDataFolder() + "/maps/" );
+		if ( !mapDir.exists() ) {
+			return;
+		}
+		for ( File file : mapDir.listFiles() ) {
+			mapManager.constructNewMinimap( file.getName() );
 		}
 	}
 	
@@ -160,9 +174,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 		for ( MapRenderer render : view.getRenderers() ) {
 			view.removeRenderer( render );
 		}
-		CartographerRenderer renderer = new CartographerRenderer( minimap );
-		renderer.setScale( scale );
-		renderer.setRotating( rotating );
+		CartographerRenderer renderer = new CartographerRenderer();
 		renderers.add( renderer );
 		view.addRenderer( renderer );
 		handler.registerMap( view.getId() );
@@ -179,9 +191,13 @@ public class Cartographer extends JavaPlugin implements Listener {
 	public MinimapPalette getPalette() {
 		return palette;
 	}
+
+	public MinimapManager getMapManager() {
+		return mapManager;
+	}
 	
-	public Minimap getMinimap() {
-		return minimap;
+	protected Set< CartographerRenderer > getRenderers() {
+		return renderers;
 	}
 	
 	public static Cartographer getInstance() {

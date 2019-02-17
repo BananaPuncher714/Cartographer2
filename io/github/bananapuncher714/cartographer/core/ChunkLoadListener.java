@@ -12,7 +12,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.test.IntegratedPanel;
 
 /**
  * A listener to load chunks and register/unregister chunk snapshots for minimaps.
@@ -28,17 +27,17 @@ public enum ChunkLoadListener implements Listener {
 	@EventHandler
 	private void onChunkLoadEvent( ChunkLoadEvent event ) {
 		ChunkLocation location = new ChunkLocation( event.getChunk() );
-		Minimap map = Cartographer.getInstance().getMinimap();
-		
-		map.getDataCache().registerSnapshot( location );
+		for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
+			minimap.getDataCache().registerSnapshot( location );
+		}
 	}
 	
 	@EventHandler
 	private void onChunkUnloadEvent( ChunkUnloadEvent event  ) {
 		ChunkLocation location = new ChunkLocation( event.getChunk() );
-		Minimap map = Cartographer.getInstance().getMinimap();
-		
-		map.getDataCache().unregisterSnapshot( location );
+		for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
+			minimap.getDataCache().unregisterSnapshot( location );
+		}
 	}
 	
 	protected void update() {
@@ -50,14 +49,14 @@ public enum ChunkLoadListener implements Listener {
 			ChunkLocation location = loading.poll();
 			checkSet.remove( location );
 			
-			Minimap map = Cartographer.getInstance().getMinimap();
-			
 			// Either load at 100 loaded chunks per second, 10 generated chunks per tick, or 2 ungenerated per tick.
 			if ( location.isLoaded() ) {
-				map.getDataCache().registerSnapshot( location );
-				i += 1;
+				for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
+					minimap.getDataCache().registerSnapshot( location );
+				}
+				i++;
 			} else {
-				i += location.exists() ? 10 : 50;
+				i+= location.exists() ? 10 : 50;
 				location.load();
 			}
 		}

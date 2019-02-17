@@ -94,7 +94,7 @@ public class ChunkLocation {
 	}
 	
 	public void load() {
-		getWorld().loadChunk( getChunk() );
+		getWorld().loadChunk( x, z );
 	}
 	
 	public boolean exists() {
