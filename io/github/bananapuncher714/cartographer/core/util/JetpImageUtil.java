@@ -115,6 +115,10 @@ public final class JetpImageUtil {
 	public static int getLargestColorVal() {
 		return largest;
 	}
+	
+	public static int getColorFromMinecraftPalette( byte val ) {
+		return PALETTE[ ( val + 256 ) % 256 ];
+	}
 
 	public static byte getBestColor( int rgb ) {
 		return COLOR_MAP[ ( rgb >> 16 & 0xFF ) >> 1 << 14 | ( rgb >> 8 & 0xFF ) >> 1 << 7 | ( rgb & 0xFF ) >> 1 ];
@@ -375,6 +379,7 @@ public final class JetpImageUtil {
 	    return a1 << 24 | r << 16 | g << 8 | b;
 	}
 	
+	// TODO: Come up with a transparent color mixing method and finish the minimap overlay feature
 	public static int mixColors( int color1, int color2 ) {
 		int a2 = color2 >> 24 & 0xFF;
 		int r2 = color2 >> 16 & 0xFF;
@@ -392,6 +397,28 @@ public final class JetpImageUtil {
 	    int b = ( int ) ( ( b1 + ( b2 * percent ) ) / 2 );
 	    
 	    return r << 16 | g << 8 | b;
+	}
+	
+	public static int mediateARGB( int c1, int c2 ) {
+	    int a1 = c1 & 0xFF000000 >>> 24;
+	    int r1 = c1 & 0x00FF0000 >> 16;
+	    int g1 = c1 & 0x0000FF00 >> 8;
+	    int b1 = c1 & 0x000000FF ;
+
+	    int a2 = c2 & 0xFF000000 >>> 24;
+	    int r2 = c2 & 0x00FF0000 >> 16;
+	    int g2 = c2 & 0x0000FF00 >> 8;
+	    int b2 = c2 & 0x000000FF ;
+
+	    int am = (a1 + a2) / 2;
+	    int rm = (r1 + r2) / 2;
+	    int gm = (g1 + g2) / 2;
+	    int bm = (b1 + b2) / 2;
+
+	    int m = am << 24 | rm << 16 | gm << 8 | bm; 
+
+
+	    return m;
 	}
 	
 	/**

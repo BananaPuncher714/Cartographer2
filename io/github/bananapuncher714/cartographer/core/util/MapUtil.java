@@ -6,7 +6,7 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
-import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
 public class MapUtil {
 	/**
@@ -45,6 +45,10 @@ public class MapUtil {
 		}
 		
 		return locations;
+	}
+	
+	public static byte getDirection( double degree ) {
+		return ( byte ) Math.min( 15, Math.max( 0, ( ( ( degree + 371.25 ) % 360 ) / 22.5 ) ) );
 	}
 	
 	public static byte getColorAt( Location location, MinimapPalette palette ) {

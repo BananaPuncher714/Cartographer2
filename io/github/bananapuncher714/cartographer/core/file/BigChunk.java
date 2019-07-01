@@ -2,10 +2,10 @@ package io.github.bananapuncher714.cartographer.core.file;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 
 public class BigChunk implements Serializable {
 	public final int width = 16;

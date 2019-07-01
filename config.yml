@@ -1,3 +1,11 @@
 # A list of IDs that are not allowed to become minimaps
 skip-ids:
 - 107
+
+# Whether or not forced loading of chunks should happen
+# If set to true, then the server will attempt to load ALL chunks that are missing on a minimap
+# If set to false, then the server will only load chunks that have been naturally loaded
+# Force loading chunks is highly server resource intensive, and should only be used if pre-loading the map
+# It is equivalent to using Worldborder to load the entire world, or rendering with Dynmap
+# Note that this does not mean your server will be lagging all the time, only when there are chunks that need loading
+force-load: false

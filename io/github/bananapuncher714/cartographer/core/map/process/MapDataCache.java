@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.map;
+package io.github.bananapuncher714.cartographer.core.map.process;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +16,9 @@ import java.util.concurrent.Future;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 
-import io.github.bananapuncher714.cartographer.core.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
@@ -286,7 +287,7 @@ public class MapDataCache {
 		
 	}
 	
-	protected interface ChunkNotifier {
+	public interface ChunkNotifier {
 		ChunkData onChunkLoad( ChunkLocation location, ChunkData data );
 		ChunkData onChunkProcessed( ChunkLocation location, ChunkData data );
 	}

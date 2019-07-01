@@ -1,5 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,23 +10,25 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursor;
-import org.bukkit.map.MapCursor.Type;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
-import io.github.bananapuncher714.cartographer.core.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.api.MapPixel;
+import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.ChunkData;
-import io.github.bananapuncher714.cartographer.core.map.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 /**
@@ -33,86 +37,175 @@ import io.github.bananapuncher714.cartographer.core.util.MapUtil;
  * @author BananaPuncher714
  */
 public class CartographerRenderer extends MapRenderer {
+	private static final boolean ASYNC_RENDER = false;
+	
 	volatile boolean RUNNING = true;
 
 	protected Thread renderer;
 
-	protected Map< UUID, PlayerSetting > settings = new ConcurrentHashMap< UUID, PlayerSetting >();
+	protected Map< UUID, PlayerSetting > settings = new HashMap< UUID, PlayerSetting >();
 	
 	protected int id;
 	
-	public CartographerRenderer() {
+	protected Minimap map;
+	
+	public CartographerRenderer( Minimap map ) {
 		super( true );
-		renderer = new Thread( this::run );
-		renderer.start();
+
+		this.map = map;
+		
+		// Allow multithreading for renderers? It would cause issues with synchronization, unfortunately
+		// Also, if enabled, be sure to make settings a concurrent hash map instead of a regular one
+		if ( ASYNC_RENDER ) {
+			renderer = new Thread( this::run );
+			renderer.start();
+		}
 	}
 	
 	private void run() {
 		while ( RUNNING ) {
-			for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
-				Entry< UUID, PlayerSetting > entry = iterator.next();
-				PlayerSetting setting = entry.getValue();
-				Location loc = setting.location;
-				loc.setY( loc.getWorld().getMaxHeight() - 1 );
-				Minimap map = setting.map;
-				MapDataCache cache = map.getDataCache();
-				
-				byte[] data = new byte[ 128 * 128 ];
-				Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, setting.rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
-				Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
-				for ( int index = 0; index < 128 * 128; index++ ) {
-					Location renderLoc = locations[ index ];
-					if ( renderLoc == null ) {
-						continue;
-					}
-					ChunkLocation cLocation = new ChunkLocation( renderLoc );
-					int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
-					int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
-
-					ChunkData chunkData = cache.getDataAt( cLocation );
-
-					if ( chunkData != null ) {
-						// This is for static colors
-//						data[ index ] = chunkData.getDataAt( xOffset, zOffset, scale );
-						// This is for dynamic colors
-						data[ index ] = chunkData.getDataAt( xOffset, zOffset );
-						
-//						if ( ChunkLoadListener.isLoading( cLocation ) ) {
-//							// Red
-//							// The ChunkLoadListener is re-loading a pre-existing chunk
-//							data[ index ] = 17;
-//						}
-						
-					} else if ( cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
-						needsRender.add( new BigChunkLocation( cLocation ) );
-					} else {
-						if ( ChunkLoadListener.isLoading( cLocation ) ) {
-							// Gray
-							// The ChunkLoadListener is going to load a chunk that does not exist
-							data[ index ] = 13;
-						}
-					}
-//					if ( cache.hasSnapshot( cLocation ) ) {
-//						if ( chunkData != null ) {
-//							// Green
-//							// Means that the cache has yet to purge the unused chunk snapshots
-//							data[ index ] = 7;
-//						} else {
-//							// Yellow-brown
-//							// The cache needs to process the chunks
-//							data[ index ] = 120;
-//						}
-//					}
-				}
-				for ( BigChunkLocation location : needsRender ) {
-					map.getQueue().load( location );
-				}
-				Cartographer.getInstance().getHandler().sendDataTo( id, data, new MapCursor[] { new MapCursor( ( byte ) 0, ( byte ) 0, ( byte ) 8, Type.WHITE_POINTER, true, null ) }, entry.getKey() );
-			}
+			update();
 			try {
 				Thread.sleep( 50 );
 			} catch ( InterruptedException e ) {
 			}
+		}
+	}
+	
+	private void update() {
+		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
+			Entry< UUID, PlayerSetting > entry = iterator.next();
+			Player player = Bukkit.getPlayer( entry.getKey() );
+			PlayerSetting setting = entry.getValue();
+			Location loc = setting.location;
+			loc.setY( loc.getWorld().getMaxHeight() - 1 );
+			Minimap map = setting.map;
+			if ( map == null ) {
+				byte[] missingMapData = Cartographer.getInstance().getMissingMapImage();
+				Cartographer.getInstance().getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
+				return;
+			}
+			
+			MapDataCache cache = map.getDataCache();
+			
+			byte[] data = new byte[ 128 * 128 ];
+			int[] overlay = new int[ 128 * 128 ];
+			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, setting.rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
+			
+			// Map Pixel color stuff
+			Collection< MapPixel > pixels = map.getPixelsFor( player );
+			for ( MapPixel pixel : pixels ) {
+				int x = pixel.getX();
+				int y = pixel.getZ();
+				if ( x < 128 && x >= 0 && y < 128 && y >= 0 ) {
+					int index = x + y * 128;
+					int color = pixel.getColor().getRGB();
+					if ( color >>> 24 == 0 ) {
+						continue;
+					}
+
+					int prevColor = overlay[ index ];
+					if ( prevColor > 0xFFFFFF ) {
+						overlay[ index ] = color;
+					} else {
+						overlay[ index ] = JetpImageUtil.mediateARGB( color, prevColor );
+					}
+				}
+				
+			}
+			
+			int[] globalOverlay = Cartographer.getInstance().getOverlay();
+			int[] loadingBackground = Cartographer.getInstance().getLoadingImage();
+			// So right now we have overlay, which contains the intermediate layer of colors
+			// The map layers should look like this from top to bottom:
+			// - Global overlay
+			// - Intermediate overlay
+			// - Map
+			// - Free real estate
+			Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
+			for ( int index = 0; index < 128 * 128; index++ ) {
+				int mapColor = 0;
+				if ( globalOverlay != null ) {
+					mapColor = globalOverlay[ index ];
+				}
+				
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+				
+				int color = overlay[ index ];
+				mapColor = JetpImageUtil.overwriteColor( color, mapColor );
+				// Continue if the intermediate layer is opaque
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+				
+				int loading = 0;
+				if ( loadingBackground != null ) {
+					loading = loadingBackground[ index ];
+				}
+				
+				Location renderLoc = locations[ index ];
+				// If renderLoc is null, we know it doesn't exist
+				// Therefore, overwrite it with whatever color mapColor is
+				if ( renderLoc == null ) {
+					data[ index ] = JetpImageUtil.getBestColor( JetpImageUtil.overwriteColor( loading, mapColor ) );
+					continue;
+				}
+				ChunkLocation cLocation = new ChunkLocation( renderLoc );
+				int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
+				int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
+
+				ChunkData chunkData = cache.getDataAt( cLocation );
+
+				int localColor = 0;
+				if ( chunkData != null ) {
+					// This is for static colors
+//					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, scale ) );
+					// This is for dynamic colors
+					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
+				} else {
+					if ( cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
+						needsRender.add( new BigChunkLocation( cLocation ) );
+					}
+					
+					localColor = loading;
+				}
+				
+				mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
+				
+				data[ index ] = JetpImageUtil.getBestColor( mapColor );
+			}
+			for ( BigChunkLocation location : needsRender ) {
+				map.getQueue().load( location );
+			}
+			
+			double yawOffset = setting.rotating ? loc.getYaw() : 0;
+			
+			MapCursor[] cursors = null;
+			Collection< RealWorldCursor > realWorldCursors = map.getCursorsFor( player );
+			cursors = new MapCursor[ realWorldCursors.size() ];
+			int index = 0;
+			for ( RealWorldCursor cursor : realWorldCursors ) {
+				Location cursorLoc = cursor.getLocation();
+				double yaw = cursorLoc.getYaw() - yawOffset + 180;
+				double relX = cursorLoc.getX() - loc.getX();
+				double relZ = cursorLoc.getZ() - loc.getZ();
+				double distance = Math.sqrt( relX * relX + relZ * relZ );
+
+				double degree = Math.atan2( relZ, relX ) - Math.toRadians( yawOffset + 180 );
+				double newRelX = 2 * distance * Math.cos( degree );
+				double newRelZ = 2 * distance * Math.sin( degree );
+
+				int normalizedX = ( int ) Math.min( 127, Math.max( -127, newRelX / setting.zoomscale ) );
+				int normalizedZ = ( int ) Math.min( 127, Math.max( -127, newRelZ / setting.zoomscale ) );
+
+				cursors[ index++ ] = Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() );
+			}
+			
+			Cartographer.getInstance().getHandler().sendDataTo( id, data, cursors, entry.getKey() );
 		}
 	}
 
@@ -168,6 +261,10 @@ public class CartographerRenderer extends MapRenderer {
 		settings.remove( player.getUniqueId() );
 	}
 	
+	public void setMinimap( Minimap map ) {
+		this.map = map;
+	}
+	
 	@Override
 	public void render( MapView view, MapCanvas canvas, Player player ) {
 		id = view.getId();
@@ -175,14 +272,19 @@ public class CartographerRenderer extends MapRenderer {
 		if ( settings.containsKey( player.getUniqueId() ) ) {
 			settings.get( player.getUniqueId() ).location = player.getLocation();
 		} else {
-			Minimap map = Cartographer.getInstance().getMapManager().getCurrentMap( player.getUniqueId() );
+			// Make minimaps item based
+//			Minimap map = Cartographer.getInstance().getMapManager().getCurrentMap( player.getUniqueId() );
 
-			if ( map == null ) {
-				return;
-			}
+//			if ( map == null ) {
+//				return;
+//			}
 
 			PlayerSetting setting = new PlayerSetting( map, player.getLocation() );
 			settings.put( player.getUniqueId(), setting );
+		}
+		
+		if ( !ASYNC_RENDER ) {
+			update();
 		}
 	}
 

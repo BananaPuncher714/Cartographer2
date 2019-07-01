@@ -1,9 +1,10 @@
-package io.github.bananapuncher714.cartographer.core.map;
+package io.github.bananapuncher714.cartographer.core.map.process;
 
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.util.noise.NoiseGenerator;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
 
+import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
 public class RandomChunkProcessor implements ChunkDataProvider {

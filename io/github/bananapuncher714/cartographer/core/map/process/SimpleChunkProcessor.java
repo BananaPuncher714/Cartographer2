@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.map;
+package io.github.bananapuncher714.cartographer.core.map.process;
 
 import java.awt.Color;
 
@@ -6,6 +6,8 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
@@ -32,7 +34,8 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 		}
 		
 		byte[] data = new byte[ 256 ];
-
+		
+		
 		for ( int x = 0; x < 16; x++ ) {
 			for ( int z = 0; z < 16; z++ ) {
 				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
@@ -52,6 +55,8 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 			}
 		}
 
+		
+		
 		return new ChunkData( data );
 	}
 }

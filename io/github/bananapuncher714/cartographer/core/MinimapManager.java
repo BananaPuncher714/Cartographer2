@@ -5,11 +5,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
-import io.github.bananapuncher714.cartographer.core.map.MapDataCache;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.SimpleChunkProcessor;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
+import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 
 public class MinimapManager {
 	protected Cartographer plugin;
@@ -23,6 +27,16 @@ public class MinimapManager {
 	
 	public Map< String, Minimap > getMinimaps() {
 		return minimaps;
+	}
+	
+	public void convert( MapView view, Minimap map ) {
+		for ( MapRenderer render : view.getRenderers() ) {
+			view.removeRenderer( render );
+		}
+		CartographerRenderer renderer = new CartographerRenderer( map );
+		plugin.getRenderers().put( view.getId(), renderer );
+		view.addRenderer( renderer );
+		plugin.getHandler().registerMap( view.getId() );
 	}
 	
 	protected void update() {
@@ -47,9 +61,14 @@ public class MinimapManager {
 	}
 	
 	public Minimap constructNewMinimap( String id ) {
+		File dir = plugin.getAndConstructMapDir( id );
+		File config = new File( dir + "/" + "config.yml" );
+		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
+		
 		MapDataCache cache = new MapDataCache();
-		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, plugin.getPalette() ) );
-		Minimap map = new Minimap( id, plugin.getPalette(), cache, new File( plugin.getDataFolder() + "/maps/" + id ), new MapSettings() );
+		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
+		
+		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );
 		registerMinimap( map );
 		return map;
 	}

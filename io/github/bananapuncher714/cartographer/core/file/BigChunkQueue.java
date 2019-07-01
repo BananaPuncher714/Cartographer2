@@ -11,10 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import io.github.bananapuncher714.cartographer.core.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.ChunkData;
-import io.github.bananapuncher714.cartographer.core.map.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 public class BigChunkQueue {

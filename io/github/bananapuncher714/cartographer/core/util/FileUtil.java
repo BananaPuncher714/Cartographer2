@@ -21,6 +21,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author BananaPuncher714
  */
 public final class FileUtil {
+	public static void saveAndUpdate( InputStream stream, File output, boolean trim ) {
+		if ( !output.exists() ) {
+			saveToFile( stream, output, false );
+		}
+		updateConfigFromFile( output, stream, trim );
+	}
 	
 	public static void saveToFile( InputStream stream, File output, boolean force ) {
 		if ( force && output.exists() ) {

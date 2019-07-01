@@ -1,23 +1,34 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.api.MapPixel;
+import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkLoadedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkProcessedEvent;
+import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
+import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.file.BigChunk;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkQueue;
-import io.github.bananapuncher714.cartographer.core.map.MapDataCache.ChunkNotifier;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
+import io.github.bananapuncher714.cartographer.core.renderer.MapViewer;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 
 public class Minimap implements ChunkNotifier {
@@ -28,6 +39,11 @@ public class Minimap implements ChunkNotifier {
 	protected BigChunkQueue queue;;
 	protected File saveFile;
 	protected MapSettings settings;
+	
+	protected Map< UUID, MapViewer > viewers = new HashMap< UUID, MapViewer >();
+
+	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
+	protected Set< MapPixelProvider > pixelProviders = new HashSet< MapPixelProvider >();
 	
 	private long tick = 0;
 	
@@ -40,6 +56,40 @@ public class Minimap implements ChunkNotifier {
 		this.settings = settings;
 		
 		cache.setNotifier( this );
+		
+		// TEST
+		registerWorldCursorProvider( new WorldCursorProvider() {
+			@Override
+			public Collection<RealWorldCursor> getCursors( Player player, Minimap map ) {
+				Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
+				cursors.add( new RealWorldCursor( player.getName(), player.getLocation(), Type.WHITE_POINTER, true ) );
+				return cursors;
+			}
+		} );
+		
+//		registerWorldCursorProvider( new WorldCursorProvider() {
+//			@Override
+//			public Collection< RealWorldCursor > getCursors( Player player, Minimap map ) {
+//				Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
+//				for ( Entity entity : player.getNearbyEntities( 20, 10, 20 ) ) {
+//					cursors.add( new RealWorldCursor( entity.getName(), entity.getLocation(), Type.BLUE_POINTER, true ) );
+//				}
+//				return cursors;
+//			}
+//		} );
+//		
+//		pixelProviders.add( new MapPixelProvider() {
+//			@Override
+//			public Collection< MapPixel > getMapPixels( Player player, Minimap map ) {
+//				Set< MapPixel > pixels = new HashSet< MapPixel >();
+//				for ( int x = 0; x < 64; x++ ) {
+//					for ( int y = 0; y < 64; y++ ) {
+//						pixels.add( new MapPixel( x, y, new Color( 0, 0, 0, 128 ) ) );
+//					}
+//				}
+//				return pixels;
+//			}
+//		} );
 	}
 	
 	public String getId() {
@@ -120,6 +170,36 @@ public class Minimap implements ChunkNotifier {
 
 	public void setSettings( MapSettings settings ) {
 		this.settings = settings;
+	}
+	
+	public Collection< MapPixel > getPixelsFor( Player player ) {
+		Set< MapPixel > pixels = new HashSet< MapPixel >();
+		for ( MapPixelProvider provider : pixelProviders ) {
+			Collection< MapPixel > cursorCollection = provider.getMapPixels( player, this );
+			if ( cursorCollection != null ) {
+				pixels.addAll( cursorCollection );
+			}
+		}
+		return pixels;
+	}
+	
+	public Collection< RealWorldCursor > getCursorsFor( Player player ) {
+		Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
+		for ( WorldCursorProvider provider : cursorProviders ) {
+			Collection< RealWorldCursor > cursorCollection = provider.getCursors( player, this );
+			if ( cursorCollection != null ) {
+				cursors.addAll( cursorCollection );
+			}
+		}
+		return cursors;
+	}
+	
+	public void registerWorldCursorProvider( WorldCursorProvider provider ) {
+		cursorProviders.add( provider );
+	}
+	
+	public void unregisterWorldCursorProvider( WorldCursorProvider provider ) {
+		cursorProviders.remove( provider );
 	}
 	
 	public void terminate() {

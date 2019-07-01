@@ -1,15 +1,17 @@
-package io.github.bananapuncher714.cartographer.core;
+package io.github.bananapuncher714.cartographer.core.map.process;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
@@ -40,7 +42,11 @@ public enum ChunkLoadListener implements Listener {
 		}
 	}
 	
-	protected void update() {
+	public void update() {
+		if ( Cartographer.getInstance().getHandler().getTPS() < 18 ) {
+			return;
+		}
+		
 		for ( int i = 0; i < 100; i++ ) {
 			if ( loading.isEmpty() ) {
 				break;
@@ -49,15 +55,16 @@ public enum ChunkLoadListener implements Listener {
 			ChunkLocation location = loading.poll();
 			checkSet.remove( location );
 			
-			// Either load at 100 loaded chunks per second, 10 generated chunks per tick, or 2 ungenerated per tick.
 			if ( location.isLoaded() ) {
 				for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
 					minimap.getDataCache().registerSnapshot( location );
 				}
 				i++;
 			} else {
-				i+= location.exists() ? 10 : 50;
-				location.load();
+				if ( Cartographer.getInstance().isForceLoad() ) {
+					i+= location.exists() ? 30 : 100;
+					location.load();
+				}
 			}
 		}
 	}

@@ -1,35 +1,31 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.MapInitializeEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
-import io.github.bananapuncher714.cartographer.core.map.MapDataCache;
-import io.github.bananapuncher714.cartographer.core.map.MapSettings;
-import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.MinimapPalette;
-import io.github.bananapuncher714.cartographer.core.map.SimpleChunkProcessor;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
@@ -38,27 +34,50 @@ import io.netty.channel.Channel;
 public class Cartographer extends JavaPlugin implements Listener {
 	private static Cartographer INSTANCE;
 	
+	private static File PALETTE_DIR;
+	private static File MAP_DIR;
+	
+	private static File CONFIG_FILE;
+	private static File DATA_FILE;
+	
+	private static File MISSING_MAP_IMAGE;
+	private static File OVERLAY_IMAGE;
+	private static File BACKGROUND_IMAGE;
+	
 	private TinyProtocol protocol;
 	private PacketHandler handler;
 	
 	private MinimapManager mapManager;
+	private PaletteManager paletteManager;
 	
 	private Set< Integer > invalidIds = new HashSet< Integer >();
 	
-	private MinimapPalette palette = new MinimapPalette( new Color( 0, 0, 0, 255 ) );
-	
-	private Set< CartographerRenderer > renderers = new HashSet< CartographerRenderer >();
+	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
 	
 	private CartographerCommand command;
+	
+	private int chunksPerSecond = 1;
+	private boolean forceLoad = false;
+	
+	private int[] loadingBackground;
+	private int[] overlay;
+	private byte[] missingMapImage;
 	
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
 		
-		JetpImageUtil.init();
+		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
+		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
 		
-		saveDefaultConfig();
-		loadConfig();
+		CONFIG_FILE = new File( getDataFolder() + "/" + "config.yml" );
+		DATA_FILE = new File( getDataFolder() + "/" + "data.yml" );
+		
+		OVERLAY_IMAGE = new File( getDataFolder() + "/" + "overlay.png" );
+		BACKGROUND_IMAGE = new File( getDataFolder() + "/" + "background.png" );
+		MISSING_MAP_IMAGE = new File( getDataFolder() + "/" + "missing.png" );
+		
+		JetpImageUtil.init();
 		
 		handler = ReflectionUtil.getNewPacketHandlerInstance();
 		if ( handler == null ) {
@@ -67,6 +86,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 			Bukkit.getPluginManager().disablePlugin( this );
 			return;
 		}
+		
 		protocol = new TinyProtocol( this ) {
 			@Override
 			public Object onPacketOutAsync( Player player, Channel channel, Object packet ) {
@@ -79,46 +99,94 @@ public class Cartographer extends JavaPlugin implements Listener {
 			}
 		};
 		
-		// TODO make this palette more customizable
-		FileConfiguration config = YamlConfiguration.loadConfiguration( new InputStreamReader( getResource( "data/colors-1.13.2.yml" ) ) );
-		for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
-			String[] data = config.getString( "colors." + key ).split( "\\D+" );
-			Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
-						
-			palette.setColor( Material.valueOf( key.toUpperCase() ), color );
-		}
-		
-		for ( String val : config.getStringList( "transparent-blocks" ) ) {
-			palette.addTransparentMaterial( Material.valueOf( val.toUpperCase() ) );
-		}
-		
+		paletteManager = new PaletteManager( this );
 		mapManager = new MinimapManager( this );
 		
 		command = new CartographerCommand();
 		getCommand( "cartographer" ).setExecutor( command );
 		getCommand( "cartographer" ).setTabCompleter( command );
 		
-		Bukkit.getPluginManager().registerEvents( this, this );
-		
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
-		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 4 );
+		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
 		Bukkit.getPluginManager().registerEvents( new PlayerListener(), this );
+//		Bukkit.getPluginManager().registerEvents( new MapListener(), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
 		
-		loadMaps();
+		load();
 	}
 	
 	@Override
 	public void onDisable() {
-		for ( CartographerRenderer renderer : renderers ) {
+		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();
 		}
 		mapManager.terminate();
+		saveData();
 	}
 	
 	private void update() {
 		mapManager.update();
+	}
+	
+	
+	private void saveData() {
+		if ( !DATA_FILE.exists() ) {
+			try {
+				DATA_FILE.createNewFile();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		FileConfiguration data = YamlConfiguration.loadConfiguration( DATA_FILE );
+		
+		data.set( "custom-renderer-ids", new ArrayList< Integer >( renderers.keySet() ) );
+		
+		try {
+			data.save( DATA_FILE );
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void load() {
+		// Load all required files first
+		loadInit();
+		
+		// Load the config and images first
+		loadConfig();
+		loadImages();
+		
+		// Load the palettes
+		loadPalettes();
+		
+		// Load the maps
+		// Requires palettes
+		loadMaps();
+		
+		// Load the data
+		// Requires maps
+		loadData();
+	}
+	
+	private void loadInit() {
+		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
+		FileUtil.saveToFile( getResource( "data/overlay.png" ), OVERLAY_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/background.png" ), BACKGROUND_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/missing.png" ), MISSING_MAP_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
+	}
+	
+	private void loadData() {
+		if ( DATA_FILE.exists() ) {
+			FileConfiguration data = YamlConfiguration.loadConfiguration( DATA_FILE );
+			for ( String str : data.getStringList( "custom-renderer-ids" ) ) {
+				int i = Integer.parseInt( str );
+				mapManager.convert( Bukkit.getMap( ( short ) i ), mapManager.defaultMinimap );
+			}
+		}
 	}
 	
 	private void loadConfig() {
@@ -126,58 +194,58 @@ public class Cartographer extends JavaPlugin implements Listener {
 		for ( String string : config.getStringList( "skip-ids" ) ) {
 			invalidIds.add( Integer.valueOf( string ) );
 		}
+		forceLoad = config.getBoolean( "force-load" );
+	}
+	
+	private void loadPalettes() {
+		if ( PALETTE_DIR.exists() ) {
+			for ( File file : PALETTE_DIR.listFiles() ) {
+				FileConfiguration configuration = YamlConfiguration.loadConfiguration( file );
+				MinimapPalette palette = paletteManager.load( configuration );
+				
+				String id = file.getName().replaceAll( "\\.yml$", "" );
+				paletteManager.register( id, palette );
+				
+				getLogger().info( "Loaded palette '" + id + "' successfully!" );
+			}
+		} else {
+			getLogger().warning( "Palette folder not discovered!" );
+		}
+	}
+	
+	private void loadImages() {
+		try {
+			if ( OVERLAY_IMAGE.exists() ) {
+				getLogger().info( "Overlay detected!" );
+				this.overlay = JetpImageUtil.getRGBArray( JetpImageUtil.toBufferedImage( ImageIO.read( OVERLAY_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) ) );
+			}
+
+			if ( BACKGROUND_IMAGE.exists() ) {
+				getLogger().info( "Background detected!" );
+				this.loadingBackground = JetpImageUtil.getRGBArray( JetpImageUtil.toBufferedImage( ImageIO.read( BACKGROUND_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) ) );
+			}
+			if ( MISSING_MAP_IMAGE.exists() ) {
+				getLogger().info( "Missing map image detected!" );
+				missingMapImage = JetpImageUtil.dither( ImageIO.read( MISSING_MAP_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) );
+			}
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void loadMaps() {
-		File mapDir = new File( getDataFolder() + "/maps/" );
-		if ( !mapDir.exists() ) {
-			return;
-		}
-		for ( File file : mapDir.listFiles() ) {
-			mapManager.constructNewMinimap( file.getName() );
-		}
-	}
-	
-	@EventHandler
-	private void onMapInitializeEvent( MapInitializeEvent event ) {
-		convert( event.getMap() );
-	}
-	
-	@EventHandler
-	private void onPlayerInteractEvent( PlayerInteractEvent event ) {
-		if ( event.getHand() != EquipmentSlot.HAND ) {
-			return;
-		}
-		ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
-		if ( item != null && item.getType() == Material.FILLED_MAP ) {
-			MapMeta meta = ( MapMeta ) item.getItemMeta();
-			MapView view = Bukkit.getMap( ( short ) meta.getMapId() );
-			for ( MapRenderer renderer : view.getRenderers() ) {
-				if ( renderer instanceof CartographerRenderer ) {
-					return;
-				}
+		if ( MAP_DIR.exists() ) {
+			for ( File file : MAP_DIR.listFiles() ) {
+				mapManager.constructNewMinimap( file.getName() );
 			}
-			
-			convert( view );
 		}
 	}
 	
-	@EventHandler
-	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
-		protocol.removeChannel( event.getPlayer() );
-	}
-	
-	private void convert( MapView view ) {
-		if ( invalidIds.contains( view.getId() ) ) {
-			return;
-		}
-		for ( MapRenderer render : view.getRenderers() ) {
-			view.removeRenderer( render );
-		}
-		CartographerRenderer renderer = new CartographerRenderer();
-		renderers.add( renderer );
-		view.addRenderer( renderer );
-		handler.registerMap( view.getId() );
+	public File getAndConstructMapDir( String id ) {
+		File dir = new File( MAP_DIR + "/" + id );
+		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );
+		
+		return dir;
 	}
 	
 	public TinyProtocol getProtocol() {
@@ -188,16 +256,42 @@ public class Cartographer extends JavaPlugin implements Listener {
 		return handler;
 	}
 	
-	public MinimapPalette getPalette() {
-		return palette;
-	}
-
 	public MinimapManager getMapManager() {
 		return mapManager;
 	}
 	
-	protected Set< CartographerRenderer > getRenderers() {
+	public PaletteManager getPaletteManager() {
+		return paletteManager;
+	}
+	
+	protected Map< Integer, CartographerRenderer > getRenderers() {
 		return renderers;
+	}
+	
+	protected Set< Integer > getInvalidIds() {
+		return invalidIds;
+	}
+	
+	public int getChunksPerSecond() {
+		return chunksPerSecond;
+	}
+	
+	public boolean isForceLoad() {
+		return forceLoad;
+	}
+	
+	public int[] getLoadingImage() {
+		// TODO Specify that this is 128x128
+		return loadingBackground;
+	}
+	
+	public int[] getOverlay() {
+		// TODO Specify that this is 128x128
+		return overlay;
+	}
+
+	public byte[] getMissingMapImage() {
+		return missingMapImage;
 	}
 	
 	public static Cartographer getInstance() {

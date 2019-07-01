@@ -1,0 +1,19 @@
+name: "&aDefault Minimap"
+
+palettes:
+- "colors-1.13.2"
+
+default-zoom: ONE
+circular-zoom: false
+allowed-zooms:
+#- SIXTY_FOURTH
+#- THIRTY_SECONDTH
+#- SIXTEENTH
+#- EIGHTH
+- FOURTH
+- HALF
+- ONE
+- TWO
+- FOUR
+- EIGHT
+#- SIXTEEN

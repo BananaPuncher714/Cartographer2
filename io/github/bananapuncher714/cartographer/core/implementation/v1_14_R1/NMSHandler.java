@@ -1,5 +1,6 @@
-package io.github.bananapuncher714.cartographer.core.implementation.v1_13_R2;
+package io.github.bananapuncher714.cartographer.core.implementation.v1_14_R1;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.EnumMap;
 import java.util.Map;
@@ -21,13 +22,16 @@ import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.MapIcon;
-import net.minecraft.server.v1_13_R2.PacketPlayOutMap;
-import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.MapIcon;
+import net.minecraft.server.v1_14_R1.MinecraftServer;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PacketDataSerializer;
+import net.minecraft.server.v1_14_R1.PacketListener;
+import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
-	private static Field[] MAP_FIELDS = new Field[ 9 ];
+	private static Field[] MAP_FIELDS = new Field[ 10 ];
 	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
 	
 	static {
@@ -41,6 +45,7 @@ public class NMSHandler implements PacketHandler {
 			MAP_FIELDS[ 6 ] = PacketPlayOutMap.class.getDeclaredField( "g" );
 			MAP_FIELDS[ 7 ] = PacketPlayOutMap.class.getDeclaredField( "h" );
 			MAP_FIELDS[ 8 ] = PacketPlayOutMap.class.getDeclaredField( "i" );
+			MAP_FIELDS[ 9 ] = PacketPlayOutMap.class.getDeclaredField( "j" );
 
 			for ( Field field : MAP_FIELDS ) {
 				field.setAccessible( true );
@@ -101,12 +106,13 @@ public class NMSHandler implements PacketHandler {
 			MAP_FIELDS[ 0 ].set( packet, id );
 			MAP_FIELDS[ 1 ].set( packet, ( byte ) 0 );
 			MAP_FIELDS[ 2 ].set( packet, false );
-			MAP_FIELDS[ 3 ].set( packet, icons );
-			MAP_FIELDS[ 4 ].set( packet, 0 );
+			MAP_FIELDS[ 3 ].set( packet, false );
+			MAP_FIELDS[ 4 ].set( packet, icons );
 			MAP_FIELDS[ 5 ].set( packet, 0 );
-			MAP_FIELDS[ 6 ].set( packet, 128 );
+			MAP_FIELDS[ 6 ].set( packet, 0 );
 			MAP_FIELDS[ 7 ].set( packet, 128 );
-			MAP_FIELDS[ 8 ].set( packet, data );
+			MAP_FIELDS[ 8 ].set( packet, 128 );
+			MAP_FIELDS[ 9 ].set( packet, data );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}

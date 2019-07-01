@@ -4,9 +4,14 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 
+/**
+ * Called whenever a chunk has been finished processing
+ * 
+ * @author BananaPuncher714
+ */
 public class ChunkProcessedEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 

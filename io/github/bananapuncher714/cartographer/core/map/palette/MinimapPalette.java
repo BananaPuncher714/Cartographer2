@@ -1,9 +1,8 @@
-package io.github.bananapuncher714.cartographer.core.map;
+package io.github.bananapuncher714.cartographer.core.map.palette;
 
 import java.awt.Color;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +14,10 @@ public class MinimapPalette {
 	private int defColor;
 	private Map< Material, Integer > colors = new EnumMap< Material, Integer >( Material.class );
 	private Set< Material > transparentBlocks = EnumSet.noneOf( Material.class );
+	
+	public MinimapPalette() {
+		this( new Color( 0 ) );
+	}
 	
 	public MinimapPalette( Color defaultColor ) {
 		defColor = defaultColor.getRGB();
@@ -46,6 +49,10 @@ public class MinimapPalette {
 	
 	public void setDefaultColor( Color color ) {
 		setDefaultColor( color.getRGB() );
+	}
+	
+	public Set< Material > getMaterials() {
+		return colors.keySet();
 	}
 	
 	public Set< Material > getTransparentBlocks() {
