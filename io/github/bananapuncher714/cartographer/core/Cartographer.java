@@ -1,11 +1,8 @@
 package io.github.bananapuncher714.cartographer.core;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
+import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
@@ -141,7 +139,17 @@ public class Cartographer extends JavaPlugin implements Listener {
 		}
 		FileConfiguration data = YamlConfiguration.loadConfiguration( DATA_FILE );
 		
-		data.set( "custom-renderer-ids", new ArrayList< Integer >( renderers.keySet() ) );
+		for ( int mapId : renderers.keySet() ) {
+			CartographerRenderer renderer = renderers.get( mapId );
+			
+			String id = "MISSING MAP";
+			Minimap map = renderer.getMinimap();
+			if ( map != null ) {
+				id = map.getId();
+			}
+			
+			data.set( "custom-renderer-ids." + mapId, id );
+		}
 		
 		try {
 			data.save( DATA_FILE );
@@ -182,9 +190,14 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private void loadData() {
 		if ( DATA_FILE.exists() ) {
 			FileConfiguration data = YamlConfiguration.loadConfiguration( DATA_FILE );
-			for ( String str : data.getStringList( "custom-renderer-ids" ) ) {
-				int i = Integer.parseInt( str );
-				mapManager.convert( Bukkit.getMap( ( short ) i ), mapManager.defaultMinimap );
+			if ( data.contains( "custom-renderer-ids" ) ) {
+				for ( String key : data.getConfigurationSection( "custom-renderer-ids" ).getKeys( false ) ) {
+					String id = data.getString( "custom-renderer-ids." + key );
+					short mapId = Short.parseShort( key );
+					Minimap map = mapManager.getMinimaps().get( id );
+					
+					mapManager.convert( Bukkit.getMap( mapId ), map );
+				}
 			}
 		}
 	}

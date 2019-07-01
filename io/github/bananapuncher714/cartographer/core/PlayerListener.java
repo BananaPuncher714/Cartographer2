@@ -34,19 +34,21 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		
 		ItemStack item = event.getItem();
+		
 		if ( item != null && item.getType() == Material.FILLED_MAP ) {
+			Cartographer.getInstance().getMapManager().update( item );
+			// TODO Move this to the NMS part
 			MapMeta meta = ( MapMeta ) item.getItemMeta();
 			int id = meta.getMapId();
 			MapView view = Bukkit.getMap( ( short ) id );
-			boolean needsConverting = NBTEditor.getByte( item, "io.github.bananapuncher714", "cartographer", "core", "item", "minimap" ) == 1;
 			for ( MapRenderer renderer : view.getRenderers() ) {
 				if ( renderer instanceof CartographerRenderer  ) {
 					CartographerRenderer cr = ( CartographerRenderer ) renderer;
 					if ( !cr.isViewing( player.getUniqueId() ) ) {
 						continue;
 					}
-					needsConverting = false;
-
+					
+					// TODO Implement zoom blacklist or something similar
 					ZoomScale scale = cr.getScale( player.getUniqueId() );
 					
 					boolean zoom = event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK;
@@ -55,9 +57,6 @@ public class PlayerListener implements Listener {
 					
 					cr.setScale( player.getUniqueId(), newScale.getBlocksPerPixel() );
 				}
-			}
-			if ( needsConverting ) {
-				Cartographer.getInstance().getMapManager().convert( view, Cartographer.getInstance().getMapManager().defaultMinimap );
 			}
 			event.setCancelled( true );
 		}

@@ -169,10 +169,12 @@ public class NMSHandler implements PacketHandler {
 		maps.remove( id );
 	}
 	
+	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true, name );
 	}
 	
+	@Override
 	public ItemStack getMapItem( int id ) {
 		ItemStack map = new ItemStack( Material.FILLED_MAP );
 		MapMeta meta = ( MapMeta ) map.getItemMeta();
@@ -181,6 +183,13 @@ public class NMSHandler implements PacketHandler {
 		return map;
 	}
 	
+	@Override
+	public int getMapId( ItemStack item ) {
+		MapMeta meta = ( MapMeta ) item.getItemMeta();
+		return meta.getMapId();
+	}
+	
+	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];
 	}

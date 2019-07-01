@@ -13,7 +13,6 @@ import java.util.concurrent.Future;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
-import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 

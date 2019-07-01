@@ -194,6 +194,14 @@ public class Minimap implements ChunkNotifier {
 		return cursors;
 	}
 	
+	public void registerPixelProvider( MapPixelProvider provider ) {
+		pixelProviders.add( provider );
+	}
+	
+	public void unregisterPixelProvider( MapPixelProvider provider ) {
+		pixelProviders.remove( provider );
+	}
+	
 	public void registerWorldCursorProvider( WorldCursorProvider provider ) {
 		cursorProviders.add( provider );
 	}

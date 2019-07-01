@@ -83,7 +83,7 @@ public class CartographerRenderer extends MapRenderer {
 			if ( map == null ) {
 				byte[] missingMapData = Cartographer.getInstance().getMissingMapImage();
 				Cartographer.getInstance().getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
-				return;
+				continue;
 			}
 			
 			MapDataCache cache = map.getDataCache();
@@ -261,7 +261,14 @@ public class CartographerRenderer extends MapRenderer {
 		settings.remove( player.getUniqueId() );
 	}
 	
+	public Minimap getMinimap() {
+		return map;
+	}
+	
 	public void setMinimap( Minimap map ) {
+		for ( PlayerSetting setting : settings.values() ) {
+			setting.map = map;
+		}
 		this.map = map;
 	}
 	
@@ -272,13 +279,6 @@ public class CartographerRenderer extends MapRenderer {
 		if ( settings.containsKey( player.getUniqueId() ) ) {
 			settings.get( player.getUniqueId() ).location = player.getLocation();
 		} else {
-			// Make minimaps item based
-//			Minimap map = Cartographer.getInstance().getMapManager().getCurrentMap( player.getUniqueId() );
-
-//			if ( map == null ) {
-//				return;
-//			}
-
 			PlayerSetting setting = new PlayerSetting( map, player.getLocation() );
 			settings.put( player.getUniqueId(), setting );
 		}

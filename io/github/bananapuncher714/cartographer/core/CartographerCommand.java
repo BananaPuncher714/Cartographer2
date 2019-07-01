@@ -83,20 +83,11 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 	private void get( CommandSender sender, String[] args ) {
 		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
 		Validate.isTrue( sender instanceof Player, ChatColor.RED + "You must be a player to run this command!" );
+		Validate.isTrue( args.length == 1, ChatColor.RED + "Usage: /cartographer get <id>" );
 		
 		Player player = ( Player ) sender;
-		
-		MapView view = Bukkit.createMap( player.getWorld() );
-		while ( Cartographer.getInstance().getInvalidIds().contains( view.getId() ) ) {
-			view = Bukkit.createMap( player.getWorld() );
-		}
-		
-		Cartographer.getInstance().getMapManager().convert( view, Cartographer.getInstance().getMapManager().defaultMinimap );
-		ItemStack map = Cartographer.getInstance().getHandler().getMapItem( view.getId() );
-		
-		map = NBTEditor.set( map, ( byte ) 1, "io.github.bananapuncher714", "cartographer", "core", "item", "minimap" );
-		
-		player.getInventory().addItem( map );
+		Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( args[ 0 ] );
+		player.getInventory().addItem( Cartographer.getInstance().getMapManager().getItemFor( map ) );
 		
 	}
 

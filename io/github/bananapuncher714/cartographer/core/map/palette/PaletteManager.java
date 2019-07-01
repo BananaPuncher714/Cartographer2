@@ -49,6 +49,14 @@ public class PaletteManager {
 	
 	public MinimapPalette load( FileConfiguration config ) {
 		MinimapPalette palette = new MinimapPalette( new Color( 0, 0, 0, 255 ) );
+		String defColor = config.getString( "default-color", "TRANSPARENT" );
+		if ( defColor.equalsIgnoreCase( "TRANSPARENT" ) ) {
+			palette.setDefaultColor( new Color( 0 ) );
+		} else {
+			String[] data = defColor.split( "\\D+" );
+			Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
+			palette.setDefaultColor( color );
+		}
 		if ( config.contains( "colors" ) ) {
 			for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
 				Material material = Material.getMaterial( key.toUpperCase() );

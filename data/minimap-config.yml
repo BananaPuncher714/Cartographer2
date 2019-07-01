@@ -1,7 +1,7 @@
 name: "&aDefault Minimap"
 
 palettes:
-- "colors-1.13.2"
+- "palette-1.13.2"
 
 default-zoom: ONE
 circular-zoom: false
