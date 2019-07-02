@@ -26,8 +26,16 @@ public class Util_1_13 implements GeneralUtil {
 	}
 
 	@Override
+	public ItemStack getMapItem( int id ) {
+		ItemStack map = new ItemStack( Material.FILLED_MAP );
+		MapMeta meta = ( MapMeta ) map.getItemMeta();
+		meta.setMapId( id );
+		map.setItemMeta( meta );
+		return map;
+	}
+	
+	@Override
 	public boolean isWater( Material material ) {
 		return material == Material.WATER;
 	}
-
 }

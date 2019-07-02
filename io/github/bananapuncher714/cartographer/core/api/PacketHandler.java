@@ -17,8 +17,8 @@ public interface PacketHandler {
 	
 	// More mundane methods
 	MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name );
-	ItemStack getMapItem( int id );
-	int getMapId( ItemStack item );
 	
 	double getTPS();
+	
+	GeneralUtil getUtil();
 }

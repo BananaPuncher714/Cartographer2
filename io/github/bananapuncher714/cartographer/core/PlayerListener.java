@@ -16,14 +16,12 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
-import io.github.bananapuncher714.cartographer.core.util.NBTEditor;
 
 public class PlayerListener implements Listener {
 	@EventHandler
@@ -37,14 +35,15 @@ public class PlayerListener implements Listener {
 		
 		if ( item != null && item.getType() == Material.FILLED_MAP ) {
 			Cartographer.getInstance().getMapManager().update( item );
-			// TODO Move this to the NMS part
-			MapMeta meta = ( MapMeta ) item.getItemMeta();
-			int id = meta.getMapId();
-			MapView view = Bukkit.getMap( ( short ) id );
+			MapView view = Cartographer.getInstance().getHandler().getUtil().getMapViewFrom( item );
 			for ( MapRenderer renderer : view.getRenderers() ) {
 				if ( renderer instanceof CartographerRenderer  ) {
 					CartographerRenderer cr = ( CartographerRenderer ) renderer;
 					if ( !cr.isViewing( player.getUniqueId() ) ) {
+						continue;
+					}
+					Minimap map = cr.getMinimap();
+					if ( map == null ) {
 						continue;
 					}
 					
@@ -53,7 +52,7 @@ public class PlayerListener implements Listener {
 					
 					boolean zoom = event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK;
 					// newScale represents how many blocks per pixel, with 16 being the most and .25 being the least
-					ZoomScale newScale = zoom ? scale.getHigher( false ) : scale.getLower( false );
+					ZoomScale newScale = zoom ? scale.getHigher( map.getSettings().isCircularZoom() ) : scale.getLower( map.getSettings().isCircularZoom() );
 					
 					cr.setScale( player.getUniqueId(), newScale.getBlocksPerPixel() );
 				}

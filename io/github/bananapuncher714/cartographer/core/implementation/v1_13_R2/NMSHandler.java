@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
@@ -17,7 +16,9 @@ import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
+import io.github.bananapuncher714.cartographer.core.internal.Util_1_13;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
@@ -79,6 +80,7 @@ public class NMSHandler implements PacketHandler {
 	}
 
 	private final Set< Integer > maps = new TreeSet< Integer >();
+	private Util_1_13 util = new Util_1_13();
 	
 	@Override
 	public void sendDataTo( int id, byte[] data, @Nullable MapCursor[] cursors, UUID... uuids ) {
@@ -169,23 +171,13 @@ public class NMSHandler implements PacketHandler {
 	}
 	
 	@Override
-	public ItemStack getMapItem( int id ) {
-		ItemStack map = new ItemStack( Material.FILLED_MAP );
-		MapMeta meta = ( MapMeta ) map.getItemMeta();
-		meta.setMapId( id );
-		map.setItemMeta( meta );
-		return map;
-	}
-	
-	@Override
-	public int getMapId( ItemStack item ) {
-		MapMeta meta = ( MapMeta ) item.getItemMeta();
-		return meta.getMapId();
-	}
-	
-	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];
+	}
+	
+	@Override
+	public GeneralUtil getUtil() {
+		return util;
 	}
 	
 	private class PacketPlayOutMinimap extends PacketPlayOutMap {

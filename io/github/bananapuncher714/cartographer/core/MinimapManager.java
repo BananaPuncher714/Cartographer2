@@ -2,7 +2,6 @@ package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -38,7 +37,7 @@ public class MinimapManager {
 			view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		}
 		
-		ItemStack mapItem = plugin.getHandler().getMapItem( view.getId() );
+		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( view.getId() );
 		
 		convert( view, map );
 		
@@ -48,8 +47,7 @@ public class MinimapManager {
 	}
 	
 	public void update( ItemStack item ) {
-		int id = plugin.getHandler().getMapId( item );
-		MapView view = Bukkit.getMap( ( short ) id );
+		MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
 		
 		String mapId = NBTEditor.getString( item, MAP_ID );
 		if ( mapId != null ) {
@@ -59,9 +57,8 @@ public class MinimapManager {
 	}
 	
 	public ItemStack update( ItemStack item, Minimap newMap ) {
-		int id = plugin.getHandler().getMapId( item );
+		MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
 		
-		MapView view = Bukkit.getMap( ( short ) id );
 		convert( view, newMap );
 		
 		item = NBTEditor.set( item, newMap.getId(), MAP_ID );
