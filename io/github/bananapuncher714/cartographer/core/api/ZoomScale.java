@@ -25,7 +25,7 @@ public enum ZoomScale {
 		return blocks;
 	}
 	
-	public ZoomScale getLower( boolean circular ) {
+	public ZoomScale zoom( boolean circular ) {
 		for ( int index = 0; index < ZoomScale.values().length; index++ ) {
 			ZoomScale scale = ZoomScale.values()[ index ];
 			if ( blocks == scale.blocks ) {
@@ -35,7 +35,7 @@ public enum ZoomScale {
 		return null;
 	}
 	
-	public ZoomScale getHigher( boolean circular ) {
+	public ZoomScale unzoom( boolean circular ) {
 		for ( int index = 0; index < ZoomScale.values().length; index++ ) {
 			ZoomScale scale = ZoomScale.values()[ index ];
 			if ( blocks == scale.blocks ) {
@@ -56,6 +56,14 @@ public enum ZoomScale {
 			}
 		}
 		return zs;
+	}
+
+	public boolean isLeastZoomed() {
+		return this == ZoomScale.values()[ ZoomScale.values().length - 1 ];
+	}
+	
+	public boolean isMostZoomed() {
+		return this == ZoomScale.values()[ 0 ]; 
 	}
 	
 	public static ZoomScale getScaleFromBukkit( Scale scale ) {

@@ -8,7 +8,7 @@ import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 
 public class BigChunk implements Serializable {
-	public final int width = 16;
+	public static final int width = 16;
 	public final int x;
 	public final int z;
 	private ChunkData[] chunks = new ChunkData[ width * width ];
@@ -16,10 +16,6 @@ public class BigChunk implements Serializable {
 	public BigChunk( ChunkLocation location ) {
 		x = location.getX() >> 4;
 		z = location.getZ() >> 4;
-	}
-	
-	public BigChunkMap getMap() {
-		return null;
 	}
 	
 	public void set( ChunkLocation location, ChunkData data ) {

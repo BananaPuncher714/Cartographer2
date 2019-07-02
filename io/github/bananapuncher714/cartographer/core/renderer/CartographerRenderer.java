@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -47,12 +46,17 @@ public class CartographerRenderer extends MapRenderer {
 	
 	protected int id;
 	
-	protected Minimap map;
+	// Keep this a string in case if we delete a minimap, so that this doesn't store the map in memory
+	protected String mapId;
 	
 	public CartographerRenderer( Minimap map ) {
 		super( true );
 
-		this.map = map;
+		if ( map != null ) {
+			this.mapId = map.getId();
+		} else {
+			this.mapId = "MISSING";
+		}
 		
 		// Allow multithreading for renderers? It would cause issues with synchronization, unfortunately
 		// Also, if enabled, be sure to make settings a concurrent hash map instead of a regular one
@@ -79,7 +83,7 @@ public class CartographerRenderer extends MapRenderer {
 			PlayerSetting setting = entry.getValue();
 			Location loc = setting.location;
 			loc.setY( loc.getWorld().getMaxHeight() - 1 );
-			Minimap map = setting.map;
+			Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
 				byte[] missingMapData = Cartographer.getInstance().getMissingMapImage();
 				Cartographer.getInstance().getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
@@ -105,10 +109,10 @@ public class CartographerRenderer extends MapRenderer {
 					}
 
 					int prevColor = overlay[ index ];
-					if ( prevColor > 0xFFFFFF ) {
+					if ( prevColor >>> 24 == 0 ) {
 						overlay[ index ] = color;
 					} else {
-						overlay[ index ] = JetpImageUtil.mediateARGB( color, prevColor );
+						overlay[ index ] = JetpImageUtil.overwriteColor( color, prevColor );
 					}
 				}
 				
@@ -185,8 +189,9 @@ public class CartographerRenderer extends MapRenderer {
 			double yawOffset = setting.rotating ? loc.getYaw() : 0;
 			
 			MapCursor[] cursors = null;
+			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player );
 			Collection< RealWorldCursor > realWorldCursors = map.getCursorsFor( player );
-			cursors = new MapCursor[ realWorldCursors.size() ];
+			cursors = new MapCursor[ realWorldCursors.size() + localCursors.size() ];
 			int index = 0;
 			for ( RealWorldCursor cursor : realWorldCursors ) {
 				Location cursorLoc = cursor.getLocation();
@@ -204,13 +209,16 @@ public class CartographerRenderer extends MapRenderer {
 
 				cursors[ index++ ] = Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() );
 			}
+			for ( MapCursor cursor : localCursors ) {
+				cursors[ index++ ] = cursor;
+			}
 			
 			Cartographer.getInstance().getHandler().sendDataTo( id, data, cursors, entry.getKey() );
 		}
 	}
 
 	public void setPlayerMap( Player player, Minimap map ) {
-		PlayerSetting setting = new PlayerSetting( map, player.getLocation() );
+		PlayerSetting setting = new PlayerSetting( map.getId(), player.getLocation() );
 		if ( settings.containsKey( player.getUniqueId() ) ) {
 			setting.zoomscale = settings.get( player.getUniqueId() ).zoomscale;
 		} else {
@@ -262,14 +270,14 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public Minimap getMinimap() {
-		return map;
+		return Cartographer.getInstance().getMapManager().getMinimaps().get( mapId );
 	}
 	
 	public void setMinimap( Minimap map ) {
 		for ( PlayerSetting setting : settings.values() ) {
-			setting.map = map;
+			setting.map = map.getId();
 		}
-		this.map = map;
+		this.mapId = map.getId();
 	}
 	
 	@Override
@@ -279,7 +287,7 @@ public class CartographerRenderer extends MapRenderer {
 		if ( settings.containsKey( player.getUniqueId() ) ) {
 			settings.get( player.getUniqueId() ).location = player.getLocation();
 		} else {
-			PlayerSetting setting = new PlayerSetting( map, player.getLocation() );
+			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
 			settings.put( player.getUniqueId(), setting );
 		}
 		
@@ -295,10 +303,10 @@ public class CartographerRenderer extends MapRenderer {
 	protected class PlayerSetting {
 		protected Location location;
 		protected double zoomscale = 1;
-		protected Minimap map;
+		protected String map;
 		protected boolean rotating = true;
 		
-		public PlayerSetting( Minimap map, Location location ) {
+		public PlayerSetting( String map, Location location ) {
 			this.map = map;
 			this.location = location;
 		}

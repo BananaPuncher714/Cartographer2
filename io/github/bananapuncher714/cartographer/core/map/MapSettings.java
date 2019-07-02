@@ -22,6 +22,7 @@ public class MapSettings {
 		for ( String string : config.getStringList( "allowed-zooms" ) ) {
 			allowedZooms.add( ZoomScale.valueOf( string.toUpperCase() ) );
 		}
+		allowedZooms.add( defaultZoom );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
@@ -40,6 +41,10 @@ public class MapSettings {
 	
 	public void setCircularZoom( boolean circular ) {
 		circularZoom = circular;
+	}
+	
+	public boolean isValidZoom( ZoomScale scale) {
+		return allowedZooms.contains( scale );
 	}
 	
 	public MinimapPalette getPalette() {

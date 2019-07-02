@@ -47,14 +47,37 @@ public class PlayerListener implements Listener {
 						continue;
 					}
 					
-					// TODO Implement zoom blacklist or something similar
 					ZoomScale scale = cr.getScale( player.getUniqueId() );
 					
-					boolean zoom = event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK;
-					// newScale represents how many blocks per pixel, with 16 being the most and .25 being the least
-					ZoomScale newScale = zoom ? scale.getHigher( map.getSettings().isCircularZoom() ) : scale.getLower( map.getSettings().isCircularZoom() );
+					boolean zoom = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
+					if ( map.getSettings().isCircularZoom() ) {
+						scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
+						while ( !map.getSettings().isValidZoom( scale ) ) {
+							scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
+						}
+					} else {
+						if ( zoom ) {
+							ZoomScale lastValid = scale;
+							scale = scale.zoom( false );
+							while ( !map.getSettings().isValidZoom( scale ) && !scale.isMostZoomed() ) {
+								scale = scale.zoom( false );
+							}
+							if ( !map.getSettings().isValidZoom( scale ) ) {
+								scale = lastValid;
+							}
+						} else {
+							ZoomScale lastValid = scale;
+							scale = scale.unzoom( false );
+							while ( !map.getSettings().isValidZoom( scale ) && !scale.isLeastZoomed() ) {
+								scale = scale.unzoom( false );
+							}
+							if ( !map.getSettings().isValidZoom( scale ) ) {
+								scale = lastValid;
+							}
+						}
+					}
 					
-					cr.setScale( player.getUniqueId(), newScale.getBlocksPerPixel() );
+					cr.setScale( player.getUniqueId(), scale.getBlocksPerPixel() );
 				}
 			}
 			event.setCancelled( true );

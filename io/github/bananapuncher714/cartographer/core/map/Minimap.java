@@ -1,5 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,11 +10,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
+
+import javax.swing.JLabel;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -19,6 +26,7 @@ import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkLoadedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkProcessedEvent;
+import io.github.bananapuncher714.cartographer.core.api.map.LocalCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.file.BigChunk;
@@ -28,8 +36,12 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
+import io.github.bananapuncher714.cartographer.core.map.text.CartographerFont;
+import io.github.bananapuncher714.cartographer.core.map.text.FontStyle;
 import io.github.bananapuncher714.cartographer.core.renderer.MapViewer;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
+import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
+import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 public class Minimap implements ChunkNotifier {
 	protected final String id;
@@ -43,7 +55,8 @@ public class Minimap implements ChunkNotifier {
 	protected Map< UUID, MapViewer > viewers = new HashMap< UUID, MapViewer >();
 
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
-	protected Set< MapPixelProvider > pixelProviders = new HashSet< MapPixelProvider >();
+	protected Set< LocalCursorProvider > localCursorProviders = new HashSet< LocalCursorProvider >();
+	protected Set< MapPixelProvider > pixelProviders = new TreeSet< MapPixelProvider >();
 	
 	private long tick = 0;
 	
@@ -78,15 +91,14 @@ public class Minimap implements ChunkNotifier {
 //			}
 //		} );
 //		
+//		Font font = new JLabel().getFont();
+//		CartographerFont cFont = new CartographerFont( font );
+//		BufferedImage image = cFont.write( "Welcome to Cartographer", Color.BLACK, 12 );
+//		Collection< MapPixel > pixels = MapUtil.getPixelsFor( image, 0, 64 );
+//		
 //		pixelProviders.add( new MapPixelProvider() {
 //			@Override
 //			public Collection< MapPixel > getMapPixels( Player player, Minimap map ) {
-//				Set< MapPixel > pixels = new HashSet< MapPixel >();
-//				for ( int x = 0; x < 64; x++ ) {
-//					for ( int y = 0; y < 64; y++ ) {
-//						pixels.add( new MapPixel( x, y, new Color( 0, 0, 0, 128 ) ) );
-//					}
-//				}
 //				return pixels;
 //			}
 //		} );
@@ -194,6 +206,17 @@ public class Minimap implements ChunkNotifier {
 		return cursors;
 	}
 	
+	public Collection< MapCursor > getLocalCursorsFor( Player player ) {
+		Set< MapCursor > cursors = new HashSet< MapCursor >();
+		for ( LocalCursorProvider provider : localCursorProviders ) {
+			Collection< MapCursor > cursorCollection = provider.getCursors( player, this );
+			if ( cursorCollection != null ) {
+				cursors.addAll( cursorCollection );
+			}
+		}
+		return cursors;
+	}
+	
 	public void registerPixelProvider( MapPixelProvider provider ) {
 		pixelProviders.add( provider );
 	}
@@ -208,6 +231,26 @@ public class Minimap implements ChunkNotifier {
 	
 	public void unregisterWorldCursorProvider( WorldCursorProvider provider ) {
 		cursorProviders.remove( provider );
+	}
+	
+	public void registerLocalCursorProvider( LocalCursorProvider provider ) {
+		localCursorProviders.add( provider );
+	}
+	
+	public void unregisterLocalCursorProvider( LocalCursorProvider provider ) {
+		localCursorProviders.remove( provider );
+	}
+	
+	public Set< WorldCursorProvider > getCursorProviders() {
+		return cursorProviders;
+	}
+	
+	public Set< LocalCursorProvider > getLocalCursorProviders() {
+		return localCursorProviders;
+	}
+	
+	public Set< MapPixelProvider > getPixelProviders() {
+		return pixelProviders;
 	}
 	
 	public void terminate() {

@@ -131,7 +131,12 @@ public class BigChunkQueue {
 		
 		@Override
 		public BigChunk call() throws Exception {
-			return FileUtil.readObject( BigChunk.class, file );
+			try {
+				return FileUtil.readObject( BigChunk.class, file );
+			} catch ( Exception exception ) {
+				file.delete();
+				return null;
+			}
 		}
 	}
 }

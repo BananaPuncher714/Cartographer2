@@ -10,6 +10,7 @@ public class MapViewer {
 		this.uuid = uuid;
 	}
 
+	// TODO Make use of this or something
 	public boolean isRotateByDefault() {
 		return rotateByDefault;
 	}

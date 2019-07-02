@@ -1,11 +1,16 @@
 package io.github.bananapuncher714.cartographer.core.util;
 
 import java.awt.Color;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
 public class MapUtil {
@@ -67,5 +72,25 @@ public class MapUtil {
 		}
 		
 		return JetpImageUtil.getBestColor( color.getRGB() );
+	}
+	
+	public static Collection< MapPixel > getPixelsFor( Image image, int x, int y ) {
+		BufferedImage bImage = JetpImageUtil.toBufferedImage( image );
+		int width = bImage.getWidth();
+		int[] data = JetpImageUtil.getRGBArray( bImage );
+		Set< MapPixel > pixels = new HashSet< MapPixel >();
+		for ( int i = 0; i < data.length; i++ ) {
+			int argb = data[ i ];
+			if ( argb >>> 24 > 0 ) {
+				int w = i % width;
+				int h = i / width;
+				int nx = w + x;
+				int ny = h + y;
+				if ( nx >=0 && nx < 128 && ny >=0 && ny < 128 ) {
+					pixels.add( new MapPixel( nx, ny, new Color( argb ) ) );
+				}
+			}
+		}
+		return pixels;
 	}
 }

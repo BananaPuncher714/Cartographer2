@@ -7,6 +7,24 @@ import org.bukkit.entity.Player;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
-public interface MapPixelProvider {
+public interface MapPixelProvider extends Comparable< MapPixelProvider > {
 	Collection< MapPixel > getMapPixels( Player player, Minimap map );
+	default PixelPriority getPriority() {
+		return PixelPriority.NORMAL;
+	}
+	
+	@Override
+	default int compareTo( MapPixelProvider provider ) {
+		if ( getPriority() == provider.getPriority() ) {
+			if ( provider == this ) {
+				return 0;
+			} else {
+				return 1;
+			}
+		} else if ( getPriority().isHigherThan( provider.getPriority() ) ) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
 }
