@@ -1,8 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,9 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
-
-import javax.swing.JLabel;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,12 +30,7 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
-import io.github.bananapuncher714.cartographer.core.map.text.CartographerFont;
-import io.github.bananapuncher714.cartographer.core.map.text.FontStyle;
-import io.github.bananapuncher714.cartographer.core.renderer.MapViewer;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
-import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
-import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 public class Minimap implements ChunkNotifier {
 	protected final String id;
@@ -52,8 +41,6 @@ public class Minimap implements ChunkNotifier {
 	protected File saveFile;
 	protected MapSettings settings;
 	
-	protected Map< UUID, MapViewer > viewers = new HashMap< UUID, MapViewer >();
-
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
 	protected Set< LocalCursorProvider > localCursorProviders = new HashSet< LocalCursorProvider >();
 	protected Set< MapPixelProvider > pixelProviders = new TreeSet< MapPixelProvider >();

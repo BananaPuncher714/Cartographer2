@@ -1,49 +1,56 @@
 package io.github.bananapuncher714.cartographer.core.map.palette;
 
 import java.awt.Color;
-import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Material;
 
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
 public class MinimapPalette {
 	private int defColor;
-	private Map< Material, Integer > colors = new EnumMap< Material, Integer >( Material.class );
-	private Set< Material > transparentBlocks = EnumSet.noneOf( Material.class );
+	private Map< CrossVersionMaterial, Integer > colors = new HashMap< CrossVersionMaterial, Integer >();
+	private Set< CrossVersionMaterial > transparentBlocks = new HashSet< CrossVersionMaterial >();
 	
 	public MinimapPalette() {
 		this( new Color( 0 ) );
+		transparentBlocks.add( new CrossVersionMaterial( Material.AIR ) );
 	}
 	
 	public MinimapPalette( Color defaultColor ) {
 		defColor = defaultColor.getRGB();
 	}
 	
-	public boolean contains( Material material ) {
+	public boolean contains( CrossVersionMaterial material ) {
 		return colors.containsKey( material );
 	}
 	
-	public byte getMinecraftColor( Material material ) {
+	public byte getMinecraftColor( CrossVersionMaterial material ) {
 		return JetpImageUtil.getBestColor( getRGB( material ) );
 	}
 	
-	public Color getColor( Material material ) {
+	public Color getColor( CrossVersionMaterial material ) {
 		return new Color( getRGB( material ) );
 	}
 	
-	public int getRGB( Material material ) {
-		return colors.containsKey( material ) ? colors.get( material ) : defColor;
+	public int getRGB( CrossVersionMaterial material ) {
+		if ( colors.containsKey( material ) ) {
+			return colors.get( material );
+		} else {
+			CrossVersionMaterial universal = new CrossVersionMaterial( material.material, -1 );
+			return colors.containsKey( universal ) ? colors.get( universal ) : defColor;
+		}
 	}
 	
-	public void setColor( Material material, Color color ) {
+	public void setColor( CrossVersionMaterial material, Color color ) {
 		setColor( material, color.getRGB() );
 	}
 	
-	public void setColor( Material material, int rgb ) {
+	public void setColor( CrossVersionMaterial material, int rgb ) {
 		colors.put( material, rgb & 0xFFFFFF );
 	}
 	
@@ -51,19 +58,19 @@ public class MinimapPalette {
 		setDefaultColor( color.getRGB() );
 	}
 	
-	public Set< Material > getMaterials() {
+	public Set< CrossVersionMaterial > getMaterials() {
 		return colors.keySet();
 	}
 	
-	public Set< Material > getTransparentBlocks() {
+	public Set< CrossVersionMaterial > getTransparentBlocks() {
 		return transparentBlocks;
 	}
 	
-	public void addTransparentMaterial( Material material ) {
+	public void addTransparentMaterial( CrossVersionMaterial material ) {
 		transparentBlocks.add( material );
 	}
 	
-	public boolean isTransparent( Material material ) {
+	public boolean isTransparent( CrossVersionMaterial material ) {
 		return transparentBlocks.contains( material );
 	}
 	

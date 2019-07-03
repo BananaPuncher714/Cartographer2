@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
@@ -56,6 +57,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	private int chunksPerSecond = 1;
 	private boolean forceLoad = false;
+	private boolean rotateByDefault = true;
 	
 	private int[] loadingBackground;
 	private int[] overlay;
@@ -107,7 +109,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
-		Bukkit.getPluginManager().registerEvents( new PlayerListener(), this );
+		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
 //		Bukkit.getPluginManager().registerEvents( new MapListener(), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
 		
@@ -181,10 +183,12 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	private void loadInit() {
 		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
-		FileUtil.saveToFile( getResource( "data/overlay.png" ), OVERLAY_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/background.png" ), BACKGROUND_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/missing.png" ), MISSING_MAP_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/images/overlay.png" ), OVERLAY_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/images/background.png" ), BACKGROUND_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/images/missing.png" ), MISSING_MAP_IMAGE, false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
+
 	}
 	
 	private void loadData() {
@@ -208,6 +212,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 			invalidIds.add( Integer.valueOf( string ) );
 		}
 		forceLoad = config.getBoolean( "force-load" );
+		rotateByDefault = config.getBoolean( "rotate-by-default", true );
 	}
 	
 	private void loadPalettes() {
@@ -293,6 +298,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 		return forceLoad;
 	}
 	
+	public boolean isRotateByDefault() {
+		return rotateByDefault;
+	}
+	
 	public int[] getLoadingImage() {
 		// TODO Specify that this is 128x128
 		return loadingBackground;
@@ -309,5 +318,9 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	public static Cartographer getInstance() {
 		return INSTANCE;
+	}
+	
+	public static GeneralUtil getUtil() {
+		return getInstance().getHandler().getUtil();
 	}
 }

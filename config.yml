@@ -9,3 +9,5 @@ skip-ids:
 # It is equivalent to using Worldborder to load the entire world, or rendering with Dynmap
 # Note that this does not mean your server will be lagging all the time, only when there are chunks that need loading
 force-load: false
+
+rotate-by-default: true

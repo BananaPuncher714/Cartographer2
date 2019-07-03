@@ -1,9 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.map.process;
 
-import java.awt.Color;
 import java.io.Serializable;
-
-import org.bukkit.map.MapPalette;
 
 /**
  * Represents a single chunk's worth of data.

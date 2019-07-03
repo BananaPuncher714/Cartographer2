@@ -3,12 +3,13 @@ package io.github.bananapuncher714.cartographer.core.map.process;
 import java.awt.Color;
 
 import org.bukkit.ChunkSnapshot;
-import org.bukkit.Material;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
 public class SimpleChunkProcessor implements ChunkDataProvider {
@@ -41,7 +42,7 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
 				int prevVal = buffer[ x ];
 				buffer[ x ] = height;
-				Material material = snapshot.getBlockData( x, height, z ).getMaterial();
+				CrossVersionMaterial material = Cartographer.getUtil().getBlockType( snapshot, x, height, z );
 				Color color = palette.getColor( material );
 				if ( prevVal > 0 ) {
 					if ( prevVal == height ) {
@@ -54,8 +55,6 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 				data[ x + z * 16 ] = JetpImageUtil.getBestColor( color.getRGB() );
 			}
 		}
-
-		
 		
 		return new ChunkData( data );
 	}

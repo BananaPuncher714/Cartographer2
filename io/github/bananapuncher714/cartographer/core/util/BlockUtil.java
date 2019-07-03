@@ -15,23 +15,23 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 
 public final class BlockUtil {
 	
 	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z ) {
 		int originalY = y - 1;
-		while ( y > 0 && chunk.getBlockType( x, y--, z ) == Material.WATER );
+		while ( y > 0 && Cartographer.getUtil().isWater( Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material ) );
 		return originalY - y;
 	}
 	
-	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< Material > skip ) {
-		while ( y > 0 && ( ( skip != null && skip.contains( chunk.getBlockType( x, y--, z ) ) ) || ( skip == null && chunk.getBlockType( x, y--, z ) == Material.AIR ) ) );
+	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip ) {
+		while ( y > 0 && ( ( skip != null && skip.contains( Cartographer.getUtil().getBlockType( chunk, x, y--, z ) ) ) || ( skip == null && Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material == Material.AIR ) ) );
 		return y + 1;
 	}
 	
-	public static int getHighestYAt( Location location, Set< Material > skip ) {
-		// TODO fix this somehow
+	public static int getHighestYAt( Location location, Set< CrossVersionMaterial > skip ) {
 		int y = location.getWorld().getMaxHeight();
 		location.setY( y );
 		while ( y > 0 ) {
@@ -40,7 +40,8 @@ public final class BlockUtil {
 					return y;
 				}
 			} else {
-				if ( !skip.contains( location.getBlock().getType() ) ) {
+				CrossVersionMaterial blockType = Cartographer.getUtil().getBlockType( location.getBlock() );
+				if ( !skip.contains( blockType ) ) {
 					return y;
 				}
 			}
@@ -49,8 +50,8 @@ public final class BlockUtil {
 		return 0;
 	}
 	
-	public static Block getNextHighestBlockAt( Location location, Set< Material > skip, int height ) {
-		skip.add( Material.AIR );
+	public static Block getNextHighestBlockAt( Location location, Set< CrossVersionMaterial > skip, int height ) {
+		skip.add( new CrossVersionMaterial( Material.AIR ) );
 		Location loc = location.clone();
 		if ( height > 0 && height <= loc.getWorld().getMaxHeight() ) {
 			loc.setY( height );
@@ -59,8 +60,10 @@ public final class BlockUtil {
 		}
 		Block b = loc.getBlock();
 		Block upper = b.getRelative( BlockFace.UP );
-		while ( skip.contains( upper.getType() ) && upper.getLocation().getY() < loc.getWorld().getMaxHeight() ) {
+		CrossVersionMaterial upperType = Cartographer.getUtil().getBlockType( upper );
+		while ( skip.contains( upperType ) && upper.getLocation().getY() < loc.getWorld().getMaxHeight() ) {
 			upper = upper.getRelative( BlockFace.UP );
+			upperType = Cartographer.getUtil().getBlockType( upper );
 		}
 		return upper;
 	}

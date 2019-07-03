@@ -1,11 +1,14 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -33,11 +36,11 @@ public class MinimapManager {
 	
 	public ItemStack getItemFor( Minimap map ) {
 		MapView view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
-		while ( Cartographer.getInstance().getInvalidIds().contains( view.getId() ) ) {
+		while ( Cartographer.getInstance().getInvalidIds().contains( ( int ) view.getId() ) ) {
 			view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		}
 		
-		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( view.getId() );
+		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( ( int ) view.getId() );
 		
 		convert( view, map );
 		
@@ -79,9 +82,9 @@ public class MinimapManager {
 		}
 		if ( !converted ) {
 			CartographerRenderer renderer = new CartographerRenderer( map );
-			plugin.getRenderers().put( view.getId(), renderer );
+			plugin.getRenderers().put( ( int ) view.getId(), renderer );
 			view.addRenderer( renderer );
-			plugin.getHandler().registerMap( view.getId() );
+			plugin.getHandler().registerMap( ( int ) view.getId() );
 		}
 	}
 	

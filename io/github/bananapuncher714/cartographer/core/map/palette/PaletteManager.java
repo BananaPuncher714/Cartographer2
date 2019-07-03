@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
 public class PaletteManager {
 	protected Cartographer plugin;
@@ -34,12 +35,12 @@ public class PaletteManager {
 		
 			palette.setDefaultColor( template.getDefaultRGB() );
 			
-			for ( Material material : template.getMaterials() ) {
+			for ( CrossVersionMaterial material : template.getMaterials() ) {
 				palette.setColor( material, template.getRGB( material ) );
 				palette.getTransparentBlocks().remove( material );
 			}
 			
-			for ( Material material : template.getTransparentBlocks() ) {
+			for ( CrossVersionMaterial material : template.getTransparentBlocks() ) {
 				palette.getTransparentBlocks().add( material );
 			}
 		}
@@ -59,27 +60,33 @@ public class PaletteManager {
 		}
 		if ( config.contains( "colors" ) ) {
 			for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
-				Material material = Material.getMaterial( key.toUpperCase() );
+				String[] matVals = key.split( "," );
+				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
+				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
 					plugin.getLogger().warning( key + " is an invalid material!" );
 					continue;
 				}
+				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );
 				
 				String[] data = config.getString( "colors." + key ).split( "\\D+" );
 				Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
 				
-				palette.setColor( material, color );
+				palette.setColor( cvMaterial, color );
 			}
 		}
 		
 		if ( config.contains( "transparent-blocks" ) ) {
 			for ( String val : config.getStringList( "transparent-blocks" ) ) {
-				Material material = Material.getMaterial( val.toUpperCase() );
+				String[] matVals = val.split( "," );
+				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
+				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
 					plugin.getLogger().warning( val + " is an invalid material!" );
 					continue;
 				}
-				palette.addTransparentMaterial( material );
+				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );
+				palette.addTransparentMaterial( cvMaterial );
 			}
 		}
 		return palette;

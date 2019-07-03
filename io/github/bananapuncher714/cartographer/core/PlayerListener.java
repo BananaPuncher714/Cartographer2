@@ -24,18 +24,25 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 
 public class PlayerListener implements Listener {
+	protected Cartographer plugin;
+	
+	protected PlayerListener( Cartographer plugin ) {
+		this.plugin = plugin;
+	}
+	
 	@EventHandler
 	private void onPlayerInteractEvent( PlayerInteractEvent event ) {
-		if ( event.getHand() != EquipmentSlot.HAND ) {
+		if ( !plugin.getHandler().getUtil().isValidHand( event ) ) {
 			return;
 		}
+
 		Player player = event.getPlayer();
 		
 		ItemStack item = event.getItem();
 		
-		if ( item != null && item.getType() == Material.FILLED_MAP ) {
-			Cartographer.getInstance().getMapManager().update( item );
-			MapView view = Cartographer.getInstance().getHandler().getUtil().getMapViewFrom( item );
+		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() ) {
+			plugin.getMapManager().update( item );
+			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
 			for ( MapRenderer renderer : view.getRenderers() ) {
 				if ( renderer instanceof CartographerRenderer  ) {
 					CartographerRenderer cr = ( CartographerRenderer ) renderer;
@@ -90,7 +97,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	private void onBlockBreakEvent( BlockBreakEvent event ) {
-		Bukkit.getScheduler().runTask( Cartographer.getInstance(), new Runnable() {
+		Bukkit.getScheduler().runTask( plugin, new Runnable() {
 			@Override
 			public void run() {
 				updateMap( event.getBlock().getLocation() );
@@ -100,7 +107,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	private void onBlockPlaceEvent( BlockPlaceEvent event ) {
-		Bukkit.getScheduler().runTask( Cartographer.getInstance(), new Runnable() {
+		Bukkit.getScheduler().runTask( plugin, new Runnable() {
 			@Override
 			public void run() {
 				updateMap( event.getBlock().getLocation() );
@@ -110,7 +117,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	private void onWaterFlowEvent( BlockFromToEvent event ) {
-		Bukkit.getScheduler().runTask( Cartographer.getInstance(), new Runnable() {
+		Bukkit.getScheduler().runTask( plugin, new Runnable() {
 			@Override
 			public void run() {
 				updateMap( event.getBlock().getLocation() );
@@ -121,7 +128,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
-		Bukkit.getScheduler().runTask( Cartographer.getInstance(), new Runnable() {
+		Bukkit.getScheduler().runTask( plugin, new Runnable() {
 			@Override
 			public void run() {
 				updateMap( event.getBlock().getLocation() );
@@ -131,11 +138,11 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
-		Cartographer.getInstance().getProtocol().removeChannel( event.getPlayer() );
+		plugin.getProtocol().removeChannel( event.getPlayer() );
 	}
 	
 	private void updateMap( Location... locations ) {
-		for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
+		for ( Minimap minimap : plugin.getMapManager().getMinimaps().values() ) {
 			for ( Location location : locations ) {
 				minimap.getDataCache().updateLocation( location, minimap.getPalette() );
 			}

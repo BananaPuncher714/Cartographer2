@@ -5,20 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Shulker;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.map.MapView;
 import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.util.NBTEditor;
 
 public class CartographerCommand implements CommandExecutor, TabCompleter {
 
@@ -56,12 +51,6 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 					create( sender, args );
 				} else if ( option.equalsIgnoreCase( "get" ) ) {
 					get( sender, args );
-				} else if ( option.equalsIgnoreCase( "shulker" ) ) {
-					if ( sender instanceof Player ) {
-						Player player = ( Player ) sender;
-						Shulker shulker = player.getWorld().spawn( player.getLocation(), Shulker.class );
-						player.addPassenger( shulker );
-					}
 				} else {
 					sender.sendMessage( ChatColor.RED + "Usage: /cartographer <create|get> ..." );
 				}

@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
@@ -61,7 +61,7 @@ public class MapUtil {
 		int prevVal = BlockUtil.getHighestYAt( location.clone().subtract( 0, 0, 1 ), palette.getTransparentBlocks() );
 		Location highest = location.clone();
 		highest.setY( height );
-		Material material = highest.getBlock().getType();
+		CrossVersionMaterial material = Cartographer.getInstance().getHandler().getUtil().getBlockType( highest.getBlock() );
 		Color color = palette.getColor( material );
 		if ( prevVal > 0 ) {
 			if ( prevVal == height ) {

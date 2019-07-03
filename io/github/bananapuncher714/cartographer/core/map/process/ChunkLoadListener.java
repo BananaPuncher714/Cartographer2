@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;

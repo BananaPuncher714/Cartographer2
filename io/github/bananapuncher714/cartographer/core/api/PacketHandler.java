@@ -3,7 +3,6 @@ package io.github.bananapuncher714.cartographer.core.api;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 

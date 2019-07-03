@@ -6,6 +6,7 @@ import java.util.Set;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
@@ -13,6 +14,8 @@ public class MapSettings {
 	protected Set< ZoomScale > allowedZooms = new HashSet< ZoomScale >();
 	protected ZoomScale defaultZoom = ZoomScale.ONE;
 	protected boolean circularZoom = false;
+	
+	protected BooleanOption rotation = BooleanOption.DEFAULT;
 	
 	protected MinimapPalette palette;
 	
@@ -45,6 +48,14 @@ public class MapSettings {
 	
 	public boolean isValidZoom( ZoomScale scale) {
 		return allowedZooms.contains( scale );
+	}
+	
+	public BooleanOption getRotation() {
+		return rotation;
+	}
+	
+	public void setRotation( BooleanOption rotation ) {
+		this.rotation = rotation;
 	}
 	
 	public MinimapPalette getPalette() {

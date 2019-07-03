@@ -18,6 +18,7 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
@@ -31,7 +32,7 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 /**
- * 
+ * Render a map and send the packet
  * 
  * @author BananaPuncher714
  */
@@ -94,7 +95,11 @@ public class CartographerRenderer extends MapRenderer {
 			
 			byte[] data = new byte[ 128 * 128 ];
 			int[] overlay = new int[ 128 * 128 ];
-			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, setting.rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
+			
+			BooleanOption rotation = map.getSettings().getRotation();
+			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
+			
+			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
 			
 			// Map Pixel color stuff
 			Collection< MapPixel > pixels = map.getPixelsFor( player );
@@ -288,6 +293,7 @@ public class CartographerRenderer extends MapRenderer {
 			settings.get( player.getUniqueId() ).location = player.getLocation();
 		} else {
 			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
+			setting.rotating = Cartographer.getInstance().isRotateByDefault();
 			settings.put( player.getUniqueId(), setting );
 		}
 		
