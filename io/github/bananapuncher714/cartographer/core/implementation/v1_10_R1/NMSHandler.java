@@ -1,8 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_10_R1;
 
 import java.lang.reflect.Field;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -131,6 +129,11 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public void unregisterMap( int id ) {
 		maps.remove( id );
+	}
+	
+	@Override
+	public boolean mapBug() {
+		return true;
 	}
 	
 	@Override

@@ -13,6 +13,10 @@ public interface PacketHandler {
 	void unregisterMap( int id );
 	void registerMap( int id );
 	void sendDataTo( int id, byte[] data, MapCursor[] cursors, UUID... uuids );
+
+	default boolean mapBug() {
+		return false;
+	}
 	
 	// More mundane methods
 	MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name );

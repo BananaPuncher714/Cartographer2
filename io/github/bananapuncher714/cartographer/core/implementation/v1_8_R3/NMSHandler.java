@@ -130,6 +130,11 @@ public class NMSHandler implements PacketHandler {
 	}
 	
 	@Override
+	public boolean mapBug() {
+		return true;
+	}
+	
+	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType.getValue(), true );
 	}

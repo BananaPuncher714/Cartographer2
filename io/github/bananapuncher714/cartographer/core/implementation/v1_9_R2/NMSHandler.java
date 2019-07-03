@@ -130,6 +130,11 @@ public class NMSHandler implements PacketHandler {
 	public void unregisterMap( int id ) {
 		maps.remove( id );
 	}
+
+	@Override
+	public boolean mapBug() {
+		return true;
+	}
 	
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {

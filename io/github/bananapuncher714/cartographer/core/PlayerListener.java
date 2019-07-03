@@ -43,8 +43,10 @@ public class PlayerListener implements Listener {
 		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() ) {
 			plugin.getMapManager().update( item );
 			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
+			Minimap currentMap = null;
+			ZoomScale newScale = null;
 			for ( MapRenderer renderer : view.getRenderers() ) {
-				if ( renderer instanceof CartographerRenderer  ) {
+				if ( renderer instanceof CartographerRenderer ) {
 					CartographerRenderer cr = ( CartographerRenderer ) renderer;
 					if ( !cr.isViewing( player.getUniqueId() ) ) {
 						continue;
@@ -53,6 +55,7 @@ public class PlayerListener implements Listener {
 					if ( map == null ) {
 						continue;
 					}
+					currentMap = map;
 					
 					ZoomScale scale = cr.getScale( player.getUniqueId() );
 					
@@ -83,10 +86,30 @@ public class PlayerListener implements Listener {
 							}
 						}
 					}
+					newScale = scale;
 					
 					cr.setScale( player.getUniqueId(), scale.getBlocksPerPixel() );
 				}
 			}
+			
+			if ( currentMap != null && plugin.getHandler().mapBug() ) {
+				ItemStack newMap = plugin.getMapManager().getItemFor( currentMap );
+				MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
+				final ZoomScale finScale = newScale;
+				Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
+					@Override
+					public void run() {
+						for ( MapRenderer renderer : newView.getRenderers() ) {
+							if ( renderer instanceof CartographerRenderer ) {
+								CartographerRenderer cr = ( CartographerRenderer ) renderer;
+								cr.setScale( player.getUniqueId(), finScale.getBlocksPerPixel() );
+							}
+						}
+					}
+				} );
+				player.getEquipment().setItemInHand( newMap );
+			}
+			
 			event.setCancelled( true );
 		}
 	}

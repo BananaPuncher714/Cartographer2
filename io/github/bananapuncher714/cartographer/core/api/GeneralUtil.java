@@ -16,6 +16,7 @@ import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
  */
 public interface GeneralUtil {
 	MapView getMapViewFrom( ItemStack item );
+	int getId( MapView view );
 	ItemStack getMapItem( int id );
 	Material getMapMaterial();
 	boolean isValidHand( PlayerInteractEvent event );

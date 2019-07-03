@@ -31,6 +31,11 @@ public class Util_1_13 implements GeneralUtil {
 	}
 
 	@Override
+	public int getId( MapView view ) {
+		return view.getId();
+	}
+	
+	@Override
 	public ItemStack getMapItem( int id ) {
 		ItemStack map = new ItemStack( Material.FILLED_MAP );
 		MapMeta meta = ( MapMeta ) map.getItemMeta();

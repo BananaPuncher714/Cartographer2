@@ -37,6 +37,7 @@ import io.github.bananapuncher714.cartographer.core.util.MapUtil;
  * @author BananaPuncher714
  */
 public class CartographerRenderer extends MapRenderer {
+	private static final int UPDATE_THRESHOLD = 5000;
 	private static final boolean ASYNC_RENDER = false;
 	
 	volatile boolean RUNNING = true;
@@ -44,6 +45,7 @@ public class CartographerRenderer extends MapRenderer {
 	protected Thread renderer;
 
 	protected Map< UUID, PlayerSetting > settings = new HashMap< UUID, PlayerSetting >();
+	protected Map< UUID, Long > lastUpdated = new HashMap< UUID, Long >();
 	
 	protected int id;
 	
@@ -80,6 +82,11 @@ public class CartographerRenderer extends MapRenderer {
 	private void update() {
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
+			
+			if ( System.currentTimeMillis() - lastUpdated.get( entry.getKey() ) > UPDATE_THRESHOLD ) {
+				iterator.remove();
+			}
+			
 			Player player = Bukkit.getPlayer( entry.getKey() );
 			PlayerSetting setting = entry.getValue();
 			Location loc = setting.location;
@@ -287,6 +294,7 @@ public class CartographerRenderer extends MapRenderer {
 	
 	@Override
 	public void render( MapView view, MapCanvas canvas, Player player ) {
+		lastUpdated.put( player.getUniqueId(), System.currentTimeMillis() );
 		id = view.getId();
 
 		if ( settings.containsKey( player.getUniqueId() ) ) {

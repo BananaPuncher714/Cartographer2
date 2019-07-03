@@ -1,14 +1,13 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -36,15 +35,16 @@ public class MinimapManager {
 	
 	public ItemStack getItemFor( Minimap map ) {
 		MapView view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
-		while ( Cartographer.getInstance().getInvalidIds().contains( ( int ) view.getId() ) ) {
+		while ( Cartographer.getInstance().getInvalidIds().contains( ( int ) getId( view ) ) ) {
 			view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		}
 		
-		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( ( int ) view.getId() );
+		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( ( int ) getId( view ) );
 		
 		convert( view, map );
 		
-		mapItem = NBTEditor.set( mapItem, map.getId(), MAP_ID );
+		String id = map == null ? "MISSING MAP" : map.getId();
+		mapItem = NBTEditor.set( mapItem, id, MAP_ID );
 		
 		return mapItem;
 	}
@@ -82,9 +82,9 @@ public class MinimapManager {
 		}
 		if ( !converted ) {
 			CartographerRenderer renderer = new CartographerRenderer( map );
-			plugin.getRenderers().put( ( int ) view.getId(), renderer );
+			plugin.getRenderers().put( ( int ) getId( view ), renderer );
 			view.addRenderer( renderer );
-			plugin.getHandler().registerMap( ( int ) view.getId() );
+			plugin.getHandler().registerMap( ( int ) getId( view ) );
 		}
 	}
 	
@@ -115,5 +115,9 @@ public class MinimapManager {
 		for ( Minimap map : minimaps.values() ) {
 			map.terminate();
 		}
+	}
+	
+	private int getId( MapView view ) {
+		return Cartographer.getUtil().getId( view );
 	}
 }
