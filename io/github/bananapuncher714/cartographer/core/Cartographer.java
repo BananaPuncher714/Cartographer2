@@ -197,10 +197,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 			if ( data.contains( "custom-renderer-ids" ) ) {
 				for ( String key : data.getConfigurationSection( "custom-renderer-ids" ).getKeys( false ) ) {
 					String id = data.getString( "custom-renderer-ids." + key );
-					short mapId = Short.parseShort( key );
+					int mapId = Integer.parseInt( key );
 					Minimap map = mapManager.getMinimaps().get( id );
 					
-					mapManager.convert( Bukkit.getMap( mapId ), map );
+					mapManager.convert( handler.getUtil().getMap( mapId ), map );
 				}
 			}
 		}

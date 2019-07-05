@@ -18,12 +18,16 @@ public class Util_1_8 implements GeneralUtil {
 	private static Method GETBLOCKTYPEID;
 	private static Method GETMATERIAL;
 	private static Method GETBLOCKDATA;
+	private static Method GETMAP;
+	private static Method GETID;
 	
 	static {
 		try {
 			GETBLOCKTYPEID = ChunkSnapshot.class.getMethod( "getBlockTypeId", int.class, int.class, int.class );
 			GETBLOCKDATA = ChunkSnapshot.class.getMethod( "getBlockData", int.class, int.class, int.class );
 			GETMATERIAL = Material.class.getMethod( "getMaterial", int.class );
+			GETMAP = Bukkit.class.getMethod( "getMap", short.class );
+			GETID = MapView.class.getMethod( "getId" );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -35,16 +39,30 @@ public class Util_1_8 implements GeneralUtil {
 			return null;
 		}
 		if ( item.getType() == Material.MAP ) {
-			return Bukkit.getMap( ( short ) item.getDurability() );
+			return getMap( item.getDurability() );
 		}
 		return null;
 	}
 
 	@Override
-	public int getId( MapView view ) {
-		return ( int ) view.getId();
+	public MapView getMap( int id ) {
+		try {
+			return ( MapView ) GETMAP.invoke( null, ( short ) id );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
+	@Override
+	public int getId( MapView view ) {
+		try {
+			return ( short ) GETID.invoke( view );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	
 	@Override
 	public ItemStack getMapItem( int id ) {

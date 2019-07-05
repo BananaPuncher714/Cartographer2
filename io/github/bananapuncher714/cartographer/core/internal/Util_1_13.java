@@ -29,6 +29,11 @@ public class Util_1_13 implements GeneralUtil {
 		}
 		return null;
 	}
+	
+	@Override
+	public MapView getMap( int id ) {
+		return Bukkit.getMap( id );
+	}
 
 	@Override
 	public int getId( MapView view ) {

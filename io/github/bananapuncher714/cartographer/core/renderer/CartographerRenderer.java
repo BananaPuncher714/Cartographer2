@@ -295,7 +295,7 @@ public class CartographerRenderer extends MapRenderer {
 	@Override
 	public void render( MapView view, MapCanvas canvas, Player player ) {
 		lastUpdated.put( player.getUniqueId(), System.currentTimeMillis() );
-		id = view.getId();
+		id = Cartographer.getUtil().getId( view );
 
 		if ( settings.containsKey( player.getUniqueId() ) ) {
 			settings.get( player.getUniqueId() ).location = player.getLocation();

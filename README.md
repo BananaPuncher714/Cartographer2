@@ -11,6 +11,10 @@ I have several objectives I would like to meet with the final product of Cartogr
 - Customizable for users
 - Modular for developers
 
+### More information
+- [Github](https://github.com/BananaPuncher714/Cartographer2)
+- [Spigot](https://www.spigotmc.org/resources/cartographer-2-1-8-9-1-14-3-the-best-minimap-plugin-for-bukkit.46922/)
+
 ### Credits
 - `BananaPuncher714` - Creator, Developer, Maintainer
 - `Jetp250` - Developer
