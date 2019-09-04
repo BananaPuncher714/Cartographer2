@@ -11,3 +11,11 @@ skip-ids:
 force-load: false
 
 rotate-by-default: true
+
+# A list of blacklisted inventories that maps are not allowed to be put into,
+# such as the crafting table, anvil, and cartographer table
+# Find the full list here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/inventory/InventoryType.html
+blacklisted-inventories:
+- "ANVIL"
+- "WORKBENCH"
+- "CARTOGRAPHY"

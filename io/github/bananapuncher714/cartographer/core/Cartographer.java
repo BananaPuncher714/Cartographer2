@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
@@ -50,6 +51,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private PaletteManager paletteManager;
 	
 	private Set< Integer > invalidIds = new HashSet< Integer >();
+	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
 	
 	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
 	
@@ -110,7 +112,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
 		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
-//		Bukkit.getPluginManager().registerEvents( new MapListener(), this );
+		Bukkit.getPluginManager().registerEvents( new MapListener( this ), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
 		
 		load();
@@ -183,6 +185,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	private void loadInit() {
 		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
+		FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
 		FileUtil.saveToFile( getResource( "data/images/overlay.png" ), OVERLAY_IMAGE, false );
 		FileUtil.saveToFile( getResource( "data/images/background.png" ), BACKGROUND_IMAGE, false );
 		FileUtil.saveToFile( getResource( "data/images/missing.png" ), MISSING_MAP_IMAGE, false );
@@ -213,6 +216,16 @@ public class Cartographer extends JavaPlugin implements Listener {
 		}
 		forceLoad = config.getBoolean( "force-load" );
 		rotateByDefault = config.getBoolean( "rotate-by-default", true );
+		
+		for ( String string : config.getStringList( "blacklisted-inventories" ) ) {
+			try {
+				InventoryType invalid = InventoryType.valueOf( string );
+				invalidInventoryTypes.add( invalid );
+				getLogger().info( "Added '" + string + "' as a blacklisted inventory" );
+			} catch ( IllegalArgumentException exception ) {
+				getLogger().warning( "No such inventory type '" + string + "'" );
+			}
+		}
 	}
 	
 	private void loadPalettes() {
@@ -314,6 +327,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 
 	public byte[] getMissingMapImage() {
 		return missingMapImage;
+	}
+	
+	public boolean isValidInventory( InventoryType type ) {
+		return !invalidInventoryTypes.contains( type );
 	}
 	
 	public static Cartographer getInstance() {

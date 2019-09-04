@@ -13,6 +13,7 @@ I have several objectives I would like to meet with the final product of Cartogr
 
 ### More information
 - [Github](https://github.com/BananaPuncher714/Cartographer2)
+- [Wiki](https://github.com/BananaPuncher714/Cartographer2/wiki)
 - [Spigot](https://www.spigotmc.org/resources/cartographer-2-1-8-9-1-14-3-the-best-minimap-plugin-for-bukkit.46922/)
 
 ### Credits

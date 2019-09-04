@@ -31,6 +31,10 @@ public class MinimapManager {
 		return minimaps;
 	}
 	
+	public boolean isMinimapItem( ItemStack item ) {
+		return NBTEditor.getString( item, MAP_ID ) != null;
+	}
+	
 	public ItemStack getItemFor( Minimap map ) {
 		MapView view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		while ( Cartographer.getInstance().getInvalidIds().contains( ( int ) getId( view ) ) ) {
