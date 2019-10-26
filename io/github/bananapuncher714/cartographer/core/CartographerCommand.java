@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,9 +28,16 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 		if ( args.length == 1 ) {
 			aos.add( "create" );
 			aos.add( "get" );
+			aos.add( "delete" );
 		} else if ( args.length == 2 ) {
+			if ( args[ 0 ].equalsIgnoreCase( "get" ) || args[ 0 ].equalsIgnoreCase( "delete" ) ) {
+				aos.addAll( Cartographer.getInstance().getMapManager().getMinimaps().keySet() );
+			}
+		} else if ( args.length == 3 ) {
 			if ( args[ 0 ].equalsIgnoreCase( "get" ) ) {
-				
+				for ( Player player : Bukkit.getOnlinePlayers() ) {
+					aos.add( player.getName() );
+				}
 			}
 		}
 			
@@ -51,8 +59,10 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 					create( sender, args );
 				} else if ( option.equalsIgnoreCase( "get" ) ) {
 					get( sender, args );
+				} else if ( option.equalsIgnoreCase( "delete" ) ) {
+					delete( sender, args );
 				} else {
-					sender.sendMessage( ChatColor.RED + "Usage: /cartographer <create|get> ..." );
+					sender.sendMessage( ChatColor.RED + "Usage: /cartographer <create|get|delete> ..." );
 				}
 			}
 		} catch ( IllegalArgumentException exception ) {
@@ -71,13 +81,41 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 	
 	private void get( CommandSender sender, String[] args ) {
 		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( sender instanceof Player, ChatColor.RED + "You must be a player to run this command!" );
-		Validate.isTrue( args.length == 1, ChatColor.RED + "Usage: /cartographer get <id>" );
-		
-		Player player = ( Player ) sender;
+		int slot = -1;
+		if ( args.length == 1 ) {
+			Validate.isTrue( sender instanceof Player, ChatColor.RED + "You must be a player to run this command!" );
+		} else if ( args.length > 1 ) {
+			Validate.isTrue( Bukkit.getPlayer( args[ 1 ] ) != null, ChatColor.RED + args[ 1 ] + " is not online!" );
+			if ( args.length > 2 ) {
+				slot = Integer.parseInt( args[ 2 ] );
+			}
+		} else {
+			throw new IllegalArgumentException( ChatColor.RED + "Usage: /cartographer get <id> [player] [slot]" );
+		}
 		Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( args[ 0 ] );
-		player.getInventory().addItem( Cartographer.getInstance().getMapManager().getItemFor( map ) );
+		Validate.isTrue( map != null, ChatColor.RED + "That map does not exist!" );
 		
+		Player player;
+		if ( args.length > 1 ) {
+			player = Bukkit.getPlayer( args[ 1 ] );
+		} else {
+			player = ( Player ) sender;
+		}
+		
+		if ( slot == -1 ) {
+			player.getInventory().addItem( Cartographer.getInstance().getMapManager().getItemFor( map ) );
+		} else {
+			player.getInventory().setItem( slot, Cartographer.getInstance().getMapManager().getItemFor( map ) );
+		}
+	}
+	
+	private void delete( CommandSender sender, String[] args ) {
+		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( args.length == 1, ChatColor.RED + "Usage: /cartographer delete <id>" );
+		Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( args[ 0 ] );
+		Validate.isTrue( map != null, ChatColor.RED + args[ 0 ] + " does not exist!" );
+		Cartographer.getInstance().getMapManager().remove( map );
+		sender.sendMessage( ChatColor.BLUE + "Delete minimap '" + map.getId() + "'" );
 	}
 
 	private String[] pop( String[] array ) {

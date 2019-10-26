@@ -330,6 +330,7 @@ public final class NBTEditor {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
+	@Deprecated
 	public final static Object getItemTag( ItemStack item, Object... keys ) {
 		if ( item == null ) {
 			return null;
@@ -404,6 +405,7 @@ public final class NBTEditor {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
+	@Deprecated
 	public final static ItemStack setItemTag( ItemStack item, Object value, Object... keys ) {
 		if ( item == null ) {
 			return null;
@@ -473,6 +475,7 @@ public final class NBTEditor {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
+	@Deprecated
 	public final static Object getEntityTag( Entity entity, Object... keys ) {
 		if ( entity == null ) {
 			return entity;
@@ -533,6 +536,7 @@ public final class NBTEditor {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
+	@Deprecated
 	public final static void setEntityTag( Entity entity, Object value, Object... keys ) {
 		if ( entity == null ) {
 			return;
@@ -566,6 +570,7 @@ public final class NBTEditor {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
+	@Deprecated
 	public final static Object getBlockTag( Block block, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
@@ -638,6 +643,7 @@ public final class NBTEditor {
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
+	@Deprecated
 	public final static void setBlockTag( Block block, Object value, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
@@ -965,7 +971,7 @@ public final class NBTEditor {
 					if ( notCompound == null ) {
 						getMethod( "remove" ).invoke( compound, ( String ) key );
 					} else {
-						getMethod( "set" ).invoke( compound, ( String ) key, notCompound );
+						getMethod( "set" ).invoke( compound, key, notCompound );
 					}
 				}
 				break;
@@ -993,7 +999,7 @@ public final class NBTEditor {
 					if ( notCompound == null ) {
 						getMethod( "remove" ).invoke( oldCompound, ( String ) key );
 					} else {
-						getMethod( "set" ).invoke( oldCompound, ( String ) key, compound );
+						getMethod( "set" ).invoke( oldCompound, key, compound );
 					}
 				}
 			}

@@ -15,6 +15,7 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.cartographer.core.util.NBTEditor;
 
 public class MinimapManager {
@@ -37,11 +38,11 @@ public class MinimapManager {
 	
 	public ItemStack getItemFor( Minimap map ) {
 		MapView view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
-		while ( Cartographer.getInstance().getInvalidIds().contains( ( int ) getId( view ) ) ) {
+		while ( Cartographer.getInstance().getInvalidIds().contains( getId( view ) ) ) {
 			view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		}
 		
-		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( ( int ) getId( view ) );
+		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( getId( view ) );
 		
 		convert( view, map );
 		
@@ -84,9 +85,9 @@ public class MinimapManager {
 		}
 		if ( !converted ) {
 			CartographerRenderer renderer = new CartographerRenderer( map );
-			plugin.getRenderers().put( ( int ) getId( view ), renderer );
+			plugin.getRenderers().put( getId( view ), renderer );
 			view.addRenderer( renderer );
-			plugin.getHandler().registerMap( ( int ) getId( view ) );
+			plugin.getHandler().registerMap( getId( view ) );
 		}
 	}
 	
@@ -111,6 +112,16 @@ public class MinimapManager {
 		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );
 		registerMinimap( map );
 		return map;
+	}
+	
+	public void remove( Minimap map ) {
+		minimaps.remove( map.getId() );
+		if ( map != null ) {
+			map.terminate();
+		}
+		
+		File file = plugin.getMapDirFor( map.getId() );
+		FileUtil.recursiveDelete( file );
 	}
 	
 	protected void terminate() {

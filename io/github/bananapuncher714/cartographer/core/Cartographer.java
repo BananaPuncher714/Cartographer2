@@ -278,6 +278,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 		}
 	}
 	
+	public File getMapDirFor( String id ) {
+		return new File( MAP_DIR + "/" + id );
+	}
+	
 	public File getAndConstructMapDir( String id ) {
 		File dir = new File( MAP_DIR + "/" + id );
 		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );

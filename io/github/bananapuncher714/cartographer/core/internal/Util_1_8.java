@@ -106,6 +106,6 @@ public class Util_1_8 implements GeneralUtil {
 	
 	@Override
 	public CrossVersionMaterial getBlockType( Block block ) {
-		return new CrossVersionMaterial( block.getType(), ( int ) block.getData() );
+		return new CrossVersionMaterial( block.getType(), block.getData() );
 	}
 }
