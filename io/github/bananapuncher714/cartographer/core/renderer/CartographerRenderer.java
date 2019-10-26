@@ -85,9 +85,16 @@ public class CartographerRenderer extends MapRenderer {
 			
 			if ( System.currentTimeMillis() - lastUpdated.get( entry.getKey() ) > UPDATE_THRESHOLD ) {
 				iterator.remove();
+				continue;
 			}
 			
 			Player player = Bukkit.getPlayer( entry.getKey() );
+			
+			if ( player == null ) {
+				iterator.remove();
+				continue;
+			}
+			
 			PlayerSetting setting = entry.getValue();
 			Location loc = setting.location;
 			loc.setY( loc.getWorld().getMaxHeight() - 1 );

@@ -60,7 +60,7 @@ public class Minimap implements ChunkNotifier {
 		// TEST
 		registerWorldCursorProvider( new WorldCursorProvider() {
 			@Override
-			public Collection<RealWorldCursor> getCursors( Player player, Minimap map ) {
+			public Collection< RealWorldCursor > getCursors( Player player, Minimap map ) {
 				Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
 				cursors.add( new RealWorldCursor( player.getName(), player.getLocation(), Type.WHITE_POINTER, true ) );
 				return cursors;

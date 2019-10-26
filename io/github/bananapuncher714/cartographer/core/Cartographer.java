@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -68,6 +69,11 @@ public class Cartographer extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
+		
+		// Disable java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper from showing up
+		Properties props = System.getProperties();
+		props.setProperty( "javax.accessibility.assistive_technologies", "" );
+		
 		
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
 		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
