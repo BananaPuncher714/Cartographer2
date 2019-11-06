@@ -87,7 +87,11 @@ public class CartographerCommand implements CommandExecutor, TabCompleter {
 		} else if ( args.length > 1 ) {
 			Validate.isTrue( Bukkit.getPlayer( args[ 1 ] ) != null, ChatColor.RED + args[ 1 ] + " is not online!" );
 			if ( args.length > 2 ) {
-				slot = Integer.parseInt( args[ 2 ] );
+				try {
+					slot = Integer.parseInt( args[ 2 ] );
+				} catch ( Exception exception ) {
+					throw new IllegalArgumentException( ChatColor.RED + args[ 2 ] + " is not a valid integer!" );
+				}
 			}
 		} else {
 			throw new IllegalArgumentException( ChatColor.RED + "Usage: /cartographer get <id> [player] [slot]" );

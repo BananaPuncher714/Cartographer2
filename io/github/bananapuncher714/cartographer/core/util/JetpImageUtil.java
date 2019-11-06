@@ -353,12 +353,22 @@ public final class JetpImageUtil {
 		return copy;
 	}
 	
+	/**
+	 * Takes in 2 colors and sets one as the foreground
+	 * 
+	 * @param baseColor
+	 * The background color
+	 * @param overlay
+	 * The foreground
+	 * @return
+	 * The colors combined, if the foreground is not opaque
+	 */
 	public static int overwriteColor( int baseColor, int overlay ) {
 		int a2 = overlay >> 24 & 0xFF;
-		if ( a2 == 255 ) {
-			return overlay;
-		} else if ( a2 == 0 ) {
+		if ( a2 == 0xFF ) {
 			return baseColor;
+		} else if ( a2 == 0 ) {
+			return overlay;
 		}
 		int r2 = overlay >> 16 & 0xFF;
 	    int g2 = overlay >> 8  & 0xFF;

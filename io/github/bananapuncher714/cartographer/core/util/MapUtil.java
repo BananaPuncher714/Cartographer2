@@ -52,6 +52,32 @@ public class MapUtil {
 		return locations;
 	}
 	
+	public static Location getPixelToLocation( Location center, double scale, double radians, int[] pixel ) {
+		double cos = Math.cos( radians );
+		double sin = Math.sin( radians );
+		
+		double a = pixel[ 0 ];
+		double b = pixel[ 1 ];
+		
+		double xx = a * cos - b * sin;
+		double yy = a * sin + b * cos;
+		
+		return center.clone().add( scale * xx, 0, scale * yy );
+	}
+	
+	public static int[] getLocationToPixel( Location center, Location point, double scale, double radians ) {
+		double cos = Math.cos( radians );
+		double sin = Math.sin( radians );
+		
+		double xx = ( point.getX() - center.getX() ) / scale;
+		double yy = ( point.getZ() - center.getZ() ) / scale;
+		
+		int a = ( int ) ( xx * cos + yy * sin );
+		int b = ( int ) ( xx * - sin + yy * cos );
+		
+		return new int[] { a, b };
+	}
+	
 	public static byte getDirection( double degree ) {
 		return ( byte ) Math.min( 15, Math.max( 0, ( ( ( degree + 371.25 ) % 360 ) / 22.5 ) ) );
 	}

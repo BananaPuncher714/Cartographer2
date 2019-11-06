@@ -38,6 +38,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private static File PALETTE_DIR;
 	private static File MAP_DIR;
 	
+	private static File README_FILE;
 	private static File CONFIG_FILE;
 	private static File DATA_FILE;
 	
@@ -78,6 +79,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
 		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
 		
+		README_FILE = new File( getDataFolder() + "/" + "README.md" );
 		CONFIG_FILE = new File( getDataFolder() + "/" + "config.yml" );
 		DATA_FILE = new File( getDataFolder() + "/" + "data.yml" );
 		
@@ -190,14 +192,17 @@ public class Cartographer extends JavaPlugin implements Listener {
 	}
 	
 	private void loadInit() {
-		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
-		FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
-		FileUtil.saveToFile( getResource( "data/images/overlay.png" ), OVERLAY_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/images/background.png" ), BACKGROUND_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/images/missing.png" ), MISSING_MAP_IMAGE, false );
-		FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
-		FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
-
+		if ( !README_FILE.exists() ) {
+			FileUtil.saveToFile( getResource( "README.md" ), README_FILE, false );
+			FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
+			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
+			FileUtil.saveToFile( getResource( "data/images/overlay.png" ), OVERLAY_IMAGE, false );
+			FileUtil.saveToFile( getResource( "data/images/background.png" ), BACKGROUND_IMAGE, false );
+			FileUtil.saveToFile( getResource( "data/images/missing.png" ), MISSING_MAP_IMAGE, false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
+		}
 	}
 	
 	private void loadData() {
@@ -237,13 +242,15 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private void loadPalettes() {
 		if ( PALETTE_DIR.exists() ) {
 			for ( File file : PALETTE_DIR.listFiles() ) {
-				FileConfiguration configuration = YamlConfiguration.loadConfiguration( file );
-				MinimapPalette palette = paletteManager.load( configuration );
-				
-				String id = file.getName().replaceAll( "\\.yml$", "" );
-				paletteManager.register( id, palette );
-				
-				getLogger().info( "Loaded palette '" + id + "' successfully!" );
+				if ( !file.isDirectory() ) {
+					FileConfiguration configuration = YamlConfiguration.loadConfiguration( file );
+					MinimapPalette palette = paletteManager.load( configuration );
+					
+					String id = file.getName().replaceAll( "\\.yml$", "" );
+					paletteManager.register( id, palette );
+					
+					getLogger().info( "Loaded palette '" + id + "' successfully!" );
+				}
 			}
 		} else {
 			getLogger().warning( "Palette folder not discovered!" );

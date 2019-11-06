@@ -22,6 +22,7 @@ import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
@@ -113,10 +114,11 @@ public class CartographerRenderer extends MapRenderer {
 			BooleanOption rotation = map.getSettings().getRotation();
 			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
 			
+			// Collect all the locations that need their color fetched
 			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
 			
 			// Map Pixel color stuff
-			Collection< MapPixel > pixels = map.getPixelsFor( player );
+			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
 			for ( MapPixel pixel : pixels ) {
 				int x = pixel.getX();
 				int y = pixel.getZ();
@@ -128,35 +130,27 @@ public class CartographerRenderer extends MapRenderer {
 					}
 
 					int prevColor = overlay[ index ];
-					if ( prevColor >>> 24 == 0 ) {
-						overlay[ index ] = color;
-					} else {
-						overlay[ index ] = JetpImageUtil.overwriteColor( color, prevColor );
-					}
+					// Add the colors on top of the overlay. The pixels provided have priority
+					overlay[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
 				}
-				
 			}
 			
+			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
+
 			int[] globalOverlay = Cartographer.getInstance().getOverlay();
 			int[] loadingBackground = Cartographer.getInstance().getLoadingImage();
 			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
+			// - Intermediate overlay, contains the MapPixels
 			// - Global overlay
-			// - Intermediate overlay
+			// - Lesser layer, contains the WorldMapPixels
 			// - Map
 			// - Free real estate
 			Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
 			for ( int index = 0; index < 128 * 128; index++ ) {
 				int mapColor = 0;
-				if ( globalOverlay != null ) {
-					mapColor = globalOverlay[ index ];
-				}
 				
-				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
-					continue;
-				}
-				
+				// Custom map pixels first
 				int color = overlay[ index ];
 				mapColor = JetpImageUtil.overwriteColor( color, mapColor );
 				// Continue if the intermediate layer is opaque
@@ -165,11 +159,23 @@ public class CartographerRenderer extends MapRenderer {
 					continue;
 				}
 				
-				int loading = 0;
+				// Then the global overlay
+				if ( globalOverlay != null ) {
+					mapColor = JetpImageUtil.overwriteColor( globalOverlay[ index ], mapColor );
+				}
+				
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+				
+				// Then get the loading background
+				int loading = 0xFF000000;
 				if ( loadingBackground != null ) {
 					loading = loadingBackground[ index ];
 				}
 				
+				// The render location comes next
 				Location renderLoc = locations[ index ];
 				// If renderLoc is null, we know it doesn't exist
 				// Therefore, overwrite it with whatever color mapColor is
@@ -177,6 +183,8 @@ public class CartographerRenderer extends MapRenderer {
 					data[ index ] = JetpImageUtil.getBestColor( JetpImageUtil.overwriteColor( loading, mapColor ) );
 					continue;
 				}
+				
+				// If not, then we try and get the redner location
 				ChunkLocation cLocation = new ChunkLocation( renderLoc );
 				int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
 				int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
@@ -197,6 +205,17 @@ public class CartographerRenderer extends MapRenderer {
 					localColor = loading;
 				}
 				
+				// First, insert any WorldPixels that may be present
+				for ( WorldPixel pixel : worldPixels ) {
+					if ( renderLoc.getWorld() == player.getWorld() &&
+							renderLoc.getBlockX() == pixel.getX() &&
+							renderLoc.getBlockY() == pixel.getY() &&
+							renderLoc.getBlockZ() == pixel.getZ() ) {
+						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
+					}
+				}
+				
+				// Then, get the color and mix it under the current overlay color
 				mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
 				
 				data[ index ] = JetpImageUtil.getBestColor( mapColor );
@@ -205,16 +224,16 @@ public class CartographerRenderer extends MapRenderer {
 				map.getQueue().load( location );
 			}
 			
-			double yawOffset = setting.rotating ? loc.getYaw() : 0;
+			double yawOffset = setting.rotating ? loc.getYaw() : 180;
 			
 			MapCursor[] cursors = null;
-			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player );
-			Collection< RealWorldCursor > realWorldCursors = map.getCursorsFor( player );
+			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player, setting );
+			Collection< RealWorldCursor > realWorldCursors = map.getCursorsFor( player, setting );
 			cursors = new MapCursor[ realWorldCursors.size() + localCursors.size() ];
 			int index = 0;
 			for ( RealWorldCursor cursor : realWorldCursors ) {
 				Location cursorLoc = cursor.getLocation();
-				double yaw = cursorLoc.getYaw() - yawOffset + 180;
+				double yaw = cursorLoc.getYaw() - yawOffset;
 				double relX = cursorLoc.getX() - loc.getX();
 				double relZ = cursorLoc.getZ() - loc.getZ();
 				double distance = Math.sqrt( relX * relX + relZ * relZ );
@@ -321,13 +340,13 @@ public class CartographerRenderer extends MapRenderer {
 		RUNNING = false;
 	}
 	
-	protected class PlayerSetting {
+	public class PlayerSetting {
 		protected Location location;
 		protected double zoomscale = 1;
 		protected String map;
 		protected boolean rotating = true;
 		
-		public PlayerSetting( String map, Location location ) {
+		protected PlayerSetting( String map, Location location ) {
 			this.map = map;
 			this.location = location;
 		}
@@ -335,6 +354,18 @@ public class CartographerRenderer extends MapRenderer {
 		public PlayerSetting setScale( double scale ) {
 			this.zoomscale = scale;
 			return this;
+		}
+		
+		public boolean isRotating() {
+			return rotating;
+		}
+		
+		public String getMap() {
+			return map;
+		}
+		
+		public Location getLocation() {
+			return location.clone();
 		}
 	}
 }

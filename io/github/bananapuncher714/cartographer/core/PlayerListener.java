@@ -147,15 +147,16 @@ public class PlayerListener implements Listener {
 		} );
 	}
 	
-	@EventHandler
-	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
-		Bukkit.getScheduler().runTask( plugin, new Runnable() {
-			@Override
-			public void run() {
-				updateMap( event.getBlock().getLocation() );
-			}
-		} );
-	}
+	// Not sure why I thought this would be a good event, didn't realize how frequently it gets called
+//	@EventHandler
+//	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
+//		Bukkit.getScheduler().runTask( plugin, new Runnable() {
+//			@Override
+//			public void run() {
+//				updateMap( event.getBlock().getLocation() );
+//			}
+//		} );
+//	}
 	
 	@EventHandler
 	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
