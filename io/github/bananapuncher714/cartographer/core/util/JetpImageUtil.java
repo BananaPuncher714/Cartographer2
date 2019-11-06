@@ -364,19 +364,19 @@ public final class JetpImageUtil {
 	 * The colors combined, if the foreground is not opaque
 	 */
 	public static int overwriteColor( int baseColor, int overlay ) {
-		int a2 = overlay >> 24 & 0xFF;
-		if ( a2 == 0xFF ) {
+		int a2 = overlay >>> 24 & 0xFF;
+		if ( a2 == 0 ) {
 			return baseColor;
-		} else if ( a2 == 0 ) {
+		} else if ( a2 == 0xFF ) {
 			return overlay;
 		}
-		int r2 = overlay >> 16 & 0xFF;
-	    int g2 = overlay >> 8  & 0xFF;
+		int r2 = overlay >>> 16 & 0xFF;
+	    int g2 = overlay >>> 8  & 0xFF;
 	    int b2 = overlay       & 0xFF;
 		
-	    int a1 = Math.max( baseColor >> 24 & 0xFF, a2 );
-		int r1 = baseColor >> 16 & 0xFF;
-	    int g1 = baseColor >> 8  & 0xFF;
+	    int a1 = Math.max( baseColor >>> 24 & 0xFF, a2 );
+		int r1 = baseColor >>> 16 & 0xFF;
+	    int g1 = baseColor >>> 8  & 0xFF;
 	    int b1 = baseColor       & 0xFF;
 	    
 	    double percent = a2 / 255.0;

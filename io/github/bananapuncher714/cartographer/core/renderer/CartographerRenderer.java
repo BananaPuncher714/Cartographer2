@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -115,7 +116,7 @@ public class CartographerRenderer extends MapRenderer {
 			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
 			
 			// Collect all the locations that need their color fetched
-			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 180 ) : 0 );
+			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
 			
 			// Map Pixel color stuff
 			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
@@ -150,27 +151,31 @@ public class CartographerRenderer extends MapRenderer {
 			for ( int index = 0; index < 128 * 128; index++ ) {
 				int mapColor = 0;
 				
-				// Custom map pixels first
+				// Get the custom map pixel
 				int color = overlay[ index ];
-				mapColor = JetpImageUtil.overwriteColor( color, mapColor );
-				// Continue if the intermediate layer is opaque
+				// Continue if the pixel is opaque, since we know that nothing else be above this
 				if ( mapColor >>> 24 == 0xFF ) {
 					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
+				} else {
+					// Otherwise, we want to set it as the bottom layer
+					mapColor = color;
 				}
 				
 				// Then the global overlay
+				// The global overlay is still the background to the foreground
 				if ( globalOverlay != null ) {
 					mapColor = JetpImageUtil.overwriteColor( globalOverlay[ index ], mapColor );
 				}
 				
+				// See if the global overlay is opaque
 				if ( mapColor >>> 24 == 0xFF ) {
 					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
 				}
 				
 				// Then get the loading background
-				int loading = 0xFF000000;
+				int loading = 0;
 				if ( loadingBackground != null ) {
 					loading = loadingBackground[ index ];
 				}
@@ -184,7 +189,7 @@ public class CartographerRenderer extends MapRenderer {
 					continue;
 				}
 				
-				// If not, then we try and get the redner location
+				// If not, then we try and get the render location
 				ChunkLocation cLocation = new ChunkLocation( renderLoc );
 				int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
 				int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
@@ -224,7 +229,7 @@ public class CartographerRenderer extends MapRenderer {
 				map.getQueue().load( location );
 			}
 			
-			double yawOffset = setting.rotating ? loc.getYaw() : 180;
+			double yawOffset = setting.rotating ? loc.getYaw() + 180 : 0;
 			
 			MapCursor[] cursors = null;
 			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player, setting );
@@ -233,12 +238,12 @@ public class CartographerRenderer extends MapRenderer {
 			int index = 0;
 			for ( RealWorldCursor cursor : realWorldCursors ) {
 				Location cursorLoc = cursor.getLocation();
-				double yaw = cursorLoc.getYaw() - yawOffset;
+				double yaw = cursorLoc.getYaw() - yawOffset + 720;
 				double relX = cursorLoc.getX() - loc.getX();
 				double relZ = cursorLoc.getZ() - loc.getZ();
 				double distance = Math.sqrt( relX * relX + relZ * relZ );
 
-				double degree = Math.atan2( relZ, relX ) - Math.toRadians( yawOffset + 180 );
+				double degree = Math.atan2( relZ, relX ) - Math.toRadians( yawOffset );
 				double newRelX = 2 * distance * Math.cos( degree );
 				double newRelZ = 2 * distance * Math.sin( degree );
 
