@@ -106,7 +106,7 @@ public class MinimapManager {
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
 		
-		MapDataCache cache = new MapDataCache();
+		MapDataCache cache = new MapDataCache( settings.isAutoUpdate() );
 		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
 		
 		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );

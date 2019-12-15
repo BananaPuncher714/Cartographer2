@@ -318,9 +318,13 @@ public class CartographerRenderer extends MapRenderer {
 	
 	public void setMinimap( Minimap map ) {
 		for ( PlayerSetting setting : settings.values() ) {
-			setting.map = map.getId();
+			if ( map == null ) {
+				setting.map = null;
+			} else {
+				setting.map = map.getId();
+			}
 		}
-		this.mapId = map.getId();
+		this.mapId = map == null ? null : map.getId();
 	}
 	
 	@Override

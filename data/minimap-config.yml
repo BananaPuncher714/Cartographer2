@@ -1,5 +1,7 @@
 name: "&aDefault Minimap"
 
+auto-update: true
+
 palettes:
 - "palette-1.13.2"
 

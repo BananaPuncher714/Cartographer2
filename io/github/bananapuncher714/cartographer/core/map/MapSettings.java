@@ -14,6 +14,7 @@ public class MapSettings {
 	protected Set< ZoomScale > allowedZooms = new HashSet< ZoomScale >();
 	protected ZoomScale defaultZoom = ZoomScale.ONE;
 	protected boolean circularZoom = false;
+	protected boolean autoUpdate = true;
 	
 	protected BooleanOption rotation = BooleanOption.DEFAULT;
 	
@@ -22,6 +23,7 @@ public class MapSettings {
 	public MapSettings( FileConfiguration config ) {
 		defaultZoom = ZoomScale.valueOf( config.getString( "default-zoom", "ONE" ).toUpperCase() );
 		circularZoom = config.getBoolean( "circular-zoom", false );
+		autoUpdate = config.getBoolean( "auto-update", true );
 		for ( String string : config.getStringList( "allowed-zooms" ) ) {
 			allowedZooms.add( ZoomScale.valueOf( string.toUpperCase() ) );
 		}
@@ -50,6 +52,14 @@ public class MapSettings {
 		return allowedZooms.contains( scale );
 	}
 	
+	public boolean isAutoUpdate() {
+		return autoUpdate;
+	}
+
+	public void setAutoUpdate( boolean autoUpdate ) {
+		this.autoUpdate = autoUpdate;
+	}
+
 	public BooleanOption getRotation() {
 		return rotation;
 	}

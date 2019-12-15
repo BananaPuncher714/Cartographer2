@@ -42,13 +42,15 @@ public class MapDataCache {
 	
 	protected ChunkNotifier notifier;
 	
-	public MapDataCache( ChunkDataProvider provider ) {
+	protected boolean updateExisting = true;
+	
+	public MapDataCache( ChunkDataProvider provider, boolean updateExisting ) {
+		this( updateExisting );
 		this.provider = provider;
-		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
-		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
 	}
 	
-	public MapDataCache() {
+	public MapDataCache( boolean updateExisting ) {
+		this.updateExisting = updateExisting;
 		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
 		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
 	}
@@ -123,7 +125,10 @@ public class MapDataCache {
 				if ( loaded.contains( south ) && loaded.contains( loc ) && loaded.contains( north ) ) {
 					removeNatural.add( loc );
 				} else if ( !loaded.contains( loc ) && chunks.containsKey( north ) ) {
-					process( loc );
+					// Only if our map is set to update or we don't have the location to begin with
+					if ( !data.containsKey( loc ) || updateExisting ) {
+						process( loc );
+					}
 				}
 				continue;
 			}
@@ -255,6 +260,9 @@ public class MapDataCache {
 	}
 	
 	public void updateLocation( Location location, MinimapPalette palette ) {
+		if ( !updateExisting ) {
+			return;
+		}
 		Location south = location.clone().add( 0, 0, 1 );
 		for ( int i = -1; i < 2; i++ ) {
 			ChunkLocation chunkLoc = new ChunkLocation( south );
