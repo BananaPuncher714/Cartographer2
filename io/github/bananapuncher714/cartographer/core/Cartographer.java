@@ -131,7 +131,9 @@ public class Cartographer extends JavaPlugin implements Listener {
 		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();
 		}
+		getLogger().info( "Saving map data. This may take a while..." );
 		mapManager.terminate();
+		getLogger().info( "Saving map data complete!" );
 		saveData();
 	}
 	

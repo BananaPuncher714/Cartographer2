@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
@@ -36,6 +37,16 @@ public class BigChunkQueue {
 			return false;
 		}
 		saving.put( coord, savingService.submit( new TaskChunkSave( getFileFor( coord ), data ) ) );
+		return true;
+	}
+	
+	public boolean saveBlocking() {
+		try {
+			savingService.awaitTermination( 10, TimeUnit.MINUTES );
+		} catch ( InterruptedException e ) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	

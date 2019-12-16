@@ -285,6 +285,7 @@ public class Minimap implements ChunkNotifier {
 			BigChunk chunk = chunks.get( loc );
 			queue.save( loc, chunk );
 		}
+		queue.saveBlocking();
 	}
 	
 	@Override

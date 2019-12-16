@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,6 +21,9 @@ public class MapListener implements Listener {
 		}
 		
 		ItemStack item = event.isShiftClick() ? event.getCurrentItem() : event.getCursor();
+		if ( item == null || item.getType() == Material.AIR ) {
+			return;
+		}
 		if ( !plugin.getMapManager().isMinimapItem( item ) ) {
 			return;
 		}
@@ -41,6 +45,9 @@ public class MapListener implements Listener {
 		}
 		
 		ItemStack item = event.getOldCursor();
+		if ( item == null || item.getType() == Material.AIR ) {
+			return;
+		}
 		if ( !plugin.getMapManager().isMinimapItem( item ) ) {
 			return;
 		}

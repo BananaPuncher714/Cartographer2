@@ -59,11 +59,9 @@ public enum ChunkLoadListener implements Listener {
 					minimap.getDataCache().registerSnapshot( location );
 				}
 				i++;
-			} else {
-				if ( Cartographer.getInstance().isForceLoad() ) {
-					i+= location.exists() ? 30 : 100;
-					location.load();
-				}
+			} else if ( Cartographer.getInstance().isForceLoad() ) {
+				i += location.exists() ? 5 : 10;
+				location.load();
 			}
 		}
 	}
