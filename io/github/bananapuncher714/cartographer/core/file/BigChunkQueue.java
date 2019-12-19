@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.file;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -41,12 +42,18 @@ public class BigChunkQueue {
 	}
 	
 	public boolean saveBlocking() {
+		savingService.shutdown();
 		try {
-			savingService.awaitTermination( 10, TimeUnit.MINUTES );
+			savingService.awaitTermination( 3, TimeUnit.MINUTES );
 		} catch ( InterruptedException e ) {
 			e.printStackTrace();
 			return false;
 		}
+		List< Runnable > leftovers = savingService.shutdownNow();
+		for ( Runnable runnable : leftovers ) {
+			runnable.run();
+		}
+		
 		return true;
 	}
 	
