@@ -7,14 +7,14 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapCursor;
+import org.bukkit.map.MapCursor.Type;
 
 public class RealWorldCursor {
-	private String name;
-	private final Location l;
-	MapCursor.Type type;
-	boolean oob;
-	private PlayerRunnable haction = null, aaction = null;
+	protected String name;
+	protected final Location l;
+	protected Type type;
+	protected boolean oob;
+	protected PlayerRunnable haction = null, aaction = null;
 
 	/**
 	 * Constructor for a RealWorldCursor
@@ -26,11 +26,23 @@ public class RealWorldCursor {
 	 * @param hideWhenOOB
 	 * Whether or not to hide this cursor when it is not on the map.
 	 */
-	public RealWorldCursor( String name, Location l, MapCursor.Type type, boolean hideWhenOOB ) {
+	public RealWorldCursor( String name, Location l, Type type, boolean hideWhenOOB ) {
 		this.name = name;
 		this.l = l;
 		this.type = type;
 		oob = hideWhenOOB;
+	}
+	
+	public RealWorldCursor( Location location ) {
+		this( null, location, Type.WHITE_POINTER, true );
+	}
+	
+	public RealWorldCursor( Location location, Type type ) {
+		this( null, location, type, true );
+	}
+	
+	public RealWorldCursor( String name, Location location, Type type ) {
+		this( name, location, type, true );
 	}
 
 	/**
@@ -49,8 +61,12 @@ public class RealWorldCursor {
 	 * @return
 	 * Returns the type that will be displayed on the map
 	 */
-	public MapCursor.Type getType() {
+	public Type getType() {
 		return type;
+	}
+	
+	public void setType( Type type ) {
+		this.type = type;
 	}
 	
 	/**
@@ -61,6 +77,10 @@ public class RealWorldCursor {
 	 */
 	public boolean hideWhenNotOnMap() {
 		return oob;
+	}
+	
+	public void setHideWhenNotOnMap( boolean hide ) {
+		oob = hide;
 	}
 	
 	public String getName() {

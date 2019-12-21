@@ -9,6 +9,9 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
@@ -17,6 +20,7 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_8;
+import io.github.bananapuncher714.cartographer.core.module.CustomCommand;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
@@ -151,8 +155,22 @@ public class NMSHandler implements PacketHandler {
 	}
 	
 	@Override
+	public boolean isCurrentThreadMain() {
+		return Thread.currentThread() == MinecraftServer.getServer().primaryThread;
+	}
+	
+	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];
+	}
+	
+	@Override
+	public boolean registerCommand( PluginCommand command ) {
+		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
+	}
+	
+	public void registerCommand( CustomCommand command ) {
+		( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( "cartographer", null );
 	}
 	
 	@Override

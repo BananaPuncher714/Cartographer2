@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,6 +52,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	private MinimapManager mapManager;
 	private PaletteManager paletteManager;
+	private ModuleManager moduleManager;
 	
 	private Set< Integer > invalidIds = new HashSet< Integer >();
 	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
@@ -111,23 +113,29 @@ public class Cartographer extends JavaPlugin implements Listener {
 		
 		paletteManager = new PaletteManager( this );
 		mapManager = new MinimapManager( this );
+		moduleManager = new ModuleManager( this );
 		
 		command = new CartographerCommand();
 		getCommand( "cartographer" ).setExecutor( command );
 		getCommand( "cartographer" ).setTabCompleter( command );
 		
-		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
 		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
 		Bukkit.getPluginManager().registerEvents( new MapListener( this ), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
+		Bukkit.getPluginManager().registerEvents( new CartographerListener(), this );
 		
 		load();
+		
+		// Load the modules in beforehand
+		moduleManager.loadModules();
 	}
 	
 	@Override
 	public void onDisable() {
+		moduleManager.disableModules();
+		
 		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();
 		}
@@ -135,6 +143,15 @@ public class Cartographer extends JavaPlugin implements Listener {
 		mapManager.terminate();
 		getLogger().info( "Saving map data complete!" );
 		saveData();
+	}
+	
+	protected void onServerLoad() {
+		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
+		
+		// Enable the modules afterwards
+		moduleManager.enableModules();
+		
+		loadAfter();
 	}
 	
 	private void update() {
@@ -183,7 +200,9 @@ public class Cartographer extends JavaPlugin implements Listener {
 		
 		// Load the palettes
 		loadPalettes();
-		
+	}
+	
+	private void loadAfter() {
 		// Load the maps
 		// Requires palettes
 		loadMaps();

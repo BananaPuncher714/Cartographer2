@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.api.events;
 
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -12,7 +11,7 @@ import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
  * 
  * @author BananaPuncher714
  */
-public class ChunkProcessedEvent extends Event {
+public class ChunkProcessedEvent extends CartographerEvent {
 	private static final HandlerList handlers = new HandlerList();
 
 	protected final Minimap map;

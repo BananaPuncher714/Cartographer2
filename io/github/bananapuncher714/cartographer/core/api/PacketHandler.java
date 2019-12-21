@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import java.util.UUID;
 
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
@@ -21,7 +22,9 @@ public interface PacketHandler {
 	// More mundane methods
 	MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name );
 	
+	boolean isCurrentThreadMain();
 	double getTPS();
+	boolean registerCommand( PluginCommand command );
 	
 	GeneralUtil getUtil();
 }

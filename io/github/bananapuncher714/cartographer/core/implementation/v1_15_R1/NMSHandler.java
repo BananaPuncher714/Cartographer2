@@ -9,6 +9,9 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.craftbukkit.v1_15_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
@@ -142,6 +145,7 @@ public class NMSHandler implements PacketHandler {
 				}
 			}
 		}
+		System.out.println( packet );
 		return packet;
 	}
 	
@@ -171,8 +175,18 @@ public class NMSHandler implements PacketHandler {
 	}
 	
 	@Override
+	public boolean isCurrentThreadMain() {
+		return Thread.currentThread() == MinecraftServer.getServer().serverThread;
+	}
+	
+	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];
+	}
+	
+	@Override
+	public boolean registerCommand( PluginCommand command ) {
+		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
 	}
 
 	@Override

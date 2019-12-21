@@ -10,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import io.github.bananapuncher714.cartographer.core.api.events.MinimapLoadEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.MinimapDeleteEvent;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
@@ -111,10 +113,15 @@ public class MinimapManager {
 		
 		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );
 		registerMinimap( map );
+		
+		new MinimapLoadEvent( map ).callEvent();
+		
 		return map;
 	}
 	
 	public void remove( Minimap map ) {
+		new MinimapDeleteEvent( map ).callEvent();
+		
 		minimaps.remove( map.getId() );
 		if ( map != null ) {
 			map.terminate();

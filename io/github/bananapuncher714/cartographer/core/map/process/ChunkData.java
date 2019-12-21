@@ -22,7 +22,7 @@ public class ChunkData implements Serializable {
 	
 	public ChunkData( byte[] data ) {
 		if ( data.length != CHUNK_WIDTH * CHUNK_WIDTH ) {
-			throw new IllegalArgumentException( "Data provided must contain 256 elements!" );
+			throw new IllegalArgumentException( "Data provided must be of " + ( CHUNK_WIDTH * CHUNK_WIDTH ) + " length!" );
 		}
 		this.data = data;
 	}
