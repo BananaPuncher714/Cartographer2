@@ -33,6 +33,16 @@ public class BukkitUtil {
 		return command;
 	}
 	
+	/**
+	 * Create and register a command with the given fallback and id
+	 * 
+	 * @param fallbackPrefix
+	 * The fallback prefix, like "bukkit" or "minecraft"
+	 * @param id
+	 * The id of the command, what the user types in
+	 * @return
+	 * A plugin registered under Cartographer 2
+	 */
 	public static PluginCommand createPluginCommandFor( String fallbackPrefix, String id ) {
 		PluginCommand command = constructCommand( id );
 		
@@ -41,6 +51,14 @@ public class BukkitUtil {
 		return command;
 	}
 	
+	/**
+	 * Create and register command
+	 * 
+	 * @param id
+	 * What the user types in
+	 * @return
+	 * A PluginCommand registered under Cartographer 2
+	 */
 	public static PluginCommand createPluginCommandFor( String id ) {
 		PluginCommand command = constructCommand( id );
 		
@@ -49,6 +67,9 @@ public class BukkitUtil {
 		return command;
 	}
 	
+	/**
+	 * Call an event synchronously, on the main thread
+	 */
 	public static void callEventSync( Event event ) {
 		if ( Cartographer.getInstance().getHandler().isCurrentThreadMain() ) {
 			Bukkit.getPluginManager().callEvent( event );
@@ -57,6 +78,14 @@ public class BukkitUtil {
 		}
 	}
 	
+	/**
+	 * Check if the plugin given is loaded
+	 * 
+	 * @param id
+	 * case sensitive plugin id
+	 * @return
+	 * If the plugin is loaded and enabled
+	 */
 	public static boolean isPluginLoaded( String id ) {
 		return Bukkit.getPluginManager().isPluginEnabled( id );
 	}

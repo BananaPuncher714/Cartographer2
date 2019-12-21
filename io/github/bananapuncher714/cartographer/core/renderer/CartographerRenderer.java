@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -110,7 +109,8 @@ public class CartographerRenderer extends MapRenderer {
 			MapDataCache cache = map.getDataCache();
 			
 			byte[] data = new byte[ 128 * 128 ];
-			int[] overlay = new int[ 128 * 128 ];
+			int[] higherMapPixels = new int[ 128 * 128 ];
+			int[] lowerMapPixels = new int[ 128 * 128 ];
 			
 			BooleanOption rotation = map.getSettings().getRotation();
 			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
@@ -120,7 +120,8 @@ public class CartographerRenderer extends MapRenderer {
 			
 			// Map Pixel color stuff
 			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
-			for ( MapPixel pixel : pixels ) {
+			for ( Iterator< MapPixel > pixelIterator = pixels.iterator(); pixelIterator.hasNext(); ) {
+				MapPixel pixel = pixelIterator.next();
 				int x = pixel.getX();
 				int y = pixel.getZ();
 				if ( x < 128 && x >= 0 && y < 128 && y >= 0 ) {
@@ -130,29 +131,35 @@ public class CartographerRenderer extends MapRenderer {
 						continue;
 					}
 
-					int prevColor = overlay[ index ];
-					// Add the colors on top of the overlay. The pixels provided have priority
-					overlay[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
+					if ( pixel.getDepth() < 0xFFFF ) {
+						int prevColor = lowerMapPixels[ index ];
+						// These go under the overlay
+						lowerMapPixels[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
+					} else {
+						int prevColor = higherMapPixels[ index ];
+						// Add the colors on top of the overlay. The pixels provided have priority
+						higherMapPixels[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
+					}
 				}
 			}
 			
 			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
-
+			
 			int[] globalOverlay = Cartographer.getInstance().getOverlay();
 			int[] loadingBackground = Cartographer.getInstance().getLoadingImage();
 			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
 			// - Intermediate overlay, contains the MapPixels
-			// - Global overlay
+			// - Global overlay - Depth of 0xFFFF, or 65535
 			// - Lesser layer, contains the WorldMapPixels
-			// - Map
+			// - Map - Depth of 0
 			// - Free real estate
 			Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
 			for ( int index = 0; index < 128 * 128; index++ ) {
 				int mapColor = 0;
 				
 				// Get the custom map pixel
-				int color = overlay[ index ];
+				int color = higherMapPixels[ index ];
 				// Continue if the pixel is opaque, since we know that nothing else be above this
 				if ( mapColor >>> 24 == 0xFF ) {
 					data[ index ] = JetpImageUtil.getBestColor( mapColor );
@@ -169,6 +176,15 @@ public class CartographerRenderer extends MapRenderer {
 				}
 				
 				// See if the global overlay is opaque
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+				
+				int lowerColor = lowerMapPixels[ index ];
+				mapColor = JetpImageUtil.overwriteColor( lowerColor, mapColor );
+				
+				// See if the pixels are opaque
 				if ( mapColor >>> 24 == 0xFF ) {
 					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
@@ -214,7 +230,6 @@ public class CartographerRenderer extends MapRenderer {
 				for ( WorldPixel pixel : worldPixels ) {
 					if ( renderLoc.getWorld() == player.getWorld() &&
 							renderLoc.getBlockX() == pixel.getX() &&
-							renderLoc.getBlockY() == pixel.getY() &&
 							renderLoc.getBlockZ() == pixel.getZ() ) {
 						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 					}
@@ -371,6 +386,10 @@ public class CartographerRenderer extends MapRenderer {
 		
 		public String getMap() {
 			return map;
+		}
+		
+		public double getScale() {
+			return zoomscale;
 		}
 		
 		public Location getLocation() {

@@ -3,7 +3,6 @@ package io.github.bananapuncher714.cartographer.core.util;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,8 +55,8 @@ public class MapUtil {
 		double cos = Math.cos( radians );
 		double sin = Math.sin( radians );
 		
-		double a = pixel[ 0 ];
-		double b = pixel[ 1 ];
+		double a = pixel[ 0 ] - 64;
+		double b = pixel[ 1 ] - 64;
 		
 		double xx = a * cos - b * sin;
 		double yy = a * sin + b * cos;
@@ -75,7 +74,7 @@ public class MapUtil {
 		int a = ( int ) ( xx * cos + yy * sin );
 		int b = ( int ) ( xx * - sin + yy * cos );
 		
-		return new int[] { a, b };
+		return new int[] { a + 64, b + 64 };
 	}
 	
 	public static byte getDirection( double degree ) {
@@ -100,7 +99,7 @@ public class MapUtil {
 		return JetpImageUtil.getBestColor( color.getRGB() );
 	}
 	
-	public static Collection< MapPixel > getPixelsFor( Image image, int x, int y ) {
+	public static Set< MapPixel > getPixelsFor( Image image, int x, int y ) {
 		BufferedImage bImage = JetpImageUtil.toBufferedImage( image );
 		int width = bImage.getWidth();
 		int[] data = JetpImageUtil.getRGBArray( bImage );
@@ -112,6 +111,7 @@ public class MapUtil {
 				int h = i / width;
 				int nx = w + x;
 				int ny = h + y;
+				// Make sure it doesn't go out of bounds
 				if ( nx >=0 && nx < 128 && ny >=0 && ny < 128 ) {
 					pixels.add( new MapPixel( nx, ny, new Color( argb ) ) );
 				}

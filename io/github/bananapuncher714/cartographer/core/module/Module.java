@@ -28,7 +28,7 @@ public abstract class Module {
 	public final void load( Cartographer plugin, ModuleDescription description, File file ) {
 		this.plugin = plugin;
 		this.description = description;
-		this.dataFolder = file;	
+		this.dataFolder = file;
 		setEnabled( true );
 	}
 	

@@ -178,7 +178,7 @@ public class Minimap implements ChunkNotifier {
 	}
 	
 	public Collection< MapPixel > getPixelsFor( Player player, PlayerSetting setting ) {
-		List< MapPixel > pixels = new ArrayList< MapPixel >();
+		Set< MapPixel > pixels = new TreeSet< MapPixel >();
 		for ( MapPixelProvider provider : pixelProviders ) {
 			Collection< MapPixel > cursorCollection = provider.getMapPixels( player, this, setting );
 			if ( cursorCollection != null ) {
@@ -189,7 +189,7 @@ public class Minimap implements ChunkNotifier {
 	}
 	
 	public Collection< WorldPixel > getWorldPixelsFor( Player player, PlayerSetting setting ) {
-		List< WorldPixel > pixels = new ArrayList< WorldPixel >();
+		Set< WorldPixel > pixels = new TreeSet< WorldPixel >();
 		for ( WorldPixelProvider provider : worldPixelProviders ) {
 			Collection< WorldPixel > cursorCollection = provider.getWorldPixels( player, this, setting );
 			if ( cursorCollection != null ) {

@@ -5,9 +5,9 @@ import java.awt.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class WorldPixel {
+public class WorldPixel implements Comparable< WorldPixel  > {
 	protected World world;
-	protected int x, y, z;
+	protected int x, depth, z;
 	protected Location location;
 	protected Color color;
 	
@@ -15,16 +15,15 @@ public class WorldPixel {
 		this.location = location.clone();
 		this.world = location.getWorld();
 		this.x = location.getBlockX();
-		this.y = location.getBlockY();
+		this.depth = location.getBlockY();
 		this.z = location.getBlockZ();
 		this.color = color;
 	}
 	
-	public WorldPixel( World world, int x, int y, int z, Color color ) {
-		this.location = new Location( world, x, y, z );
+	public WorldPixel( World world, int x, int z, Color color ) {
+		this.location = new Location( world, x, depth, z );
 		this.world = world;
 		this.x = x;
-		this.y = y;
 		this.z = z;
 		this.color = color;
 	}
@@ -45,12 +44,12 @@ public class WorldPixel {
 		this.x = x;
 	}
 
-	public int getY() {
-		return y;
+	public int getDepth() {
+		return depth;
 	}
 
-	public void setY(int y) {
-		this.y = y;
+	public void setDepth( int y ) {
+		this.depth = y;
 	}
 
 	public int getZ() {
@@ -75,5 +74,14 @@ public class WorldPixel {
 
 	public void setColor( Color color ) {
 		this.color = color;
+	}
+
+	@Override
+	public int compareTo( WorldPixel other ) {
+		if ( depth > other.depth ) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 }
