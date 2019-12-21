@@ -15,7 +15,7 @@ public class BukkitUtil {
 	
 	static {
 		try {
-			PLUGINCOMMAND_CONSTRUCTOR = PluginCommand.class.getConstructor( String.class, Plugin.class );
+			PLUGINCOMMAND_CONSTRUCTOR = PluginCommand.class.getDeclaredConstructor( String.class, Plugin.class );
 			PLUGINCOMMAND_CONSTRUCTOR.setAccessible( true );
 		} catch ( NoSuchMethodException | SecurityException e ) {
 			e.printStackTrace();

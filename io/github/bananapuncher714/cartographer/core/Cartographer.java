@@ -134,6 +134,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onDisable() {
+		getLogger().info( "Disabling modules..." );
 		moduleManager.disableModules();
 		
 		for ( CartographerRenderer renderer : renderers.values() ) {
@@ -149,6 +150,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		
 		// Enable the modules afterwards
+		getLogger().info( "Enabling modules..." );
 		moduleManager.enableModules();
 		
 		loadAfter();

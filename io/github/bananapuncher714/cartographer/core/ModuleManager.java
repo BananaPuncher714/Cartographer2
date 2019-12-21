@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import io.github.bananapuncher714.cartographer.core.module.Module;
@@ -10,7 +11,7 @@ import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 public class ModuleManager {
 	protected Cartographer plugin;
-	protected Map< String, Module > modules;
+	protected Map< String, Module > modules = new HashMap< String, Module >();
 	protected File moduleFolder;
 	
 	protected ModuleManager( Cartographer plugin ) {
@@ -43,7 +44,7 @@ public class ModuleManager {
 		ModuleDescription description = ModuleLoader.getDescriptionFor( file );
 		Module module = ModuleLoader.load( file, description );
 		
-		File dataFolder = new File( moduleFolder + "/" + module.getName() );
+		File dataFolder = new File( moduleFolder + "/" + description.getName() );
 		module.load( plugin, description, dataFolder );
 		
 		return module;
