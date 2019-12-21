@@ -67,7 +67,7 @@ public class ModuleManager {
 				}
 			}
 			if ( allDependenciesLoaded ) {
-				plugin.getLogger().info( "[ModuleManager] Enabling " + description.getName() + " version " + description.getVersion() + " by " + description.getAuthor() );
+				plugin.getLogger().info( "[ModuleManager] Enabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 				module.setEnabled( true );
 			} else {
 				plugin.getLogger().warning( "[ModuleManager] Unable to enable " + description.getName() + " due to the missing dependencies: " + missingDeps.toString().trim() );

@@ -22,7 +22,7 @@ public class BukkitUtil {
 		}
 	}
 	
-	public static PluginCommand createPluginCommandFor( String id ) {
+	private static PluginCommand constructCommand( String id ) {
 		PluginCommand command = null;
 		try {
 			command = PLUGINCOMMAND_CONSTRUCTOR.newInstance( id, Cartographer.getInstance() );
@@ -30,6 +30,19 @@ public class BukkitUtil {
 			e.printStackTrace();
 			return null;
 		}
+		return command;
+	}
+	
+	public static PluginCommand createPluginCommandFor( String fallbackPrefix, String id ) {
+		PluginCommand command = constructCommand( id );
+		
+		Cartographer.getInstance().getHandler().registerCommand( Cartographer.getInstance().getName() + ":" + fallbackPrefix, command );
+		
+		return command;
+	}
+	
+	public static PluginCommand createPluginCommandFor( String id ) {
+		PluginCommand command = constructCommand( id );
 		
 		Cartographer.getInstance().getHandler().registerCommand( command );
 		

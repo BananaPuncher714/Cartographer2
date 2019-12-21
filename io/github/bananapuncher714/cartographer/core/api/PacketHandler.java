@@ -24,6 +24,7 @@ public interface PacketHandler {
 	
 	boolean isCurrentThreadMain();
 	double getTPS();
+	boolean registerCommand( String fallbackPrefix, PluginCommand command );
 	boolean registerCommand( PluginCommand command );
 	
 	GeneralUtil getUtil();

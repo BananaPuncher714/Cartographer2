@@ -186,7 +186,12 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public boolean registerCommand( PluginCommand command ) {
-		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
+		return registerCommand( command.getPlugin().getName(), command );
+	}
+	
+	@Override
+	public boolean registerCommand( String fallbackPrefix, PluginCommand command ) {
+		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( fallbackPrefix, command );
 	}
 
 	@Override

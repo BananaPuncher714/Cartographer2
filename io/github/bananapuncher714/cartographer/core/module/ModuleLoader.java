@@ -1,12 +1,9 @@
 package io.github.bananapuncher714.cartographer.core.module;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -75,6 +72,8 @@ public class ModuleLoader {
 			
 			return moduleDescription;
 		} catch ( IOException e ) {
+			e.printStackTrace();
+		} catch ( IllegalArgumentException e ) {
 			e.printStackTrace();
 		}
 		return null;
