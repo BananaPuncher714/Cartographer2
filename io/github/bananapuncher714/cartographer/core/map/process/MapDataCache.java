@@ -17,6 +17,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.api.events.ChunkPreProcessEvent;
 import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
@@ -247,7 +248,13 @@ public class MapDataCache {
 			return;
 		}
 		if ( !renderers.containsKey( location ) ) {
-			renderers.put( location, service.submit( new ChunkProcessor( getChunkSnapshotAt( location ) ) ) );
+			ChunkProcessor processor = new ChunkProcessor( getChunkSnapshotAt( location ), provider );
+			
+			ChunkPreProcessEvent event = new ChunkPreProcessEvent( location, processor );
+			event.callEvent();
+			processor = event.getDataProcessor();
+			
+			renderers.put( location, service.submit( processor ) );
 		}
 	}
 	
@@ -281,11 +288,29 @@ public class MapDataCache {
 		service.shutdown();
 	}
 	
-	protected class ChunkProcessor implements Callable< ChunkData > {
+	public class ChunkProcessor implements Callable< ChunkData > {
 		private final ChunkSnapshot snapshot;
+		private ChunkDataProvider provider;
 		
-		ChunkProcessor( ChunkSnapshot snapshot ) {
+		ChunkProcessor( ChunkSnapshot snapshot, ChunkDataProvider provider ) {
 			this.snapshot = snapshot;
+			this.provider = provider;
+		}
+		
+		public ChunkSnapshot getSnapshot() {
+			return snapshot;
+		}
+		
+		public ChunkLocation getChunkLocation() {
+			return new ChunkLocation( snapshot );
+		}
+		
+		public ChunkDataProvider getDataProvider() {
+			return provider;
+		}
+		
+		public void setDataProvider( ChunkDataProvider provider ) {
+			this.provider = provider;
 		}
 		
 		@Override
