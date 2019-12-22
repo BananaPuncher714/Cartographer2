@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -77,5 +78,10 @@ public class Util_1_13 implements GeneralUtil {
 	@Override
 	public CrossVersionMaterial getBlockType( Block block ) {
 		return new CrossVersionMaterial( block.getType() );
+	}
+	
+	@Override
+	public boolean updateEvent( BlockPhysicsEvent event ) {
+		return true;
 	}
 }

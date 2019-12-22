@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.api;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
@@ -25,4 +26,5 @@ public interface GeneralUtil {
 	CrossVersionMaterial getBlockType( ChunkSnapshot snapshot, int x, int y, int z );
 	CrossVersionMaterial getItemType( ItemStack item );
 	CrossVersionMaterial getBlockType( Block block );
+	boolean updateEvent( BlockPhysicsEvent event );
 }

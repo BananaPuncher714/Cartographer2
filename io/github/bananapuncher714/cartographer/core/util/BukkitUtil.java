@@ -71,7 +71,7 @@ public class BukkitUtil {
 	 * Call an event synchronously, on the main thread
 	 */
 	public static void callEventSync( Event event ) {
-		if ( Cartographer.getInstance().getHandler().isCurrentThreadMain() ) {
+		if ( Bukkit.getServer().isPrimaryThread() ) {
 			Bukkit.getPluginManager().callEvent( event );
 		} else {
 			Bukkit.getScheduler().scheduleSyncDelayedTask( Cartographer.getInstance(), () -> { callEventSync( event ); } );

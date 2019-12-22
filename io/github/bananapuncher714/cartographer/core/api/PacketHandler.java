@@ -22,7 +22,6 @@ public interface PacketHandler {
 	// More mundane methods
 	MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name );
 	
-	boolean isCurrentThreadMain();
 	double getTPS();
 	boolean registerCommand( String fallbackPrefix, PluginCommand command );
 	boolean registerCommand( PluginCommand command );

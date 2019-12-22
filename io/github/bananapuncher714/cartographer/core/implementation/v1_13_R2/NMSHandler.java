@@ -172,11 +172,6 @@ public class NMSHandler implements PacketHandler {
 	}
 	
 	@Override
-	public boolean isCurrentThreadMain() {
-		return Thread.currentThread() == MinecraftServer.getServer().primaryThread;
-	}
-	
-	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];
 	}

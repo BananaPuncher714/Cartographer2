@@ -4,6 +4,11 @@ import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
+/**
+ * Event pertaining to minimaps mainly
+ * 
+ * @author BananaPuncher714
+ */
 public class MinimapEvent extends CartographerEvent {
 	private static final HandlerList handlers = new HandlerList();
 	protected Minimap map;

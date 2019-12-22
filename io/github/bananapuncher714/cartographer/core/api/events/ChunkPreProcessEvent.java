@@ -5,6 +5,11 @@ import org.bukkit.event.HandlerList;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkProcessor;
 
+/**
+ * Called before a task gets submitted to the executor service to render a chunk
+ * 
+ * @author BananaPuncher714
+ */
 public class ChunkPreProcessEvent extends CartographerEvent {
 	private static final HandlerList handlers = new HandlerList();
 

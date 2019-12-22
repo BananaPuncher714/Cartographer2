@@ -1,12 +1,15 @@
 package io.github.bananapuncher714.cartographer.core.module;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -40,10 +43,18 @@ public class ModuleLoader {
 			throw new IllegalArgumentException( "File cannot be null!" );
 		}
 		if ( !file.exists() ) {
-			throw new IllegalArgumentException( "File does not exist! " + file.getAbsolutePath() );
+			try {
+				throw new FileNotFoundException( "File does not exist! " + file.getAbsolutePath() );
+			} catch ( FileNotFoundException e ) {
+				e.printStackTrace();
+			}
+			return null;
 		}
 		try ( JarFile jar = new JarFile( file ) ) {
 			JarEntry entry = jar.getJarEntry( "module.json" );
+			if ( entry == null ) {
+				throw new NoSuchFileException( "module.json does not exist! " + file.getAbsolutePath() );
+			}
 			InputStream stream = jar.getInputStream( entry );
 			JsonReader reader = new JsonReader( new InputStreamReader( stream ) );
 			
@@ -51,6 +62,11 @@ public class ModuleLoader {
 			JsonElement element = parser.parse( reader );
 			
 			JsonObject object = element.getAsJsonObject();
+			
+			if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "description" ) && object.has( "version" ) ) ) {
+				throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/description/version)" );
+			}
+			
 			String name = object.get( "name" ).getAsString();
 			String main = object.get( "main" ).getAsString();
 			String author = object.get( "author" ).getAsString();

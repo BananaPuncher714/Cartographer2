@@ -270,6 +270,7 @@ public class MapDataCache {
 		if ( !updateExisting ) {
 			return;
 		}
+		
 		Location south = location.clone().add( 0, 0, 1 );
 		for ( int i = -1; i < 2; i++ ) {
 			ChunkLocation chunkLoc = new ChunkLocation( south );

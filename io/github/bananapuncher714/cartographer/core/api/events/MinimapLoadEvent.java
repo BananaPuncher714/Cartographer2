@@ -4,9 +4,13 @@ import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
+/**
+ * Called after a minimap gets loaded completely
+ * 
+ * @author BananaPuncher714
+ */
 public class MinimapLoadEvent extends MinimapEvent {
 	private static final HandlerList handlers = new HandlerList();
-	protected Minimap map;
 	
 	public MinimapLoadEvent( Minimap map ) {
 		super( map );

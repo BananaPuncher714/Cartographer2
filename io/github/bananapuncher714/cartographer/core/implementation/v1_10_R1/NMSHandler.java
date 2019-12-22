@@ -143,12 +143,7 @@ public class NMSHandler implements PacketHandler {
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType.getValue(), true );
 	}
-	
-	@Override
-	public boolean isCurrentThreadMain() {
-		return Thread.currentThread() == MinecraftServer.getServer().primaryThread;
-	}
-	
+
 	@Override
 	public double getTPS() {
 		return MinecraftServer.getServer().recentTps[ 0 ];

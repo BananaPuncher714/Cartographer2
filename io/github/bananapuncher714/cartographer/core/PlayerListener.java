@@ -128,11 +128,11 @@ public class PlayerListener implements Listener {
 	// The more players, or the more stuff going on the more lag, but the solution is just to get a better computer
 	@EventHandler
 	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
-		if ( event.getSourceBlock() == event.getBlock() ) {
+		if ( Cartographer.getInstance().getHandler().getUtil().updateEvent( event ) ) {
 			Bukkit.getScheduler().runTask( plugin, new Runnable() {
 				@Override
 				public void run() {
-					addLocation( event.getSourceBlock().getLocation() );
+					addLocation( event.getBlock().getLocation() );
 				}
 			} );
 		}
@@ -150,7 +150,7 @@ public class PlayerListener implements Listener {
 	private void updateMap( Location... locations ) {
 		for ( Minimap minimap : plugin.getMapManager().getMinimaps().values() ) {
 			for ( Location location : locations ) {
-				minimap.getDataCache().updateLocation( location, minimap.getPalette() );
+				minimap.updateLocation( location );
 			}
 		}
 	}

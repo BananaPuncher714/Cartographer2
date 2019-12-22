@@ -20,6 +20,7 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_13;
+import io.github.bananapuncher714.cartographer.core.internal.Util_1_14;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
@@ -83,7 +84,7 @@ public class NMSHandler implements PacketHandler {
 	}
 
 	private final Set< Integer > maps = new TreeSet< Integer >();
-	private Util_1_13 util = new Util_1_13();
+	private Util_1_14 util = new Util_1_14();
 	
 	@Override
 	public void sendDataTo( int id, byte[] data, @Nullable MapCursor[] cursors, UUID... uuids ) {
@@ -172,11 +173,6 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true, name );
-	}
-	
-	@Override
-	public boolean isCurrentThreadMain() {
-		return Thread.currentThread() == MinecraftServer.getServer().serverThread;
 	}
 	
 	@Override

@@ -21,6 +21,7 @@ import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkLoadedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkProcessedEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.MapUpdateBlockEvent;
 import io.github.bananapuncher714.cartographer.core.api.map.LocalCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
@@ -265,6 +266,13 @@ public class Minimap implements ChunkNotifier {
 	
 	public Set< WorldPixelProvider > getWorldPixelProviders() {
 		return worldPixelProviders;
+	}
+	
+	public void updateLocation( Location location ) {
+		MapUpdateBlockEvent event = new MapUpdateBlockEvent( this, location, palette );
+		event.callEvent();
+		
+		cache.updateLocation( location, event.getPalette() );
 	}
 	
 	public void terminate() {

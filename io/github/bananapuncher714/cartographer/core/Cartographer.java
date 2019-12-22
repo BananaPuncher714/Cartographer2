@@ -68,6 +68,8 @@ public class Cartographer extends JavaPlugin implements Listener {
 	private int[] overlay;
 	private byte[] missingMapImage;
 	
+	private boolean loaded = false;
+	
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
@@ -146,6 +148,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 	}
 	
 	protected void onServerLoad() {
+		if ( loaded ) {
+			return;
+		}
+		loaded = true;
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		
 		// Enable the modules afterwards
