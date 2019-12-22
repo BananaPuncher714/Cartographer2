@@ -1,15 +1,15 @@
 package io.github.bananapuncher714.cartographer.core;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -23,9 +23,17 @@ import io.github.bananapuncher714.cartographer.core.renderer.CartographerRendere
 
 public class PlayerListener implements Listener {
 	protected Cartographer plugin;
+	protected Set< Location > updateSet = new HashSet< Location >();
 	
 	protected PlayerListener( Cartographer plugin ) {
 		this.plugin = plugin;
+		
+		Bukkit.getScheduler().runTaskTimer( plugin, this::update, 1, 2 );
+	}
+	
+	private void update() {
+		updateMap( updateSet.toArray( new Location[ updateSet.size() ] ) );
+		updateSet.clear();
 	}
 	
 	@EventHandler
@@ -116,51 +124,27 @@ public class PlayerListener implements Listener {
 	private void onPlayerLoginEvent( PlayerLoginEvent event ) {
 	}
 	
+	// This is probably the laggiest part of the plugin, mostly since the BlockPhysicsEvent fires a ton
+	// The more players, or the more stuff going on the more lag, but the solution is just to get a better computer
 	@EventHandler
-	private void onBlockBreakEvent( BlockBreakEvent event ) {
-		Bukkit.getScheduler().runTask( plugin, new Runnable() {
-			@Override
-			public void run() {
-				updateMap( event.getBlock().getLocation() );
-			}
-		} );
+	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
+		if ( event.getSourceBlock() == event.getBlock() ) {
+			Bukkit.getScheduler().runTask( plugin, new Runnable() {
+				@Override
+				public void run() {
+					addLocation( event.getSourceBlock().getLocation() );
+				}
+			} );
+		}
 	}
-	
-	@EventHandler
-	private void onBlockPlaceEvent( BlockPlaceEvent event ) {
-		Bukkit.getScheduler().runTask( plugin, new Runnable() {
-			@Override
-			public void run() {
-				updateMap( event.getBlock().getLocation() );
-			}
-		} );
-	}
-	
-	@EventHandler
-	private void onWaterFlowEvent( BlockFromToEvent event ) {
-		Bukkit.getScheduler().runTask( plugin, new Runnable() {
-			@Override
-			public void run() {
-				updateMap( event.getBlock().getLocation() );
-				updateMap( event.getToBlock().getLocation() );
-			}
-		} );
-	}
-	
-	// Not sure why I thought this would be a good event, didn't realize how frequently it gets called
-//	@EventHandler
-//	private void onBlockPhysicsEvent( BlockPhysicsEvent event ) {
-//		Bukkit.getScheduler().runTask( plugin, new Runnable() {
-//			@Override
-//			public void run() {
-//				updateMap( event.getBlock().getLocation() );
-//			}
-//		} );
-//	}
 	
 	@EventHandler
 	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
 		plugin.getProtocol().removeChannel( event.getPlayer() );
+	}
+	
+	private void addLocation( Location location ) {
+		updateSet.add( new Location( location.getWorld(), location.getBlockX(), 0, location.getBlockZ() ) );
 	}
 	
 	private void updateMap( Location... locations ) {
@@ -169,6 +153,5 @@ public class PlayerListener implements Listener {
 				minimap.getDataCache().updateLocation( location, minimap.getPalette() );
 			}
 		}
-		
 	}
 }

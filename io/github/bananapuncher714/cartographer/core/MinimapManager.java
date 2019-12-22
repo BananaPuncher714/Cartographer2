@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-import io.github.bananapuncher714.cartographer.core.api.events.MinimapLoadEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.MinimapDeleteEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.MinimapLoadEvent;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
