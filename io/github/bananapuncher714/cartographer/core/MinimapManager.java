@@ -119,6 +119,22 @@ public class MinimapManager {
 		return map;
 	}
 	
+	public Minimap constructNewMinimap( File dir ) {
+		plugin.saveMapFiles( dir );
+		File config = new File( dir + "/" + "config.yml" );
+		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
+		
+		MapDataCache cache = new MapDataCache( settings.isAutoUpdate() );
+		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
+		
+		Minimap map = new Minimap( dir.getName(), settings.getPalette(), cache, dir, settings );
+		registerMinimap( map );
+		
+		new MinimapLoadEvent( map ).callEvent();
+		
+		return map;
+	}
+	
 	public void remove( Minimap map ) {
 		new MinimapDeleteEvent( map ).callEvent();
 		

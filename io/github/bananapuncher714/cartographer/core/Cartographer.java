@@ -319,9 +319,13 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	public File getAndConstructMapDir( String id ) {
 		File dir = new File( MAP_DIR + "/" + id );
-		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );
+		saveMapFiles( dir );
 		
 		return dir;
+	}
+	
+	protected void saveMapFiles( File dir ) {
+		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );
 	}
 	
 	public TinyProtocol getProtocol() {
