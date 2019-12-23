@@ -23,6 +23,7 @@ import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
+import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager.ColorType;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
@@ -35,6 +36,7 @@ public class Cartographer extends JavaPlugin {
 	private static Cartographer INSTANCE;
 	
 	private static File PALETTE_DIR;
+	private static File MODULE_DIR;
 	private static File MAP_DIR;
 	
 	private static File README_FILE;
@@ -79,6 +81,7 @@ public class Cartographer extends JavaPlugin {
 		
 		
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
+		MODULE_DIR = new File( getDataFolder() + "/" + "modules/" );
 		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
 		
 		README_FILE = new File( getDataFolder() + "/" + "README.md" );
@@ -113,7 +116,7 @@ public class Cartographer extends JavaPlugin {
 		
 		paletteManager = new PaletteManager( this );
 		mapManager = new MinimapManager( this );
-		moduleManager = new ModuleManager( this );
+		moduleManager = new ModuleManager( this, MODULE_DIR );
 		
 		command = new CartographerCommand();
 		getCommand( "cartographer" ).setExecutor( command );
@@ -274,8 +277,29 @@ public class Cartographer extends JavaPlugin {
 		getLogger().info( "Constructing vanilla palette..." );
 		MinimapPalette vanilla = handler.getVanillaPalette();
 		paletteManager.register( "default", vanilla );
-		paletteManager.register( "vanilla", vanilla );
-		getLogger().info( vanilla.getMaterials().size() + " materials stored in vanilla" );
+		
+		File vanillaPalette = new File( PALETTE_DIR + "/" + "vanilla.yml" );
+		if ( !vanillaPalette.exists() ) {
+			getLogger().info( "Vanilla palette not found, saving..." );
+			
+			PALETTE_DIR.mkdirs();
+			try {
+				vanillaPalette.createNewFile();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+			
+			FileConfiguration vanillaConfig = YamlConfiguration.loadConfiguration( vanillaPalette );
+			paletteManager.save( vanilla, vanillaConfig, ColorType.RGB );
+			
+			try {
+				vanillaConfig.save( vanillaPalette );
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+		}
+		
+		getLogger().info( ( vanilla.getMaterials().size() + vanilla.getTransparentBlocks().size() ) + " materials mapped for vanilla" );
 		
 		getLogger().info( "Loading local palette files..." );
 		if ( PALETTE_DIR.exists() ) {

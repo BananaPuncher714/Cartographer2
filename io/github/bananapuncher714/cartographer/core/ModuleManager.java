@@ -14,9 +14,9 @@ public class ModuleManager {
 	protected Map< String, Module > modules = new HashMap< String, Module >();
 	protected File moduleFolder;
 	
-	protected ModuleManager( Cartographer plugin ) {
+	protected ModuleManager( Cartographer plugin, File moduleFolder ) {
 		this.plugin = plugin;
-		moduleFolder = new File( plugin.getDataFolder() + "/" + "modules" );
+		this.moduleFolder = moduleFolder;
 		moduleFolder.mkdirs();
 	}
 	

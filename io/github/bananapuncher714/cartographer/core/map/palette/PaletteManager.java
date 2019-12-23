@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.map.palette;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,47 @@ public class PaletteManager {
 			}
 		}
 		return palette;
+	}
+	
+	public void save( MinimapPalette palette, FileConfiguration config, ColorType format ) {
+		if ( ( ( palette.getDefaultRGB() >>> 24 ) & 0xFF ) == 0 ) {
+			config.set( "default", "TRANSPARENT" );
+		} else {
+			config.set( "default", toString( palette.getDefaultRGB(), format ) );
+		}
+		List< String > transparent = new ArrayList< String >();
+		for ( CrossVersionMaterial mat : palette.getTransparentBlocks() ) {
+			String key = mat.material.name();
+			if ( mat.durability != 0 ) {
+				key += "," + mat.durability;
+			}
+			transparent.add( key );
+		}
+		config.set( "transparent-blocks", transparent );
+		
+		for ( CrossVersionMaterial mat : palette.getMaterials() ) {
+			String key = mat.material.name();
+			if ( mat.durability != 0 ) {
+				key += "," + mat.durability;
+			}
+			config.set( "colors." + key, toString( palette.getRGB( mat ), format ) );
+		}
+	}
+	
+	public String toString( int color, ColorType type ) {
+		if ( type == ColorType.HEX ) {
+			return "#" + Integer.toHexString( color );
+		} else if ( type == ColorType.INT ) {
+			return "" + ( color & 0xFFFFFF );
+		} else if ( type == ColorType.RGB ) {
+			return "( " + ( color >> 16 & 0xFF ) + ", " + ( color >> 8 & 0xFF ) + ", " + ( color & 0xFF ) + " )";
+		} else {
+			throw new IllegalArgumentException( "Unknown ColorType provided! " + type.name() );
+		}
+	}
+	
+	public String toString( Color color, ColorType type ) {
+		return toString( color.getRGB(), type );
 	}
 	
 	public enum ColorType {
