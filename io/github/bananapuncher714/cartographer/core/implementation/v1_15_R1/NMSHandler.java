@@ -10,22 +10,34 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.craftbukkit.v1_15_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftLegacy;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
+import org.bukkit.material.MaterialData;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_13;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_14;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_15_R1.Block;
+import net.minecraft.server.v1_15_R1.Blocks;
 import net.minecraft.server.v1_15_R1.ChatComponentText;
+import net.minecraft.server.v1_15_R1.EnumRenderType;
+import net.minecraft.server.v1_15_R1.IBlockData;
+import net.minecraft.server.v1_15_R1.IRegistry;
 import net.minecraft.server.v1_15_R1.MapIcon;
+import net.minecraft.server.v1_15_R1.MinecraftKey;
 import net.minecraft.server.v1_15_R1.MinecraftServer;
 import net.minecraft.server.v1_15_R1.PacketPlayOutMap;
 
@@ -173,6 +185,24 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true, name );
+	}
+	
+	@Override
+	public MinimapPalette getVanillaPalette() {
+		MinimapPalette palette = new MinimapPalette();
+		// For some reason IRegistry.BLOCK contains only a few blocks, and it's not a consistent amount.
+		for ( MinecraftKey key : IRegistry.BLOCK.keySet() ) {
+			Block block = IRegistry.BLOCK.get( key );
+			CrossVersionMaterial material = new CrossVersionMaterial( CraftLegacy.fromLegacy( CraftMagicNumbers.getMaterial( block ) ) );
+			boolean transparent = block.c( block.getBlockData() ) == EnumRenderType.INVISIBLE;
+			if ( transparent ) {
+				palette.addTransparentMaterial( material );
+			} else {
+				int color = block.e( block.getBlockData(), null, null ).rgb;
+				palette.setColor( material, color );
+			}
+		}
+		return palette;
 	}
 	
 	@Override

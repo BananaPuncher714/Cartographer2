@@ -3,7 +3,8 @@ name: "&aDefault Minimap"
 auto-update: true
 
 palettes:
-- "palette-1.13.2"
+- "default"
+- "palette-1.15.1"
 
 default-zoom: ONE
 circular-zoom: false

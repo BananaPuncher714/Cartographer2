@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
@@ -18,9 +19,14 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_8;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_8_R3.Block;
+import net.minecraft.server.v1_8_R3.IBlockData;
+import net.minecraft.server.v1_8_R3.MinecraftKey;
 import net.minecraft.server.v1_8_R3.MapIcon;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutMap;
@@ -140,6 +146,26 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType.getValue(), true );
+	}
+	
+	@Override
+	public MinimapPalette getVanillaPalette() {
+		MinimapPalette palette = new MinimapPalette();
+		for ( MinecraftKey key : Block.REGISTRY.keySet() ) {
+			Block block = Block.REGISTRY.get( key );
+			for ( IBlockData data : block.P().a() ) {
+				boolean transparent = !block.c();
+				CrossVersionMaterial material = new CrossVersionMaterial( CraftMagicNumbers.getMaterial( block ), block.toLegacyData( data ) );
+				
+				if ( transparent ) {
+					palette.addTransparentMaterial( material );
+				} else {
+					int color = block.g( data ).L;
+					palette.setColor( material, color );
+				}
+			}
+		}
+		return palette;
 	}
 	
 	@Override

@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +31,7 @@ import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
 
-public class Cartographer extends JavaPlugin implements Listener {
+public class Cartographer extends JavaPlugin {
 	private static Cartographer INSTANCE;
 	
 	private static File PALETTE_DIR;
@@ -202,10 +201,13 @@ public class Cartographer extends JavaPlugin implements Listener {
 		loadInit();
 		
 		// Load the config and images first
+		getLogger().info( "Loading config..." );
 		loadConfig();
+		getLogger().info( "Loading images..." );
 		loadImages();
 		
 		// Load the palettes
+		getLogger().info( "Loading palettes..." );
 		loadPalettes();
 	}
 	
@@ -230,6 +232,7 @@ public class Cartographer extends JavaPlugin implements Listener {
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
 		}
 	}
 	
@@ -268,6 +271,13 @@ public class Cartographer extends JavaPlugin implements Listener {
 	}
 	
 	private void loadPalettes() {
+		getLogger().info( "Constructing vanilla palette..." );
+		MinimapPalette vanilla = handler.getVanillaPalette();
+		paletteManager.register( "default", vanilla );
+		paletteManager.register( "vanilla", vanilla );
+		getLogger().info( vanilla.getMaterials().size() + " materials stored in vanilla" );
+		
+		getLogger().info( "Loading local palette files..." );
 		if ( PALETTE_DIR.exists() ) {
 			for ( File file : PALETTE_DIR.listFiles() ) {
 				if ( !file.isDirectory() ) {
@@ -342,6 +352,10 @@ public class Cartographer extends JavaPlugin implements Listener {
 	
 	public PaletteManager getPaletteManager() {
 		return paletteManager;
+	}
+	
+	public ModuleManager getModuleManager() {
+		return moduleManager;
 	}
 	
 	protected Map< Integer, CartographerRenderer > getRenderers() {

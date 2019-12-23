@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
@@ -20,9 +21,16 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_8;
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_12_R1.Block;
+import net.minecraft.server.v1_12_R1.EnumRenderType;
+import net.minecraft.server.v1_12_R1.IBlockAccess;
+import net.minecraft.server.v1_12_R1.IBlockData;
+import net.minecraft.server.v1_12_R1.MinecraftKey;
 import net.minecraft.server.v1_12_R1.MapIcon;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutMap;
@@ -151,6 +159,26 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
 		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true );
+	}
+	
+	@Override
+	public MinimapPalette getVanillaPalette() {
+		MinimapPalette palette = new MinimapPalette();
+		for ( MinecraftKey key : Block.REGISTRY.keySet() ) {
+			Block block = Block.REGISTRY.get( key );
+			for ( IBlockData data : block.s().a() ) {
+				boolean transparent = data.i() == EnumRenderType.INVISIBLE;
+				CrossVersionMaterial material = new CrossVersionMaterial( CraftMagicNumbers.getMaterial( block ), block.toLegacyData( data ) );
+				
+				if ( transparent ) {
+					palette.addTransparentMaterial( material );
+				} else {
+					int color = block.c( data, ( IBlockAccess ) null, null ).ac;
+					palette.setColor( material, color );
+				}
+			}
+		}
+		return palette;
 	}
 	
 	@Override

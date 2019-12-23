@@ -228,9 +228,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// First, insert any WorldPixels that may be present
 				for ( WorldPixel pixel : worldPixels ) {
-					if ( renderLoc.getWorld() == player.getWorld() &&
-							renderLoc.getBlockX() == pixel.getX() &&
-							renderLoc.getBlockZ() == pixel.getZ() ) {
+					if ( renderLoc.getWorld() == player.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
 						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 					}
 				}

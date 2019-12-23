@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
+import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
+
 public interface PacketHandler {
 	Object onPacketInterceptOut( Player player, Object packet );
 	Object onPacketInterceptIn( Player player, Object packet );
@@ -14,7 +16,8 @@ public interface PacketHandler {
 	void unregisterMap( int id );
 	void registerMap( int id );
 	void sendDataTo( int id, byte[] data, MapCursor[] cursors, UUID... uuids );
-
+	MinimapPalette getVanillaPalette();
+	
 	default boolean mapBug() {
 		return false;
 	}
