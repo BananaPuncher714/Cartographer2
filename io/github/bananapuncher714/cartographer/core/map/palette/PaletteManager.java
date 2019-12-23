@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -69,9 +71,31 @@ public class PaletteManager {
 				}
 				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );
 				
-				String[] data = config.getString( "colors." + key ).split( "\\D+" );
-				Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
+				String data = config.getString( "colors." + key );
 				
+				Color color;
+				if ( ColorType.HEX.matches( data ) ) {
+					Matcher matcher = ColorType.HEX.pattern.matcher( data );
+					matcher.find();
+					String hexString = matcher.group( 1 );
+					int val = Integer.parseInt( hexString, 16 );
+					color = new Color( val );
+				} else if ( ColorType.INT.matches( data ) ) {
+					Matcher matcher = ColorType.INT.pattern.matcher( data );
+					matcher.find();
+					String intString = matcher.group( 1 );
+					color = new Color( Integer.parseInt( intString ) );
+				} else if ( ColorType.RGB.matches( data ) ) {
+					Matcher matcher = ColorType.RGB.pattern.matcher( data );
+					matcher.find();
+					String r = matcher.group( 1 );
+					String g = matcher.group( 2 );
+					String b = matcher.group( 3 );
+					color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
+				} else {
+					plugin.getLogger().info( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
+					continue;
+				}
 				palette.setColor( cvMaterial, color );
 			}
 		}
@@ -90,5 +114,23 @@ public class PaletteManager {
 			}
 		}
 		return palette;
+	}
+	
+	public enum ColorType {
+		HEX( "^#?([A-Fa-f0-9]{1,6})$" ), RGB( "^\\D*?(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D*?$" ), INT( "^([0-9]?){8}$" );
+		
+		private Pattern pattern;
+		
+		ColorType( String pattern ) {
+			this.pattern = Pattern.compile( pattern );
+		}
+		
+		public boolean matches( String string ) {
+			return pattern.matcher( string ).matches();
+		}
+		
+		public Pattern getPattern() {
+			return pattern;
+		}
 	}
 }
