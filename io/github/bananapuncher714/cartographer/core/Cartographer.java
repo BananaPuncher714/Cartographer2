@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
+import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
@@ -46,6 +47,9 @@ public class Cartographer extends JavaPlugin {
 	private static File MISSING_MAP_IMAGE;
 	private static File OVERLAY_IMAGE;
 	private static File BACKGROUND_IMAGE;
+	private static File MISSING_MAP_GIF;
+	private static File OVERLAY_GIF;
+	private static File BACKGROUND_GIF;
 	
 	private TinyProtocol protocol;
 	private PacketHandler handler;
@@ -65,9 +69,9 @@ public class Cartographer extends JavaPlugin {
 	private boolean forceLoad = false;
 	private boolean rotateByDefault = true;
 	
-	private int[] loadingBackground;
-	private int[] overlay;
-	private byte[] missingMapImage;
+	private SimpleImage loadingBackground;
+	private SimpleImage overlay;
+	private SimpleImage missingMapImage;
 	
 	private boolean loaded = false;
 	
@@ -89,8 +93,11 @@ public class Cartographer extends JavaPlugin {
 		DATA_FILE = new File( getDataFolder() + "/" + "data.yml" );
 		
 		OVERLAY_IMAGE = new File( getDataFolder() + "/" + "overlay.png" );
+		OVERLAY_GIF = new File( getDataFolder() + "/" + "overlay.gif" );
 		BACKGROUND_IMAGE = new File( getDataFolder() + "/" + "background.png" );
+		BACKGROUND_GIF = new File( getDataFolder() + "/" + "background.gif" );
 		MISSING_MAP_IMAGE = new File( getDataFolder() + "/" + "missing.png" );
+		MISSING_MAP_GIF = new File( getDataFolder() + "/" + "missing.gif" );
 		
 		JetpImageUtil.init();
 		
@@ -321,18 +328,27 @@ public class Cartographer extends JavaPlugin {
 	
 	private void loadImages() {
 		try {
-			if ( OVERLAY_IMAGE.exists() ) {
+			if ( OVERLAY_GIF.exists() ) {
+				getLogger().info( "Overlay gif detected!" );
+				this.overlay = new SimpleImage( OVERLAY_GIF, 128, 128, Image.SCALE_REPLICATE );
+			} else if ( OVERLAY_IMAGE.exists() ) {
 				getLogger().info( "Overlay detected!" );
-				this.overlay = JetpImageUtil.getRGBArray( JetpImageUtil.toBufferedImage( ImageIO.read( OVERLAY_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) ) );
+				this.overlay = new SimpleImage( OVERLAY_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			}
 
-			if ( BACKGROUND_IMAGE.exists() ) {
+			if ( BACKGROUND_GIF.exists() ) {
+				getLogger().info( "Background gif detected!" );
+				this.loadingBackground = new SimpleImage( BACKGROUND_GIF, 128, 128, Image.SCALE_REPLICATE );
+			} else if ( BACKGROUND_IMAGE.exists() ) {
 				getLogger().info( "Background detected!" );
-				this.loadingBackground = JetpImageUtil.getRGBArray( JetpImageUtil.toBufferedImage( ImageIO.read( BACKGROUND_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) ) );
+				this.loadingBackground = new SimpleImage( BACKGROUND_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			}
-			if ( MISSING_MAP_IMAGE.exists() ) {
+			if ( MISSING_MAP_GIF.exists() ) {
+				getLogger().info( "Missing map gif detected!" );
+				missingMapImage = new SimpleImage( MISSING_MAP_GIF, 128, 128, Image.SCALE_REPLICATE );
+			} else if ( MISSING_MAP_IMAGE.exists() ) {
 				getLogger().info( "Missing map image detected!" );
-				missingMapImage = JetpImageUtil.dither( ImageIO.read( MISSING_MAP_IMAGE ).getScaledInstance( 128, 128, Image.SCALE_REPLICATE ) );
+				missingMapImage = new SimpleImage( MISSING_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();
@@ -402,17 +418,17 @@ public class Cartographer extends JavaPlugin {
 		return rotateByDefault;
 	}
 	
-	public int[] getLoadingImage() {
+	public SimpleImage getLoadingImage() {
 		// TODO Specify that this is 128x128
 		return loadingBackground;
 	}
 	
-	public int[] getOverlay() {
+	public SimpleImage getOverlay() {
 		// TODO Specify that this is 128x128
 		return overlay;
 	}
 
-	public byte[] getMissingMapImage() {
+	public SimpleImage getMissingMapImage() {
 		return missingMapImage;
 	}
 	

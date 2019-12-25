@@ -22,6 +22,7 @@ import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
@@ -101,7 +102,8 @@ public class CartographerRenderer extends MapRenderer {
 			loc.setY( loc.getWorld().getMaxHeight() - 1 );
 			Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
-				byte[] missingMapData = Cartographer.getInstance().getMissingMapImage();
+				SimpleImage missingImage = Cartographer.getInstance().getMissingMapImage();
+				byte[] missingMapData = JetpImageUtil.dither( missingImage.getWidth(), missingImage.getImage() );
 				Cartographer.getInstance().getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
 				continue;
 			}
@@ -145,8 +147,8 @@ public class CartographerRenderer extends MapRenderer {
 			
 			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
 			
-			int[] globalOverlay = Cartographer.getInstance().getOverlay();
-			int[] loadingBackground = Cartographer.getInstance().getLoadingImage();
+			int[] globalOverlay = Cartographer.getInstance().getOverlay().getImage();
+			int[] loadingBackground = Cartographer.getInstance().getLoadingImage().getImage();
 			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
 			// - Intermediate overlay, contains the MapPixels
