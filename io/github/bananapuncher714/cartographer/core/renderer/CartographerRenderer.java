@@ -217,7 +217,7 @@ public class CartographerRenderer extends MapRenderer {
 				int localColor = 0;
 				if ( chunkData != null ) {
 					// This is for static colors
-//					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, scale ) );
+//					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
 					// This is for dynamic colors
 					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
 				} else {

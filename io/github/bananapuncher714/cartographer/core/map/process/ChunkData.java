@@ -15,9 +15,9 @@ public class ChunkData implements Serializable {
 	protected final byte[] data;
 	
 	protected boolean colored = false;
-	protected transient byte[] two = new byte[ 64 ];
-	protected transient byte[] four = new byte[ 16 ];
-	protected transient byte[] eight = new byte[ 4 ];
+	protected transient byte[] two;
+	protected transient byte[] four;
+	protected transient byte[] eight;
 	protected transient byte mainColor;
 	
 	public ChunkData( byte[] data ) {
@@ -54,16 +54,19 @@ public class ChunkData implements Serializable {
 
 	public void refreshColors() {
 		mainColor = getBestColor( data );
+		two = new byte[ 64 ];
 		for ( int i = 0; i < 8; i++ ) {
 	    	for ( int j = 0; j < 8; j++ ) {
 	    		two[ i + ( j << 3 ) ] = getBestColor( getSubarray( i << 1, j << 1, 2, 2 ) );
 	    	}
 	    }
+		four = new byte[ 16 ];
 	    for ( int i = 0; i < 4; i++ ) {
 	    	for ( int j = 0; j < 4; j++ ) {
 	    		four[ i + ( j << 2 ) ] = getBestColor( getSubarray( i << 2, j << 2, 4, 4 ) );
 	    	}
 	    }
+	    eight = new byte[ 4 ];
 	    for ( int i = 0; i < 2; i++ ) {
 	    	for ( int j = 0; j < 2; j++ ) {
 	    		eight[ i + ( j << 1 ) ] = getBestColor( getSubarray( i << 3, j << 3, 8, 8 ) );

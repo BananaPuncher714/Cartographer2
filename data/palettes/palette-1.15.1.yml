@@ -1,4 +1,4 @@
-default-color: 0, 0, 0
+default-color: TRANSPARENT
 
 transparent-blocks:
 - LEGACY_AIR
