@@ -47,9 +47,6 @@ public class Cartographer extends JavaPlugin {
 	private static File MISSING_MAP_IMAGE;
 	private static File OVERLAY_IMAGE;
 	private static File BACKGROUND_IMAGE;
-	private static File MISSING_MAP_GIF;
-	private static File OVERLAY_GIF;
-	private static File BACKGROUND_GIF;
 	
 	private TinyProtocol protocol;
 	private PacketHandler handler;
@@ -91,13 +88,6 @@ public class Cartographer extends JavaPlugin {
 		README_FILE = new File( getDataFolder() + "/" + "README.md" );
 		CONFIG_FILE = new File( getDataFolder() + "/" + "config.yml" );
 		DATA_FILE = new File( getDataFolder() + "/" + "data.yml" );
-		
-		OVERLAY_IMAGE = new File( getDataFolder() + "/" + "overlay.png" );
-		OVERLAY_GIF = new File( getDataFolder() + "/" + "overlay.gif" );
-		BACKGROUND_IMAGE = new File( getDataFolder() + "/" + "background.png" );
-		BACKGROUND_GIF = new File( getDataFolder() + "/" + "background.gif" );
-		MISSING_MAP_IMAGE = new File( getDataFolder() + "/" + "missing.png" );
-		MISSING_MAP_GIF = new File( getDataFolder() + "/" + "missing.gif" );
 		
 		JetpImageUtil.init();
 		
@@ -236,9 +226,9 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "README.md" ), README_FILE, false );
 			FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
-			FileUtil.saveToFile( getResource( "data/images/overlay.png" ), OVERLAY_IMAGE, false );
-			FileUtil.saveToFile( getResource( "data/images/background.png" ), BACKGROUND_IMAGE, false );
-			FileUtil.saveToFile( getResource( "data/images/missing.png" ), MISSING_MAP_IMAGE, false );
+			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder() + "/" + "overlay.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder() + "/" + "background.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder() + "/" + "missing.png" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
@@ -327,28 +317,30 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadImages() {
+		OVERLAY_IMAGE = getImageFile( getDataFolder(), "overlay" );
+		BACKGROUND_IMAGE = getImageFile( getDataFolder(), "background" );
+		MISSING_MAP_IMAGE = getImageFile( getDataFolder(), "missing" );
+		
 		try {
-			if ( OVERLAY_GIF.exists() ) {
-				getLogger().info( "Overlay gif detected!" );
-				this.overlay = new SimpleImage( OVERLAY_GIF, 128, 128, Image.SCALE_REPLICATE );
-			} else if ( OVERLAY_IMAGE.exists() ) {
+			if ( OVERLAY_IMAGE.exists() ) {
 				getLogger().info( "Overlay detected!" );
 				this.overlay = new SimpleImage( OVERLAY_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+			} else {
+				getLogger().warning( "Overlay image does not exist!" );
 			}
 
-			if ( BACKGROUND_GIF.exists() ) {
-				getLogger().info( "Background gif detected!" );
-				this.loadingBackground = new SimpleImage( BACKGROUND_GIF, 128, 128, Image.SCALE_REPLICATE );
-			} else if ( BACKGROUND_IMAGE.exists() ) {
+			if ( BACKGROUND_IMAGE.exists() ) {
 				getLogger().info( "Background detected!" );
 				this.loadingBackground = new SimpleImage( BACKGROUND_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+			} else {
+				getLogger().warning( "Background image does not exist!" );
 			}
-			if ( MISSING_MAP_GIF.exists() ) {
-				getLogger().info( "Missing map gif detected!" );
-				missingMapImage = new SimpleImage( MISSING_MAP_GIF, 128, 128, Image.SCALE_REPLICATE );
-			} else if ( MISSING_MAP_IMAGE.exists() ) {
+			
+			if ( MISSING_MAP_IMAGE.exists() ) {
 				getLogger().info( "Missing map image detected!" );
 				missingMapImage = new SimpleImage( MISSING_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+			} else {
+				getLogger().warning( "Missing map image does not exist!" );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();
@@ -434,6 +426,19 @@ public class Cartographer extends JavaPlugin {
 	
 	public boolean isValidInventory( InventoryType type ) {
 		return !invalidInventoryTypes.contains( type );
+	}
+	
+	private static File getImageFile( File dir, String prefix ) {
+		File image = new File( dir + "/" + prefix + ".png" );
+		for ( File file : dir.listFiles() ) {
+			String fileName = file.getName();
+			if ( fileName.equalsIgnoreCase( prefix + ".gif" ) ) {
+				return file;
+			} else if ( fileName.equalsIgnoreCase( prefix + ".png" ) || fileName.equalsIgnoreCase( prefix + ".jpg" ) || fileName.equalsIgnoreCase( prefix + ".jpeg" ) || fileName.equalsIgnoreCase( prefix + ".bmp" ) ) {
+				image = file;
+			}
+		}
+		return image;
 	}
 	
 	public static Cartographer getInstance() {
