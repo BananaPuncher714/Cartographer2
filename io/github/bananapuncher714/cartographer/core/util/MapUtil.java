@@ -88,6 +88,7 @@ public class MapUtil {
 		highest.setY( height );
 		CrossVersionMaterial material = Cartographer.getInstance().getHandler().getUtil().getBlockType( highest.getBlock() );
 		Color color = palette.getColor( material );
+		
 		if ( prevVal > 0 ) {
 			if ( prevVal == height ) {
 				color = JetpImageUtil.brightenColor( color, -10 );
@@ -96,7 +97,7 @@ public class MapUtil {
 			}
 		}
 		
-		return JetpImageUtil.getBestColor( color.getRGB() );
+		return JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
 	}
 	
 	public static Set< MapPixel > getPixelsFor( Image image, int x, int y ) {

@@ -36,7 +36,6 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 		
 		byte[] data = new byte[ 256 ];
 		
-		
 		for ( int x = 0; x < 16; x++ ) {
 			for ( int z = 0; z < 16; z++ ) {
 				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
@@ -52,7 +51,7 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 					}
 				}
 				
-				data[ x + z * 16 ] = JetpImageUtil.getBestColor( color.getRGB() );
+				data[ x + z * 16 ] = JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
 			}
 		}
 		

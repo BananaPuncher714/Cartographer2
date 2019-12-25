@@ -52,13 +52,34 @@ public class PaletteManager {
 	
 	
 	public MinimapPalette load( FileConfiguration config ) {
-		MinimapPalette palette = new MinimapPalette( new Color( 0, 0, 0, 255 ) );
+		MinimapPalette palette = new MinimapPalette();
 		String defColor = config.getString( "default-color", "TRANSPARENT" );
 		if ( defColor.equalsIgnoreCase( "TRANSPARENT" ) ) {
-			palette.setDefaultColor( new Color( 255, 0, 0, 0 ) );
+			palette.setDefaultColor( new Color( 0, true ) );
 		} else {
-			String[] data = defColor.split( "\\D+" );
-			Color color = new Color( Integer.parseInt( data[ 0 ] ), Integer.parseInt( data[ 1 ] ), Integer.parseInt( data[ 2 ] ) );
+			Color color;
+			if ( ColorType.HEX.matches( defColor ) ) {
+				Matcher matcher = ColorType.HEX.pattern.matcher( defColor );
+				matcher.find();
+				String hexString = matcher.group( 1 );
+				int val = Integer.parseInt( hexString, 16 );
+				color = new Color( val );
+			} else if ( ColorType.INT.matches( defColor ) ) {
+				Matcher matcher = ColorType.INT.pattern.matcher( defColor );
+				matcher.find();
+				String intString = matcher.group( 1 );
+				color = new Color( Integer.parseInt( intString ) );
+			} else if ( ColorType.RGB.matches( defColor ) ) {
+				Matcher matcher = ColorType.RGB.pattern.matcher( defColor );
+				matcher.find();
+				String r = matcher.group( 1 );
+				String g = matcher.group( 2 );
+				String b = matcher.group( 3 );
+				color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
+			} else {
+				plugin.getLogger().info( "Cannot parse default color. Invalid value: " + defColor );
+				color = new Color( 0 );
+			}
 			palette.setDefaultColor( color );
 		}
 		if ( config.contains( "colors" ) ) {

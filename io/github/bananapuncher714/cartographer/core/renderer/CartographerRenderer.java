@@ -162,7 +162,7 @@ public class CartographerRenderer extends MapRenderer {
 				int color = higherMapPixels[ index ];
 				// Continue if the pixel is opaque, since we know that nothing else be above this
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 					continue;
 				} else {
 					// Otherwise, we want to set it as the bottom layer
@@ -177,7 +177,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// See if the global overlay is opaque
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 					continue;
 				}
 				
@@ -186,7 +186,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// See if the pixels are opaque
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 					continue;
 				}
 				
@@ -201,7 +201,7 @@ public class CartographerRenderer extends MapRenderer {
 				// If renderLoc is null, we know it doesn't exist
 				// Therefore, overwrite it with whatever color mapColor is
 				if ( renderLoc == null ) {
-					data[ index ] = JetpImageUtil.getBestColor( JetpImageUtil.overwriteColor( loading, mapColor ) );
+					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
 					continue;
 				}
 				
@@ -235,8 +235,9 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// Then, get the color and mix it under the current overlay color
 				mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
+				mapColor = JetpImageUtil.overwriteColor( loading, mapColor );
 				
-				data[ index ] = JetpImageUtil.getBestColor( mapColor );
+				data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 			}
 			for ( BigChunkLocation location : needsRender ) {
 				map.getQueue().load( location );

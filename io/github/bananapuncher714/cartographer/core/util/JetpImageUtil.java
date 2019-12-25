@@ -73,7 +73,8 @@ public final class JetpImageUtil {
 		for ( int color : colors ) {
 			PALETTE[ index++ ] = color;
 		}
-
+		PALETTE[ 0 ] = 0;
+		
 		for ( int r = 0; r < 256; r += 2 ) {
 			for ( int g = 0; g < 256; g += 2 ) {
 				for ( int b = 0; b < 256; b += 2 ) {
@@ -120,6 +121,10 @@ public final class JetpImageUtil {
 		return PALETTE[ ( val + 256 ) % 256 ];
 	}
 
+	public static byte getBestColorIncludingTransparent( int rgb ) {
+		return ( rgb >>> 24 & 0xFF ) == 0 ? 0 : getBestColor( rgb );
+	}
+	
 	public static byte getBestColor( int rgb ) {
 		return COLOR_MAP[ ( rgb >> 16 & 0xFF ) >> 1 << 14 | ( rgb >> 8 & 0xFF ) >> 1 << 7 | ( rgb & 0xFF ) >> 1 ];
 	}
@@ -455,6 +460,6 @@ public final class JetpImageUtil {
 		int newr = r + percent * r / 100;
 		int newg = g + percent * g / 100;
 		int newb = b + percent * b / 100;
-		return new Color( newr, newg, newb );
+		return new Color( newr, newg, newb, c.getAlpha() );
 	}
 }

@@ -17,12 +17,12 @@ public class MinimapPalette {
 	private Set< CrossVersionMaterial > transparentBlocks = new HashSet< CrossVersionMaterial >();
 	
 	public MinimapPalette() {
-		this( new Color( 0 ) );
-		transparentBlocks.add( new CrossVersionMaterial( Material.AIR ) );
+		this( new Color( 0, true ) );
 	}
 	
 	public MinimapPalette( Color defaultColor ) {
 		defColor = defaultColor.getRGB();
+		transparentBlocks.add( new CrossVersionMaterial( Material.AIR ) );
 	}
 	
 	public boolean contains( CrossVersionMaterial material ) {
@@ -34,10 +34,13 @@ public class MinimapPalette {
 	}
 	
 	public Color getColor( CrossVersionMaterial material ) {
-		return new Color( getRGB( material ) );
+		return new Color( getRGB( material ), true );
 	}
 	
 	public int getRGB( CrossVersionMaterial material ) {
+		if ( transparentBlocks.contains( material ) ) {
+			return defColor;
+		}
 		if ( colors.containsKey( material ) ) {
 			return colors.get( material );
 		} else {
@@ -51,7 +54,7 @@ public class MinimapPalette {
 	}
 	
 	public void setColor( CrossVersionMaterial material, int rgb ) {
-		colors.put( material, rgb & 0xFFFFFF );
+		colors.put( material, rgb );
 	}
 	
 	public void setDefaultColor( Color color ) {
@@ -79,7 +82,7 @@ public class MinimapPalette {
 	}
 	
 	public Color getDefaultColor() {
-		return new Color( defColor );
+		return new Color( defColor, true );
 	}
 	
 	public int getDefaultRGB() {
