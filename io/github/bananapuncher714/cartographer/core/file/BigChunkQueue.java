@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
@@ -135,6 +136,8 @@ public class BigChunkQueue {
 			if ( chunk != null ) {
 				FileUtil.writeObject( chunk, saveFile );
 				return true;
+			} else {
+				Cartographer.getInstance().getLogger().warning( "Was unable to save big chunk " + chunk.x + " " + chunk.z );
 			}
 			return false;
 		}
