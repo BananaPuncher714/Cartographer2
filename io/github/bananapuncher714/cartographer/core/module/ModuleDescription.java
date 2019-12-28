@@ -15,14 +15,13 @@ public class ModuleDescription {
 	protected String website;
 	protected final Set< String > dependencies = new HashSet< String >();
 	
-	public ModuleDescription( String name, String main, String author, String description, String version ) {
+	public ModuleDescription( String name, String main, String author, String version ) {
 		if ( !VALID_NAME.matcher( name ).matches() ) {
 			throw new IllegalArgumentException( "name " + name + " contains invalid characters." );
 		}
 		this.name = name;
 		this.main = main;
 		this.author = author;
-		this.description = description;
 		this.version = version;
 	}
 

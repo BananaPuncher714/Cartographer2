@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -64,16 +63,19 @@ public class ModuleLoader {
 			JsonObject object = element.getAsJsonObject();
 			
 			if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "description" ) && object.has( "version" ) ) ) {
-				throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/description/version)" );
+				throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/version)" );
 			}
 			
 			String name = object.get( "name" ).getAsString();
 			String main = object.get( "main" ).getAsString();
 			String author = object.get( "author" ).getAsString();
-			String description = object.get( "description" ).getAsString();
 			String version = object.get( "version" ).getAsString();
 
-			ModuleDescription moduleDescription = new ModuleDescription( name, main, author, description, version );
+			ModuleDescription moduleDescription = new ModuleDescription( name, main, author, version );
+			
+			if ( object.has( "description" ) ) {
+				moduleDescription.setDescription( object.get( "description" ).getAsString() );
+			}
 			
 			if ( object.has( "website" ) ) {
 				moduleDescription.setWebsite( object.get( "website" ).getAsString() );
@@ -81,6 +83,13 @@ public class ModuleLoader {
 			
 			if ( object.has( "depend" ) ) {
 				JsonArray array = object.get( "depend" ).getAsJsonArray();
+				for ( JsonElement dependElement : array ) {
+					moduleDescription.getDependencies().add( dependElement.getAsString() );
+				}
+			}
+			
+			if ( object.has( "dependencies" ) ) {
+				JsonArray array = object.get( "dependencies" ).getAsJsonArray();
 				for ( JsonElement dependElement : array ) {
 					moduleDescription.getDependencies().add( dependElement.getAsString() );
 				}

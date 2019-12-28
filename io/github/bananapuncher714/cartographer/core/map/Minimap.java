@@ -47,7 +47,7 @@ public class Minimap implements ChunkNotifier {
 	
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
 	protected Set< LocalCursorProvider > localCursorProviders = new HashSet< LocalCursorProvider >();
-	protected Set< MapPixelProvider > pixelProviders = new TreeSet< MapPixelProvider >();
+	protected Set< MapPixelProvider > pixelProviders = new HashSet< MapPixelProvider >();
 	protected Set< WorldPixelProvider > worldPixelProviders = new HashSet< WorldPixelProvider >();
 	
 	private long tick = 0;
@@ -112,7 +112,7 @@ public class Minimap implements ChunkNotifier {
 				if ( noSave.contains( bigLoc ) ) {
 					continue;
 				}
-				if ( needsRender( location ) ) {
+				if ( needsRender( location ) || location.isLoaded() ) {
 					noSave.add( bigLoc );
 					if ( chunks.containsKey( bigLoc ) ) {
 						chunks.remove( bigLoc );

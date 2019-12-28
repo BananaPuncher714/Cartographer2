@@ -186,7 +186,8 @@ public class MapDataCache {
 	}
 	
 	public void registerSnapshot( ChunkLocation location ) {
-		if ( !BlockUtil.needsRender( location ) ) {
+		// Ensure that the chunk actually needs to be rendered, and that the snapshot isn't already cached.
+		if ( !BlockUtil.needsRender( location ) || chunks.containsKey( location ) ) {
 			return;
 		}
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );

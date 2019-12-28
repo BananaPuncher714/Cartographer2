@@ -43,6 +43,7 @@ public class BigChunkQueue {
 	}
 	
 	public boolean saveBlocking() {
+		loadingService.shutdown();
 		savingService.shutdown();
 		try {
 			savingService.awaitTermination( 3, TimeUnit.MINUTES );
