@@ -39,10 +39,11 @@ import io.github.bananapuncher714.cartographer.core.util.MapUtil;
  * @author BananaPuncher714
  */
 public class CartographerRenderer extends MapRenderer {
+	// Maximum number of ticks to keep updating the player after not recieving render calls for them
 	private static final int UPDATE_THRESHOLD = 5000;
 	private static final boolean ASYNC_RENDER = false;
 	
-	volatile boolean RUNNING = true;
+	private volatile boolean RUNNING = true;
 
 	protected Thread renderer;
 
@@ -68,6 +69,8 @@ public class CartographerRenderer extends MapRenderer {
 		if ( ASYNC_RENDER ) {
 			renderer = new Thread( this::run );
 			renderer.start();
+		} else {
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
 		}
 	}
 	
@@ -85,6 +88,7 @@ public class CartographerRenderer extends MapRenderer {
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			
+			// Stop updating people who aren't holding this map anymore
 			if ( System.currentTimeMillis() - lastUpdated.get( entry.getKey() ) > UPDATE_THRESHOLD ) {
 				iterator.remove();
 				continue;
@@ -343,21 +347,36 @@ public class CartographerRenderer extends MapRenderer {
 		this.mapId = map == null ? null : map.getId();
 	}
 	
+	// Since Paper only updates 4 times a tick, we'll have to compensate and manually update 20 times a tick instead
+	private void tickRender() {
+		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
+			Entry< UUID, PlayerSetting > entry = iterator.next();
+			UUID uuid = entry.getKey();
+			Player player = Bukkit.getPlayer( uuid );
+			
+			if ( player == null ) {
+				iterator.remove();
+				continue;
+			}
+			
+			PlayerSetting setting = entry.getValue();
+			setting.location = player.getLocation();
+		}
+		
+		if ( !ASYNC_RENDER ) {
+			update();
+		}
+	}
+	
 	@Override
 	public void render( MapView view, MapCanvas canvas, Player player ) {
 		lastUpdated.put( player.getUniqueId(), System.currentTimeMillis() );
 		id = Cartographer.getUtil().getId( view );
 
-		if ( settings.containsKey( player.getUniqueId() ) ) {
-			settings.get( player.getUniqueId() ).location = player.getLocation();
-		} else {
+		if ( !settings.containsKey( player.getUniqueId() ) ) {
 			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
 			setting.rotating = Cartographer.getInstance().isRotateByDefault();
 			settings.put( player.getUniqueId(), setting );
-		}
-		
-		if ( !ASYNC_RENDER ) {
-			update();
 		}
 	}
 
