@@ -1,10 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.RecursiveAction;
 
 import org.bukkit.Location;
@@ -14,13 +12,16 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
-import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
 public class FrameRenderTask extends RecursiveAction {
+	// There are 128 * 128 pixels that need to be processed
+	// Keep in mind cache lines? Don't want to waste time
+	private static final int SUBTASK_INTERVAL = 128;
+	
 	protected RenderInfo info;
 	
 	public FrameRenderTask( RenderInfo info ) {
@@ -35,6 +36,7 @@ public class FrameRenderTask extends RecursiveAction {
 		int[] lowerMapPixels = new int[ 128 * 128 ];
 		int[] globalOverlay = Cartographer.getInstance().getOverlay().getImage();
 		int[] loadingBackground = Cartographer.getInstance().getLoadingImage().getImage();
+		MapCursor[] cursors = new MapCursor[ info.worldCursors.size() + info.mapCursors.size() ];
 		
 		// Set the information to the render info
 		info.data = data;
@@ -42,6 +44,7 @@ public class FrameRenderTask extends RecursiveAction {
 		info.lowerPixelInfo = lowerMapPixels;
 		info.globalOverlay = globalOverlay;
 		info.background = loadingBackground;
+		info.cursors = cursors;
 		
 		// Get the locations around that need rendering
 		Location loc = info.setting.location;
@@ -77,10 +80,9 @@ public class FrameRenderTask extends RecursiveAction {
 		}
 		
 		// Construct the fork join pools required for the interval below and run
-		int interval = 128;
 		List< SubRenderTask > tasks = new ArrayList< SubRenderTask >();
-		for ( int subTaskIndex = 0; subTaskIndex < 128 * 128; subTaskIndex += interval ) {
-			SubRenderTask task = new SubRenderTask( info, subTaskIndex, interval );
+		for ( int subTaskIndex = 0; subTaskIndex < 128 * 128; subTaskIndex += SUBTASK_INTERVAL ) {
+			SubRenderTask task = new SubRenderTask( info, subTaskIndex, SUBTASK_INTERVAL );
 			tasks.add( task );
 			task.fork();
 		}
@@ -88,8 +90,6 @@ public class FrameRenderTask extends RecursiveAction {
 		// Calculate the cursor info while the sub render tasks are running
 		double yawOffset = rotating ? loc.getYaw() + 180 : 0;
 		
-		MapCursor[] cursors = null;
-		cursors = new MapCursor[ info.worldCursors.size() + info.mapCursors.size() ];
 		int index = 0;
 		for ( WorldCursor cursor : info.worldCursors ) {
 			Location cursorLoc = cursor.getLocation();
@@ -116,7 +116,7 @@ public class FrameRenderTask extends RecursiveAction {
 			SubRenderInfo subInfo = task.join();
 
 			info.needsRender.addAll( subInfo.requiresRender );
-			for ( int i = 0; i < interval; i++ ) {
+			for ( int i = 0; i < SUBTASK_INTERVAL; i++ ) {
 				data[ i + subInfo.index ] = subInfo.data[ i ];
 			}
 		}

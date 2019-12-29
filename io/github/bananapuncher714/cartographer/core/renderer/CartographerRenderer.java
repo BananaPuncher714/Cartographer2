@@ -3,12 +3,10 @@ package io.github.bananapuncher714.cartographer.core.renderer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveTask;
@@ -22,19 +20,15 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
-import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
-import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
+import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
-import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
-import io.github.bananapuncher714.cartographer.core.util.MapUtil;
-import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
 /**
  * Render a map and send the packet
@@ -62,6 +56,7 @@ public class CartographerRenderer extends MapRenderer {
 	protected String mapId;
 	
 	public CartographerRenderer( Minimap map ) {
+		// Yes contextual
 		super( true );
 
 		if ( map != null ) {
@@ -71,7 +66,6 @@ public class CartographerRenderer extends MapRenderer {
 		}
 		
 		// Allow multithreading for renderers? It would cause issues with synchronization, unfortunately
-		// Also, if enabled, be sure to make settings a concurrent hash map instead of a regular one
 		if ( ASYNC_RENDER ) {
 			settings = new ConcurrentHashMap< UUID, PlayerSetting >();
 			renderer = new Thread( this::run );
@@ -79,7 +73,7 @@ public class CartographerRenderer extends MapRenderer {
 		}
 		if ( TICK_RENDER ) {
 			// As it turns out, calling this is a lot more intensive than not
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 2 );
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
 		}
 	}
 	
@@ -94,23 +88,25 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	private void update() {
+		// Each person gets their own FrameRenderTask
 		List< FrameRenderTask > tasks = new ArrayList< FrameRenderTask >();
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			
-			// Stop updating people who aren't holding this map anymore
+			// Stop updating people who aren't holding this map anymore, if it's been UPDATE_THRESHOLD ticks since they've last been called
 			if ( System.currentTimeMillis() - lastUpdated.get( entry.getKey() ) > UPDATE_THRESHOLD ) {
 				iterator.remove();
 				continue;
 			}
-			
+
+			// Make sure the player is online
 			Player player = Bukkit.getPlayer( entry.getKey() );
-			
 			if ( player == null ) {
 				iterator.remove();
 				continue;
 			}
 			
+			// Check if the minimap which they're trying to view actually exists
 			PlayerSetting setting = entry.getValue();
 			Location loc = setting.location;
 			loc.setY( loc.getWorld().getMaxHeight() - 1 );
@@ -122,13 +118,14 @@ public class CartographerRenderer extends MapRenderer {
 				continue;
 			}
 			
-			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
 			// - Intermediate overlay, contains the MapPixels
 			// - Global overlay - Depth of 0xFFFF, or 65535
 			// - Lesser layer, contains the WorldMapPixels
 			// - Map - Depth of 0
 			// - Free real estate
+
+			// Gather the cursors and pixels sync
 			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player, setting );
 			Collection< WorldCursor > realWorldCursors = map.getCursorsFor( player, setting );
 			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );

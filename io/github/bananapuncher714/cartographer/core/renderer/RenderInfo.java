@@ -17,6 +17,16 @@ import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
 
 public class RenderInfo {
+	// These have to be generated
+	protected byte[] data;
+	protected int[] upperPixelInfo;
+	protected int[] lowerPixelInfo;
+	protected int[] globalOverlay;
+	protected int[] background;
+	protected Location[] locations;
+	protected MapCursor[] cursors;
+	
+	// This is just there
 	protected Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
 	
 	// These should be provided
@@ -30,13 +40,4 @@ public class RenderInfo {
 	
 	protected Minimap map;
 	protected MapDataCache cache;
-	
-	// These have to be generated
-	protected byte[] data;
-	protected int[] upperPixelInfo;
-	protected int[] lowerPixelInfo;
-	protected int[] globalOverlay;
-	protected int[] background;
-	protected Location[] locations;
-	protected MapCursor[] cursors;
 }
