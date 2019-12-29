@@ -19,3 +19,9 @@ blacklisted-inventories:
 - "ANVIL"
 - "WORKBENCH"
 - "CARTOGRAPHY"
+
+# Enable this if you're making a palette and would like to get detailed warnings in the config about invalid materials
+palette-debug: false
+
+# The delay in ticks between map rendering. A value of 1 means it will render every tick. A value of 20 means it will render once every 20 ticks.
+render-delay: 1

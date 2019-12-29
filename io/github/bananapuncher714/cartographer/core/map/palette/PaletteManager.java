@@ -77,7 +77,7 @@ public class PaletteManager {
 				String b = matcher.group( 3 );
 				color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
 			} else {
-				plugin.getLogger().info( "Cannot parse default color. Invalid value: " + defColor );
+				plugin.getLogger().warning( "Cannot parse default color. Invalid value: " + defColor );
 				color = new Color( 0 );
 			}
 			palette.setDefaultColor( color );
@@ -88,7 +88,9 @@ public class PaletteManager {
 				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
-					plugin.getLogger().warning( key + " is an invalid material!" );
+					if ( plugin.isPaletteDebug() ) {
+						plugin.getLogger().warning( key + " is an invalid material!" );
+					}
 					continue;
 				}
 				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );
@@ -115,7 +117,7 @@ public class PaletteManager {
 					String b = matcher.group( 3 );
 					color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
 				} else {
-					plugin.getLogger().info( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
+					plugin.getLogger().warning( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
 					continue;
 				}
 				palette.setColor( cvMaterial, color );
@@ -128,7 +130,9 @@ public class PaletteManager {
 				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
-					plugin.getLogger().warning( val + " is an invalid material!" );
+					if ( plugin.isPaletteDebug() ) {
+						plugin.getLogger().warning( val + " is an invalid material!" );
+					}
 					continue;
 				}
 				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );

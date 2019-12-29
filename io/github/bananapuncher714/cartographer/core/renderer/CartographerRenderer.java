@@ -73,7 +73,7 @@ public class CartographerRenderer extends MapRenderer {
 		}
 		if ( TICK_RENDER ) {
 			// As it turns out, calling this is a lot more intensive than not
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, Cartographer.getInstance().getRenderDelay() );
 		}
 	}
 	
@@ -149,6 +149,7 @@ public class CartographerRenderer extends MapRenderer {
 			// Create a new task per player and run
 			FrameRenderTask task = new FrameRenderTask( renderInfo );
 			tasks.add( task );
+			
 			task.fork();
 		}
 		

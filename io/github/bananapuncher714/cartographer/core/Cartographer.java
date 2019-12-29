@@ -61,8 +61,10 @@ public class Cartographer extends JavaPlugin {
 	private CartographerCommand command;
 	
 	private int chunksPerSecond = 1;
+	private int renderDelay;
 	private boolean forceLoad = false;
 	private boolean rotateByDefault = true;
+	private boolean paletteDebug;
 	
 	private SimpleImage loadingBackground;
 	private SimpleImage overlay;
@@ -254,6 +256,8 @@ public class Cartographer extends JavaPlugin {
 		for ( String string : config.getStringList( "skip-ids" ) ) {
 			invalidIds.add( Integer.valueOf( string ) );
 		}
+		renderDelay = config.getInt( "render-delay", 1 );
+		paletteDebug = config.getBoolean( "palette-debug", false );
 		forceLoad = config.getBoolean( "force-load" );
 		rotateByDefault = config.getBoolean( "rotate-by-default", true );
 		
@@ -400,12 +404,20 @@ public class Cartographer extends JavaPlugin {
 		return chunksPerSecond;
 	}
 	
+	public int getRenderDelay() {
+		return renderDelay;
+	}
+	
 	public boolean isForceLoad() {
 		return forceLoad;
 	}
 	
 	public boolean isRotateByDefault() {
 		return rotateByDefault;
+	}
+	
+	public boolean isPaletteDebug() {
+		return paletteDebug;
 	}
 	
 	public SimpleImage getLoadingImage() {
