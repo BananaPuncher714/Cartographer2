@@ -17,7 +17,7 @@ import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
-import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkLoadedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.ChunkProcessedEvent;
@@ -65,9 +65,9 @@ public class Minimap implements ChunkNotifier {
 		// TEST
 		registerWorldCursorProvider( new WorldCursorProvider() {
 			@Override
-			public Collection< RealWorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting ) {
-				Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
-				cursors.add( new RealWorldCursor( player.getName(), player.getLocation(), Type.WHITE_POINTER, true ) );
+			public Collection< WorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting ) {
+				Set< WorldCursor > cursors = new HashSet< WorldCursor >();
+				cursors.add( new WorldCursor( player.getName(), player.getLocation(), Type.WHITE_POINTER, true ) );
 				return cursors;
 			}
 		} );
@@ -198,10 +198,10 @@ public class Minimap implements ChunkNotifier {
 		return pixels;
 	}
 	
-	public Collection< RealWorldCursor > getCursorsFor( Player player, PlayerSetting setting ) {
-		Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
+	public Collection< WorldCursor > getCursorsFor( Player player, PlayerSetting setting ) {
+		Set< WorldCursor > cursors = new HashSet< WorldCursor >();
 		for ( WorldCursorProvider provider : cursorProviders ) {
-			Collection< RealWorldCursor > cursorCollection = provider.getCursors( player, this, setting );
+			Collection< WorldCursor > cursorCollection = provider.getCursors( player, this, setting );
 			if ( cursorCollection != null ) {
 				cursors.addAll( cursorCollection );
 			}

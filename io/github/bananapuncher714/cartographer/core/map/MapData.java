@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
-import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 
 public class MapData {
-	Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
+	Set< WorldCursor > cursors = new HashSet< WorldCursor >();
 	Set< MapPixel > pixels = new HashSet< MapPixel >();
 	
-	public Set< RealWorldCursor > getCursors() {
+	public Set< WorldCursor > getCursors() {
 		return cursors;
 	}
 }

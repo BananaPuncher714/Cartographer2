@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 
-public class RealWorldCursor {
+public class WorldCursor {
 	protected String name;
 	protected final Location l;
 	protected Type type;
@@ -26,22 +26,22 @@ public class RealWorldCursor {
 	 * @param hideWhenOOB
 	 * Whether or not to hide this cursor when it is not on the map.
 	 */
-	public RealWorldCursor( String name, Location l, Type type, boolean hideWhenOOB ) {
+	public WorldCursor( String name, Location l, Type type, boolean hideWhenOOB ) {
 		this.name = name;
 		this.l = l;
 		this.type = type;
 		oob = hideWhenOOB;
 	}
 	
-	public RealWorldCursor( Location location ) {
+	public WorldCursor( Location location ) {
 		this( null, location, Type.WHITE_POINTER, true );
 	}
 	
-	public RealWorldCursor( Location location, Type type ) {
+	public WorldCursor( Location location, Type type ) {
 		this( null, location, type, true );
 	}
 	
-	public RealWorldCursor( String name, Location location, Type type ) {
+	public WorldCursor( String name, Location location, Type type ) {
 		this( name, location, type, true );
 	}
 

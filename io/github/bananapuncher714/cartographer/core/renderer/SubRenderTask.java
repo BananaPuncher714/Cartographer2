@@ -28,16 +28,16 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 		byte[] data = new byte[ length ];
 		subRenderInfo.data = data;
 		subRenderInfo.index = index;
-		int endIndex = index + length;
-		for ( int subIndex = index; subIndex < endIndex; subIndex++ ) {
-
+		for ( int i = 0; i < length; i++ ) {
+			int subIndex = i + index;
+			
 			int mapColor = 0;
 
 			// Get the custom map pixel
 			int color = info.upperPixelInfo[ subIndex ];
 			// Continue if the pixel is opaque, since we know that nothing else be above this
 			if ( mapColor >>> 24 == 0xFF ) {
-				data[ subIndex ] = JetpImageUtil.getBestColor( mapColor );
+				data[ i ] = JetpImageUtil.getBestColor( mapColor );
 				continue;
 			} else {
 				// Otherwise, we want to set it as the bottom layer
@@ -50,7 +50,7 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 
 			// See if the global overlay is opaque
 			if ( mapColor >>> 24 == 0xFF ) {
-				data[ subIndex ] = JetpImageUtil.getBestColor( mapColor );
+				data[ i ] = JetpImageUtil.getBestColor( mapColor );
 				continue;
 			}
 
@@ -59,7 +59,7 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 
 			// See if the pixels are opaque
 			if ( mapColor >>> 24 == 0xFF ) {
-				data[ subIndex ] = JetpImageUtil.getBestColor( mapColor );
+				data[ i ] = JetpImageUtil.getBestColor( mapColor );
 				continue;
 			}
 
@@ -71,7 +71,7 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 			// If renderLoc is null, we know it doesn't exist
 			// Therefore, overwrite it with whatever color mapColor is
 			if ( renderLoc == null ) {
-				data[ subIndex ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
+				data[ i ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
 				continue;
 			}
 
@@ -97,8 +97,8 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 			}
 
 			// First, insert any WorldPixels that may be present
-			for ( WorldPixel pixel : info.pixels ) {
-				if ( renderLoc.getWorld() == info.playerLoc.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
+			for ( WorldPixel pixel : info.worldPixels ) {
+				if ( renderLoc.getWorld() == info.setting.location.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
 					localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 				}
 			}
@@ -107,7 +107,7 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 			mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
 			mapColor = JetpImageUtil.overwriteColor( loading, mapColor );
 
-			data[ subIndex ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
+			data[ i ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 		}
 		return subRenderInfo;
 	}

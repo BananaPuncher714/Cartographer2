@@ -26,15 +26,15 @@ import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
+import net.minecraft.server.v1_14_R1.Block;
 import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.EnumRenderType;
+import net.minecraft.server.v1_14_R1.IBlockData;
+import net.minecraft.server.v1_14_R1.IRegistry;
 import net.minecraft.server.v1_14_R1.MapIcon;
 import net.minecraft.server.v1_14_R1.MinecraftKey;
 import net.minecraft.server.v1_14_R1.MinecraftServer;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
-import net.minecraft.server.v1_14_R1.Block;
-import net.minecraft.server.v1_14_R1.EnumRenderType;
-import net.minecraft.server.v1_14_R1.IBlockData;
-import net.minecraft.server.v1_14_R1.IRegistry;
 
 public class NMSHandler implements PacketHandler {
 	private static Field[] MAP_FIELDS = new Field[ 10 ];

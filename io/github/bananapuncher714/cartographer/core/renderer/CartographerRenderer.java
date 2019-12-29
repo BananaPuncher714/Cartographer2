@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Bukkit;
@@ -24,22 +23,18 @@ import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
-import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
-import io.github.bananapuncher714.cartographer.core.api.RealWorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
-import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
-import io.netty.util.internal.chmv8.ForkJoinTask;
 
 /**
  * Render a map and send the packet
@@ -49,7 +44,10 @@ import io.netty.util.internal.chmv8.ForkJoinTask;
 public class CartographerRenderer extends MapRenderer {
 	// Maximum number of ticks to keep updating the player after not recieving render calls for them
 	private static final int UPDATE_THRESHOLD = 5000;
+	
+	// Async is not recommended, particularly because of the pixel and cursor providers
 	private static final boolean ASYNC_RENDER = false;
+	private static final boolean TICK_RENDER = true;
 	
 	private volatile boolean RUNNING = true;
 
@@ -78,9 +76,10 @@ public class CartographerRenderer extends MapRenderer {
 			settings = new ConcurrentHashMap< UUID, PlayerSetting >();
 			renderer = new Thread( this::run );
 			renderer.start();
-		} else {
+		}
+		if ( TICK_RENDER ) {
 			// As it turns out, calling this is a lot more intensive than not
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 4 );
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 2 );
 		}
 	}
 	
@@ -88,13 +87,14 @@ public class CartographerRenderer extends MapRenderer {
 		while ( RUNNING ) {
 			update();
 			try {
-				Thread.sleep( 50 );
+				Thread.sleep( 70 );
 			} catch ( InterruptedException e ) {
 			}
 		}
 	}
 	
 	private void update() {
+		List< FrameRenderTask > tasks = new ArrayList< FrameRenderTask >();
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			
@@ -122,62 +122,6 @@ public class CartographerRenderer extends MapRenderer {
 				continue;
 			}
 			
-			MapDataCache cache = map.getDataCache();
-			
-			RenderInfo renderInfo = new RenderInfo();
-			
-			byte[] data = new byte[ 128 * 128 ];
-			int[] higherMapPixels = new int[ 128 * 128 ];
-			int[] lowerMapPixels = new int[ 128 * 128 ];
-			
-			renderInfo.playerLoc = loc;
-			renderInfo.data = data;
-			renderInfo.upperPixelInfo = higherMapPixels;
-			renderInfo.lowerPixelInfo = lowerMapPixels;
-			
-			BooleanOption rotation = map.getSettings().getRotation();
-			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
-			
-			// Collect all the locations that need their color fetched
-			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
-			
-			renderInfo.locations = locations;
-			
-			// Map Pixel color stuff
-			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
-			for ( Iterator< MapPixel > pixelIterator = pixels.iterator(); pixelIterator.hasNext(); ) {
-				MapPixel pixel = pixelIterator.next();
-				int x = pixel.getX();
-				int y = pixel.getZ();
-				if ( x < 128 && x >= 0 && y < 128 && y >= 0 ) {
-					int index = x + y * 128;
-					int color = pixel.getColor().getRGB();
-					if ( color >>> 24 == 0 ) {
-						continue;
-					}
-
-					if ( pixel.getDepth() < 0xFFFF ) {
-						int prevColor = lowerMapPixels[ index ];
-						// These go under the overlay
-						lowerMapPixels[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
-					} else {
-						int prevColor = higherMapPixels[ index ];
-						// Add the colors on top of the overlay. The pixels provided have priority
-						higherMapPixels[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
-					}
-				}
-			}
-			
-			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
-			
-			renderInfo.pixels = worldPixels;
-			
-			int[] globalOverlay = Cartographer.getInstance().getOverlay().getImage();
-			int[] loadingBackground = Cartographer.getInstance().getLoadingImage().getImage();
-			
-			renderInfo.globalOverlay = globalOverlay;
-			renderInfo.background = loadingBackground;
-			
 			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
 			// - Intermediate overlay, contains the MapPixels
@@ -185,145 +129,48 @@ public class CartographerRenderer extends MapRenderer {
 			// - Lesser layer, contains the WorldMapPixels
 			// - Map - Depth of 0
 			// - Free real estate
-			Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
-			// Construct the pools required
-			int interval = 128;
-			// TODO find out what is required to make this all run concurrently as fast as possible.
-			List< SubRenderTask > tasks = new ArrayList< SubRenderTask >();
-			for ( int index = 0; index < 128 * 128; index += interval ) {
-				tasks.add( new SubRenderTask( renderInfo, index, interval ) );
-			}
-			for ( SubRenderTask task : tasks ) {
-				task.fork();
-			}
-			
-			for ( SubRenderTask task : tasks ) {
-				SubRenderInfo subInfo = task.join();
-				
-				needsRender.addAll( subInfo.requiresRender );
-				for ( int i = 0; i < interval; i++ ) {
-					data[ i + subInfo.index ] = subInfo.data[ i ];
-				}
-			}
-			
-			/*
-			for ( int index = 0; index < 128 * 128; index++ ) {
-				int mapColor = 0;
-				
-				// Get the custom map pixel
-				int color = higherMapPixels[ index ];
-				// Continue if the pixel is opaque, since we know that nothing else be above this
-				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
-					continue;
-				} else {
-					// Otherwise, we want to set it as the bottom layer
-					mapColor = color;
-				}
-
-				// Then the global overlay
-				// The global overlay is still the background to the foreground
-				if ( globalOverlay != null ) {
-					mapColor = JetpImageUtil.overwriteColor( globalOverlay[ index ], mapColor );
-				}
-				
-				// See if the global overlay is opaque
-				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
-					continue;
-				}
-				
-				int lowerColor = lowerMapPixels[ index ];
-				mapColor = JetpImageUtil.overwriteColor( lowerColor, mapColor );
-				
-				// See if the pixels are opaque
-				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColor( mapColor );
-					continue;
-				}
-				
-				// Then get the loading background
-				int loading = 0;
-				if ( loadingBackground != null ) {
-					loading = loadingBackground[ index ];
-				}
-				
-				// The render location comes next
-				Location renderLoc = locations[ index ];
-				// If renderLoc is null, we know it doesn't exist
-				// Therefore, overwrite it with whatever color mapColor is
-				if ( renderLoc == null ) {
-					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
-					continue;
-				}
-				
-				// If not, then we try and get the render location
-				ChunkLocation cLocation = new ChunkLocation( renderLoc );
-				int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
-				int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
-
-				ChunkData chunkData = cache.getDataAt( cLocation );
-				
-				int localColor = 0;
-				if ( chunkData != null ) {
-					// This is for static colors
-//					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
-					// This is for dynamic colors
-					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
-				} else {
-					if ( cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
-						needsRender.add( new BigChunkLocation( cLocation ) );
-					}
-					
-					localColor = loading;
-				}
-				
-				// First, insert any WorldPixels that may be present
-				for ( WorldPixel pixel : worldPixels ) {
-					if ( renderLoc.getWorld() == player.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
-						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
-					}
-				}
-				
-				// Then, get the color and mix it under the current overlay color
-				mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
-				mapColor = JetpImageUtil.overwriteColor( loading, mapColor );
-				
-				data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
-			}
-			*/
-			for ( BigChunkLocation location : needsRender ) {
-				map.getQueue().load( location );
-			}
-			
-			double yawOffset = setting.rotating ? loc.getYaw() + 180 : 0;
-			
-			MapCursor[] cursors = null;
 			Collection< MapCursor > localCursors = map.getLocalCursorsFor( player, setting );
-			Collection< RealWorldCursor > realWorldCursors = map.getCursorsFor( player, setting );
-			cursors = new MapCursor[ realWorldCursors.size() + localCursors.size() ];
-			int index = 0;
-			for ( RealWorldCursor cursor : realWorldCursors ) {
-				Location cursorLoc = cursor.getLocation();
-				double yaw = cursorLoc.getYaw() - yawOffset + 720;
-				double relX = cursorLoc.getX() - loc.getX();
-				double relZ = cursorLoc.getZ() - loc.getZ();
-				double distance = Math.sqrt( relX * relX + relZ * relZ );
+			Collection< WorldCursor > realWorldCursors = map.getCursorsFor( player, setting );
+			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
+			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
+			
+			MapDataCache cache = map.getDataCache();
+			
+			// Everything after this point can be done async
+			RenderInfo renderInfo = new RenderInfo();
+			renderInfo.setting = setting;
+			renderInfo.uuid = player.getUniqueId();
+			
+			renderInfo.map = map;
+			renderInfo.cache = cache;
+			
+			renderInfo.worldPixels = worldPixels;
+			renderInfo.worldCursors = realWorldCursors;
+			renderInfo.mapPixels = pixels;
+			renderInfo.mapCursors = localCursors;
+			
+			// Create a new task per player and run
+			FrameRenderTask task = new FrameRenderTask( renderInfo );
+			tasks.add( task );
+			task.fork();
+		}
+		
+		// Once all the frames are done, then send
+		for ( FrameRenderTask task : tasks ) {
+			task.join();
+			
+			RenderInfo info = task.info;
 
-				double radians = IcecoreMath.atan2_Op_2( ( float ) relZ, ( float ) relX ) - Math.toRadians( yawOffset );
-				double newRelX = 2 * distance * RivenMath.cos( ( float ) radians );
-				double newRelZ = 2 * distance * RivenMath.sin( ( float ) radians );
-
-				int normalizedX = ( int ) Math.min( 127, Math.max( -127, newRelX / setting.zoomscale ) );
-				int normalizedZ = ( int ) Math.min( 127, Math.max( -127, newRelZ / setting.zoomscale ) );
-
-				cursors[ index++ ] = Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() );
-			}
-			for ( MapCursor cursor : localCursors ) {
-				cursors[ index++ ] = cursor;
+			// Queue the locations that need loading
+			for ( BigChunkLocation location : info.needsRender ) {
+				info.map.getQueue().load( location );
 			}
 			
-			Cartographer.getInstance().getHandler().sendDataTo( id, data, cursors, entry.getKey() );
+			// Send the packet
+			byte[] data = info.data;
+			MapCursor[] cursors = info.cursors;
+			UUID uuid = info.uuid;
+			Cartographer.getInstance().getHandler().sendDataTo( id, data, cursors, uuid );
 		}
 	}
 
@@ -412,7 +259,9 @@ public class CartographerRenderer extends MapRenderer {
 			setting.location = player.getLocation();
 		}
 		
-		update();
+		if ( !ASYNC_RENDER ) {
+			update();
+		}
 	}
 	
 	@Override
@@ -424,13 +273,15 @@ public class CartographerRenderer extends MapRenderer {
 			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
 			setting.rotating = Cartographer.getInstance().isRotateByDefault();
 			settings.put( player.getUniqueId(), setting );
-//		} else {
-//			settings.get( player.getUniqueId() ).location = player.getLocation();
+		} else if ( !TICK_RENDER ) {
+			settings.get( player.getUniqueId() ).location = player.getLocation();
 		}
 		
-//		if ( !ASYNC_RENDER ) {
-//			update();
-//		}
+		if ( !TICK_RENDER ) {
+			if ( !ASYNC_RENDER ) {
+				update();
+			}
+		}
 	}
 
 	public void terminate() {

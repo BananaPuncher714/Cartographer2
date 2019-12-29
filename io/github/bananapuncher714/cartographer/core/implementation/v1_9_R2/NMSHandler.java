@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.craftbukkit.v1_9_R2.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R2.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
@@ -27,8 +27,8 @@ import io.netty.channel.Channel;
 import net.minecraft.server.v1_9_R2.Block;
 import net.minecraft.server.v1_9_R2.EnumRenderType;
 import net.minecraft.server.v1_9_R2.IBlockData;
-import net.minecraft.server.v1_9_R2.MinecraftKey;
 import net.minecraft.server.v1_9_R2.MapIcon;
+import net.minecraft.server.v1_9_R2.MinecraftKey;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.PacketPlayOutMap;
 
