@@ -30,8 +30,8 @@ public class MapUtil {
 		
 		int length = 128;
 		
-		double cos = Math.cos( radians );
-		double sin = Math.sin( radians );
+		double cos = RivenMath.cos( ( float ) radians );
+		double sin = RivenMath.sin( ( float ) radians );
 		
 		double side = length * .5;
 		
@@ -52,8 +52,8 @@ public class MapUtil {
 	}
 	
 	public static Location getPixelToLocation( Location center, double scale, double radians, int[] pixel ) {
-		double cos = Math.cos( radians );
-		double sin = Math.sin( radians );
+		double cos = RivenMath.cos( ( float ) radians );
+		double sin = RivenMath.sin( ( float ) radians );
 		
 		double a = pixel[ 0 ] - 64;
 		double b = pixel[ 1 ] - 64;
@@ -65,8 +65,8 @@ public class MapUtil {
 	}
 	
 	public static int[] getLocationToPixel( Location center, Location point, double scale, double radians ) {
-		double cos = Math.cos( radians );
-		double sin = Math.sin( radians );
+		double cos = RivenMath.cos( ( float ) radians );
+		double sin = RivenMath.sin( ( float ) radians );
 		
 		double xx = ( point.getX() - center.getX() ) / scale;
 		double yy = ( point.getZ() - center.getZ() ) / scale;

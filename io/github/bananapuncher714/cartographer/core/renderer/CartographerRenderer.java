@@ -1,13 +1,18 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,8 +35,11 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
+import io.github.bananapuncher714.cartographer.core.util.RivenMath;
+import io.netty.util.internal.chmv8.ForkJoinTask;
 
 /**
  * Render a map and send the packet
@@ -67,10 +75,12 @@ public class CartographerRenderer extends MapRenderer {
 		// Allow multithreading for renderers? It would cause issues with synchronization, unfortunately
 		// Also, if enabled, be sure to make settings a concurrent hash map instead of a regular one
 		if ( ASYNC_RENDER ) {
+			settings = new ConcurrentHashMap< UUID, PlayerSetting >();
 			renderer = new Thread( this::run );
 			renderer.start();
 		} else {
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
+			// As it turns out, calling this is a lot more intensive than not
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 4 );
 		}
 	}
 	
@@ -114,15 +124,24 @@ public class CartographerRenderer extends MapRenderer {
 			
 			MapDataCache cache = map.getDataCache();
 			
+			RenderInfo renderInfo = new RenderInfo();
+			
 			byte[] data = new byte[ 128 * 128 ];
 			int[] higherMapPixels = new int[ 128 * 128 ];
 			int[] lowerMapPixels = new int[ 128 * 128 ];
+			
+			renderInfo.playerLoc = loc;
+			renderInfo.data = data;
+			renderInfo.upperPixelInfo = higherMapPixels;
+			renderInfo.lowerPixelInfo = lowerMapPixels;
 			
 			BooleanOption rotation = map.getSettings().getRotation();
 			boolean rotating = rotation == BooleanOption.DEFAULT ? setting.rotating : ( rotation == BooleanOption.ON ? true : false );
 			
 			// Collect all the locations that need their color fetched
 			Location[] locations = MapUtil.getLocationsAround( loc, setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
+			
+			renderInfo.locations = locations;
 			
 			// Map Pixel color stuff
 			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
@@ -151,8 +170,14 @@ public class CartographerRenderer extends MapRenderer {
 			
 			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
 			
+			renderInfo.pixels = worldPixels;
+			
 			int[] globalOverlay = Cartographer.getInstance().getOverlay().getImage();
 			int[] loadingBackground = Cartographer.getInstance().getLoadingImage().getImage();
+			
+			renderInfo.globalOverlay = globalOverlay;
+			renderInfo.background = loadingBackground;
+			
 			// So right now we have overlay, which contains the intermediate layer of colors
 			// The map layers should look like this from top to bottom:
 			// - Intermediate overlay, contains the MapPixels
@@ -161,6 +186,27 @@ public class CartographerRenderer extends MapRenderer {
 			// - Map - Depth of 0
 			// - Free real estate
 			Set< BigChunkLocation > needsRender = new HashSet< BigChunkLocation >();
+			// Construct the pools required
+			int interval = 128;
+			// TODO find out what is required to make this all run concurrently as fast as possible.
+			List< SubRenderTask > tasks = new ArrayList< SubRenderTask >();
+			for ( int index = 0; index < 128 * 128; index += interval ) {
+				tasks.add( new SubRenderTask( renderInfo, index, interval ) );
+			}
+			for ( SubRenderTask task : tasks ) {
+				task.fork();
+			}
+			
+			for ( SubRenderTask task : tasks ) {
+				SubRenderInfo subInfo = task.join();
+				
+				needsRender.addAll( subInfo.requiresRender );
+				for ( int i = 0; i < interval; i++ ) {
+					data[ i + subInfo.index ] = subInfo.data[ i ];
+				}
+			}
+			
+			/*
 			for ( int index = 0; index < 128 * 128; index++ ) {
 				int mapColor = 0;
 				
@@ -168,13 +214,13 @@ public class CartographerRenderer extends MapRenderer {
 				int color = higherMapPixels[ index ];
 				// Continue if the pixel is opaque, since we know that nothing else be above this
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
 				} else {
 					// Otherwise, we want to set it as the bottom layer
 					mapColor = color;
 				}
-				
+
 				// Then the global overlay
 				// The global overlay is still the background to the foreground
 				if ( globalOverlay != null ) {
@@ -183,7 +229,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// See if the global overlay is opaque
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
 				}
 				
@@ -192,7 +238,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				// See if the pixels are opaque
 				if ( mapColor >>> 24 == 0xFF ) {
-					data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
 				}
 				
@@ -217,7 +263,7 @@ public class CartographerRenderer extends MapRenderer {
 				int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
 
 				ChunkData chunkData = cache.getDataAt( cLocation );
-
+				
 				int localColor = 0;
 				if ( chunkData != null ) {
 					// This is for static colors
@@ -245,6 +291,7 @@ public class CartographerRenderer extends MapRenderer {
 				
 				data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 			}
+			*/
 			for ( BigChunkLocation location : needsRender ) {
 				map.getQueue().load( location );
 			}
@@ -263,9 +310,9 @@ public class CartographerRenderer extends MapRenderer {
 				double relZ = cursorLoc.getZ() - loc.getZ();
 				double distance = Math.sqrt( relX * relX + relZ * relZ );
 
-				double degree = Math.atan2( relZ, relX ) - Math.toRadians( yawOffset );
-				double newRelX = 2 * distance * Math.cos( degree );
-				double newRelZ = 2 * distance * Math.sin( degree );
+				double radians = IcecoreMath.atan2_Op_2( ( float ) relZ, ( float ) relX ) - Math.toRadians( yawOffset );
+				double newRelX = 2 * distance * RivenMath.cos( ( float ) radians );
+				double newRelZ = 2 * distance * RivenMath.sin( ( float ) radians );
 
 				int normalizedX = ( int ) Math.min( 127, Math.max( -127, newRelX / setting.zoomscale ) );
 				int normalizedZ = ( int ) Math.min( 127, Math.max( -127, newRelZ / setting.zoomscale ) );
@@ -347,6 +394,8 @@ public class CartographerRenderer extends MapRenderer {
 		this.mapId = map == null ? null : map.getId();
 	}
 	
+	int tick = 0;
+	
 	// Since Paper only updates 4 times a tick, we'll have to compensate and manually update 20 times a tick instead
 	private void tickRender() {
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
@@ -363,9 +412,7 @@ public class CartographerRenderer extends MapRenderer {
 			setting.location = player.getLocation();
 		}
 		
-		if ( !ASYNC_RENDER ) {
-			update();
-		}
+		update();
 	}
 	
 	@Override
@@ -377,11 +424,34 @@ public class CartographerRenderer extends MapRenderer {
 			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
 			setting.rotating = Cartographer.getInstance().isRotateByDefault();
 			settings.put( player.getUniqueId(), setting );
+//		} else {
+//			settings.get( player.getUniqueId() ).location = player.getLocation();
 		}
+		
+//		if ( !ASYNC_RENDER ) {
+//			update();
+//		}
 	}
 
 	public void terminate() {
 		RUNNING = false;
+	}
+	
+	public class RenderTask extends RecursiveTask< SubRenderInfo > {
+		protected RenderInfo info;
+		protected int index;
+		protected int length;
+		
+		protected RenderTask( RenderInfo info, int index, int length ) {
+			this.info = info;
+			this.index = index;
+			this.length = length;
+		}
+		
+		@Override
+		protected SubRenderInfo compute() {
+			return null;
+		}
 	}
 	
 	public class PlayerSetting {

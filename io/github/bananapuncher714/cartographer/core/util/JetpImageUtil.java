@@ -377,12 +377,12 @@ public final class JetpImageUtil {
 		}
 		int r2 = overlay >>> 16 & 0xFF;
 	    int g2 = overlay >>> 8  & 0xFF;
-	    int b2 = overlay       & 0xFF;
+	    int b2 = overlay        & 0xFF;
 		
 	    int a1 = Math.max( baseColor >>> 24 & 0xFF, a2 );
 		int r1 = baseColor >>> 16 & 0xFF;
 	    int g1 = baseColor >>> 8  & 0xFF;
-	    int b1 = baseColor       & 0xFF;
+	    int b1 = baseColor        & 0xFF;
 	    
 	    double percent = a2 / 255.0;
 	    double unPercent = 1 - percent;
