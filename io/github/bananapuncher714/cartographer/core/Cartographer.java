@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
+import io.github.bananapuncher714.cartographer.core.command.CommandCartographer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
@@ -58,8 +59,9 @@ public class Cartographer extends JavaPlugin {
 	
 	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
 	
-	private CartographerCommand command;
+	private CommandCartographer command;
 	
+	private int tickLimit = 18;
 	private int chunksPerSecond = 1;
 	private int renderDelay;
 	private boolean forceLoad = false;
@@ -115,7 +117,7 @@ public class Cartographer extends JavaPlugin {
 		mapManager = new MinimapManager( this );
 		moduleManager = new ModuleManager( this, MODULE_DIR );
 		
-		command = new CartographerCommand();
+		command = new CommandCartographer( this );
 		getCommand( "cartographer" ).setExecutor( command );
 		getCommand( "cartographer" ).setTabCompleter( command );
 		
@@ -135,7 +137,7 @@ public class Cartographer extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		getLogger().info( "Disabling modules..." );
-		moduleManager.disableModules();
+		moduleManager.unloadModules();
 		
 		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();
@@ -256,6 +258,7 @@ public class Cartographer extends JavaPlugin {
 		for ( String string : config.getStringList( "skip-ids" ) ) {
 			invalidIds.add( Integer.valueOf( string ) );
 		}
+		tickLimit = config.getInt( "tick-limit", 16 );
 		renderDelay = config.getInt( "render-delay", 1 );
 		paletteDebug = config.getBoolean( "palette-debug", false );
 		forceLoad = config.getBoolean( "force-load" );
@@ -357,6 +360,14 @@ public class Cartographer extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Purely for configs, palettes and images
+	 * Does not load modules
+	 */
+	public void reload() {
+		load();
+	}
+	
 	public File getMapDirFor( String id ) {
 		return new File( MAP_DIR + "/" + id );
 	}
@@ -408,6 +419,10 @@ public class Cartographer extends JavaPlugin {
 		return renderDelay;
 	}
 	
+	public boolean isServerOverloaded() {
+		return tickLimit > handler.getTPS();
+	}
+	
 	public boolean isForceLoad() {
 		return forceLoad;
 	}
@@ -457,5 +472,17 @@ public class Cartographer extends JavaPlugin {
 	
 	public static GeneralUtil getUtil() {
 		return getInstance().getHandler().getUtil();
+	}
+	
+	public static File getMapSaveDir() {
+		return MAP_DIR;
+	}
+	
+	public static File getModuleDir() {
+		return MODULE_DIR;
+	}
+	
+	public static File getPaletteDir() {
+		return PALETTE_DIR;
 	}
 }

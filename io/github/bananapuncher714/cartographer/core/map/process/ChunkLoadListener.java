@@ -42,7 +42,7 @@ public enum ChunkLoadListener implements Listener {
 	}
 	
 	public void update() {
-		if ( Cartographer.getInstance().getHandler().getTPS() < 18 ) {
+		if ( Cartographer.getInstance().isServerOverloaded() ) {
 			return;
 		}
 		

@@ -12,6 +12,7 @@ import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.api.events.MinimapDeleteEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.MinimapLoadEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.MinimapUnloadEvent;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
@@ -102,7 +103,7 @@ public class MinimapManager {
 	public void registerMinimap( Minimap minimap ) {
 		minimaps.put( minimap.getId(), minimap );
 	}
-
+	
 	public Minimap constructNewMinimap( String id ) {
 		File dir = plugin.getAndConstructMapDir( id );
 		File config = new File( dir + "/" + "config.yml" );
@@ -117,6 +118,11 @@ public class MinimapManager {
 		new MinimapLoadEvent( map ).callEvent();
 		
 		return map;
+	}
+	
+	public Minimap load( File dir ) {
+		plugin.getLogger().info( "[MapManager] " + "Loading minimap '" + dir.getName() + "'" );
+		return constructNewMinimap( dir );
 	}
 	
 	public Minimap constructNewMinimap( File dir ) {
@@ -135,7 +141,18 @@ public class MinimapManager {
 		return map;
 	}
 	
+	public void unload( Minimap map ) {
+		plugin.getLogger().info( "[MapManager] " + "Unloading minimap '" + map.getId() + "'" );
+		new MinimapUnloadEvent( map ).callEvent();
+		
+		minimaps.remove( map.getId() );
+		if ( map != null ) {
+			map.terminate();
+		}
+	}
+	
 	public void remove( Minimap map ) {
+		plugin.getLogger().info( "[MapManager] " + "Deleting minimap '" + map.getId() + "'" );
 		new MinimapDeleteEvent( map ).callEvent();
 		
 		minimaps.remove( map.getId() );

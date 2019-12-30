@@ -25,3 +25,7 @@ palette-debug: false
 
 # The delay in ticks between map rendering. A value of 1 means it will render every tick. A value of 20 means it will render once every 20 ticks.
 render-delay: 1
+
+# How low the tps can get until Cartographer2 starts delaying some of its functions, such as map loading and chunk processing.
+# For example, if the limit is 16, Cartographer will keep operating until the tps drops below 16
+tick-limit: 18

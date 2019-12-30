@@ -24,7 +24,7 @@ public class FrameRenderTask extends RecursiveAction {
 	
 	protected RenderInfo info;
 	
-	public FrameRenderTask( RenderInfo info ) {
+	protected FrameRenderTask( RenderInfo info ) {
 		this.info = info;
 	}
 	

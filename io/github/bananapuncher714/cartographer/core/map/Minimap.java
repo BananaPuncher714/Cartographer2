@@ -171,6 +171,10 @@ public class Minimap implements ChunkNotifier {
 	public MapSettings getSettings() {
 		return settings;
 	}
+	
+	public File getDataFolder() {
+		return saveFile;
+	}
 
 	public void setSettings( MapSettings settings ) {
 		this.settings = settings;

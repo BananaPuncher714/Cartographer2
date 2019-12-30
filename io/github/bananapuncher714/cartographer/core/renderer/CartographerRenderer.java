@@ -108,8 +108,6 @@ public class CartographerRenderer extends MapRenderer {
 			
 			// Check if the minimap which they're trying to view actually exists
 			PlayerSetting setting = entry.getValue();
-			Location loc = setting.location;
-			loc.setY( loc.getWorld().getMaxHeight() - 1 );
 			Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
 				SimpleImage missingImage = Cartographer.getInstance().getMissingMapImage();
@@ -243,6 +241,12 @@ public class CartographerRenderer extends MapRenderer {
 	
 	// Since Paper only updates 4 times a tick, we'll have to compensate and manually update 20 times a tick instead
 	private void tickRender() {
+		// This is one of the most resource intensive methods
+		// We'll have to disable this if the server is overloaded
+		if ( Cartographer.getInstance().isServerOverloaded() ) {
+			return;
+		}
+		
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			UUID uuid = entry.getKey();
