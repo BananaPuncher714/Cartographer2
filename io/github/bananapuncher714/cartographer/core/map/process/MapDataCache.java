@@ -17,7 +17,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.api.events.ChunkPreProcessEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkPreProcessEvent;
 import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;

@@ -1,8 +1,9 @@
-package io.github.bananapuncher714.cartographer.core.api.events;
+package io.github.bananapuncher714.cartographer.core.api.events.chunk;
 
 import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.api.events.CartographerEvent;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkProcessor;
 
 /**

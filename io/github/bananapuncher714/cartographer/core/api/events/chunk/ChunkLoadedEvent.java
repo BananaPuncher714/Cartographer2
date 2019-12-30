@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.api.events;
+package io.github.bananapuncher714.cartographer.core.api.events.chunk;
 
 import org.bukkit.event.HandlerList;
 

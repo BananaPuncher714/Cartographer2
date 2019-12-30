@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.api.events;
+package io.github.bananapuncher714.cartographer.core.api.events.minimap;
 
 import org.bukkit.event.HandlerList;
 

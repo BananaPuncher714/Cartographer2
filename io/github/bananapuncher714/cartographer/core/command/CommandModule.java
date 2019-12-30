@@ -97,7 +97,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		} else {
 			StringBuilder builder = new StringBuilder();
 			builder.append( ChatColor.GOLD );
-			builder.append( "Cartographer2 Modules (" + modules.size() + ")" );
+			builder.append( "Cartographer2 Modules (" );
 			builder.append( modules.size() );
 			builder.append( "): " );
 			for ( Iterator< Module > iterator = modules.iterator(); iterator.hasNext(); ) {
