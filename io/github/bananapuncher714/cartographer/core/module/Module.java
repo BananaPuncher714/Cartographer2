@@ -29,11 +29,9 @@ public abstract class Module {
 		this.plugin = plugin;
 		this.description = description;
 		this.dataFolder = file;
-		setEnabled( true );
 	}
 	
 	public final void unload() {
-		setEnabled( false );
 	}
 	
 	/**
@@ -65,7 +63,8 @@ public abstract class Module {
 	}
 	
 	/**
-	 * Set to enable or disable
+	 * Set to enable or disable. You should use {@link ModuleManager#enableModule( Module )} or {@link ModuleManager#disableModule( Module )} instead.
+	 * 
 	 * @param enabled
 	 * Enabled or not
 	 * @return

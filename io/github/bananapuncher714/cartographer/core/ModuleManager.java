@@ -8,6 +8,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
+import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleDisableEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleEnableEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleLoadEvent;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 import io.github.bananapuncher714.cartographer.core.module.ModuleDescription;
 import io.github.bananapuncher714.cartographer.core.module.ModuleLoader;
@@ -46,10 +49,14 @@ public class ModuleManager {
 	
 	public Module loadModule( File file ) {
 		ModuleDescription description = ModuleLoader.getDescriptionFor( file );
+		plugin.getLogger().info( "[ModuleManager] Loading " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+		
 		Module module = ModuleLoader.load( file, description );
 		
 		File dataFolder = new File( moduleFolder + "/" + description.getName() );
 		module.load( plugin, description, dataFolder );
+		
+		new ModuleLoadEvent( module ).callEvent();
 		
 		return module;
 	}
@@ -83,6 +90,7 @@ public class ModuleManager {
 		if ( allDependenciesLoaded ) {
 			plugin.getLogger().info( "[ModuleManager] Enabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 			module.setEnabled( true );
+			new ModuleEnableEvent( module ).callEvent();
 		} else {
 			plugin.getLogger().warning( "[ModuleManager] Unable to enable " + description.getName() + " due to the missing dependencies: " + missingDeps.toString().trim() );
 		}
@@ -95,6 +103,7 @@ public class ModuleManager {
 			ModuleDescription description = module.getDescription();
 			plugin.getLogger().info( "[ModuleManager] Disabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 			module.setEnabled( false );
+			new ModuleDisableEvent( module ).callEvent();
 			return true;
 		}
 		return false;
@@ -118,6 +127,7 @@ public class ModuleManager {
 	protected void unloadModules() {
 		for ( String id : modules.keySet() ) {
 			Module module = modules.get( id );
+			disableModule( module );
 			module.unload();
 			
 			plugin.getLogger().info( "[ModuleManager] Unloading " + id );
