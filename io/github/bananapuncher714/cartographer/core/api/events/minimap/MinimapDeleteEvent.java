@@ -5,13 +5,19 @@ import org.bukkit.event.HandlerList;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
 /**
- * Called before a minimap is about to be deleted
+ * Called before a {@link Minimap} is about to be deleted.
  * 
  * @author BananaPuncher714
  */
 public class MinimapDeleteEvent extends MinimapEvent {
 	private static final HandlerList handlers = new HandlerList();
 	
+	/**
+	 * The {@link Minimap} to be deleted.
+	 * 
+	 * @param map
+	 * Cannot be null.
+	 */
 	public MinimapDeleteEvent( Minimap map ) {
 		super( map );
 	}

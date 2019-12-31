@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.api.events.chunk;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.event.HandlerList;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -13,23 +14,49 @@ import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.Chu
  */
 public class ChunkPreProcessEvent extends CartographerEvent {
 	private static final HandlerList handlers = new HandlerList();
-
 	protected final ChunkLocation location;
 	protected ChunkProcessor processor;
 	
+	/**
+	 * Construct a new ChunkPreProcessEvent at the given {@link ChunkLocation} with the {@link ChunkProcessor} provided.
+	 * 
+	 * @param location
+	 * The location of the chunk.
+	 * @param processor
+	 * The processor that will be used.
+	 */
 	public ChunkPreProcessEvent( ChunkLocation location, ChunkProcessor processor ) {
 		this.location = location;
 		this.processor = processor;
 	}
 	
+	/**
+	 * Get the {@link ChunkProcessor} that will be used to process the chunk data.
+	 * 
+	 * @return
+	 * The {@link ChunkProcessor} should not be null.
+	 */
 	public ChunkProcessor getDataProcessor() {
 		return processor;
 	}
 
+	/**
+	 * Set the {@link ChunkProcessor} that will be used to process the chunk data.
+	 * 
+	 * @param processor
+	 * Cannot be null.
+	 */
 	public void setDataProcessor( ChunkProcessor processor ) {
+		Validate.notNull( processor );
 		this.processor = processor;
 	}
 
+	/**
+	 * Get the location of the chunk data to be processed.
+	 * 
+	 * @return
+	 * The {@link ChunkLocation} of the chunk.
+	 */
 	public ChunkLocation getLocation() {
 		return location;
 	}
