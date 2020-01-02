@@ -8,13 +8,41 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JLabel;
 
+import org.apache.commons.lang.Validate;
+
+/**
+ * Convert text to an image.
+ * 
+ * @author BananaPuncher714
+ */
 public class CartographerFont {
 	protected Font font;
 	
+	/**
+	 * Construct with a font.
+	 * 
+	 * @param font
+	 * Cannot be null.
+	 */
 	public CartographerFont( Font font ) {
+		Validate.notNull( font );
 		this.font = font;
 	}
 
+	/**
+	 * Create a new image from the message, color, size, and styles provided.
+	 * 
+	 * @param message
+	 * The message to write. Supports special characters.
+	 * @param color
+	 * Cannot be null.
+	 * @param size
+	 * Size as defined by the java.
+	 * @param styles
+	 * Styles as defined by java.
+	 * @return
+	 * A transparent image with the text only.
+	 */
 	public BufferedImage write( String message, Color color, float size, FontStyle... styles ) {
 		Font font = this.font.deriveFont( size );
 		for ( FontStyle style : styles ) {

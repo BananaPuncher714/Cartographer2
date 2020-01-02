@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
-import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -111,10 +110,12 @@ public class Minimap implements ChunkNotifier {
 		try {
 			if ( OVERLAY_IMAGE_FILE.exists() ) {
 				overlay = new SimpleImage( OVERLAY_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
+				Cartographer.getInstance().getLogger().info( "[Minimap] [" + id + "] Loaded overlay image '" + OVERLAY_IMAGE_FILE + "'" );
 			}
 			
 			if ( BACKGROUND_IMAGE_FILE.exists() ) {
 				background = new SimpleImage( BACKGROUND_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
+				Cartographer.getInstance().getLogger().info( "[Minimap] [" + id + "] Loaded background image '" + BACKGROUND_IMAGE_FILE + "'" );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();

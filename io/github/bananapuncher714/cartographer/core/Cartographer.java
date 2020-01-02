@@ -214,6 +214,8 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadAfter() {
+		getLogger().info( "Loading minimaps and data..." );
+		
 		// Load the maps
 		// Requires palettes
 		loadMaps();

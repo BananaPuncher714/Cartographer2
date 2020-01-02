@@ -12,6 +12,8 @@ import java.nio.file.NoSuchFileException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.lang.Validate;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,8 +22,28 @@ import com.google.gson.stream.JsonReader;
 
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
 
+/**
+ * Load modules and their descriptions, like a plugin.
+ * 
+ * @author BananaPuncher714
+ */
 public class ModuleLoader {
+	/**
+	 * Load a module with the given description and file.
+	 * 
+	 * @param file
+	 * The module jar. Cannot be null.
+	 * @param description
+	 * A {@link ModuleDescription} of the module being loaded. Cannot be null.
+	 * @return
+	 * A new module if successful.
+	 */
 	public static Module load( File file, ModuleDescription description ) {
+		Validate.notNull( file );
+		Validate.notNull( description );
+		Validate.isTrue( file.exists(), file + " does not exist!" );
+		Validate.isTrue( file.isFile(), file + " is not a file!" );
+		
 		try {
 			URLClassLoader child = new URLClassLoader(
 			        new URL[] { file.toURI().toURL() },
@@ -37,6 +59,14 @@ public class ModuleLoader {
 		return null;
 	}
 	
+	/**
+	 * Get a {@link ModuleDescription} from a module jar.
+	 * 
+	 * @param file
+	 * The module jar. Cannot be null.
+	 * @return
+	 * A ModuleDescription if successful.
+	 */
 	public static ModuleDescription getDescriptionFor( File file ) {
 		if ( file == null ) {
 			throw new IllegalArgumentException( "File cannot be null!" );
@@ -65,7 +95,16 @@ public class ModuleLoader {
 		return null;
 	}
 	
+	/**
+	 * Get a ModuleDescription from an input stream.
+	 * 
+	 * @param stream
+	 * The stream to read from. Cannot be null.
+	 * @return
+	 * A {@link ModuleDescription} generated from the stream.
+	 */
 	public static ModuleDescription getDescriptionFor( InputStream stream ) {
+		Validate.notNull( stream );
 		JsonReader reader = new JsonReader( new InputStreamReader( stream ) );
 		
 		JsonParser parser = new JsonParser();

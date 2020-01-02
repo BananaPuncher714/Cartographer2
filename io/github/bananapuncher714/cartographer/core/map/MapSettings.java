@@ -10,6 +10,11 @@ import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
+/**
+ * Contains settings for a {@link Minimap} that can be loaded from a config.
+ * 
+ * @author BananaPuncher714
+ */
 public class MapSettings {
 	protected Set< ZoomScale > allowedZooms = new HashSet< ZoomScale >();
 	protected ZoomScale defaultZoom = ZoomScale.ONE;

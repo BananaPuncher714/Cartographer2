@@ -2,10 +2,10 @@ package io.github.bananapuncher714.cartographer.core.map.process;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * Represents a single chunk's worth of data.
- * 
- * Created on 20181128
  * 
  * @author BananaPuncher714
  */
@@ -15,6 +15,9 @@ public class ChunkData implements Serializable {
 	 */
 	private static final long serialVersionUID = -3618660491621607445L;
 
+	/**
+	 * Width of the chunk, not very relevant currently.
+	 */
 	public static final int CHUNK_WIDTH = 16;
 	
 	protected final byte[] data;
@@ -25,21 +28,53 @@ public class ChunkData implements Serializable {
 	protected transient byte[] eight;
 	protected transient byte mainColor;
 	
+	/**
+	 * Construct a ChunkData with the color data provided.
+	 * 
+	 * @param data
+	 * Cannot be null. Must have length of CHUNK_WIDTH * CHUNK_WIDTH
+	 */
 	public ChunkData( byte[] data ) {
-		if ( data.length != CHUNK_WIDTH * CHUNK_WIDTH ) {
-			throw new IllegalArgumentException( "Data provided must be of " + ( CHUNK_WIDTH * CHUNK_WIDTH ) + " length!" );
-		}
+		Validate.notNull( data );
+		Validate.isTrue( data.length == CHUNK_WIDTH * CHUNK_WIDTH, "Data provided must be of " + ( CHUNK_WIDTH * CHUNK_WIDTH ) + " length!" );
 		this.data = data;
 	}
 	
+	/**
+	 * Get the data for this chunk.
+	 * 
+	 * @return
+	 */
 	public byte[] getData() {
 		return data;
 	}
 	
+	/**
+	 * Get the data at the coordinates specified.
+	 * 
+	 * @param x
+	 * X coordinate from 0 to 15.
+	 * @param z
+	 * Z coordinate from 0 to 15.
+	 * @return
+	 * A byte representing the color.
+	 */
 	public byte getDataAt( int x, int z ) {
 		return data[ x + z * 16 ];
 	}
 	
+	/**
+	 * Get the data at the coordinates specified using the mipmaps.
+	 * 
+	 * @param x
+	 * X coordinate from 0 to 15.
+	 * @param z
+	 * Z coordinate from 0 to 15.
+	 * @param scale
+	 * Scale in blocks per pixel
+	 * @return
+	 * A byte representing the color.
+	 */
 	public byte getDataAt( int x, int z, double scale ) {
 		if ( !colored ) {
 			refreshColors();
@@ -57,6 +92,9 @@ public class ChunkData implements Serializable {
 		}
 	}
 
+	/**
+	 * Refresh the mipmap for this chunk data.
+	 */
 	public void refreshColors() {
 		mainColor = getBestColor( data );
 		two = new byte[ 64 ];

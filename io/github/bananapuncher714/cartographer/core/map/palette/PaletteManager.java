@@ -13,11 +13,13 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
 /**
+ * Manage the {@link MinimapPalette} for {@link Minimap}.
+ * 
  * @author BananaPuncher714
- *
  */
 public class PaletteManager {
 	protected Cartographer plugin;
@@ -25,25 +27,39 @@ public class PaletteManager {
 	protected Map< String, MinimapPalette > palettes = new HashMap< String, MinimapPalette >();
 	
 	/**
+	 * Only one PaletteManager is recommended. To get the current one in use, call {@link Cartographer#getPaletteManager()}.
+	 * 
 	 * @param plugin
+	 * Requires a Cartographer plugin.
 	 */
 	public PaletteManager( Cartographer plugin ) {
 		this.plugin = plugin;
 	}
 	
 	/**
+	 * Register a new {@link MinimapPalette}. Will overwrite any existing one with the same id.
+	 * 
 	 * @param name
+	 * Cannot be null.
 	 * @param palette
+	 * Cannot be null.
 	 */
 	public void register( String name, MinimapPalette palette ) {
+		Validate.notNull( name );
+		Validate.notNull( palette );
 		palettes.put( name, palette );
 	}
 	
 	/**
+	 * Construct a new {@link MinimapPalette} from a list of palette ids.
+	 * 
 	 * @param palettes
+	 * A non null list of ids.
 	 * @return
+	 * A compound MinimapPalette.
 	 */
 	public MinimapPalette construct( List< String > palettes ) {
+		Validate.notNull( palettes );
 		MinimapPalette palette = new MinimapPalette();
 		for ( String id : palettes ) {
 			MinimapPalette template = this.palettes.get( id );
@@ -68,10 +84,15 @@ public class PaletteManager {
 	
 	
 	/**
+	 * Create a {@link MinimapPalette} from the config provided.
+	 * 
 	 * @param config
+	 * Cannot be null, and has to follow a {@link MinimapPalette} format.
 	 * @return
+	 * A {@link MinimapPalette}.
 	 */
 	public MinimapPalette load( FileConfiguration config ) {
+		Validate.notNull( config );
 		MinimapPalette palette = new MinimapPalette();
 		String defColor = config.getString( "default-color", "TRANSPARENT" );
 		if ( defColor.equalsIgnoreCase( "TRANSPARENT" ) ) {
@@ -163,11 +184,19 @@ public class PaletteManager {
 	}
 	
 	/**
+	 * Save the given {@link MinimapPalette} to file with the {@link ColorType} indicated.
+	 * 
 	 * @param palette
+	 * The {@link MinimapPalette} to save. Cannot be null.
 	 * @param config
+	 * The config to save to. Cannot be null.
 	 * @param format
+	 * The ColorType to use. Cannot be null.
 	 */
 	public void save( MinimapPalette palette, FileConfiguration config, ColorType format ) {
+		Validate.notNull( palette );
+		Validate.notNull( config );
+		Validate.notNull( format );
 		if ( ( ( palette.getDefaultRGB() >>> 24 ) & 0xFF ) == 0 ) {
 			config.set( "default", "TRANSPARENT" );
 		} else {
@@ -193,11 +222,17 @@ public class PaletteManager {
 	}
 	
 	/**
+	 * Convert an integer color to a string.
+	 * 
 	 * @param color
+	 * The integer color.
 	 * @param type
+	 * The format to use. Cannot be null.
 	 * @return
+	 * A string that follows the {@link ColorType} pattern.
 	 */
 	public String toString( int color, ColorType type ) {
+		Validate.notNull( type );
 		if ( type == ColorType.HEX ) {
 			return "#" + Integer.toHexString( color );
 		} else if ( type == ColorType.INT ) {
@@ -210,11 +245,17 @@ public class PaletteManager {
 	}
 	
 	/**
+	 * Convert a color to a string.
+	 * 
 	 * @param color
+	 * Cannot be null.
 	 * @param type
+	 * The format to use. Cannot be null.
 	 * @return
+	 * A string that follows the {@link ColorType} pattern.
 	 */
 	public String toString( Color color, ColorType type ) {
+		Validate.notNull( color );
 		return toString( color.getRGB(), type );
 	}
 	

@@ -41,6 +41,9 @@ public enum ChunkLoadListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Update every so often to load new chunks.
+	 */
 	public void update() {
 		if ( Cartographer.getInstance().isServerOverloaded() ) {
 			return;
@@ -66,10 +69,24 @@ public enum ChunkLoadListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Check if the given {@link ChunkLocation} is loading.
+	 * 
+	 * @param location
+	 * {@link ChunkLocation} to check.
+	 * @return
+	 * Whether or not it is being queued for loading.
+	 */
 	public static boolean isLoading( ChunkLocation location ) {
 		return INSTANCE.checkSet.contains( location );
 	}
 	
+	/**
+	 * Add the given location to the load queue.
+	 * 
+	 * @param location
+	 * A {@link ChunkLocation} that needs loading.
+	 */
 	public static void loadChunk( ChunkLocation location ) {
 		if ( INSTANCE.checkSet.contains( location ) ) {
 			return;
@@ -78,6 +95,12 @@ public enum ChunkLoadListener implements Listener {
 		INSTANCE.checkSet.add( location );
 	}
 	
+	/**
+	 * Get the locations that are queued for loading.
+	 * 
+	 * @return
+	 * The current set of chunks.
+	 */
 	public Set< ChunkLocation > getChunks() {
 		return checkSet;
 	}

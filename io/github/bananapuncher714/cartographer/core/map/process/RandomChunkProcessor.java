@@ -4,9 +4,13 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.util.noise.NoiseGenerator;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
 
-import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
+/**
+ * Fill the map with noise.
+ * 
+ * @author BananaPuncher714
+ */
 public class RandomChunkProcessor implements ChunkDataProvider {
 	protected NoiseGenerator generator = new SimplexNoiseGenerator( 1337 );
 	

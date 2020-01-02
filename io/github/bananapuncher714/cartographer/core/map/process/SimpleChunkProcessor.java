@@ -3,20 +3,35 @@ package io.github.bananapuncher714.cartographer.core.map.process;
 import java.awt.Color;
 
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
+/**
+ * Simulates vanilla map rendering, except not the water.
+ * 
+ * @author BananaPuncher714
+ */
 public class SimpleChunkProcessor implements ChunkDataProvider {
 	protected MapDataCache cache;
 	protected MinimapPalette palette;
 	
+	/**
+	 * Construct a SimpleChunkProcessor with a cache and palette.
+	 * 
+	 * @param cache
+	 * Cache containing other ChunkSnapshots that can be used. Cannot be null.
+	 * @param palette
+	 * A palette to get the colors for the blocks. Cannot be null.
+	 */
 	public SimpleChunkProcessor( MapDataCache cache, MinimapPalette palette ) {
+		Validate.notNull( cache );
+		Validate.notNull( palette );
 		this.cache = cache;
 		this.palette = palette;
 	}

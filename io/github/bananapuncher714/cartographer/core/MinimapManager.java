@@ -75,6 +75,13 @@ public class MinimapManager {
 		return item;
 	}
 	
+	
+	/**
+	 * Change the given MapView to a Cartographer2 {@link Minimap}.
+	 * 
+	 * @param view
+	 * @param map
+	 */
 	public void convert( MapView view, Minimap map ) {
 		boolean converted = false;
 		for ( MapRenderer render : view.getRenderers() ) {
@@ -105,6 +112,7 @@ public class MinimapManager {
 	}
 	
 	public Minimap constructNewMinimap( String id ) {
+		plugin.getLogger().info( "[MapManager] " + "Loading minimap '" + id + "'" );
 		File dir = plugin.getAndConstructMapDir( id );
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
@@ -121,7 +129,6 @@ public class MinimapManager {
 	}
 	
 	public Minimap load( File dir ) {
-		plugin.getLogger().info( "[MapManager] " + "Loading minimap '" + dir.getName() + "'" );
 		return constructNewMinimap( dir );
 	}
 	
