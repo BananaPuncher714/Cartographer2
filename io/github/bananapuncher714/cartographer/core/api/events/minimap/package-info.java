@@ -1,5 +1,5 @@
 /**
- * Contains events dealing with Minimaps.
+ * Contains events dealing with {@link io.github.bananapuncher714.cartographer.core.map.Minimap}.
  * 
  * @author BananaPuncher714
  */

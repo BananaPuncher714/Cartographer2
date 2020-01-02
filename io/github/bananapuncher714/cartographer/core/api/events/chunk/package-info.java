@@ -1,5 +1,5 @@
 /**
- * Contains events dealing with chunk loading
+ * Contains events dealing with chunk loading.
  * 
  * @author BananaPuncher714
  */

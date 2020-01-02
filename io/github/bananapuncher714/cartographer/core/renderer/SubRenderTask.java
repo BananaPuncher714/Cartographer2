@@ -84,8 +84,9 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 
 			int localColor = 0;
 			if ( chunkData != null ) {
+				// TODO make this configurable per player or something. Make a player preference thing or whatnot.
 				// This is for static colors
-				//			localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
+//  			localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
 				// This is for dynamic colors
 				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
 			} else {

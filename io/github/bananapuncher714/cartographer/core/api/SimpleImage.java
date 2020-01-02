@@ -14,6 +14,11 @@ import io.github.bananapuncher714.cartographer.core.util.GifDecoder;
 import io.github.bananapuncher714.cartographer.core.util.GifDecoder.GifImage;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
+/**
+ * Load GIFs and images.
+ * 
+ * @author BananaPuncher714
+ */
 public class SimpleImage {
 	private final long time;
 	
@@ -25,6 +30,20 @@ public class SimpleImage {
 	private final int frameCount;
 	private final int totalTime;
 	
+	/**
+	 * Construct a SimpleImage with the arguments provided.
+	 * 
+	 * @param file
+	 * Must not be null, exist, and be a file.
+	 * @param width
+	 * The width that this image should be resized to.
+	 * @param height
+	 * The height that this image should be resized to.
+	 * @param hints
+	 * Resizing hints. For example, {@link Image#SCALE_REPLICATE}.
+	 * @throws IOException
+	 * Look for {@link ImageIO#read( File )}.
+	 */
 	public SimpleImage( File file, int width, int height, int hints ) throws IOException {
 		Validate.notNull( file );
 		Validate.isTrue( file.exists() );
@@ -66,7 +85,20 @@ public class SimpleImage {
 		time = System.currentTimeMillis();
 	}
 	
+	/**
+	 * Construct a SimpleImage with the arguments provided.
+	 * 
+	 * @param image
+	 * Cannot be null.
+	 * @param width
+	 * The width that this image should be resized to.
+	 * @param height
+	 * The height that this image should be resized to.
+	 * @param hints
+	 * Resizing hints. For example, {@link Image#SCALE_REPLICATE}.
+	 */
 	public SimpleImage( Image image, int width, int height, int hints ) {
+		Validate.notNull( image );
 		BufferedImage bImage = JetpImageUtil.toBufferedImage( image.getScaledInstance( width, height, hints ) );
 		images = new BufferedImage[] { bImage };
 		data = new int[][] { JetpImageUtil.getRGBArray( bImage ) };
@@ -79,18 +111,77 @@ public class SimpleImage {
 		time = System.currentTimeMillis();
 	}
 	
+	/**
+	 * Construct a resized SimpleImage with the arguments provided.
+	 * 
+	 * @param image
+	 * Another SimpleImage, cannot be null.
+	 * @param width
+	 * The new width.
+	 * @param height
+	 * The new height.
+	 * @param hints
+	 * Resizing hints. For example, {@link Image#SCALE_REPLICATE}.
+	 */
+	public SimpleImage( SimpleImage image, int width, int height, int hints ) {
+		Validate.notNull( image );
+		this.time = image.time;
+		this.width = width;
+		this.height = height;
+		this.frameCount = image.frameCount;
+		this.totalTime = image.totalTime;
+		this.images = new BufferedImage[ image.images.length ];
+		this.delays = new int[ image.delays.length ];
+		this.data = new int[ image.data.length ][];
+		
+		for ( int i = 0; i < image.frameCount; i++ ) {
+			BufferedImage rescaledImg = JetpImageUtil.toBufferedImage( image.images[ i ].getScaledInstance( width, height, hints ) );
+			images[ i ] = rescaledImg;
+			data[ i ] = JetpImageUtil.getRGBArray( rescaledImg );
+			delays[ i ] = image.delays[ i ];
+		}
+	}
+	
+	/**
+	 * Get the current image.
+	 * 
+	 * @return
+	 * If the image is a GIF, then whichever frame should be displayed currently according to the time of creation.
+	 */
 	public BufferedImage getBufferedImage() {
 		return images[ getIndex() ];
 	}
 	
+	/**
+	 * Get the image at the given index.
+	 * 
+	 * @param index
+	 * The index of the images.
+	 * @return
+	 * The image located at the given index.
+	 */
 	public BufferedImage getBufferedImage( int index ) {
 		return images[ index ];
 	}
 	
+	/**
+	 * Get the ARGB buffer for the current image.
+	 * 
+	 * @return
+	 * If the image is a GIF, then whichever frame should be displayed currently according to the time of creation.
+	 */
 	public int[] getImage() {
 		return data[ getIndex() ];
 	}
 	
+	/**
+	 * Get the ARGB buffer at the given index.
+	 * 
+	 * @param index
+	 * The index of the buffer.
+	 * @return
+	 * The ARGB buffer located at the given index.
+	 */
 	public int[] getImage( int index ) {
 		return data[ index ];
 	}
@@ -108,18 +199,44 @@ public class SimpleImage {
 		return index;
 	}
 	
+	/**
+	 * Get the delay at the given index.
+	 * 
+	 * @param index
+	 * The index of the delay.
+	 * @return
+	 * The delay in milliseconds until the next frame.
+	 */
 	public int getDelay( int index ) {
 		return delays[ index ];
 	}
 	
+	/**
+	 * Get the amount of frames.
+	 * 
+	 * @return
+	 * Will return 1 if it is a single image.
+	 */
 	public int getFrames() {
 		return frameCount;
 	}
 	
+	/**
+	 * Get the width.
+	 * 
+	 * @return
+	 * The width of all the images.
+	 */
 	public int getWidth() {
 		return width;
 	}
 	
+	/**
+	 * Get the height.
+	 * 
+	 * @return
+	 * The height of all the images.
+	 */
 	public int getHeight() {
 		return height;
 	}

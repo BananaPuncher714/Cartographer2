@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.internal;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
@@ -57,6 +58,7 @@ public class Util_1_8 implements GeneralUtil {
 	
 	@Override
 	public int getId( MapView view ) {
+		Validate.notNull( view );
 		try {
 			return ( short ) GETID.invoke( view );
 		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
@@ -102,11 +104,13 @@ public class Util_1_8 implements GeneralUtil {
 	
 	@Override
 	public CrossVersionMaterial getItemType( ItemStack item ) {
+		Validate.notNull( item );
 		return new CrossVersionMaterial( item.getType(), item.getDurability() );
 	}
 	
 	@Override
 	public CrossVersionMaterial getBlockType( Block block ) {
+		Validate.notNull( block );
 		return new CrossVersionMaterial( block.getType(), block.getData() );
 	}
 	

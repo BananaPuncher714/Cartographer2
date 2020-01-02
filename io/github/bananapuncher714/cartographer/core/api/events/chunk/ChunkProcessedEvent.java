@@ -23,13 +23,16 @@ public class ChunkProcessedEvent extends CartographerEvent {
 	 * Construct a new ChunkProcessedEvent for the given {@link Minimap} at the {@link ChunkLocation} provided.
 	 * 
 	 * @param map
-	 * The {@link Minimap} for the data.
+	 * The {@link Minimap} for the data. Cannot be null.
 	 * @param location
-	 * The {@link ChunkLocation} for the data.
+	 * The {@link ChunkLocation} for the data. Cannot be null.
 	 * @param chunk
-	 * The completed {@link ChunkData}.
+	 * The completed {@link ChunkData}. Cannot be null.
 	 */
 	public ChunkProcessedEvent( Minimap map, ChunkLocation location, ChunkData chunk ) {
+		Validate.notNull( map );
+		Validate.notNull( location );
+		Validate.notNull( chunk );
 		this.map = map;
 		this.location = location;
 		this.data = chunk;

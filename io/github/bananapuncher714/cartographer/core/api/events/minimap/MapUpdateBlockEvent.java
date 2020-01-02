@@ -22,14 +22,16 @@ public class MapUpdateBlockEvent extends MinimapEvent {
 	 * Construct a MapUpdateBlockEvent with the given {@link Minimap} and {@link MinimapPalette}.
 	 * 
 	 * @param map
-	 * The {@link Minimap} updating the location.
+	 * The {@link Minimap} updating the location. Cannot be null.
 	 * @param location
-	 * The location to update.
+	 * The location to update. Cannot be null.
 	 * @param palette
-	 * The {@link MinimapPalette} which will be used.
+	 * The {@link MinimapPalette} which will be used. Cannot be null.
 	 */
 	public MapUpdateBlockEvent( Minimap map, Location location, MinimapPalette palette ) {
 		super( map );
+		Validate.notNull( location );
+		Validate.notNull( palette );
 		this.location = location.clone();
 		this.palette = palette;
 	}

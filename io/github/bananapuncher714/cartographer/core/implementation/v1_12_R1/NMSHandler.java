@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
@@ -188,11 +189,14 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public boolean registerCommand( PluginCommand command ) {
+		Validate.notNull( command );
 		return registerCommand( command.getPlugin().getName(), command );
 	}
 	
 	@Override
 	public boolean registerCommand( String fallbackPrefix, PluginCommand command ) {
+		Validate.notNull( fallbackPrefix );
+		Validate.notNull( command );		
 		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
 	}
 	

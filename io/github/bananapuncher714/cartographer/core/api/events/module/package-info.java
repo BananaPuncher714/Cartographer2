@@ -1,5 +1,5 @@
 /**
- * Events relating to modules
+ * Events relating to modules.
  * 
  * @author BananaPuncher714
  */

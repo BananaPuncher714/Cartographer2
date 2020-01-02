@@ -46,9 +46,10 @@ public class PlayerListener implements Listener {
 		
 		ItemStack item = event.getItem();
 		
-		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() ) {
+		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() && plugin.getMapManager().isMinimapItem( item ) ) {
 			plugin.getMapManager().update( item );
 			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
+			plugin.getMapManager().update( item );
 			Minimap currentMap = null;
 			ZoomScale newScale = null;
 			for ( MapRenderer renderer : view.getRenderers() ) {

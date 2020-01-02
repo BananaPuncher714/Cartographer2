@@ -55,52 +55,57 @@ public class ModuleLoader {
 				throw new NoSuchFileException( "module.json does not exist! " + file.getAbsolutePath() );
 			}
 			InputStream stream = jar.getInputStream( entry );
-			JsonReader reader = new JsonReader( new InputStreamReader( stream ) );
 			
-			JsonParser parser = new JsonParser();
-			JsonElement element = parser.parse( reader );
-			
-			JsonObject object = element.getAsJsonObject();
-			
-			if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "description" ) && object.has( "version" ) ) ) {
-				throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/version)" );
-			}
-			
-			String name = object.get( "name" ).getAsString();
-			String main = object.get( "main" ).getAsString();
-			String author = object.get( "author" ).getAsString();
-			String version = object.get( "version" ).getAsString();
-
-			ModuleDescription moduleDescription = new ModuleDescription( name, main, author, version );
-			
-			if ( object.has( "description" ) ) {
-				moduleDescription.setDescription( object.get( "description" ).getAsString() );
-			}
-			
-			if ( object.has( "website" ) ) {
-				moduleDescription.setWebsite( object.get( "website" ).getAsString() );
-			}
-			
-			if ( object.has( "depend" ) ) {
-				JsonArray array = object.get( "depend" ).getAsJsonArray();
-				for ( JsonElement dependElement : array ) {
-					moduleDescription.getDependencies().add( dependElement.getAsString() );
-				}
-			}
-			
-			if ( object.has( "dependencies" ) ) {
-				JsonArray array = object.get( "dependencies" ).getAsJsonArray();
-				for ( JsonElement dependElement : array ) {
-					moduleDescription.getDependencies().add( dependElement.getAsString() );
-				}
-			}
-			
-			return moduleDescription;
+			return getDescriptionFor( stream );
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		} catch ( IllegalArgumentException e ) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static ModuleDescription getDescriptionFor( InputStream stream ) {
+		JsonReader reader = new JsonReader( new InputStreamReader( stream ) );
+		
+		JsonParser parser = new JsonParser();
+		JsonElement element = parser.parse( reader );
+		
+		JsonObject object = element.getAsJsonObject();
+		
+		if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "description" ) && object.has( "version" ) ) ) {
+			throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/version)" );
+		}
+		
+		String name = object.get( "name" ).getAsString();
+		String main = object.get( "main" ).getAsString();
+		String author = object.get( "author" ).getAsString();
+		String version = object.get( "version" ).getAsString();
+
+		ModuleDescription moduleDescription = new ModuleDescription( name, main, author, version );
+		
+		if ( object.has( "description" ) ) {
+			moduleDescription.setDescription( object.get( "description" ).getAsString() );
+		}
+		
+		if ( object.has( "website" ) ) {
+			moduleDescription.setWebsite( object.get( "website" ).getAsString() );
+		}
+		
+		if ( object.has( "depend" ) ) {
+			JsonArray array = object.get( "depend" ).getAsJsonArray();
+			for ( JsonElement dependElement : array ) {
+				moduleDescription.getDependencies().add( dependElement.getAsString() );
+			}
+		}
+		
+		if ( object.has( "dependencies" ) ) {
+			JsonArray array = object.get( "dependencies" ).getAsJsonArray();
+			for ( JsonElement dependElement : array ) {
+				moduleDescription.getDependencies().add( dependElement.getAsString() );
+			}
+		}
+		
+		return moduleDescription;
 	}
 }

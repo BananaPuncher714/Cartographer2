@@ -1,5 +1,11 @@
 package io.github.bananapuncher714.cartographer.core.file;
 
+/**
+ * @deprecated
+ * Unused currently, may never be used.
+ * 
+ * @author BananaPuncher714
+ */
 public class BigChunkMap {
 	long[] data;
 	

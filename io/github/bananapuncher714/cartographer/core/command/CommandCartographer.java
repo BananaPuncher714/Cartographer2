@@ -19,6 +19,8 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
 /**
+ * Base Cartographer command.
+ * 
  * @author BananaPuncher714
  */
 public class CommandCartographer implements CommandExecutor, TabCompleter {

@@ -8,25 +8,41 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
+/**
+ * @author BananaPuncher714
+ *
+ */
 public class PaletteManager {
 	protected Cartographer plugin;
 	
 	protected Map< String, MinimapPalette > palettes = new HashMap< String, MinimapPalette >();
 	
+	/**
+	 * @param plugin
+	 */
 	public PaletteManager( Cartographer plugin ) {
 		this.plugin = plugin;
 	}
 	
+	/**
+	 * @param name
+	 * @param palette
+	 */
 	public void register( String name, MinimapPalette palette ) {
 		palettes.put( name, palette );
 	}
 	
+	/**
+	 * @param palettes
+	 * @return
+	 */
 	public MinimapPalette construct( List< String > palettes ) {
 		MinimapPalette palette = new MinimapPalette();
 		for ( String id : palettes ) {
@@ -51,6 +67,10 @@ public class PaletteManager {
 	}
 	
 	
+	/**
+	 * @param config
+	 * @return
+	 */
 	public MinimapPalette load( FileConfiguration config ) {
 		MinimapPalette palette = new MinimapPalette();
 		String defColor = config.getString( "default-color", "TRANSPARENT" );
@@ -142,6 +162,11 @@ public class PaletteManager {
 		return palette;
 	}
 	
+	/**
+	 * @param palette
+	 * @param config
+	 * @param format
+	 */
 	public void save( MinimapPalette palette, FileConfiguration config, ColorType format ) {
 		if ( ( ( palette.getDefaultRGB() >>> 24 ) & 0xFF ) == 0 ) {
 			config.set( "default", "TRANSPARENT" );
@@ -167,6 +192,11 @@ public class PaletteManager {
 		}
 	}
 	
+	/**
+	 * @param color
+	 * @param type
+	 * @return
+	 */
 	public String toString( int color, ColorType type ) {
 		if ( type == ColorType.HEX ) {
 			return "#" + Integer.toHexString( color );
@@ -179,12 +209,33 @@ public class PaletteManager {
 		}
 	}
 	
+	/**
+	 * @param color
+	 * @param type
+	 * @return
+	 */
 	public String toString( Color color, ColorType type ) {
 		return toString( color.getRGB(), type );
 	}
 	
+	/**
+	 * Contains different ways to write a color.
+	 * 
+	 * @author BananaPuncher714
+	 */
 	public enum ColorType {
-		HEX( "^#?([A-Fa-f0-9]{1,6})$" ), RGB( "^\\D*?(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D*?$" ), INT( "^([0-9]?){8}$" );
+		/**
+		 * Hex form, accepts 6 digits. Ex: '#FF00FF'
+		 */
+		HEX( "^#?([A-Fa-f0-9]{1,6})$" ),
+		/**
+		 * RGB form, accepts 3 bytes separated by non-digit characters. Ex: '( 255, 0, 128 )'
+		 */
+		RGB( "^\\D*?(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D*?$" ),
+		/**
+		 * Integer form, accepts an 8 digit number only. Ex: '219203'
+		 */
+		INT( "^([0-9]?){8}$" );
 		
 		private Pattern pattern;
 		
@@ -192,10 +243,25 @@ public class PaletteManager {
 			this.pattern = Pattern.compile( pattern );
 		}
 		
+		/**
+		 * Check if the input matches this pattern.
+		 * 
+		 * @param string
+		 * Cannot be null.
+		 * @return
+		 * Whether the input matches the pattern of this ColorType.
+		 */
 		public boolean matches( String string ) {
+			Validate.notNull( string );
 			return pattern.matcher( string ).matches();
 		}
 		
+		/**
+		 * Get the pattern for this color type.
+		 * 
+		 * @return
+		 * The pattern.
+		 */
 		public Pattern getPattern() {
 			return pattern;
 		}

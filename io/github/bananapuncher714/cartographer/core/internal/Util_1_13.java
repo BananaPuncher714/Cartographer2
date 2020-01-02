@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.internal;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
@@ -38,6 +39,7 @@ public class Util_1_13 implements GeneralUtil {
 
 	@Override
 	public int getId( MapView view ) {
+		Validate.notNull( view );
 		return view.getId();
 	}
 	
@@ -62,6 +64,7 @@ public class Util_1_13 implements GeneralUtil {
 	
 	@Override
 	public boolean isValidHand( PlayerInteractEvent event ) {
+		Validate.notNull( event );
 		return event.getHand() == EquipmentSlot.HAND;
 	}
 	
@@ -72,11 +75,13 @@ public class Util_1_13 implements GeneralUtil {
 	
 	@Override
 	public CrossVersionMaterial getItemType( ItemStack item ) {
+		Validate.notNull( item );
 		return new CrossVersionMaterial( item.getType() );
 	}
 	
 	@Override
 	public CrossVersionMaterial getBlockType( Block block ) {
+		Validate.notNull( block );
 		return new CrossVersionMaterial( block.getType() );
 	}
 	

@@ -1,5 +1,5 @@
 /**
- * Contains events associated with Cartographer2
+ * Contains events associated with Cartographer2.
  * 
  * @author BananaPuncher714
  */

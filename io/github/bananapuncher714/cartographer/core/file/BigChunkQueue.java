@@ -13,12 +13,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import io.github.bananapuncher714.cartographer.core.Cartographer;
+import org.apache.commons.lang.Validate;
+
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
+/**
+ * Save and load {@link BigChunk} asynchronously.
+ * 
+ * @author BananaPuncher714
+ */
 public class BigChunkQueue {
 	protected final ExecutorService savingService = Executors.newFixedThreadPool( 2 );
 	protected final ExecutorService loadingService = Executors.newFixedThreadPool( 2 );
@@ -29,19 +35,47 @@ public class BigChunkQueue {
 	protected MapDataCache cache;
 	protected File saveLocation;
 	
+	/**
+	 * Construct a BigChunkQueue from the arguments provided. 
+	 * 
+	 * @param saveFile
+	 * The directory to save {@link BigChunk} in. Cannot be null.
+	 * @param cache
+	 * The {@link MapDataCache} containing the data. Cannot be null.
+	 */
 	public BigChunkQueue( File saveFile, MapDataCache cache ) {
+		Validate.notNull( saveFile );
+		Validate.notNull( cache );
 		saveLocation = saveFile;
 		this.cache = cache;
 	}
 	
+	/**
+	 * Save the data as soon as possible, if not being already saved or loaded.
+	 * 
+	 * @param coord
+	 * The {@link BigChunkLocation} of the data, cannot be null.
+	 * @param data
+	 * The {@link BigChunk} to save, cannot be null.
+	 * @return
+	 * If successfully queued for saving.
+	 */
 	public boolean save( BigChunkLocation coord, BigChunk data ) {
+		Validate.notNull( coord );
 		if ( saving.containsKey( coord ) || loading.containsKey( coord ) ) {
 			return false;
 		}
+		Validate.notNull( data );
 		saving.put( coord, savingService.submit( new TaskChunkSave( getFileFor( coord ), data ) ) );
 		return true;
 	}
 	
+	/**
+	 * Shutdown loading and saving services, and finish saving what needs to be saved on the main thread.
+	 * 
+	 * @return
+	 * If shutting down was successful.
+	 */
 	public boolean saveBlocking() {
 		loadingService.shutdown();
 		savingService.shutdown();
@@ -59,13 +93,24 @@ public class BigChunkQueue {
 		return true;
 	}
 	
+	/**
+	 * Load the {@link BigChunkLocation} as soon as possible.
+	 * 
+	 * @param coord
+	 * The {@link BigChunkLocation} to load, cannot be null.
+	 */
 	public void load( BigChunkLocation coord ) {
+		Validate.notNull( coord );
 		if ( saving.containsKey( coord ) || loading.containsKey( coord ) ) {
 			return;
 		}
 		loading.put( coord, loadingService.submit( new TaskChunkLoad( getFileFor( coord ) ) ) );
 	}
 	
+	/**
+	 * Should be called each tick or so often by whatever is responsible for this
+	 * to use the data that has been loaded, and request processing for what has not.
+	 */
 	public void update() {
 		for ( Iterator< Entry< BigChunkLocation, Future< Boolean > > > iterator = saving.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< BigChunkLocation, Future< Boolean > > entry = iterator.next();
@@ -119,46 +164,83 @@ public class BigChunkQueue {
 		}
 	}
 	
+	/**
+	 * Get the file for the {@link BigChunkLocation}.
+	 * 
+	 * @param coord
+	 * The coordinate of the {@link BigChunkLocation}, cannot be null.
+	 * @return
+	 * Normally stored in 'base/world/x/z/' form.
+	 */
 	protected File getFileFor( BigChunkLocation coord ) {
+		Validate.notNull( coord );
 		return new File( saveLocation + "/" + coord.getWorld().getName() + "/" + coord.getX() + "/" + coord.getZ() );
 	}
 	
+	/**
+	 * Responsible for saving chunks.
+	 * 
+	 * @author BananaPuncher714
+	 */
 	protected class TaskChunkSave implements Callable< Boolean > {
 		protected final File saveFile;
 		protected final BigChunk chunk;
 		
+		/**
+		 * Save a BigChunk to the file.
+		 * 
+		 * @param saveFile
+		 * Cannot be null.
+		 * @param chunk
+		 * Cannot be null.
+		 */
 		TaskChunkSave( File saveFile, BigChunk chunk ) {
+			Validate.notNull( chunk );
+			Validate.notNull( saveFile );
 			this.saveFile = saveFile;
 			this.chunk = chunk;
 		}
 		
 		@Override
 		public Boolean call() throws Exception {
-			if ( chunk != null ) {
-				FileUtil.writeObject( chunk, saveFile );
-				return true;
-			} else {
-				Cartographer.getInstance().getLogger().warning( "Was unable to save big chunk " + chunk.x + " " + chunk.z );
-			}
-			return false;
+			FileUtil.writeObject( chunk, saveFile );
+			return true;
 		}
 	}
 	
+	/**
+	 * Responsible for loading chunks.
+	 * 
+	 * @author BananaPuncher714
+	 */
 	protected class TaskChunkLoad implements Callable< BigChunk > {
 		protected final File file;
 		
+		/**
+		 * Load a BigChunk from the file provided.
+		 * 
+		 * @param file
+		 * Cannot be null.
+		 */
 		TaskChunkLoad( File file ) {
+			Validate.notNull( file );
 			this.file = file;
 		}
 		
 		@Override
 		public BigChunk call() throws Exception {
-			try {
-				return FileUtil.readObject( BigChunk.class, file );
-			} catch ( Exception exception ) {
-				file.delete();
-				return null;
+			if ( file.exists() ) {
+				try {
+					return FileUtil.readObject( BigChunk.class, file );
+				} catch ( Exception exception ) {
+					// Delete the file if there was a problem reading it.
+					// Should probably catch the exception and log it, but will do that later.
+					// TODO Fix this
+					file.delete();
+					return null;
+				}
 			}
+			return null;
 		}
 	}
 }

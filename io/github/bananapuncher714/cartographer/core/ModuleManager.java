@@ -61,6 +61,13 @@ public class ModuleManager {
 		return module;
 	}
 	
+	public void loadModule( Module module, ModuleDescription description ) {
+		File dataFolder = new File( moduleFolder + "/" + description.getName() );
+		module.load( plugin, description, dataFolder );
+		
+		new ModuleLoadEvent( module ).callEvent();
+	}
+	
 	public Module getModule( String name ) {
 		return modules.get( name );
 	}

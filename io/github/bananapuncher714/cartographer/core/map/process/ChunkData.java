@@ -10,6 +10,11 @@ import java.io.Serializable;
  * @author BananaPuncher714
  */
 public class ChunkData implements Serializable {
+	/**
+	 * Serial id until I can make a better serialization method.
+	 */
+	private static final long serialVersionUID = -3618660491621607445L;
+
 	public static final int CHUNK_WIDTH = 16;
 	
 	protected final byte[] data;

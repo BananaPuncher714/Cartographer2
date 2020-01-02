@@ -17,6 +17,11 @@ import org.bukkit.util.StringUtil;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 
+/**
+ * Cartographer2 Module subcommand.
+ * 
+ * @author BananaPuncher714
+ */
 public class CommandModule implements CommandExecutor, TabCompleter {
 	private Cartographer plugin;
 	

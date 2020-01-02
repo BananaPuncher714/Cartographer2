@@ -8,7 +8,7 @@ import io.github.bananapuncher714.cartographer.core.api.events.CartographerEvent
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkProcessor;
 
 /**
- * Called before a task gets submitted to the executor service to render a chunk
+ * Called before a task gets submitted to the executor service to render a chunk.
  * 
  * @author BananaPuncher714
  */
@@ -21,11 +21,13 @@ public class ChunkPreProcessEvent extends CartographerEvent {
 	 * Construct a new ChunkPreProcessEvent at the given {@link ChunkLocation} with the {@link ChunkProcessor} provided.
 	 * 
 	 * @param location
-	 * The location of the chunk.
+	 * The location of the chunk. Cannot be null.
 	 * @param processor
-	 * The processor that will be used.
+	 * The processor that will be used. Cannot be null.
 	 */
 	public ChunkPreProcessEvent( ChunkLocation location, ChunkProcessor processor ) {
+		Validate.notNull( location );
+		Validate.notNull( processor );
 		this.location = location;
 		this.processor = processor;
 	}

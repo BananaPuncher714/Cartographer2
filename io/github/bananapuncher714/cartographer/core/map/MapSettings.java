@@ -16,7 +16,7 @@ public class MapSettings {
 	protected boolean circularZoom = false;
 	protected boolean autoUpdate = true;
 	
-	protected BooleanOption rotation = BooleanOption.DEFAULT;
+	protected BooleanOption rotation = BooleanOption.UNSET;
 	
 	protected MinimapPalette palette;
 	

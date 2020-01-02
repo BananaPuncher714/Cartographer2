@@ -49,7 +49,7 @@ public class FrameRenderTask extends RecursiveAction {
 		// Get the locations around that need rendering
 		Location loc = info.setting.location;
 		BooleanOption rotation = info.map.getSettings().getRotation();
-		boolean rotating = rotation == BooleanOption.DEFAULT ? info.setting.rotating : ( rotation == BooleanOption.ON ? true : false );
+		boolean rotating = rotation == BooleanOption.UNSET ? info.setting.rotating : ( rotation == BooleanOption.TRUE ? true : false );
 		Location[] locations = MapUtil.getLocationsAround( loc, info.setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
 		
 		// Set the locations
@@ -67,7 +67,7 @@ public class FrameRenderTask extends RecursiveAction {
 					continue;
 				}
 
-				if ( pixel.getDepth() < 0xFFFF ) {
+				if ( pixel.getPriority() < 0xFFFF ) {
 					int prevColor = lowerMapPixels[ index ];
 					// These go under the overlay
 					lowerMapPixels[ index ] = JetpImageUtil.overwriteColor( prevColor, color );
@@ -102,6 +102,8 @@ public class FrameRenderTask extends RecursiveAction {
 			double newRelX = 2 * distance * RivenMath.cos( ( float ) radians );
 			double newRelZ = 2 * distance * RivenMath.sin( ( float ) radians );
 
+			// TODO Check if this really works
+			// TODO Also use the global flag somewhere...
 			int normalizedX = ( int ) Math.min( 127, Math.max( -127, newRelX / info.setting.zoomscale ) );
 			int normalizedZ = ( int ) Math.min( 127, Math.max( -127, newRelZ / info.setting.zoomscale ) );
 

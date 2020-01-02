@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkLoadedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkProcessedEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MapUpdateBlockEvent;
-import io.github.bananapuncher714.cartographer.core.api.map.LocalCursorProvider;
+import io.github.bananapuncher714.cartographer.core.api.map.MapCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
@@ -46,7 +47,7 @@ public class Minimap implements ChunkNotifier {
 	protected MapSettings settings;
 	
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
-	protected Set< LocalCursorProvider > localCursorProviders = new HashSet< LocalCursorProvider >();
+	protected Set< MapCursorProvider > localCursorProviders = new HashSet< MapCursorProvider >();
 	protected Set< MapPixelProvider > pixelProviders = new HashSet< MapPixelProvider >();
 	protected Set< WorldPixelProvider > worldPixelProviders = new HashSet< WorldPixelProvider >();
 	
@@ -63,7 +64,7 @@ public class Minimap implements ChunkNotifier {
 		cache.setNotifier( this );
 		
 		// TEST
-		registerWorldCursorProvider( new WorldCursorProvider() {
+		registerProvider( new WorldCursorProvider() {
 			@Override
 			public Collection< WorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting ) {
 				Set< WorldCursor > cursors = new HashSet< WorldCursor >();
@@ -215,7 +216,7 @@ public class Minimap implements ChunkNotifier {
 	
 	public Collection< MapCursor > getLocalCursorsFor( Player player, PlayerSetting setting ) {
 		Set< MapCursor > cursors = new HashSet< MapCursor >();
-		for ( LocalCursorProvider provider : localCursorProviders ) {
+		for ( MapCursorProvider provider : localCursorProviders ) {
 			Collection< MapCursor > cursorCollection = provider.getCursors( player, this, setting );
 			if ( cursorCollection != null ) {
 				cursors.addAll( cursorCollection );
@@ -224,35 +225,35 @@ public class Minimap implements ChunkNotifier {
 		return cursors;
 	}
 	
-	public void registerWorldPixelProvider( WorldPixelProvider provider ) {
+	public void registerProvider( WorldPixelProvider provider ) {
 		worldPixelProviders.add( provider );
 	}
 	
-	public void unregisterWorldPixelProvider( WorldPixelProvider provider ) {
+	public void unregisterProvider( WorldPixelProvider provider ) {
 		worldPixelProviders.remove( provider );
 	}
 	
-	public void registerPixelProvider( MapPixelProvider provider ) {
+	public void registerProvider( MapPixelProvider provider ) {
 		pixelProviders.add( provider );
 	}
 	
-	public void unregisterPixelProvider( MapPixelProvider provider ) {
+	public void unregisterProvider( MapPixelProvider provider ) {
 		pixelProviders.remove( provider );
 	}
 	
-	public void registerWorldCursorProvider( WorldCursorProvider provider ) {
+	public void registerProvider( WorldCursorProvider provider ) {
 		cursorProviders.add( provider );
 	}
 	
-	public void unregisterWorldCursorProvider( WorldCursorProvider provider ) {
+	public void unregisterProvider( WorldCursorProvider provider ) {
 		cursorProviders.remove( provider );
 	}
 	
-	public void registerLocalCursorProvider( LocalCursorProvider provider ) {
+	public void registerProvider( MapCursorProvider provider ) {
 		localCursorProviders.add( provider );
 	}
 	
-	public void unregisterLocalCursorProvider( LocalCursorProvider provider ) {
+	public void unregisterProvider( MapCursorProvider provider ) {
 		localCursorProviders.remove( provider );
 	}
 	
@@ -260,7 +261,7 @@ public class Minimap implements ChunkNotifier {
 		return cursorProviders;
 	}
 	
-	public Set< LocalCursorProvider > getLocalCursorProviders() {
+	public Set< MapCursorProvider > getLocalCursorProviders() {
 		return localCursorProviders;
 	}
 	
@@ -270,6 +271,16 @@ public class Minimap implements ChunkNotifier {
 	
 	public Set< WorldPixelProvider > getWorldPixelProviders() {
 		return worldPixelProviders;
+	}
+	
+	/**
+	 * Set the {@link MinimapPalette} for this minimap.
+	 * 
+	 * @param palette
+	 * Cannot be null.
+	 */
+	public void setPalette( MinimapPalette palette ) {
+		Validate.notNull( palette );
 	}
 	
 	public void updateLocation( Location location ) {

@@ -3,19 +3,20 @@ package io.github.bananapuncher714.cartographer.core.api.map;
 import java.util.Collection;
 
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor;
 
-import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
 
 /**
- * Provides a {@link Minimap} with {@link WorldCursor} that will appear on the canvas, may be called extremely frequently(Several times per tick).
+ * Provides a {@link Minimap} with cursors that will appear on the canvas, may be called extremely frequently(Several times per tick).
  * 
  * @author BananaPuncher714
  */
-public interface WorldCursorProvider {
+public interface MapCursorProvider {
 	/**
-	 * Get a collection of {@link WorldCursor} that will be placed on the map. To place cursors relative to the map canvas, use a {@link MapCursorProvider}.
+	 * Get a collection of cursors that can be placed on the map. To place cursors relative to the Minecraft world, use a {@link WorldCursorProvider}.
 	 * 
 	 * @param player
 	 * The player for who this is rendering. Do not use the location of this player, may not be accurate.
@@ -24,7 +25,7 @@ public interface WorldCursorProvider {
 	 * @param setting
 	 * The {@link PlayerSetting} of the player, including the location of the player that will be used to render the canvas.
 	 * @return
-	 * A collection of {@link WorldCursor}. Can return null.
+	 * A collection of {@link MapPixel}. Can return null.
 	 */
-	Collection< WorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting );
+	Collection< MapCursor > getCursors( Player player, Minimap map, PlayerSetting setting );
 }
