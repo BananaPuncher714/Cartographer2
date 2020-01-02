@@ -1,6 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
+import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +18,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
+import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkLoadedEvent;
@@ -36,15 +40,23 @@ import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
+import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 public class Minimap implements ChunkNotifier {
 	protected final String id;
+	
+	protected final File OVERLAY_IMAGE_FILE;
+	protected final File BACKGROUND_IMAGE_FILE;
 	
 	protected MinimapPalette palette;
 	protected MapDataCache cache;
 	protected BigChunkQueue queue;;
 	protected File saveFile;
 	protected MapSettings settings;
+
+	// Local images
+	protected SimpleImage overlay;
+	protected SimpleImage background;
 	
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
 	protected Set< MapCursorProvider > localCursorProviders = new HashSet< MapCursorProvider >();
@@ -61,17 +73,15 @@ public class Minimap implements ChunkNotifier {
 		this.queue = new BigChunkQueue( new File( saveDir + "/" + "cache" ), cache );
 		this.settings = settings;
 		
+		OVERLAY_IMAGE_FILE = FileUtil.getImageFile( saveDir, "overlay" );
+		BACKGROUND_IMAGE_FILE = FileUtil.getImageFile( saveDir, "background" );
+		
 		cache.setNotifier( this );
 		
-		// TEST
-		registerProvider( new WorldCursorProvider() {
-			@Override
-			public Collection< WorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting ) {
-				Set< WorldCursor > cursors = new HashSet< WorldCursor >();
-				cursors.add( new WorldCursor( player.getName(), player.getLocation(), Type.WHITE_POINTER, true ) );
-				return cursors;
-			}
-		} );
+		load();
+		
+		// Show at least the player, if nothing else
+		registerProvider( new DefaultPlayerCursorProvider() );
 		
 //		registerWorldCursorProvider( new WorldCursorProvider() {
 //			@Override
@@ -95,6 +105,20 @@ public class Minimap implements ChunkNotifier {
 //				return pixels;
 //			}
 //		} );
+	}
+	
+	protected void load() {
+		try {
+			if ( OVERLAY_IMAGE_FILE.exists() ) {
+				overlay = new SimpleImage( OVERLAY_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
+			}
+			
+			if ( BACKGROUND_IMAGE_FILE.exists() ) {
+				background = new SimpleImage( BACKGROUND_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
+			}
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getId() {
@@ -171,6 +195,26 @@ public class Minimap implements ChunkNotifier {
 	
 	public MapSettings getSettings() {
 		return settings;
+	}
+	
+	public SimpleImage getOverlayImage() {
+		return overlay == null ? Cartographer.getInstance().getOverlay() : overlay;
+	}
+	
+	public void setOverlayImage( SimpleImage image ) {
+		if ( image != null ) {
+			overlay = new SimpleImage( image, 128, 128, Image.SCALE_REPLICATE );
+		}
+	}
+	
+	public SimpleImage getBackgroundImage() {
+		return background == null ? Cartographer.getInstance().getBackground() : background;
+	}
+	
+	public void setBackgroundImage( SimpleImage image ) {
+		if ( image != null ) {
+			background = new SimpleImage( image, 128, 128, Image.SCALE_REPLICATE );
+		}
 	}
 	
 	public File getDataFolder() {

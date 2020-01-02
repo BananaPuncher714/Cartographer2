@@ -21,6 +21,17 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 ## Permissions
 - `cartographer.admin` - Master permission to run the commands
 
+## Module ideas
+- Show land claims
+- Draw animated beacons
+- Located nearby entities and mark players
+- Add a sepia filter to the worldmap
+- Show a treasure hunt
+- Display pathfinding points
+- Show locations and statistics
+- Cool looking HUD
+- RPG style waypoints
+
 ## TODO
 - Add vanilla module integration
 - Fix the wiki

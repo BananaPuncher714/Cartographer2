@@ -63,12 +63,12 @@ public class NMSHandler implements PacketHandler {
 		
 		CURSOR_TYPES.put( MapCursor.Type.WHITE_POINTER, MapIcon.Type.PLAYER );
 		CURSOR_TYPES.put( MapCursor.Type.GREEN_POINTER, MapIcon.Type.FRAME );
-		CURSOR_TYPES.put( MapCursor.Type.RED_POINTER, MapIcon.Type.PLAYER_OFF_LIMITS );
+		CURSOR_TYPES.put( MapCursor.Type.RED_POINTER, MapIcon.Type.TARGET_POINT );
 		CURSOR_TYPES.put( MapCursor.Type.BLUE_POINTER, MapIcon.Type.BLUE_MARKER );
 		CURSOR_TYPES.put( MapCursor.Type.WHITE_CROSS, MapIcon.Type.TARGET_X );
 		CURSOR_TYPES.put( MapCursor.Type.RED_MARKER, MapIcon.Type.RED_MARKER );
-		CURSOR_TYPES.put( MapCursor.Type.WHITE_CIRCLE, MapIcon.Type.PLAYER );
-		CURSOR_TYPES.put( MapCursor.Type.SMALL_WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_MAP );
+		CURSOR_TYPES.put( MapCursor.Type.WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_MAP );
+		CURSOR_TYPES.put( MapCursor.Type.SMALL_WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_LIMITS );
 		CURSOR_TYPES.put( MapCursor.Type.MANSION, MapIcon.Type.MANSION );
 		CURSOR_TYPES.put( MapCursor.Type.TEMPLE, MapIcon.Type.MONUMENT );
 		CURSOR_TYPES.put( MapCursor.Type.BANNER_WHITE, MapIcon.Type.BANNER_WHITE );

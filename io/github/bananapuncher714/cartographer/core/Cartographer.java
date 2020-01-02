@@ -153,6 +153,7 @@ public class Cartographer extends JavaPlugin {
 			return;
 		}
 		loaded = true;
+		
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
 		
 		// Enable the modules afterwards
@@ -165,7 +166,6 @@ public class Cartographer extends JavaPlugin {
 	private void update() {
 		mapManager.update();
 	}
-	
 	
 	private void saveData() {
 		if ( !DATA_FILE.exists() ) {
@@ -322,9 +322,9 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadImages() {
-		OVERLAY_IMAGE = getImageFile( getDataFolder(), "overlay" );
-		BACKGROUND_IMAGE = getImageFile( getDataFolder(), "background" );
-		MISSING_MAP_IMAGE = getImageFile( getDataFolder(), "missing" );
+		OVERLAY_IMAGE = FileUtil.getImageFile( getDataFolder(), "overlay" );
+		BACKGROUND_IMAGE = FileUtil.getImageFile( getDataFolder(), "background" );
+		MISSING_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "missing" );
 		
 		try {
 			if ( OVERLAY_IMAGE.exists() ) {
@@ -435,7 +435,7 @@ public class Cartographer extends JavaPlugin {
 		return paletteDebug;
 	}
 	
-	public SimpleImage getLoadingImage() {
+	public SimpleImage getBackground() {
 		// TODO Specify that this is 128x128
 		return loadingBackground;
 	}
@@ -451,19 +451,6 @@ public class Cartographer extends JavaPlugin {
 	
 	public boolean isValidInventory( InventoryType type ) {
 		return !invalidInventoryTypes.contains( type );
-	}
-	
-	private static File getImageFile( File dir, String prefix ) {
-		File image = new File( dir + "/" + prefix + ".png" );
-		for ( File file : dir.listFiles() ) {
-			String fileName = file.getName();
-			if ( fileName.equalsIgnoreCase( prefix + ".gif" ) ) {
-				return file;
-			} else if ( fileName.equalsIgnoreCase( prefix + ".png" ) || fileName.equalsIgnoreCase( prefix + ".jpg" ) || fileName.equalsIgnoreCase( prefix + ".jpeg" ) || fileName.equalsIgnoreCase( prefix + ".bmp" ) ) {
-				image = file;
-			}
-		}
-		return image;
 	}
 	
 	public static Cartographer getInstance() {

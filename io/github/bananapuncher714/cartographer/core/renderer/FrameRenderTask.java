@@ -34,9 +34,8 @@ public class FrameRenderTask extends RecursiveAction {
 		byte[] data = new byte[ 128 * 128 ];
 		int[] higherMapPixels = new int[ 128 * 128 ];
 		int[] lowerMapPixels = new int[ 128 * 128 ];
-		int[] globalOverlay = Cartographer.getInstance().getOverlay().getImage();
-		int[] loadingBackground = Cartographer.getInstance().getLoadingImage().getImage();
-		MapCursor[] cursors = new MapCursor[ info.worldCursors.size() + info.mapCursors.size() ];
+		int[] globalOverlay = info.map.getOverlayImage().getImage();
+		int[] loadingBackground = info.map.getBackgroundImage().getImage();
 		
 		// Set the information to the render info
 		info.data = data;
@@ -44,7 +43,6 @@ public class FrameRenderTask extends RecursiveAction {
 		info.lowerPixelInfo = lowerMapPixels;
 		info.globalOverlay = globalOverlay;
 		info.background = loadingBackground;
-		info.cursors = cursors;
 		
 		// Get the locations around that need rendering
 		Location loc = info.setting.location;
@@ -90,7 +88,7 @@ public class FrameRenderTask extends RecursiveAction {
 		// Calculate the cursor info while the sub render tasks are running
 		double yawOffset = rotating ? loc.getYaw() + 180 : 0;
 		
-		int index = 0;
+		List< MapCursor > cursorList = new ArrayList< MapCursor >( info.mapCursors );
 		for ( WorldCursor cursor : info.worldCursors ) {
 			Location cursorLoc = cursor.getLocation();
 			double yaw = cursorLoc.getYaw() - yawOffset + 720;
@@ -102,16 +100,20 @@ public class FrameRenderTask extends RecursiveAction {
 			double newRelX = 2 * distance * RivenMath.cos( ( float ) radians );
 			double newRelZ = 2 * distance * RivenMath.sin( ( float ) radians );
 
-			// TODO Check if this really works
-			// TODO Also use the global flag somewhere...
-			int normalizedX = ( int ) Math.min( 127, Math.max( -127, newRelX / info.setting.zoomscale ) );
-			int normalizedZ = ( int ) Math.min( 127, Math.max( -127, newRelZ / info.setting.zoomscale ) );
-
-			cursors[ index++ ] = Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() );
+			double scaledX = newRelX / info.setting.zoomscale;
+			double scaledZ = newRelZ / info.setting.zoomscale;
+			
+			// The range may range from -127 to 127. Not sure about -128
+			if ( cursor.isGlobal() ||
+					( scaledX > -128 && scaledX < 128 &&
+					  scaledZ > -128 && scaledZ < 128 ) ) {
+				int normalizedX = ( int ) Math.min( 127, Math.max( -127, scaledX ) );
+				int normalizedZ = ( int ) Math.min( 127, Math.max( -127, scaledZ ) );
+				
+				cursorList.add( Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() ) );
+			}
 		}
-		for ( MapCursor cursor : info.mapCursors ) {
-			cursors[ index++ ] = cursor;
-		}
+		info.cursors = cursorList.toArray( new MapCursor[ cursorList.size() ] );
 		
 		// Once they have been run, join them together
 		for ( SubRenderTask task : tasks ) {

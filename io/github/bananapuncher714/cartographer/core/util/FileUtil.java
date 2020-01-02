@@ -138,4 +138,17 @@ public final class FileUtil {
 			exception.printStackTrace();
 		}
 	}
+	
+	public static File getImageFile( File dir, String prefix ) {
+		File image = new File( dir + "/" + prefix + ".png" );
+		for ( File file : dir.listFiles() ) {
+			String fileName = file.getName();
+			if ( fileName.equalsIgnoreCase( prefix + ".gif" ) ) {
+				return file;
+			} else if ( fileName.equalsIgnoreCase( prefix + ".png" ) || fileName.equalsIgnoreCase( prefix + ".jpg" ) || fileName.equalsIgnoreCase( prefix + ".jpeg" ) || fileName.equalsIgnoreCase( prefix + ".bmp" ) ) {
+				image = file;
+			}
+		}
+		return image;
+	}
 }
