@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<properties>
+		<plugin.version>2.12.9</plugin.version>
+	</properties>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.github.bananapuncher714</groupId>
+	<artifactId>Cartographer2_Master</artifactId>
+	<version>${plugin.version}</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>Cartographer2_Main</module>
+		<module>Cartographer2_v1_8_R3</module>
+		<module>Cartographer2_v1_9_R2</module>
+		<module>Cartographer2_v1_10_R1</module>
+		<module>Cartographer2_v1_11_R1</module>
+		<module>Cartographer2_v1_12_R1</module>
+		<module>Cartographer2_v1_13_R2</module>
+		<module>Cartographer2_v1_14_R1</module>
+		<module>Cartographer2_v1_15_R1</module>
+		<module>Cartographer2</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
