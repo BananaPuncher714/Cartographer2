@@ -9,7 +9,7 @@ import org.apache.commons.lang.Validate;
  * 
  * @author BananaPuncher714
  */
-public class ChunkData implements Serializable {
+public final class ChunkData implements Serializable {
 	/**
 	 * Serial id until I can make a better serialization method.
 	 */
@@ -44,7 +44,6 @@ public class ChunkData implements Serializable {
 	 * Get the data for this chunk.
 	 * 
 	 * @return
-	 * The chunk data in byte array form.
 	 */
 	public byte[] getData() {
 		return data;

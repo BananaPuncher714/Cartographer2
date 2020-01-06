@@ -302,15 +302,15 @@ public class Minimap implements ChunkNotifier {
 		localCursorProviders.remove( provider );
 	}
 	
-	public Set< WorldCursorProvider > getCursorProviders() {
+	public Set< WorldCursorProvider > getWorldCursorProviders() {
 		return cursorProviders;
 	}
 	
-	public Set< MapCursorProvider > getLocalCursorProviders() {
+	public Set< MapCursorProvider > getMapCursorProviders() {
 		return localCursorProviders;
 	}
 	
-	public Set< MapPixelProvider > getPixelProviders() {
+	public Set< MapPixelProvider > getMapPixelProviders() {
 		return pixelProviders;
 	}
 	

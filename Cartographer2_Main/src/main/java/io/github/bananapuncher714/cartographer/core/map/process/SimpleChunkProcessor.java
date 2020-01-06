@@ -2,8 +2,11 @@ package io.github.bananapuncher714.cartographer.core.map.process;
 
 import java.awt.Color;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChunkSnapshot;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -56,20 +59,109 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
 				int prevVal = buffer[ x ];
 				buffer[ x ] = height;
-				CrossVersionMaterial material = Cartographer.getUtil().getBlockType( snapshot, x, height, z );
-				Color color = palette.getColor( material );
-				if ( prevVal > 0 ) {
-					if ( prevVal == height ) {
+				Color color = palette.getDefaultColor();
+				if ( Cartographer.getUtil().isWater( snapshot, x, height, z ) ) {
+					// WATER RENDERING TIME
+					int depth = BlockUtil.getWaterDepth( snapshot, x, height, z );
+					boolean even = ( ( x + z ) % 2 ) == 0;
+					// 1-2
+					// 3-4
+					// 5-6
+					// 7-9
+					// 10+
+					color = palette.getColor( new CrossVersionMaterial( Material.WATER ) );
+					if ( depth < 3 ) {
+						// Do nothing
+					} else if ( depth < 5 ) {
+						if ( even ) {
+							// Do nothing
+						} else {
+							color = JetpImageUtil.brightenColor( color, -10 );
+						}
+					} else if ( depth < 7 ) {
 						color = JetpImageUtil.brightenColor( color, -10 );
-					} else if ( prevVal > height ) {
+					} else if ( depth < 10 ) {
+						if ( even ) {
+							color = JetpImageUtil.brightenColor( color, -10 );
+						} else {
+							color = JetpImageUtil.brightenColor( color, -30 );
+						}
+					} else {
 						color = JetpImageUtil.brightenColor( color, -30 );
 					}
+				} else {
+					// It's something on land
+					CrossVersionMaterial material = Cartographer.getUtil().getBlockType( snapshot, x, height, z );
+					color = palette.getColor( material );
+					if ( prevVal > 0 ) {
+						if ( prevVal == height ) {
+							color = JetpImageUtil.brightenColor( color, -10 );
+						} else if ( prevVal > height ) {
+							color = JetpImageUtil.brightenColor( color, -30 );
+						}
+					}
+					
 				}
-				
 				data[ x + z * 16 ] = JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
 			}
 		}
 		
 		return new ChunkData( data );
+	}
+	
+	@Override
+	public int process( Location location, MinimapPalette palette ) {
+		Validate.notNull( palette );
+		int height = BlockUtil.getHighestYAt( location, palette.getTransparentBlocks() );
+		int prevVal = BlockUtil.getHighestYAt( location.clone().subtract( 0, 0, 1 ), palette.getTransparentBlocks() );
+		Location highest = location.clone();
+		highest.setY( height );
+		Block block = highest.getBlock();
+		Color color = palette.getDefaultColor();
+		if ( Cartographer.getUtil().isWater( block ) ) {
+			// WATER RENDERING TIME
+			int depth = BlockUtil.getWaterDepth( block );
+			int x = block.getX();
+			int z = block.getZ();
+			boolean even = ( ( x + z ) % 2 ) == 0;
+			// 1-2
+			// 3-4
+			// 5-6
+			// 7-9
+			// 10+
+			color = palette.getColor( new CrossVersionMaterial( Material.WATER ) );
+			if ( depth < 3 ) {
+				// Do nothing
+			} else if ( depth < 5 ) {
+				if ( even ) {
+					// Do nothing
+				} else {
+					color = JetpImageUtil.brightenColor( color, -10 );
+				}
+			} else if ( depth < 7 ) {
+				color = JetpImageUtil.brightenColor( color, -10 );
+			} else if ( depth < 10 ) {
+				if ( even ) {
+					color = JetpImageUtil.brightenColor( color, -10 );
+				} else {
+					color = JetpImageUtil.brightenColor( color, -30 );
+				}
+			} else {
+				color = JetpImageUtil.brightenColor( color, -30 );
+			}
+		} else {
+			// It's something on land
+			CrossVersionMaterial material = Cartographer.getInstance().getHandler().getUtil().getBlockType( block );
+			color = palette.getColor( material );
+			if ( prevVal > 0 ) {
+				if ( prevVal == height ) {
+					color = JetpImageUtil.brightenColor( color, -10 );
+				} else if ( prevVal > height ) {
+					color = JetpImageUtil.brightenColor( color, -30 );
+				}
+			}
+		}
+		
+		return color.getRGB();
 	}
 }

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -202,7 +206,8 @@ public class PaletteManager {
 		} else {
 			config.set( "default", toString( palette.getDefaultRGB(), format ) );
 		}
-		List< String > transparent = new ArrayList< String >();
+		// Alphabetically sort the strings
+		Set< String > transparent = new TreeSet< String >();
 		for ( CrossVersionMaterial mat : palette.getTransparentBlocks() ) {
 			String key = mat.material.name();
 			if ( mat.durability != 0 ) {
@@ -210,14 +215,18 @@ public class PaletteManager {
 			}
 			transparent.add( key );
 		}
-		config.set( "transparent-blocks", transparent );
-		
+		config.set( "transparent-blocks", new ArrayList< String >( transparent ) );
+
+		Map< String, CrossVersionMaterial > keys = new TreeMap< String, CrossVersionMaterial >();
 		for ( CrossVersionMaterial mat : palette.getMaterials() ) {
 			String key = mat.material.name();
 			if ( mat.durability != 0 ) {
 				key += "," + mat.durability;
 			}
-			config.set( "colors." + key, toString( palette.getRGB( mat ), format ) );
+			keys.put( key, mat );
+		}
+		for ( Entry< String, CrossVersionMaterial > entry : keys.entrySet() ) {
+			config.set( "colors." + entry.getKey(), toString( palette.getRGB( entry.getValue() ), format ) );
 		}
 	}
 	

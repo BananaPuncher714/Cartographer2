@@ -20,6 +20,7 @@ import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkPreProcessEvent;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
+import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 /**
@@ -56,6 +57,10 @@ public class MapDataCache {
 	public MapDataCache setNotifier( ChunkNotifier notifier ) {
 		this.notifier = notifier;
 		return this;
+	}
+	
+	public ChunkNotifier getChunkNotifier() {
+		return notifier;
 	}
 	
 	public void update() {
@@ -178,6 +183,10 @@ public class MapDataCache {
 		this.provider = provider;
 	}
 	
+	public ChunkDataProvider getChunkDataProvider() {
+		return provider;
+	}
+	
 	public Map< ChunkLocation, ChunkData > getData() {
 		return data;
 	}
@@ -275,7 +284,7 @@ public class MapDataCache {
 			ChunkData cData = data.get( chunkLoc );
 			if ( cData != null ) {
 				int index = ( south.getBlockX() - ( chunkLoc.getX() << 4 ) ) + ( south.getBlockZ() - ( chunkLoc.getZ() << 4 ) ) * 16;
-				cData.getData()[ index ] = MapUtil.getColorAt( south, palette );
+				cData.getData()[ index ] = JetpImageUtil.getBestColorIncludingTransparent( provider.process( south, palette ) );
 			} else {
 				addToProcessQueue( chunkLoc );
 			}

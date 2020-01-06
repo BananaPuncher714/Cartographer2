@@ -20,15 +20,46 @@ import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 
 public final class BlockUtil {
 	
+	public static int getWaterDepth( Block block ) {
+		int depth = 0;
+		while ( Cartographer.getUtil().isWater( block ) ) {
+			depth++;
+			block = block.getRelative( BlockFace.DOWN );
+			if ( block == null || block.getY() < 0 ) {
+				return depth;
+			}
+		}
+		return depth;
+	}
+	
 	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z ) {
+		// 1-2
+		// 3-4
+		// 5-6
+		// 7-9
+		// 10+
 		int originalY = y - 1;
-		while ( y > 0 && Cartographer.getUtil().isWater( Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material ) );
+		while ( y > 0 && Cartographer.getUtil().isWater( chunk, x, y--, z ) );
 		return originalY - y;
 	}
 	
 	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip ) {
-		while ( y > 0 && ( ( skip != null && skip.contains( Cartographer.getUtil().getBlockType( chunk, x, y--, z ) ) ) || ( skip == null && Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material == Material.AIR ) ) );
-		return y + 1;
+//		while ( y > 0 && ( ( skip != null && skip.contains( Cartographer.getUtil().getBlockType( chunk, x, y--, z ) ) ) || ( skip == null && Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material == Material.AIR ) ) );
+		for ( ; y > 0; y-- ) {
+			if ( Cartographer.getUtil().isWater( chunk, x, y, z ) ) {
+				return y;
+			}
+			
+			CrossVersionMaterial mat = Cartographer.getUtil().getBlockType( chunk, x, y, z );
+			if ( skip == null ) {
+				if ( mat.material != Material.AIR ) {
+					return y;
+				}
+			} else if ( !skip.contains( mat ) ) {
+				return y;
+			}
+		}
+		return y;
 	}
 	
 	public static int getHighestYAt( Location location, Set< CrossVersionMaterial > skip ) {
@@ -41,7 +72,7 @@ public final class BlockUtil {
 				}
 			} else {
 				CrossVersionMaterial blockType = Cartographer.getUtil().getBlockType( location.getBlock() );
-				if ( !skip.contains( blockType ) ) {
+				if ( !skip.contains( blockType ) || Cartographer.getUtil().isWater( location.getBlock() ) ) {
 					return y;
 				}
 			}

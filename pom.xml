@@ -23,6 +23,7 @@
 		<module>Cartographer2_v1_14_R1</module>
 		<module>Cartographer2_v1_15_R1</module>
 		<module>Cartographer2</module>
+		<module>Cartographer2_ModuleVanilla</module>
 	</modules>
 
 	<build>

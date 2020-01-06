@@ -10,8 +10,10 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.ModuleManager;
 import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 /**
@@ -23,6 +25,7 @@ public abstract class Module {
 	private Cartographer plugin;
 	private boolean isEnabled = false;
 	private ModuleDescription description;
+	private ModuleTracker tracker;
 	private File dataFolder;
 
 	/**
@@ -46,6 +49,7 @@ public abstract class Module {
 		Validate.notNull( description );
 		Validate.notNull( file );
 		this.plugin = plugin;
+		this.tracker = new ModuleTracker();
 		this.description = description;
 		this.dataFolder = file;
 	}
@@ -64,6 +68,10 @@ public abstract class Module {
 	public void onDisable() {
 	}
 
+	protected final ModuleTracker getTracker() {
+		return tracker;
+	}
+	
 	/**
 	 * Gets a command with the given name.
 	 * 
@@ -78,12 +86,25 @@ public abstract class Module {
 		if ( command == null ) {
 			command = BukkitUtil.createPluginCommandFor( description.getName(), id );
 		}
+		tracker.getCommands().add( command );
 		
 		return command;
 	}
 	
+	protected BukkitTask runTaskTimer( Runnable runnable, long delay, long interval ) {
+		BukkitTask task = Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), runnable, delay, interval );
+		tracker.getTasks().add( task );
+		return task;
+	}
+	
+	protected BukkitTask runTask( Runnable runnable, long delay ) {
+		BukkitTask task = Bukkit.getScheduler().runTaskLater( Cartographer.getInstance(), runnable, delay );
+		tracker.getTasks().add( task );
+		return task;
+	}
+	
 	/**
-	 * Set to enable or disable. You should use {@link ModuleManager#enableModule(Module)} or {@link ModuleManager#disableModule(Module)} instead.
+	 * Set to enable or disable. You should use {@link ModuleManager#enableModule( Module )} or {@link ModuleManager#disableModule( Module )} instead.
 	 * 
 	 * @param enabled
 	 * Enabled or not.
@@ -136,6 +157,7 @@ public abstract class Module {
 	 */
 	public void registerListener( Listener listener ) {
 		Validate.notNull( listener );
+		tracker.getListeners().add( listener );
 		Bukkit.getPluginManager().registerEvents( listener, plugin );
 	}
 	
@@ -177,6 +199,16 @@ public abstract class Module {
 	 */
 	public final ModuleDescription getDescription() {
 		return description;
+	}
+
+	/**
+	 * Quick get file method.
+	 * 
+	 * @return
+	 * The jar file of this module.
+	 */
+	public final File getFile() {
+		return description.getFile();
 	}
 	
 	/**

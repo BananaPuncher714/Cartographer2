@@ -108,7 +108,7 @@ public class CartographerRenderer extends MapRenderer {
 			
 			// Check if the minimap which they're trying to view actually exists
 			PlayerSetting setting = entry.getValue();
-			Minimap map = mapId == null ? null : Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
+			Minimap map = Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
 				SimpleImage missingImage = Cartographer.getInstance().getMissingMapImage();
 				byte[] missingMapData = JetpImageUtil.dither( missingImage.getWidth(), missingImage.getImage() );
@@ -223,7 +223,7 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public Minimap getMinimap() {
-		return mapId == null ? null : Cartographer.getInstance().getMapManager().getMinimaps().get( mapId );
+		return Cartographer.getInstance().getMapManager().getMinimaps().get( mapId );
 	}
 	
 	public void setMinimap( Minimap map ) {

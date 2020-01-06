@@ -75,8 +75,15 @@ public class Util_1_8 implements GeneralUtil {
 	}
 	
 	@Override
-	public boolean isWater( Material material ) {
-		return material == Material.WATER;
+	public boolean isWater( Block block ) {
+		Material material = block.getType();
+		return material == Material.WATER || material.name().equalsIgnoreCase( "STATIONARY_WATER" );
+	}
+	
+	@Override
+	public boolean isWater( ChunkSnapshot snapshot, int x, int y, int z ) {
+		CrossVersionMaterial material = getBlockType( snapshot, x, y, z );
+		return material.material == Material.WATER || material.material.name().equalsIgnoreCase( "STATIONARY_WATER" );
 	}
 	
 	@Override

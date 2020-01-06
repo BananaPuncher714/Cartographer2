@@ -329,7 +329,7 @@ public final class NBTEditor {
 	 * 
 	 * @param item
 	 * The itemstack to get the keys from
-	 * @param keys
+	 * @param key
 	 * The keys to fetch; an integer after a key value indicates that it should get the nth place of
 	 * the previous compound because it is a list;
 	 * @return
@@ -471,9 +471,9 @@ public final class NBTEditor {
 	 * 
 	 * Gets an NBT tag in a given entity with the specified keys
 	 * 
-	 * @param entity
+	 * @param block
 	 * The entity to get the keys from
-	 * @param keys
+	 * @param key
 	 * The keys to fetch; an integer after a key value indicates that it should get the nth place of
 	 * the previous compound because it is a list;
 	 * @return
@@ -531,12 +531,12 @@ public final class NBTEditor {
 	 * Sets an NBT tag in an entity with the provided keys and value
 	 * Should use the {@link set(Object, Object, Object...)} method instead
 	 * 
-	 * @param entity
+	 * @param item
 	 * The entity to set
+	 * @param key
+	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
 	 * @param value
 	 * The value to set
-	 * @param keys
-	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
 	 * @return
 	 * A new ItemStack with the updated NBT tags
 	 */
@@ -567,7 +567,7 @@ public final class NBTEditor {
 	 * 
 	 * @param block
 	 * The block to get the keys from
-	 * @param keys
+	 * @param key
 	 * The keys to fetch; an integer after a key value indicates that it should get the nth place of
 	 * the previous compound because it is a list;
 	 * @return
@@ -637,12 +637,14 @@ public final class NBTEditor {
 	 * Sets an NBT tag in an block with the provided keys and value
 	 * Should use the {@link set(Object, Object, Object...)} method instead
 	 * 
-	 * @param block
+	 * @param item
 	 * The block to set
+	 * @param key
+	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
 	 * @param value
 	 * The value to set
-	 * @param keys
-	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
+	 * @return
+	 * A new ItemStack with the updated NBT tags
 	 */
 	public final static void setBlockTag( Block block, Object value, Object... keys ) {
 		try {

@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.command;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,10 +42,28 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 			aos.add( "reload" );
 			aos.add( "enable" );
 			aos.add( "disable" );
+			aos.add( "load" );
+			aos.add( "unload" );
 		} else if ( args.length == 2 ) {
-			if ( args[ 0 ].equalsIgnoreCase( "reload" ) ) {
+			if ( args[ 0 ].equalsIgnoreCase( "unload" ) ) {
 				for ( Module module : plugin.getModuleManager().getModules() ) {
 					aos.add( module.getName() );
+				}
+			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) ) {
+				for ( File file : Cartographer.getModuleDir().listFiles() ) {
+					if ( file.exists() && file.isFile() ) {
+						boolean found = false;
+						for ( Module module : plugin.getModuleManager().getModules() ) {
+							File moduleFile = module.getFile();
+							if ( moduleFile.getAbsolutePath().equals( file.getAbsolutePath() ) ) {
+								found = true;
+								break;
+							}
+						}
+						if ( !found ) {
+							aos.add( file.getName() );
+						}
+					}
 				}
 			} else if ( args[ 0 ].equalsIgnoreCase( "enable" ) ) {
 				for ( Module module : plugin.getModuleManager().getModules() ) {
@@ -83,6 +102,10 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 					enable( sender, args );
 				} else if ( option.equalsIgnoreCase( "disable" ) ) {
 					disable( sender, args );
+				} else if ( option.equalsIgnoreCase( "unload" ) ) {
+					unload( sender, args );
+				} else if ( option.equalsIgnoreCase( "load" ) ) {
+					load( sender, args );
 				} else {
 					sender.sendMessage( ChatColor.RED + "Usage: /cartographer module <list|reload|enable|disable> ..." );
 				}
@@ -125,27 +148,8 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	
 	private void reload( CommandSender sender, String[] args ) {
 		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
-		if ( args.length == 0 ) {
-			plugin.getModuleManager().disableModules();
-			plugin.getModuleManager().enableModules();
-			
-			sender.sendMessage( ChatColor.GOLD + "Reloaded all modules!" );
-		} else {
-			StringBuilder builder = new StringBuilder();
-			for ( String string : args  ) {
-				builder.append( string );
-				builder.append( " " );
-			}
-			String moduleName = builder.toString().trim();
-			
-			Module module = plugin.getModuleManager().getModule( moduleName );
-			Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
-			
-			plugin.getModuleManager().disableModule( module );
-			plugin.getModuleManager().enableModule( module );
-			
-			sender.sendMessage( ChatColor.GOLD + "Reloaded module '" + ChatColor.YELLOW + module.getName() + ChatColor.GOLD + "'" );
-		}
+		plugin.getModuleManager().reload();
+		sender.sendMessage( ChatColor.GOLD + "Reloaded all modules!" );
 	}
 	
 	private void enable( CommandSender sender, String[] args ) {
@@ -195,5 +199,54 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		} else {
 			sender.sendMessage( ChatColor.RED + "Module '" + moduleName + "' is already disabled!" );
 		}
+	}
+	
+	private void load( CommandSender sender, String[] args ) {
+		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module load <id>" );
+		StringBuilder builder = new StringBuilder();
+		for ( String string : args  ) {
+			builder.append( string );
+			builder.append( " " );
+		}
+		String moduleName = builder.toString().trim().replace( "/", "" );
+
+		File file = new File( Cartographer.getModuleDir() + "/" + moduleName );
+		Validate.isTrue( file.exists() && file.isFile(), ChatColor.RED + "'" + moduleName + "' does not exist!" );
+		
+		for ( Module module : plugin.getModuleManager().getModules() ) {
+			if ( file.getAbsolutePath().equals( module.getFile().getAbsolutePath() ) ) {
+				sender.sendMessage( ChatColor.RED + "'" + module + "' is already loaded!" );
+			}
+		}
+		
+		Module module = plugin.getModuleManager().loadModule( file );
+		plugin.getModuleManager().registerModule( module );
+
+		boolean valid = plugin.getModuleManager().enableModule( module );
+		
+		if ( valid ) {
+			sender.sendMessage( ChatColor.GOLD + "Loaded and enabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+		} else {
+			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + moduleName + "', Check the server log for details.(Missing dependencies?)" );
+		}
+	}
+	
+	private void unload( CommandSender sender, String[] args ) {
+		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module unload <id>"  );
+		StringBuilder builder = new StringBuilder();
+		for ( String string : args  ) {
+			builder.append( string );
+			builder.append( " " );
+		}
+		String moduleName = builder.toString().trim();
+		
+		Module module = plugin.getModuleManager().getModule( moduleName );
+		Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
+		
+		plugin.getModuleManager().unloadModule( module );
+		
+		sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
 	}
 }

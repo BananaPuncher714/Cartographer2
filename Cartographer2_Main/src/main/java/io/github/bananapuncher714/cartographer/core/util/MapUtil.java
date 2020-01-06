@@ -81,25 +81,7 @@ public class MapUtil {
 		return ( byte ) Math.min( 15, Math.max( 0, ( ( ( degree + 371.25 ) % 360 ) / 22.5 ) ) );
 	}
 	
-	public static byte getColorAt( Location location, MinimapPalette palette ) {
-		int height = BlockUtil.getHighestYAt( location, palette.getTransparentBlocks() );
-		int prevVal = BlockUtil.getHighestYAt( location.clone().subtract( 0, 0, 1 ), palette.getTransparentBlocks() );
-		Location highest = location.clone();
-		highest.setY( height );
-		CrossVersionMaterial material = Cartographer.getInstance().getHandler().getUtil().getBlockType( highest.getBlock() );
-		Color color = palette.getColor( material );
-		
-		if ( prevVal > 0 ) {
-			if ( prevVal == height ) {
-				color = JetpImageUtil.brightenColor( color, -10 );
-			} else if ( prevVal > height ) {
-				color = JetpImageUtil.brightenColor( color, -30 );
-			}
-		}
-		
-		return JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
-	}
-	
+	//TODO add dithering in some way?
 	public static Set< MapPixel > getPixelsFor( Image image, int x, int y ) {
 		BufferedImage bImage = JetpImageUtil.toBufferedImage( image );
 		int width = bImage.getWidth();

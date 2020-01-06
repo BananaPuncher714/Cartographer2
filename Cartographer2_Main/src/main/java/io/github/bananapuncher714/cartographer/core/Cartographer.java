@@ -137,7 +137,7 @@ public class Cartographer extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		getLogger().info( "Disabling modules..." );
-		moduleManager.unloadModules();
+		moduleManager.terminate();
 		
 		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();

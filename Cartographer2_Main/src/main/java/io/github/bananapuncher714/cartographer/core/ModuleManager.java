@@ -18,13 +18,51 @@ import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 public class ModuleManager {
 	protected Cartographer plugin;
+	protected ModuleLoader loader;
 	protected Map< String, Module > modules = new HashMap< String, Module >();
 	protected File moduleFolder;
 	
 	protected ModuleManager( Cartographer plugin, File moduleFolder ) {
 		this.plugin = plugin;
 		this.moduleFolder = moduleFolder;
+		loader = new ModuleLoader( this, plugin );
 		moduleFolder.mkdirs();
+	}
+	
+	protected void terminate() {
+		disableModules();
+		unloadModules();
+	}
+	
+	public void registerModule( Module module ) {
+		modules.put( module.getName(), module );
+	}
+	
+	public void registerAndEnable( Module module ) {
+		registerModule( module );
+		enableModule( module );
+	}
+	
+	public void reload() {
+		plugin.getLogger().info( "[ModuleManager] Reloading modules..." );
+		unloadModules();
+		loadModules();
+		enableModules();
+		plugin.getLogger().info( "[ModuleManager] Done reloading modules");
+	}
+	
+	public Module loadModule( File file ) {
+		ModuleDescription description = loader.getDescriptionFor( file );
+		plugin.getLogger().info( "[ModuleManager] Loading " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+		
+		Module module = loader.load( description );
+		
+		File dataFolder = new File( moduleFolder + "/" + description.getName() );
+		module.load( plugin, description, dataFolder );
+		
+		new ModuleLoadEvent( module ).callEvent();
+		
+		return module;
 	}
 	
 	protected void loadModules() {
@@ -37,35 +75,32 @@ public class ModuleManager {
 			registerModule( module );
 		}
 	}
-	
-	public void registerModule( Module module ) {
-		modules.put( module.getName(), module );
-	}
-	
-	public void registerAndEnable( Module module ) {
-		registerModule( module );
-		module.setEnabled( true );
-	}
-	
-	public Module loadModule( File file ) {
-		ModuleDescription description = ModuleLoader.getDescriptionFor( file );
-		plugin.getLogger().info( "[ModuleManager] Loading " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 		
-		Module module = ModuleLoader.load( file, description );
-		
-		File dataFolder = new File( moduleFolder + "/" + description.getName() );
-		module.load( plugin, description, dataFolder );
-		
-		new ModuleLoadEvent( module ).callEvent();
-		
-		return module;
-	}
-	
 	public void loadModule( Module module, ModuleDescription description ) {
 		File dataFolder = new File( moduleFolder + "/" + description.getName() );
 		module.load( plugin, description, dataFolder );
 		
 		new ModuleLoadEvent( module ).callEvent();
+	}
+	
+	protected void unloadModules() {
+		Set< String > keys = new HashSet< String >( modules.keySet() );
+		for ( String id : keys ) {
+			Module module = modules.get( id );
+			
+			unloadModule( module );
+		}
+	}
+	
+	public void unloadModule( Module module ) {
+		module.unload();
+		
+		plugin.getLogger().info( "[ModuleManager] Unloading " + module.getName() );
+		disableModule( module );
+		
+		loader.unload( module );
+		
+		modules.remove( module.getName() );
 	}
 	
 	public Module getModule( String name ) {
@@ -104,18 +139,6 @@ public class ModuleManager {
 		return true;
 	}
 	
-	public boolean disableModule( Module module ) {
-		Validate.notNull( module );
-		if ( module.isEnabled() ) {
-			ModuleDescription description = module.getDescription();
-			plugin.getLogger().info( "[ModuleManager] Disabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
-			module.setEnabled( false );
-			new ModuleDisableEvent( module ).callEvent();
-			return true;
-		}
-		return false;
-	}
-	
 	public void enableModules() {
 		// Load all modules, but check if their dependencies are loaded
 		// This should be called after the server is done loading.
@@ -125,19 +148,26 @@ public class ModuleManager {
 		}
 	}
 	
+	public boolean disableModule( Module module ) {
+		Validate.notNull( module );
+		if ( module.isEnabled() ) {
+			ModuleDescription description = module.getDescription();
+			new ModuleDisableEvent( module ).callEvent();
+			plugin.getLogger().info( "[ModuleManager] Disabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+			module.setEnabled( false );
+			loader.disable( module );
+			return true;
+		}
+		return false;
+	}
+	
 	public void disableModules() {
 		for ( Module module : modules.values() ) {
 			disableModule( module );
 		}
 	}
 	
-	protected void unloadModules() {
-		for ( String id : modules.keySet() ) {
-			Module module = modules.get( id );
-			disableModule( module );
-			module.unload();
-			
-			plugin.getLogger().info( "[ModuleManager] Unloading " + id );
-		}
+	public ModuleLoader getLoader() {
+		return loader;
 	}
 }

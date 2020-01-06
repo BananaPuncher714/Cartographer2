@@ -1,8 +1,11 @@
 package io.github.bananapuncher714.cartographer.core.module;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.Validate;
 
 public class ModuleDescription {
 	private static final Pattern VALID_NAME = Pattern.compile( "^[A-Za-z0-9 _.-]+$" );
@@ -14,15 +17,24 @@ public class ModuleDescription {
 	protected final String version;
 	protected String website;
 	protected final Set< String > dependencies = new HashSet< String >();
+	protected final File file;
 	
-	public ModuleDescription( String name, String main, String author, String version ) {
+	public ModuleDescription( File jarFile, String name, String main, String author, String version ) {
 		if ( !VALID_NAME.matcher( name ).matches() ) {
 			throw new IllegalArgumentException( "name " + name + " contains invalid characters." );
 		}
+		Validate.notNull( jarFile );
+		Validate.notNull( name );
+		
+		this.file = jarFile;
 		this.name = name;
 		this.main = main;
 		this.author = author;
 		this.version = version;
+	}
+	
+	public File getFile() {
+		return file;
 	}
 
 	public String getMain() {

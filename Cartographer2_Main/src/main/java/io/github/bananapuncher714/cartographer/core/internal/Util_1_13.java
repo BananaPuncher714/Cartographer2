@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -53,8 +55,23 @@ public class Util_1_13 implements GeneralUtil {
 	}
 	
 	@Override
-	public boolean isWater( Material material ) {
-		return material == Material.WATER;
+	public boolean isWater( Block block ) {
+		BlockData data = block.getBlockData();
+		if ( data instanceof Waterlogged ) {
+			Waterlogged waterlogged = ( Waterlogged ) data;
+			return waterlogged.isWaterlogged();
+		}
+		return data.getMaterial() == Material.WATER || data.getMaterial() == Material.SEAGRASS || data.getMaterial() == Material.TALL_SEAGRASS || data.getMaterial() == Material.KELP_PLANT || data.getMaterial() == Material.KELP;
+	}
+	
+	@Override
+	public boolean isWater( ChunkSnapshot snapshot, int x, int y, int z ) {
+		BlockData data = snapshot.getBlockData( x, y, z );
+		if ( data instanceof Waterlogged ) {
+			Waterlogged waterlogged = ( Waterlogged ) data;
+			return waterlogged.isWaterlogged();
+		}
+		return data.getMaterial() == Material.WATER || data.getMaterial() == Material.SEAGRASS || data.getMaterial() == Material.TALL_SEAGRASS || data.getMaterial() == Material.KELP_PLANT || data.getMaterial() == Material.KELP;
 	}
 	
 	@Override

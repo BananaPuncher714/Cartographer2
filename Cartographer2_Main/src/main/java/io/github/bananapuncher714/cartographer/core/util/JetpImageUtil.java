@@ -171,6 +171,18 @@ public final class JetpImageUtil {
 		return map;
 	}
 
+	public static BufferedImage ditherImage( Image image ) {
+		BufferedImage bImage = toBufferedImage( image );
+		byte[] dithered = dither( image );
+		int[] argb = new int[ dithered.length ];
+		for ( int i = 0; i < dithered.length; i++ ) {
+			argb[ i ] = getColorFromMinecraftPalette( dithered[ i ] );
+		}
+		BufferedImage newImage = new BufferedImage( bImage.getWidth(), bImage.getHeight(), BufferedImage.TYPE_INT_ARGB );
+		newImage.setRGB( 0, 0, bImage.getWidth(), bImage.getHeight(), argb, 0, bImage.getWidth() );
+		return newImage;
+	}
+	
 	public static byte[] dither( Image image ) {
 		BufferedImage bImage = toBufferedImage( image );
 		return dither( bImage.getWidth(), bImage.getRGB( 0, 0, bImage.getWidth(), bImage.getHeight(), null, 0, bImage.getWidth() ) );

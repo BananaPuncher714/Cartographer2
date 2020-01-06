@@ -75,14 +75,30 @@ public interface GeneralUtil {
 	boolean isValidHand( PlayerInteractEvent event );
 	
 	/**
-	 * Check if a material is water.
+	 * Check if a block at the given position is water.
 	 * 
-	 * @param material
-	 * Includes flowing water as water.
+	 * @param snapshot
+	 * The snapshot to check
+	 * @param x
+	 * X coordinate from 0 to 15.
+	 * @param y
+	 * Y coordinate from 0 to 255
+	 * @param z
+	 * Z coordinate from 0 to 15.
 	 * @return
-	 * Whether the material provided is some form of water.
+	 * If the block is some form of water, included waterlogged and kelp.
 	 */
-	boolean isWater( Material material );
+	boolean isWater( ChunkSnapshot snapshot, int x, int y, int z );
+	
+	/**
+	 * Check if a block is water.
+	 * 
+	 * @param block
+	 * The block to check, cannot be null.
+	 * @return
+	 * If the block is some form of water, included waterlogged and kelp.
+	 */
+	boolean isWater( Block block );
 	
 	/**
 	 * Get the material of the block in the chunk snapshot at the specified coordinates.
