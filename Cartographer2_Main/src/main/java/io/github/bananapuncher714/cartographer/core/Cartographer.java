@@ -227,7 +227,6 @@ public class Cartographer extends JavaPlugin {
 	
 	private void loadInit() {
 		if ( !README_FILE.exists() ) {
-			FileUtil.saveToFile( getResource( "README.md" ), README_FILE, false );
 			FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
 			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder() + "/" + "overlay.gif" ), false );
@@ -238,6 +237,7 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.15.1.yml" ), false );
 		}
+		FileUtil.saveToFile( getResource( "README.md" ), README_FILE, true );
 	}
 	
 	private void loadData() {

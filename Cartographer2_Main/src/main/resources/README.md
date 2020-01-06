@@ -10,16 +10,42 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - Delete this file to regenerate any missing files/folders, such as the built in palettes, or images.
 
 ## Commands
-- `/cartographer  <create|get|delete|reload|unload|load> ...`
+- `/cartographer  <create|get|delete|reload|unload|load|list|module> ...`
   - `/cartographer create <id>` - Create a minimap with the given id. Minimaps can span worlds, so normally one is enough.
-  - `/cartographer delete <id>` - Delete the minimap with the given id. Removes it from the server and from disk
+  - `/cartographer delete <id>` - Delete the minimap with the given id. Removes it from the server and from disk.
   - `/cartographer get <id> [player] [slot]` - Get a map item for the minimap with the given id. A player and optional slot can be provided to be ran from console or command block.
-  - `/cartographer reload [id]` -  Reload Cartographer2's config, or reload a minimap if an id is provided
-  - `/cartographer unload <id>` - 
-  - `/cartographer load <id>` - 
+  - `/cartographer reload [id]` -  Reload Cartographer2's config, or reload a minimap if an id is provided.
+  - `/cartographer unload <id>` - Unload a minimap with the given id.
+  - `/cartographer load <id>` - Load an unloaded minimap with the given id.
+  - `/cartographer module <list|reload|unload|load|enable|disable> ...`
+    - `/cartographer module list` - List all the modules, regardless if they are disabled.
+    - `/cartographer module reload` - Reload all the modules.
+    - `/cartographer module enable <id>` - Enable the specified module.
+    - `/cartographer module disable <id>` - Disable the specified module.
+    - `/cartographer module load <file>` - Load the specified file.
+    - `/cartographer module unload <id>` - Unload the specified module.
 
 ## Permissions
-- `cartographer.admin` - Master permission to run the commands
+- `cartographer.admin` - Master permission.
+- `cartographer.reload` - Reload Cartographer2's settings and images.
+- `cartographer.map.admin` - Master permission for maps.
+- `cartographer.map.list` - List all minimaps.
+- `cartographer.map.reload` - Reload a minimap.
+- `cartographer.map.unload` - Unload a minimap.
+- `cartographer.map.load` - Load a minimap.
+- `cartographer.map.give` - Give a minimap to someone.
+- `cartographer.map.get` - Get a minimap for yourself.
+- `cartographer.map.create` - Create a new minimap.
+- `cartographer.map.delete` - Delete a minimap.
+- `cartographer.module` - Module command.
+- `cartographer.module.admin` - Master permission for modules.
+- `cartographer.module.list` - List all modules.
+- `cartographer.module.reload` - Reload all modules.
+- `cartographer.module.load` - Load a given module.
+- `cartographer.module.unload` - Unload a given module.
+- `cartographer.module.disable` - Disable a given module.
+- `cartographer.module.unload` - Enable a given module.
+
 
 ## Module ideas
 - Show land claims

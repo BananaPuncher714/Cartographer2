@@ -33,23 +33,32 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	@Override
 	public List< String > onTabComplete( CommandSender sender, Command arg1, String arg2, String[] args ) {
 		List< String > aos = new ArrayList< String >();
-		if ( !sender.hasPermission( "cartographer.admin" ) ) {
-			return aos;
-		}
 		
 		if ( args.length == 1 ) {
-			aos.add( "list" );
-			aos.add( "reload" );
-			aos.add( "enable" );
-			aos.add( "disable" );
-			aos.add( "load" );
-			aos.add( "unload" );
+			if ( sender.hasPermission( "cartographer.module.list" ) ) {
+				aos.add( "list" );
+			}
+			if ( sender.hasPermission( "cartographer.module.reload" ) ) {
+				aos.add( "reload" );
+			}
+			if ( sender.hasPermission( "cartographer.module.enable" ) ) {
+				aos.add( "enable" );
+			}
+			if ( sender.hasPermission( "cartographer.module.disable" ) ) {
+				aos.add( "disable" );
+			}
+			if ( sender.hasPermission( "cartographer.module.load" ) ) {
+				aos.add( "load" );
+			}
+			if ( sender.hasPermission( "cartographer.module.unload" ) ) {
+				aos.add( "unload" );
+			}
 		} else if ( args.length == 2 ) {
-			if ( args[ 0 ].equalsIgnoreCase( "unload" ) ) {
+			if ( args[ 0 ].equalsIgnoreCase( "unload" ) && sender.hasPermission( "cartographer.module.unload" ) ) {
 				for ( Module module : plugin.getModuleManager().getModules() ) {
 					aos.add( module.getName() );
 				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) ) {
+			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) && sender.hasPermission( "cartographer.module.load" ) ) {
 				for ( File file : Cartographer.getModuleDir().listFiles() ) {
 					if ( file.exists() && file.isFile() ) {
 						boolean found = false;
@@ -65,13 +74,13 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 						}
 					}
 				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "enable" ) ) {
+			} else if ( args[ 0 ].equalsIgnoreCase( "enable" ) && sender.hasPermission( "cartographer.module.enable" ) ) {
 				for ( Module module : plugin.getModuleManager().getModules() ) {
 					if ( !module.isEnabled() ) {
 						aos.add( module.getName() );
 					}
 				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "disable" ) ) {
+			} else if ( args[ 0 ].equalsIgnoreCase( "disable" ) && sender.hasPermission( "cartographer.module.disable" ) ) {
 				for ( Module module : plugin.getModuleManager().getModules() ) {
 					if ( module.isEnabled() ) {
 						aos.add( module.getName() );
@@ -90,7 +99,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	public boolean onCommand( CommandSender sender, Command arg1, String arg2, String[] args ) {
 		try {
 			if ( args.length == 0 ) {
-				sender.sendMessage( ChatColor.RED + "Usage: /cartographer module <list|reload|enable|disable> ..." );
+				sender.sendMessage( ChatColor.RED + "You must provide an argument!" );
 			} else if ( args.length > 0 ) {
 				String option = args[ 0 ];
 				args = CommandCartographer.pop( args );
@@ -107,7 +116,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 				} else if ( option.equalsIgnoreCase( "load" ) ) {
 					load( sender, args );
 				} else {
-					sender.sendMessage( ChatColor.RED + "Usage: /cartographer module <list|reload|enable|disable> ..." );
+					sender.sendMessage( ChatColor.RED + "Invalid argument!" );
 				}
 			}
 		} catch ( IllegalArgumentException exception ) {
@@ -117,7 +126,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	}
 	
 	private void list( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.list" ), ChatColor.RED + "You do not have permission to run this command!" );
 		
 		Set< Module > modules = plugin.getModuleManager().getModules();
 		if ( modules.isEmpty() ) {
@@ -147,13 +156,13 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	}
 	
 	private void reload( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.reload" ), ChatColor.RED + "You do not have permission to run this command!" );
 		plugin.getModuleManager().reload();
 		sender.sendMessage( ChatColor.GOLD + "Reloaded all modules!" );
 	}
 	
 	private void enable( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.enable" ), ChatColor.RED + "You do not have permission to run this command!" );
 		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module enable <id>" );
 		StringBuilder builder = new StringBuilder();
 		for ( String string : args  ) {
@@ -180,7 +189,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	}
 	
 	private void disable( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.disable" ), ChatColor.RED + "You do not have permission to run this command!" );
 		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module disable <id>"  );
 		StringBuilder builder = new StringBuilder();
 		for ( String string : args  ) {
@@ -202,7 +211,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	}
 	
 	private void load( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.load" ), ChatColor.RED + "You do not have permission to run this command!" );
 		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module load <id>" );
 		StringBuilder builder = new StringBuilder();
 		for ( String string : args  ) {
@@ -233,7 +242,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 	}
 	
 	private void unload( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.admin" ), ChatColor.RED + "You do not have permission to run this command!" );
+		Validate.isTrue( sender.hasPermission( "cartographer.module.unload" ), ChatColor.RED + "You do not have permission to run this command!" );
 		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module unload <id>"  );
 		StringBuilder builder = new StringBuilder();
 		for ( String string : args  ) {

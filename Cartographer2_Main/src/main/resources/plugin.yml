@@ -1,6 +1,6 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.12.9
+version: 2.12.10
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
@@ -9,9 +9,99 @@ softdepend:
 
 commands:
   cartographer:
+    description: Main Cartographer2 command
     aliases: []
-    permission: cartographer.admin
 
 permissions:
   cartographer.admin:
+    description: Get all permissions for Cartographer2
     default: op
+    children:
+      cartographer.reload: true
+      cartographer.map.admin: true
+      cartographer.module.admin: true
+  cartographer.reload:
+    description: Reload the plugin's configs
+    default: false
+  cartographer.map.admin:
+    description: Get all map related permissions
+    default: false
+    children:
+      cartographer.map.give: true
+      cartographer.map.create: true
+      cartographer.map.delete: true
+      cartographer.map.reload: true
+      cartographer.map.list: true
+  cartographer.map.list:
+    description: List the active minimaps
+    default: false
+  cartographer.map.reload:
+    description: Reload minimaps
+    default: false
+    children:
+      cartographer.map.unload: true
+      cartographer.map.load: true
+  cartographer.map.unload:
+    description: Unload a minimap
+    default: false
+  cartographer.map.load:
+    description: Load a minimap
+    default: false
+  cartographer.map.give:
+    description: Give a minimap to another player
+    default: false
+    children:
+      cartographer.map.get: true
+  cartographer.map.get:
+    description: Get a minimap for yourself
+    default: false
+  cartographer.map.create:
+    description: Create a minimap
+    default: false
+  cartographer.map.delete:
+    description: Delete a minimap
+    default: false
+  cartographer.module.admin:
+    description: Manage Cartographer2 modules
+    default: false
+    children:
+      cartographer.module: true
+      cartographer.module.list: true
+      cartographer.module.reload: true
+      cartographer.module.enable: true
+      cartographer.module.disable: true
+  cartographer.module.list:
+    description: View all modules
+    default: false
+    children:
+      cartographer.module: true
+  cartographer.module.reload:
+    description: Reload all modules
+    default: false
+    children:
+      cartographer.module.load: true
+      cartographer.module.unload: true
+      cartographer.module: true
+  cartographer.module.load:
+    description: Load module files
+    default: false
+    children:
+      cartographer.module: true
+  cartographer.module.unload:
+    description: Unload modules
+    default: false
+    children:
+      cartographer.module: true
+  cartographer.module.enable:
+    description: Enable modules
+    default: false
+    children:
+      cartographer.module: true
+  cartographer.module.disable:
+    description: Disable modules
+    default: false
+    children:
+      cartographer.module: true
+  cartographer.module:
+    description: Access to the module command
+    default: false

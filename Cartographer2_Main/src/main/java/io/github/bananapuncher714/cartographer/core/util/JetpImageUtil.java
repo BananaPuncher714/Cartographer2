@@ -7,9 +7,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.map.MapPalette;
+
+import io.github.bananapuncher714.cartographer.core.renderer.FrameRenderTask;
 
 /**
  * What a piece of optimization;
@@ -75,39 +78,58 @@ public final class JetpImageUtil {
 		}
 		PALETTE[ 0 ] = 0;
 		
+		// ForkJoinPool'd the loading of colors
+		List< LoadRed > tasks = new ArrayList< LoadRed >( 128 );
 		for ( int r = 0; r < 256; r += 2 ) {
-			for ( int g = 0; g < 256; g += 2 ) {
-				for ( int b = 0; b < 256; b += 2 ) {
-					int colorIndex = r >> 1 << 14 | g >> 1 << 7 | b >> 1;
-
-					int val = 0;
-					float best_distance = Float.MAX_VALUE;
-					float distance = 0;
-					int col = 0;
-					for (int i = 4; i < PALETTE.length; ++i) {
-						col = PALETTE[i];
-						int r2 = col >> 16 & 0xFF;
-						int g2 = col >> 8 & 0xFF;
-						int b2 = col & 0xFF;
-				
-						float red_avg = ( r + r2 ) * .5f;
-						int redVal = r - r2;
-						int greenVal = g - g2;
-						int blueVal = b - b2;
-						float weight_red = 2.0f + red_avg * ( 1f / 256f );
-						float weight_green = 4.0f;
-						float weight_blue = 2.0f + ( 255.0f - red_avg ) * ( 1f / 256f );
-						distance = weight_red * redVal * redVal + weight_green * greenVal * greenVal + weight_blue * blueVal * blueVal;
-				
-						if (distance < best_distance) {
-							best_distance = distance;
-							val = i;
-						}
-					}
-					COLOR_MAP[ colorIndex ] = ( byte ) val;
-				}
+			LoadRed red = new LoadRed( PALETTE, r );
+			
+			tasks.add( red );
+			
+			red.fork();
+		}
+		
+		for ( int i = 0; i < 128; i++ ) {
+			byte[] sub = tasks.get( i ).join();
+			int ci = i << 14;
+			for ( int si = 0; si < 16384; si++ ) {
+				COLOR_MAP[ ci + si ] = sub[ si ];
 			}
 		}
+		
+		// Original method
+//		for ( int r = 0; r < 256; r += 2 ) {
+//			for ( int g = 0; g < 256; g += 2 ) {
+//				for ( int b = 0; b < 256; b += 2 ) {
+//					int colorIndex = r >> 1 << 14 | g >> 1 << 7 | b >> 1;
+//
+//					int val = 0;
+//					float best_distance = Float.MAX_VALUE;
+//					float distance = 0;
+//					int col = 0;
+//					for (int i = 4; i < PALETTE.length; ++i) {
+//						col = PALETTE[i];
+//						int r2 = col >> 16 & 0xFF;
+//						int g2 = col >> 8 & 0xFF;
+//						int b2 = col & 0xFF;
+//				
+//						float red_avg = ( r + r2 ) * .5f;
+//						int redVal = r - r2;
+//						int greenVal = g - g2;
+//						int blueVal = b - b2;
+//						float weight_red = 2.0f + red_avg * ( 1f / 256f );
+//						float weight_green = 4.0f;
+//						float weight_blue = 2.0f + ( 255.0f - red_avg ) * ( 1f / 256f );
+//						distance = weight_red * redVal * redVal + weight_green * greenVal * greenVal + weight_blue * blueVal * blueVal;
+//				
+//						if (distance < best_distance) {
+//							best_distance = distance;
+//							val = i;
+//						}
+//					}
+//					COLOR_MAP[ colorIndex ] = ( byte ) val;
+//				}
+//			}
+//		}
 
 		long end = System.nanoTime();
 		System.out.println( "Initial lookup table initialized in " + ( end - start ) / 1_000_000.0 + " ms" );
@@ -473,5 +495,112 @@ public final class JetpImageUtil {
 		int newg = g + percent * g / 100;
 		int newb = b + percent * b / 100;
 		return new Color( newr, newg, newb, c.getAlpha() );
+	}
+}
+
+class LoadRed extends RecursiveTask< byte[] > {
+	protected final int r;
+	protected final int[] palette;
+	
+	protected LoadRed( int[] palette, int r ) {
+		this.r = r;
+		this.palette = palette;
+	}
+	
+	@Override
+	protected byte[] compute() {
+		List< LoadGreen > greenSub = new ArrayList< LoadGreen >( 128 );
+		for ( int g = 0; g < 256; g += 2 ) {
+			LoadGreen green = new LoadGreen( palette, r, g );
+			
+			greenSub.add( green );
+			
+			green.fork();
+		}
+		
+		byte[] vals = new byte[ 16384 ];
+		for ( int i = 0; i < 128; i++ ) {
+			byte[] sub = greenSub.get( i ).join();
+			int index = i << 7;
+			for ( int si = 0; si < 128; si++ ) {
+				vals[ index + si ] = sub[ si ];
+			}
+		}
+		
+		return vals;
+	}
+	
+}
+
+class LoadGreen extends RecursiveTask< byte[] > {
+	protected final int r;
+	protected final int g;
+	protected final int[] palette;
+	
+	protected LoadGreen( int[] palette, int r, int g ) {
+		this.r = r;
+		this.g = g;
+		this.palette = palette;
+	}
+	
+	@Override
+	protected byte[] compute() {
+		List< LoadBlue > blueSub = new ArrayList< LoadBlue >( 128 );
+		for ( int b = 0; b < 256; b += 2 ) {
+			LoadBlue blue = new LoadBlue( palette, r, g, b );
+			
+			blueSub.add( blue );
+			
+			blue.fork();
+		}
+		
+		byte[] matches = new byte[ 128 ];
+		for ( int i = 0; i < 128; i++ ) {
+			matches[ i ] = blueSub.get( i ).join();
+		}
+		
+		return matches;
+	}
+}
+
+class LoadBlue extends RecursiveTask< Byte > {
+	protected final int r, g, b;
+	protected final int[] palette;
+	
+	protected LoadBlue( int[] palette, int r, int g, int b ) {
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.palette = palette;
+	}
+	
+	@Override
+	protected Byte compute() {
+		int val = 0;
+		float best_distance = Float.MAX_VALUE;
+		float distance = 0;
+		int col = 0;
+		for (int i = 4; i < palette.length; ++i) {
+			col = palette[ i ];
+			int r2 = col >> 16 & 0xFF;
+			int g2 = col >> 8 & 0xFF;
+			int b2 = col & 0xFF;
+	
+			float red_avg = ( r + r2 ) * .5f;
+			int redVal = r - r2;
+			int greenVal = g - g2;
+			int blueVal = b - b2;
+			float weight_red = 2.0f + red_avg * ( 1f / 256f );
+			float weight_green = 4.0f;
+			float weight_blue = 2.0f + ( 255.0f - red_avg ) * ( 1f / 256f );
+			distance = weight_red * redVal * redVal + weight_green * greenVal * greenVal + weight_blue * blueVal * blueVal;
+	
+			if (distance < best_distance) {
+				best_distance = distance;
+				val = i;
+			}
+		}
+		
+		return ( byte ) val;
 	}
 }
