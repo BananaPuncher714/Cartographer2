@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.libs.org.apache.commons.codec.binary.Base64;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -267,7 +267,7 @@ public final class NBTEditor {
 		}
 		ItemMeta headMeta = head.getItemMeta();
 		GameProfile profile = new GameProfile( UUID.randomUUID(), null);
-		byte[] encodedData = Base64.encodeBase64( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", skinURL ).getBytes() );
+		byte[] encodedData = Base64.getEncoder().encode( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", skinURL ).getBytes() );
 		profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
 		Field profileField = null;
 		try {
@@ -311,7 +311,7 @@ public final class NBTEditor {
 
 			for ( Property prop : profile.getProperties().values() ) {
 				if ( prop.getName().equals( "textures" ) ) {
-					String texture = new String( Base64.decodeBase64( prop.getValue() ) );
+					String texture = new String( Base64.getDecoder().decode( prop.getValue() ) );
 					return getMatch( texture, "\\{\"url\":\"(.*?)\"\\}" );
 				}
 			}
@@ -682,7 +682,7 @@ public final class NBTEditor {
 	 */
 	public final static void setSkullTexture( Block block, String texture ) {
 		GameProfile profile = new GameProfile( UUID.randomUUID(), null );
-		profile.getProperties().put( "textures", new com.mojang.authlib.properties.Property( "textures", new String( Base64.encodeBase64( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", texture ).getBytes() ) ) ) );
+		profile.getProperties().put( "textures", new com.mojang.authlib.properties.Property( "textures", new String( Base64.getEncoder().encode( String.format( "{textures:{SKIN:{\"url\":\"%s\"}}}", texture ).getBytes() ) ) ) );
 		
 		try {
 			Location location = block.getLocation();

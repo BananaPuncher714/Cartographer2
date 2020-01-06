@@ -87,15 +87,17 @@ public class ModuleLoader {
 	 * 
 	 * @param module
 	 * The module to unload. Cannot be null.
+	 * @param return
+	 * Whether or not this module was unloaded.
 	 */
-	public void unload( Module module ) {
+	public boolean unload( Module module ) {
 		Validate.notNull( module );
 
 		disable( module );
 		
 		ModuleClassLoader loader = classLoaders.get( module );
 		if ( loader == null ) {
-			return;
+			return false;
 		}
 		
 		Set< String > classes = loader.getClassNames();
@@ -113,6 +115,8 @@ public class ModuleLoader {
 		
 		// Remove from classloaders
 		classLoaders.remove( module );
+		
+		return true;
 	}
 	
 	/**

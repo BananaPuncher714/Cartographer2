@@ -133,6 +133,7 @@ public class MinimapManager {
 	}
 	
 	public Minimap constructNewMinimap( File dir ) {
+		plugin.getLogger().info( "[MapManager] " + "Loading minimap '" + dir.getName() + "'" );
 		plugin.saveMapFiles( dir );
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );

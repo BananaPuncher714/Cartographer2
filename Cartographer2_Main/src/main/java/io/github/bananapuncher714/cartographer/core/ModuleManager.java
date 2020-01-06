@@ -92,15 +92,18 @@ public class ModuleManager {
 		}
 	}
 	
-	public void unloadModule( Module module ) {
+	public boolean unloadModule( Module module ) {
 		module.unload();
 		
-		plugin.getLogger().info( "[ModuleManager] Unloading " + module.getName() );
 		disableModule( module );
 		
-		loader.unload( module );
+		plugin.getLogger().info( "[ModuleManager] Unloading " + module.getName() );
+		if ( !loader.unload( module ) ) {
+			return false;
+		}
 		
 		modules.remove( module.getName() );
+		return true;
 	}
 	
 	public Module getModule( String name ) {

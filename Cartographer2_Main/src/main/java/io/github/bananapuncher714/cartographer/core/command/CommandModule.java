@@ -245,8 +245,10 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		Module module = plugin.getModuleManager().getModule( moduleName );
 		Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
 		
-		plugin.getModuleManager().unloadModule( module );
-		
-		sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+		if ( plugin.getModuleManager().unloadModule( module ) ) {
+			sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+		} else {
+			sender.sendMessage( ChatColor.GOLD + "Could not unload module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'! Was not loaded by Cartographer2!" );
+		}
 	}
 }
