@@ -44,7 +44,7 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer.module.load` - Load a given module.
 - `cartographer.module.unload` - Unload a given module.
 - `cartographer.module.disable` - Disable a given module.
-- `cartographer.module.unload` - Enable a given module.
+- `cartographer.module.enable` - Enable a given module.
 
 
 ## Module ideas

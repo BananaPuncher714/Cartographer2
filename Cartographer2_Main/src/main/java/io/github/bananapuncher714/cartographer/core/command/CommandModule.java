@@ -226,6 +226,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		for ( Module module : plugin.getModuleManager().getModules() ) {
 			if ( file.getAbsolutePath().equals( module.getFile().getAbsolutePath() ) ) {
 				sender.sendMessage( ChatColor.RED + "'" + module + "' is already loaded!" );
+				return;
 			}
 		}
 		

@@ -53,7 +53,7 @@ public class CartographerRenderer extends MapRenderer {
 	protected int id;
 	
 	// Keep this a string in case if we delete a minimap, so that this doesn't store the map in memory
-	protected String mapId;
+	protected String mapId = null;
 	
 	public CartographerRenderer( Minimap map ) {
 		// Yes contextual
@@ -61,8 +61,6 @@ public class CartographerRenderer extends MapRenderer {
 
 		if ( map != null ) {
 			this.mapId = map.getId();
-		} else {
-			this.mapId = "MISSING";
 		}
 		
 		// Allow multithreading for renderers? It would cause issues with synchronization, unfortunately
@@ -288,23 +286,6 @@ public class CartographerRenderer extends MapRenderer {
 
 	public void terminate() {
 		RUNNING = false;
-	}
-	
-	public class RenderTask extends RecursiveTask< SubRenderInfo > {
-		protected RenderInfo info;
-		protected int index;
-		protected int length;
-		
-		protected RenderTask( RenderInfo info, int index, int length ) {
-			this.info = info;
-			this.index = index;
-			this.length = length;
-		}
-		
-		@Override
-		protected SubRenderInfo compute() {
-			return null;
-		}
 	}
 	
 	public class PlayerSetting {
