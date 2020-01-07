@@ -14,6 +14,7 @@ import java.util.concurrent.RecursiveTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
@@ -55,6 +56,8 @@ public class CartographerRenderer extends MapRenderer {
 	// Keep this a string in case if we delete a minimap, so that this doesn't store the map in memory
 	protected String mapId = null;
 	
+	protected long tick = 0;
+	
 	public CartographerRenderer( Minimap map ) {
 		// Yes contextual
 		super( true );
@@ -71,7 +74,7 @@ public class CartographerRenderer extends MapRenderer {
 		}
 		if ( TICK_RENDER ) {
 			// As it turns out, calling this is a lot more intensive than not
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, Cartographer.getInstance().getRenderDelay() );
+			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
 		}
 	}
 	
@@ -235,13 +238,15 @@ public class CartographerRenderer extends MapRenderer {
 		this.mapId = map == null ? null : map.getId();
 	}
 	
-	int tick = 0;
-	
 	// Since Paper only updates 4 times a tick, we'll have to compensate and manually update 20 times a tick instead
 	private void tickRender() {
 		// This is one of the most resource intensive methods
 		// We'll have to disable this if the server is overloaded
 		if ( Cartographer.getInstance().isServerOverloaded() ) {
+			return;
+		}
+		// Render once ever X ticks
+		if ( tick++ % Cartographer.getInstance().getRenderDelay() != 0 ) {
 			return;
 		}
 		
@@ -251,6 +256,29 @@ public class CartographerRenderer extends MapRenderer {
 			Player player = Bukkit.getPlayer( uuid );
 			
 			if ( player == null ) {
+				iterator.remove();
+				continue;
+			}
+
+			ItemStack main = Cartographer.getUtil().getMainHandItem( player );
+			ItemStack off = Cartographer.getUtil().getOffHandItem( player );
+			
+			boolean inHand = false;
+			if ( main != null ) {
+				MapView mainView = Cartographer.getUtil().getMapViewFrom( main );
+				if ( mainView != null && mainView.getId() == id ) {
+					inHand = true;
+				}
+			}
+			
+			if ( off != null ) {
+				MapView offView = Cartographer.getUtil().getMapViewFrom( off );
+				if ( offView != null && offView.getId() == id ) {
+					inHand = true;
+				}
+			}
+			
+			if ( !inHand ) {
 				iterator.remove();
 				continue;
 			}
@@ -269,6 +297,30 @@ public class CartographerRenderer extends MapRenderer {
 		lastUpdated.put( player.getUniqueId(), System.currentTimeMillis() );
 		id = Cartographer.getUtil().getId( view );
 
+		ItemStack main = Cartographer.getUtil().getMainHandItem( player );
+		ItemStack off = Cartographer.getUtil().getOffHandItem( player );
+		
+		// Only render if the map is in the player's hand. Otherwise, there's no point in updating.
+		boolean inHand = false;
+		if ( main != null ) {
+			MapView mainView = Cartographer.getUtil().getMapViewFrom( main );
+			if ( mainView != null && mainView.getId() == id ) {
+				inHand = true;
+			}
+		}
+		
+		if ( off != null ) {
+			MapView offView = Cartographer.getUtil().getMapViewFrom( off );
+			if ( offView != null && offView.getId() == id ) {
+				inHand = true;
+			}
+		}
+		
+		if ( !inHand ) {
+			settings.remove( player.getUniqueId() );
+			return;
+		}
+		
 		if ( !settings.containsKey( player.getUniqueId() ) ) {
 			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
 			setting.rotating = Cartographer.getInstance().isRotateByDefault();

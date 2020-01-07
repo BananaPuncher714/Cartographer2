@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.api;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -73,6 +74,26 @@ public interface GeneralUtil {
 	 * If the event's hand is equal to the player's main hand, or true by default in earlier versions of Minecraft.
 	 */
 	boolean isValidHand( PlayerInteractEvent event );
+	
+	/**
+	 * Get the item in the player's main hand
+	 * 
+	 * @param player
+	 * The player, cannot be null.
+	 * @return
+	 * The item being held in the main hand
+	 */
+	ItemStack getMainHandItem( Player player );
+	
+	/**
+	 * Get the item in the player's off hand
+	 * 
+	 * @param player
+	 * The player, cannot null.
+	 * @return
+	 * Null if no item is being held.
+	 */
+	ItemStack getOffHandItem( Player player );
 	
 	/**
 	 * Check if a block at the given position is water.

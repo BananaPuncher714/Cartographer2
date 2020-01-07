@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -83,6 +84,16 @@ public class Util_1_13 implements GeneralUtil {
 	public boolean isValidHand( PlayerInteractEvent event ) {
 		Validate.notNull( event );
 		return event.getHand() == EquipmentSlot.HAND;
+	}
+	
+	@Override
+	public ItemStack getMainHandItem( Player player ) {
+		return player.getInventory().getItemInMainHand();
+	}
+	
+	@Override
+	public ItemStack getOffHandItem( Player player ) {
+		return player.getInventory().getItemInOffHand();
 	}
 	
 	@Override

@@ -42,9 +42,11 @@ public class ModuleClassLoader extends URLClassLoader {
 		this.jar = new JarFile( this.file );
 		this.manifest = this.jar.getManifest();
 		
-		Class< ? > jarClass = Class.forName( description.getMain(), true, this );
-		Class< ? extends Module > moduleClass = jarClass.asSubclass( Module.class );
+		Class< ? > jarClass = null;
 		try {
+			jarClass = Class.forName( description.getMain(), true, this );
+			Class< ? extends Module > moduleClass = jarClass.asSubclass( Module.class );
+			
 			module = moduleClass.newInstance();
 		} catch ( InstantiationException e ) {
 			close();
@@ -52,6 +54,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		} catch ( IllegalAccessException e ) {
 			close();
 			throw new IllegalArgumentException( "Abnormal module type " + e );
+		} catch ( ClassNotFoundException e ) {
+			close();
+			throw e;
 		}
 	}
 	
@@ -76,7 +81,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				// Convert our class name to a path
 				String path = name.replace( '.', '/' ).concat( ".class" );
 				JarEntry entry = this.jar.getJarEntry( path );
-
+				
 				// See if it exists. If so...
 				if ( entry != null ) {
 					byte[] classBytes;

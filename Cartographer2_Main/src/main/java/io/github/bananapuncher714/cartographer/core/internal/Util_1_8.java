@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -94,6 +95,16 @@ public class Util_1_8 implements GeneralUtil {
 	@Override
 	public boolean isValidHand( PlayerInteractEvent event ) {
 		return true;
+	}
+	
+	@Override
+	public ItemStack getMainHandItem( Player player ) {
+		return player.getItemInHand();
+	}
+	
+	@Override
+	public ItemStack getOffHandItem( Player player ) {
+		return null;
 	}
 	
 	@Override
