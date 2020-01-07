@@ -74,6 +74,9 @@ public class ModuleManager {
 			if ( file.isDirectory() ) {
 				continue;
 			}
+			if ( !file.getName().matches( "*\\.jar" ) ) {
+				continue;
+			}
 			
 			Module module = loadModule( file );
 			if ( module != null ) {
@@ -144,6 +147,7 @@ public class ModuleManager {
 			new ModuleEnableEvent( module ).callEvent();
 		} else {
 			plugin.getLogger().warning( "[ModuleManager] Unable to enable " + description.getName() + " due to the missing dependencies: " + missingDeps.toString().trim() );
+			return false;
 		}
 		return true;
 	}

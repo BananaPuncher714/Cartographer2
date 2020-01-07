@@ -60,7 +60,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 				}
 			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) && sender.hasPermission( "cartographer.module.load" ) ) {
 				for ( File file : Cartographer.getModuleDir().listFiles() ) {
-					if ( file.exists() && file.isFile() ) {
+					if ( file.exists() && file.isFile() && file.getName().matches( "*\\.jar" ) ) {
 						boolean found = false;
 						for ( Module module : plugin.getModuleManager().getModules() ) {
 							File moduleFile = module.getFile();
@@ -221,7 +221,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		String moduleName = builder.toString().trim().replace( "/", "" );
 
 		File file = new File( Cartographer.getModuleDir() + "/" + moduleName );
-		Validate.isTrue( file.exists() && file.isFile(), ChatColor.RED + "'" + moduleName + "' does not exist!" );
+		Validate.isTrue( file.exists() && file.isFile() && file.getName().matches( "*\\.jar" ), ChatColor.RED + "'" + moduleName + "' does not exist!" );
 		
 		for ( Module module : plugin.getModuleManager().getModules() ) {
 			if ( file.getAbsolutePath().equals( module.getFile().getAbsolutePath() ) ) {
@@ -231,6 +231,11 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		}
 		
 		Module module = plugin.getModuleManager().loadModule( file );
+		if ( module == null ) {
+			sender.sendMessage( ChatColor.RED + "Unable to load module '" + moduleName + "', Check the server log for details." );
+			return;
+		}
+		
 		plugin.getModuleManager().registerModule( module );
 
 		boolean valid = plugin.getModuleManager().enableModule( module );
