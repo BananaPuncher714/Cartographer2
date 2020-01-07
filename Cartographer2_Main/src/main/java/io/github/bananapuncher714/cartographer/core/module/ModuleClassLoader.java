@@ -47,8 +47,10 @@ public class ModuleClassLoader extends URLClassLoader {
 		try {
 			module = moduleClass.newInstance();
 		} catch ( InstantiationException e ) {
+			close();
 			throw new IllegalArgumentException( "No public constructor " + jarClass );
 		} catch ( IllegalAccessException e ) {
+			close();
 			throw new IllegalArgumentException( "Abnormal module type " + e );
 		}
 	}

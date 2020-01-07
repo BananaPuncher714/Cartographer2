@@ -11,10 +11,17 @@
 	<version>1.0.0</version>
 
 	<dependencies>
+	<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.15.1-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
 			<artifactId>Cartographer2</artifactId>
 			<version>${plugin.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -70,9 +70,10 @@ public class ModuleLoader {
 		Validate.isTrue( file.exists(), file + " does not exist!" );
 		Validate.isTrue( file.isFile(), file + " is not a file!" );
 		
+		ModuleClassLoader loader = null;
 		try {
 			// Cache this sometime
-			ModuleClassLoader loader = new ModuleClassLoader( description, Bukkit.class.getClassLoader() );
+			loader = new ModuleClassLoader( description, Bukkit.class.getClassLoader() );
 			classLoaders.put( loader.getModule(), loader );
 			
 			return loader.getModule();

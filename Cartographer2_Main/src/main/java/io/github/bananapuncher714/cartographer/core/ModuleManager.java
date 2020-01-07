@@ -57,6 +57,10 @@ public class ModuleManager {
 		
 		Module module = loader.load( description );
 		
+		if ( module == null ) {
+			return null;
+		}
+		
 		File dataFolder = new File( moduleFolder + "/" + description.getName() );
 		module.load( plugin, description, dataFolder );
 		
@@ -72,7 +76,9 @@ public class ModuleManager {
 			}
 			
 			Module module = loadModule( file );
-			registerModule( module );
+			if ( module != null ) {
+				registerModule( module );
+			}
 		}
 	}
 		
