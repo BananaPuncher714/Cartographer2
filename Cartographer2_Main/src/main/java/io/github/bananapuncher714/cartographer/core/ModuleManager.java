@@ -74,7 +74,7 @@ public class ModuleManager {
 			if ( file.isDirectory() ) {
 				continue;
 			}
-			if ( !file.getName().matches( "*\\.jar" ) ) {
+			if ( !file.getName().matches( ".*?\\.jar$" ) ) {
 				continue;
 			}
 			

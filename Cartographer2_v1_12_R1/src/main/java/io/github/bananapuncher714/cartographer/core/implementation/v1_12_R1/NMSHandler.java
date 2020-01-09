@@ -174,8 +174,12 @@ public class NMSHandler implements PacketHandler {
 				if ( transparent ) {
 					palette.addTransparentMaterial( material );
 				} else {
-					int color = block.c( data, ( IBlockAccess ) null, null ).ac;
-					palette.setColor( material, color );
+					try {
+						int color = block.c( data, ( IBlockAccess ) null, null ).ac;
+						palette.setColor( material, color );
+					} catch ( NullPointerException exception ) {
+						// Looks like one of the arguments wasn't meant to be null
+					}
 				}
 			}
 		}

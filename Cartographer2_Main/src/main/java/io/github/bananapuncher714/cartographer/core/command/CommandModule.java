@@ -17,6 +17,7 @@ import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.module.Module;
+import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * Cartographer2 Module subcommand.
@@ -60,7 +61,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 				}
 			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) && sender.hasPermission( "cartographer.module.load" ) ) {
 				for ( File file : Cartographer.getModuleDir().listFiles() ) {
-					if ( file.exists() && file.isFile() && file.getName().matches( "*\\.jar" ) ) {
+					if ( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ) ) {
 						boolean found = false;
 						for ( Module module : plugin.getModuleManager().getModules() ) {
 							File moduleFile = module.getFile();
@@ -102,7 +103,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 				sender.sendMessage( ChatColor.RED + "You must provide an argument!" );
 			} else if ( args.length > 0 ) {
 				String option = args[ 0 ];
-				args = CommandCartographer.pop( args );
+				args = FailSafe.pop( args );
 				if ( option.equalsIgnoreCase( "list" ) ) {
 					list( sender, args );
 				} else if ( option.equalsIgnoreCase( "reload" ) ) {
@@ -184,7 +185,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		if ( valid ) {
 			sender.sendMessage( ChatColor.GOLD + "Enabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
 		} else {
-			sender.sendMessage( ChatColor.RED + "Unable to load module '" + moduleName + "', Check the server log for details.(Missing dependencies?)" );
+			sender.sendMessage( ChatColor.RED + "Unable to load module '" + moduleName + "', Check the server log for details. (Missing dependencies?)" );
 		}
 	}
 	
@@ -221,7 +222,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		String moduleName = builder.toString().trim().replace( "/", "" );
 
 		File file = new File( Cartographer.getModuleDir() + "/" + moduleName );
-		Validate.isTrue( file.exists() && file.isFile() && file.getName().matches( "*\\.jar" ), ChatColor.RED + "'" + moduleName + "' does not exist!" );
+		Validate.isTrue( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ), ChatColor.RED + "'" + moduleName + "' does not exist!" );
 		
 		for ( Module module : plugin.getModuleManager().getModules() ) {
 			if ( file.getAbsolutePath().equals( module.getFile().getAbsolutePath() ) ) {
@@ -243,7 +244,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		if ( valid ) {
 			sender.sendMessage( ChatColor.GOLD + "Loaded and enabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
 		} else {
-			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + moduleName + "', Check the server log for details.(Missing dependencies?)" );
+			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + moduleName + "', Check the server log for details. (Missing dependencies?)" );
 		}
 	}
 	

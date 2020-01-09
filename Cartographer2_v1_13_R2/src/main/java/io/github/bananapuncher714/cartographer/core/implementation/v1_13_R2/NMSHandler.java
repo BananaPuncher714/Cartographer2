@@ -90,7 +90,7 @@ public class NMSHandler implements PacketHandler {
 	}
 
 	private final Set< Integer > maps = new TreeSet< Integer >();
-	private Util_1_13 util = new Util_1_13();
+	private Util_1_13 util = new Util_1_13( false );
 	
 	@Override
 	public void sendDataTo( int id, byte[] data, @Nullable MapCursor[] cursors, UUID... uuids ) {

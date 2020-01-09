@@ -55,6 +55,26 @@ public class MinimapManager {
 		return mapItem;
 	}
 	
+	/**
+	 * Get the {@link CartographerRenderer} of a MapView.
+	 * 
+	 * @param view
+	 * The MapView to get it from.
+	 * @return
+	 * Null if the MapView provided is null, or does not contain a {@link CartographerRenderer}.
+	 */
+	public CartographerRenderer getRendererFrom( MapView view ) {
+		if ( view == null ) {
+			return null;
+		}
+		for ( MapRenderer renderer : view.getRenderers() ) {
+			if ( renderer instanceof CartographerRenderer ) {
+				return ( CartographerRenderer ) renderer;
+			}
+		}
+		return null;
+	}
+	
 	public void update( ItemStack item ) {
 		MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
 		
@@ -94,7 +114,7 @@ public class MinimapManager {
 			}
 		}
 		if ( !converted ) {
-			CartographerRenderer renderer = new CartographerRenderer( map );
+			CartographerRenderer renderer = new CartographerRenderer( plugin, map );
 			plugin.getRenderers().put( getId( view ), renderer );
 			view.addRenderer( renderer );
 			plugin.getHandler().registerMap( getId( view ) );
@@ -117,7 +137,7 @@ public class MinimapManager {
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
 		
-		MapDataCache cache = new MapDataCache( settings.isAutoUpdate() );
+		MapDataCache cache = new MapDataCache( settings );
 		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
 		
 		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );
@@ -138,7 +158,7 @@ public class MinimapManager {
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
 		
-		MapDataCache cache = new MapDataCache( settings.isAutoUpdate() );
+		MapDataCache cache = new MapDataCache( settings );
 		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
 		
 		Minimap map = new Minimap( dir.getName(), settings.getPalette(), cache, dir, settings );

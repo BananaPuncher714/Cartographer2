@@ -81,6 +81,7 @@ public class Minimap implements ChunkNotifier {
 		
 		// Show at least the player, if nothing else
 		registerProvider( new DefaultPlayerCursorProvider() );
+		registerProvider( new DefaultPointerCursorProvider() );
 		
 //		registerWorldCursorProvider( new WorldCursorProvider() {
 //			@Override

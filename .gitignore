@@ -3,3 +3,4 @@
 .settings/
 target/
 doc/
+dependency-reduced-pom.xml

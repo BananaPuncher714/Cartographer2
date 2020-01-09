@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,12 +20,14 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
@@ -48,8 +49,10 @@ public class CartographerRenderer extends MapRenderer {
 
 	protected Thread renderer;
 
+	protected Map< UUID, Double > scales = new HashMap< UUID, Double >();
 	protected Map< UUID, PlayerSetting > settings = new HashMap< UUID, PlayerSetting >();
-	protected Map< UUID, Long > lastUpdated = new HashMap< UUID, Long >();
+	
+	protected Cartographer plugin;
 	
 	protected int id;
 	
@@ -58,10 +61,11 @@ public class CartographerRenderer extends MapRenderer {
 	
 	protected long tick = 0;
 	
-	public CartographerRenderer( Minimap map ) {
+	public CartographerRenderer( Cartographer plugin, Minimap map ) {
 		// Yes contextual
 		super( true );
 
+		this.plugin = plugin;
 		if ( map != null ) {
 			this.mapId = map.getId();
 		}
@@ -74,7 +78,7 @@ public class CartographerRenderer extends MapRenderer {
 		}
 		if ( TICK_RENDER ) {
 			// As it turns out, calling this is a lot more intensive than not
-			Bukkit.getScheduler().runTaskTimer( Cartographer.getInstance(), this::tickRender, 20, 1 );
+			Bukkit.getScheduler().runTaskTimer( plugin, this::tickRender, 20, 1 );
 		}
 	}
 	
@@ -93,9 +97,11 @@ public class CartographerRenderer extends MapRenderer {
 		List< FrameRenderTask > tasks = new ArrayList< FrameRenderTask >();
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
+			PlayerSetting setting = entry.getValue();
+			scales.put( entry.getKey(), setting.getScale() );
 			
 			// Stop updating people who aren't holding this map anymore, if it's been UPDATE_THRESHOLD ticks since they've last been called
-			if ( System.currentTimeMillis() - lastUpdated.get( entry.getKey() ) > UPDATE_THRESHOLD ) {
+			if ( System.currentTimeMillis() - setting.lastUpdated > UPDATE_THRESHOLD ) {
 				iterator.remove();
 				continue;
 			}
@@ -108,12 +114,11 @@ public class CartographerRenderer extends MapRenderer {
 			}
 			
 			// Check if the minimap which they're trying to view actually exists
-			PlayerSetting setting = entry.getValue();
-			Minimap map = setting.map == null ? null : Cartographer.getInstance().getMapManager().getMinimaps().get( setting.map );
+			Minimap map = setting.map == null ? null : plugin.getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
-				SimpleImage missingImage = Cartographer.getInstance().getMissingMapImage();
+				SimpleImage missingImage = plugin.getMissingMapImage();
 				byte[] missingMapData = JetpImageUtil.dither( missingImage.getWidth(), missingImage.getImage() );
-				Cartographer.getInstance().getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
+				plugin.getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
 				continue;
 			}
 			
@@ -167,7 +172,7 @@ public class CartographerRenderer extends MapRenderer {
 			byte[] data = info.data;
 			MapCursor[] cursors = info.cursors;
 			UUID uuid = info.uuid;
-			Cartographer.getInstance().getHandler().sendDataTo( id, data, cursors, uuid );
+			plugin.getHandler().sendDataTo( id, data, cursors, uuid );
 		}
 	}
 
@@ -179,21 +184,6 @@ public class CartographerRenderer extends MapRenderer {
 			setting.zoomscale = map.getSettings().getDefaultZoom().getBlocksPerPixel();
 		}
 		settings.put( player.getUniqueId(), setting );
-	}
-	
-	public void setRotatingFor( UUID uuid, boolean rotating ) {
-		PlayerSetting setting = settings.get( uuid );
-		if ( setting != null ) {
-			setting.rotating = rotating;
-		}
-	}
-	
-	public boolean isRotating( UUID uuid ) {
-		PlayerSetting setting = settings.get( uuid );
-		if ( setting == null ) {
-			return false;
-		}
-		return setting.rotating;
 	}
 	
 	public ZoomScale getScale( UUID uuid ) {
@@ -213,6 +203,7 @@ public class CartographerRenderer extends MapRenderer {
 		if ( setting != null ) {
 			setting.setScale( blocksPerPixel );
 		}
+		scales.put( uuid, blocksPerPixel );
 	}
 	
 	public boolean isViewing( UUID uuid ) {
@@ -224,7 +215,7 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public Minimap getMinimap() {
-		return mapId == null ? null : Cartographer.getInstance().getMapManager().getMinimaps().get( mapId );
+		return mapId == null ? null : plugin.getMapManager().getMinimaps().get( mapId );
 	}
 	
 	public void setMinimap( Minimap map ) {
@@ -242,11 +233,11 @@ public class CartographerRenderer extends MapRenderer {
 	private void tickRender() {
 		// This is one of the most resource intensive methods
 		// We'll have to disable this if the server is overloaded
-		if ( Cartographer.getInstance().isServerOverloaded() ) {
+		if ( plugin.isServerOverloaded() ) {
 			return;
 		}
 		// Render once ever X ticks
-		if ( tick++ % Cartographer.getInstance().getRenderDelay() != 0 ) {
+		if ( tick++ % plugin.getRenderDelay() != 0 ) {
 			return;
 		}
 		
@@ -254,37 +245,61 @@ public class CartographerRenderer extends MapRenderer {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			UUID uuid = entry.getKey();
 			Player player = Bukkit.getPlayer( uuid );
+			PlayerSetting setting = entry.getValue();
 			
 			if ( player == null ) {
 				iterator.remove();
 				continue;
 			}
-
+			
 			ItemStack main = Cartographer.getUtil().getMainHandItem( player );
 			ItemStack off = Cartographer.getUtil().getOffHandItem( player );
 			
 			boolean inHand = false;
+			boolean mainHand = false;
 			if ( main != null ) {
 				MapView mainView = Cartographer.getUtil().getMapViewFrom( main );
-				if ( mainView != null && mainView.getId() == id ) {
+				if ( mainView != null && Cartographer.getUtil().getId( mainView ) == id ) {
 					inHand = true;
+					mainHand = true;
 				}
 			}
 			
 			if ( off != null ) {
 				MapView offView = Cartographer.getUtil().getMapViewFrom( off );
-				if ( offView != null && offView.getId() == id ) {
+				if ( offView != null && Cartographer.getUtil().getId( offView ) == id ) {
 					inHand = true;
 				}
 			}
 			
 			if ( !inHand ) {
+				scales.put( player.getUniqueId(), setting.getScale() );
 				iterator.remove();
 				continue;
 			}
 			
-			PlayerSetting setting = entry.getValue();
-			setting.location = player.getLocation();
+			Location location = player.getLocation();
+			
+			
+			setting.location = location;
+			setting.mainhand = mainHand;
+			setting.lastUpdated = System.currentTimeMillis();
+			
+			if ( mainHand ) {
+				double center = 180 - setting.getCursorYaw();
+				double yaw = ( ( ( location.getYaw() + center ) % 360 ) + 360 ) % 360;
+				center = ( 180 - yaw ) * ( 127 / 40.0 );
+				center = Math.min( 127, Math.max( -127, center ) );
+				setting.setCursorX( -center );
+				
+				// The pitch varies from 50 to 90
+				double pitch = location.getPitch();
+				
+				pitch = Math.max( 50, Math.min( 90, pitch ) );
+				pitch -= 70;
+				pitch = pitch / 20.0;
+				setting.setCursorY( pitch * 127 );
+			}
 		}
 		
 		if ( !ASYNC_RENDER ) {
@@ -294,7 +309,6 @@ public class CartographerRenderer extends MapRenderer {
 	
 	@Override
 	public void render( MapView view, MapCanvas canvas, Player player ) {
-		lastUpdated.put( player.getUniqueId(), System.currentTimeMillis() );
 		id = Cartographer.getUtil().getId( view );
 
 		ItemStack main = Cartographer.getUtil().getMainHandItem( player );
@@ -302,31 +316,63 @@ public class CartographerRenderer extends MapRenderer {
 		
 		// Only render if the map is in the player's hand. Otherwise, there's no point in updating.
 		boolean inHand = false;
+		boolean mainHand = false;
 		if ( main != null ) {
 			MapView mainView = Cartographer.getUtil().getMapViewFrom( main );
-			if ( mainView != null && mainView.getId() == id ) {
+			if ( mainView != null && Cartographer.getUtil().getId( mainView ) == id ) {
 				inHand = true;
+				mainHand = true;
 			}
 		}
 		
 		if ( off != null ) {
 			MapView offView = Cartographer.getUtil().getMapViewFrom( off );
-			if ( offView != null && offView.getId() == id ) {
+			if ( offView != null && Cartographer.getUtil().getId( offView ) == id ) {
 				inHand = true;
 			}
 		}
 		
 		if ( !inHand ) {
-			settings.remove( player.getUniqueId() );
+			PlayerSetting setting = settings.remove( player.getUniqueId() );
+			if ( setting != null ) {
+				scales.put( player.getUniqueId(), setting.getScale() );
+			}
 			return;
 		}
 		
+		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+		Minimap map = getMinimap();
+		boolean rotating = Cartographer.getInstance().isRotateByDefault();
+		if ( map != null ) {
+			if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
+				rotating = map.getSettings().getRotation().isTrue();
+			} else if ( viewer.getRotate() != BooleanOption.UNSET ) {
+				rotating = viewer.getRotate().isTrue();
+			}
+		}
 		if ( !settings.containsKey( player.getUniqueId() ) ) {
-			PlayerSetting setting = new PlayerSetting( mapId, player.getLocation() );
-			setting.rotating = Cartographer.getInstance().isRotateByDefault();
+			Location location = player.getLocation();
+			PlayerSetting setting = new PlayerSetting( mapId, location );
+			setting.rotating = rotating;
+			setting.mainhand = mainHand;
+			setting.lastUpdated = System.currentTimeMillis();
+			setting.zoomscale = scales.getOrDefault( player.getUniqueId(), 1.0 );
 			settings.put( player.getUniqueId(), setting );
+			
+			if ( mainHand ) {
+				// We know the minimap is in the player's main hand
+				// The cursor for the player should be here too
+				// Reset it
+				setting.setCursorX( 0 );
+				setting.setCursorY( 0 );
+				setting.setCursorYaw( ( ( location.getYaw() % 360 ) + 360 ) % 360 );
+			}
 		} else if ( !TICK_RENDER ) {
-			settings.get( player.getUniqueId() ).location = player.getLocation();
+			PlayerSetting setting = settings.get( player.getUniqueId() );
+			setting.mainhand = mainHand;
+			setting.location = player.getLocation();
+			setting.rotating = rotating;
+			setting.lastUpdated = System.currentTimeMillis();
 		}
 		
 		if ( !TICK_RENDER ) {
@@ -341,10 +387,16 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public class PlayerSetting {
+		protected long lastUpdated = System.currentTimeMillis();
 		protected Location location;
 		protected double zoomscale = 1;
 		protected String map;
-		protected boolean rotating = true;
+		protected boolean rotating = plugin.isRotateByDefault();
+		protected boolean mainhand;
+		
+		protected double cursorX;
+		protected double cursorY;
+		protected double cursorCenter;
 		
 		protected PlayerSetting( String map, Location location ) {
 			this.map = map;
@@ -368,6 +420,34 @@ public class CartographerRenderer extends MapRenderer {
 			return zoomscale;
 		}
 		
+		public boolean isMainHand() {
+			return mainhand;
+		}
+		
+		public double getCursorX() {
+			return cursorX;
+		}
+
+		public void setCursorX( double cursorX ) {
+			this.cursorX = cursorX;
+		}
+
+		public double getCursorY() {
+			return cursorY;
+		}
+
+		public void setCursorY( double cursorY ) {
+			this.cursorY = cursorY;
+		}
+
+		public double getCursorYaw() {
+			return cursorCenter;
+		}
+
+		public void setCursorYaw( double cursorCenter ) {
+			this.cursorCenter = cursorCenter;
+		}
+
 		public Location getLocation() {
 			return location.clone();
 		}

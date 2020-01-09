@@ -1,5 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
@@ -20,6 +23,17 @@ import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
 public class Util_1_13 implements GeneralUtil {
+	private static Method GETMAP;
+
+	public Util_1_13( boolean subclass ) {
+		if ( !subclass ) {
+			try {
+				GETMAP = Bukkit.class.getMethod( "getMap", short.class );
+			} catch ( Exception exception ) {
+				exception.printStackTrace();
+			}
+		}
+	}
 
 	@Override
 	public MapView getMapViewFrom( ItemStack item ) {
@@ -30,14 +44,19 @@ public class Util_1_13 implements GeneralUtil {
 		if ( meta instanceof MapMeta ) {
 			// This pains me right here
 			// It's right in the middle of 1.13 and 1.12
-			return Bukkit.getMap( ( short ) ( ( MapMeta ) meta ).getMapId() );
+			return getMap( ( ( MapMeta ) meta ).getMapId() );
 		}
 		return null;
 	}
-	
+
 	@Override
 	public MapView getMap( int id ) {
-		return Bukkit.getMap( id );
+		try {
+			return ( MapView ) GETMAP.invoke( null, ( short ) id );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -45,7 +64,7 @@ public class Util_1_13 implements GeneralUtil {
 		Validate.notNull( view );
 		return view.getId();
 	}
-	
+
 	@Override
 	public ItemStack getMapItem( int id ) {
 		ItemStack map = new ItemStack( Material.FILLED_MAP );
@@ -54,7 +73,7 @@ public class Util_1_13 implements GeneralUtil {
 		map.setItemMeta( meta );
 		return map;
 	}
-	
+
 	@Override
 	public boolean isWater( Block block ) {
 		BlockData data = block.getBlockData();
@@ -64,7 +83,7 @@ public class Util_1_13 implements GeneralUtil {
 		}
 		return data.getMaterial() == Material.WATER || data.getMaterial() == Material.SEAGRASS || data.getMaterial() == Material.TALL_SEAGRASS || data.getMaterial() == Material.KELP_PLANT || data.getMaterial() == Material.KELP;
 	}
-	
+
 	@Override
 	public boolean isWater( ChunkSnapshot snapshot, int x, int y, int z ) {
 		BlockData data = snapshot.getBlockData( x, y, z );
@@ -74,45 +93,45 @@ public class Util_1_13 implements GeneralUtil {
 		}
 		return data.getMaterial() == Material.WATER || data.getMaterial() == Material.SEAGRASS || data.getMaterial() == Material.TALL_SEAGRASS || data.getMaterial() == Material.KELP_PLANT || data.getMaterial() == Material.KELP;
 	}
-	
+
 	@Override
 	public Material getMapMaterial() {
 		return Material.FILLED_MAP;
 	}
-	
+
 	@Override
 	public boolean isValidHand( PlayerInteractEvent event ) {
 		Validate.notNull( event );
 		return event.getHand() == EquipmentSlot.HAND;
 	}
-	
+
 	@Override
 	public ItemStack getMainHandItem( Player player ) {
 		return player.getInventory().getItemInMainHand();
 	}
-	
+
 	@Override
 	public ItemStack getOffHandItem( Player player ) {
 		return player.getInventory().getItemInOffHand();
 	}
-	
+
 	@Override
 	public CrossVersionMaterial getBlockType( ChunkSnapshot snapshot, int x, int y, int z ) {
 		return new CrossVersionMaterial( snapshot.getBlockType( x, y, z ) );
 	}
-	
+
 	@Override
 	public CrossVersionMaterial getItemType( ItemStack item ) {
 		Validate.notNull( item );
 		return new CrossVersionMaterial( item.getType() );
 	}
-	
+
 	@Override
 	public CrossVersionMaterial getBlockType( Block block ) {
 		Validate.notNull( block );
 		return new CrossVersionMaterial( block.getType() );
 	}
-	
+
 	@Override
 	public boolean updateEvent( BlockPhysicsEvent event ) {
 		return true;

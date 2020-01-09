@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
-import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
@@ -34,8 +33,9 @@ public class FrameRenderTask extends RecursiveAction {
 		byte[] data = new byte[ 128 * 128 ];
 		int[] higherMapPixels = new int[ 128 * 128 ];
 		int[] lowerMapPixels = new int[ 128 * 128 ];
-		int[] globalOverlay = info.map.getOverlayImage().getImage();
-		int[] loadingBackground = info.map.getBackgroundImage().getImage();
+		// Make sure it's not null
+		int[] globalOverlay = info.map.getOverlayImage() != null ? info.map.getOverlayImage().getImage() : new int[ 128 * 128 ];
+		int[] loadingBackground = info.map.getBackgroundImage() != null ? info.map.getBackgroundImage().getImage() : new int[ 128 * 128 ];
 		
 		// Set the information to the render info
 		info.data = data;
@@ -46,9 +46,7 @@ public class FrameRenderTask extends RecursiveAction {
 		
 		// Get the locations around that need rendering
 		Location loc = info.setting.location;
-		BooleanOption rotation = info.map.getSettings().getRotation();
-		boolean rotating = rotation == BooleanOption.UNSET ? info.setting.rotating : ( rotation == BooleanOption.TRUE ? true : false );
-		Location[] locations = MapUtil.getLocationsAround( loc, info.setting.zoomscale, rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
+		Location[] locations = MapUtil.getLocationsAround( loc, info.setting.zoomscale, info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
 		
 		// Set the locations
 		info.locations = locations;
@@ -86,7 +84,7 @@ public class FrameRenderTask extends RecursiveAction {
 		}
 		
 		// Calculate the cursor info while the sub render tasks are running
-		double yawOffset = rotating ? loc.getYaw() + 180 : 0;
+		double yawOffset = info.setting.rotating ? loc.getYaw() + 180 : 0;
 		
 		List< MapCursor > cursorList = new ArrayList< MapCursor >( info.mapCursors );
 		for ( WorldCursor cursor : info.worldCursors ) {

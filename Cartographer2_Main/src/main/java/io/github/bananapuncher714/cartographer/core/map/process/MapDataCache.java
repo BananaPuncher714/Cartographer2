@@ -16,12 +16,13 @@ import java.util.concurrent.Future;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkPreProcessEvent;
+import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
-import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 /**
  * A thread safe cache with chunk data.
@@ -41,15 +42,15 @@ public class MapDataCache {
 	
 	protected ChunkNotifier notifier;
 	
-	protected boolean updateExisting = true;
+	protected MapSettings setting;
 	
-	public MapDataCache( ChunkDataProvider provider, boolean updateExisting ) {
-		this( updateExisting );
+	public MapDataCache( ChunkDataProvider provider, MapSettings setting ) {
+		this( setting );
 		this.provider = provider;
 	}
 	
-	public MapDataCache( boolean updateExisting ) {
-		this.updateExisting = updateExisting;
+	public MapDataCache( MapSettings setting ) {
+		this.setting = setting;
 		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
 		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
 	}
@@ -129,8 +130,11 @@ public class MapDataCache {
 					removeNatural.add( loc );
 				} else if ( !loaded.contains( loc ) && chunks.containsKey( north ) ) {
 					// Only if our map is set to update or we don't have the location to begin with
-					if ( !data.containsKey( loc ) || updateExisting ) {
-						process( loc );
+					if ( !data.containsKey( loc ) || setting.isAutoUpdate() ) {
+						// Only if our minimap is willing to render outside of worldborders and such
+						if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( loc ) ) {
+							process( loc );
+						}
 					}
 				}
 				continue;
@@ -198,7 +202,9 @@ public class MapDataCache {
 		}
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		if ( !forcedLoading.contains( location ) || !data.containsKey( location ) || !data.containsKey( south ) ) {
-			chunks.put( location, location.getChunk().getChunkSnapshot() );
+			if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( south ) ) {
+				chunks.put( location, location.getChunk().getChunkSnapshot() );
+			}
 		}
 	}
 	
@@ -274,7 +280,11 @@ public class MapDataCache {
 	}
 	
 	public void updateLocation( Location location, MinimapPalette palette ) {
-		if ( !updateExisting ) {
+		if ( !setting.isAutoUpdate() ) {
+			return;
+		}
+		
+		if ( !( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldLocationBeLoaded( location ) ) ) {
 			return;
 		}
 		

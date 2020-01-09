@@ -19,6 +19,7 @@ import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * Base Cartographer command.
@@ -41,7 +42,7 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 		
 		if ( args.length > 1 && args[ 0 ].equalsIgnoreCase( "module" ) ) {
 			// Module sub command
-			String[] subArgs = pop( args );
+			String[] subArgs = FailSafe.pop( args );
 			aos.addAll( moduleCommand.onTabComplete( sender, command, label, subArgs ) );
 		} else if ( args.length == 1 ) {
 			if ( sender.hasPermission( "cartographer.reload" ) || sender.hasPermission( "cartographer.map.reload" ) ) {
@@ -107,7 +108,7 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 				sender.sendMessage( ChatColor.RED + "You must provide an argument!" );
 			} else if ( args.length > 0 ) {
 				String option = args[ 0 ];
-				args = pop( args );
+				args = FailSafe.pop( args );
 				if ( option.equalsIgnoreCase( "create" ) ) {
 					create( sender, args );
 				} else if ( option.equalsIgnoreCase( "get" ) ) {
@@ -139,7 +140,7 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 		
 		Set< String > minimaps = plugin.getMapManager().getMinimaps().keySet();
 		if ( minimaps.isEmpty() ) {
-			sender.sendMessage( ChatColor.GOLD + "There are currently no modules loaded!" );
+			sender.sendMessage( ChatColor.AQUA + "There are currently no minimaps loaded!" );
 		} else {
 			StringBuilder builder = new StringBuilder();
 			builder.append( ChatColor.AQUA );
@@ -260,13 +261,5 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 		Minimap map = plugin.getMapManager().load( mapDir );
 		
 		sender.sendMessage( ChatColor.AQUA + "Loaded minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
-	}
-
-	protected static String[] pop( String[] array ) {
-		String[] array2 = new String[ Math.max( 0, array.length - 1 ) ];
-		for ( int i = 1; i < array.length; i++ ) {
-			array2[ i - 1 ] = array[ i ];
-		}
-		return array2;
 	}
 }

@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +20,7 @@ import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.command.CommandCartographer;
+import io.github.bananapuncher714.cartographer.core.dependency.DependencyManager;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
@@ -38,6 +39,7 @@ public class Cartographer extends JavaPlugin {
 	private static File PALETTE_DIR;
 	private static File MODULE_DIR;
 	private static File MAP_DIR;
+	private static File CACHE_DIR;
 	
 	private static File README_FILE;
 	private static File CONFIG_FILE;
@@ -53,6 +55,8 @@ public class Cartographer extends JavaPlugin {
 	private MinimapManager mapManager;
 	private PaletteManager paletteManager;
 	private ModuleManager moduleManager;
+	private DependencyManager dependencyManager;
+	private PlayerManager playerManager;
 	
 	private Set< Integer > invalidIds = new HashSet< Integer >();
 	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
@@ -79,13 +83,17 @@ public class Cartographer extends JavaPlugin {
 		INSTANCE = this;
 		
 		// Disable java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper from showing up
-		Properties props = System.getProperties();
-		props.setProperty( "javax.accessibility.assistive_technologies", "" );
+		System.setProperty( "javax.accessibility.assistive_technologies", "" );
+		// No GUI present, so we want to enforce that
+		System.setProperty( "java.awt.headless", "true" );
 		
+		// BStats
+		Metrics metric = new Metrics( this );
 		
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
 		MODULE_DIR = new File( getDataFolder() + "/" + "modules/" );
 		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
+		CACHE_DIR = new File( getDataFolder() + "/" + "cache/" );
 		
 		README_FILE = new File( getDataFolder() + "/" + "README.md" );
 		CONFIG_FILE = new File( getDataFolder() + "/" + "config.yml" );
@@ -116,6 +124,8 @@ public class Cartographer extends JavaPlugin {
 		paletteManager = new PaletteManager( this );
 		mapManager = new MinimapManager( this );
 		moduleManager = new ModuleManager( this, MODULE_DIR );
+		dependencyManager = new DependencyManager( this );
+		playerManager = new PlayerManager( this );
 		
 		command = new CommandCartographer( this );
 		getCommand( "cartographer" ).setExecutor( command );
@@ -405,6 +415,14 @@ public class Cartographer extends JavaPlugin {
 		return moduleManager;
 	}
 	
+	public DependencyManager getDependencyManager() {
+		return dependencyManager;
+	}
+	
+	public PlayerManager getPlayerManager() {
+		return playerManager;
+	}
+	
 	protected Map< Integer, CartographerRenderer > getRenderers() {
 		return renderers;
 	}
@@ -473,5 +491,9 @@ public class Cartographer extends JavaPlugin {
 	
 	public static File getPaletteDir() {
 		return PALETTE_DIR;
+	}
+	
+	public static File getCacheDir() {
+		return CACHE_DIR;
 	}
 }

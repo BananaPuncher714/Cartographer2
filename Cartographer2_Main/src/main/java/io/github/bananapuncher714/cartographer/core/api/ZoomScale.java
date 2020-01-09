@@ -6,6 +6,7 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
 /**
  * Zoom scales for the map renderer. More scales may be added in the future.
+ * TODO Make this not an enum, and let maps freely assign whatever scales they want
  * 
  * @author BananaPuncher714
  */
