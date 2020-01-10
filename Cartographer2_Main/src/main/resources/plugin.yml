@@ -1,6 +1,6 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.12.12
+version: 2.12.13
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
@@ -14,6 +14,7 @@ commands:
     aliases: []
 
 permissions:
+  # Admin permission
   cartographer.admin:
     description: Get all permissions for Cartographer2
     default: op
@@ -21,9 +22,12 @@ permissions:
       cartographer.reload: true
       cartographer.map.admin: true
       cartographer.module.admin: true
+      cartographer.settings.admin: true
+  # Reload permission
   cartographer.reload:
     description: Reload the plugin's configs
     default: false
+  # Map admin permission
   cartographer.map.admin:
     description: Get all map related permissions
     default: false
@@ -33,35 +37,55 @@ permissions:
       cartographer.map.delete: true
       cartographer.map.reload: true
       cartographer.map.list: true
+  # Map permissions
   cartographer.map.list:
     description: List the active minimaps
     default: false
+    children:
+      cartographer.map: true
   cartographer.map.reload:
     description: Reload minimaps
     default: false
     children:
       cartographer.map.unload: true
       cartographer.map.load: true
+      cartographer.map: true
   cartographer.map.unload:
     description: Unload a minimap
     default: false
+    children:
+      cartographer.map: true
   cartographer.map.load:
     description: Load a minimap
     default: false
+    children:
+      cartographer.map: true
   cartographer.map.give:
     description: Give a minimap to another player
     default: false
     children:
       cartographer.map.get: true
+      cartographer.map: true
   cartographer.map.get:
     description: Get a minimap for yourself
     default: false
+    children:
+      cartographer.map: true
   cartographer.map.create:
     description: Create a minimap
     default: false
+    children:
+      cartographer.map: true
   cartographer.map.delete:
     description: Delete a minimap
     default: false
+    children:
+      cartographer.map: true
+  # Map command
+  cartographer.map:
+    description: Access to map commands
+    default: false
+  # Module admin permission
   cartographer.module.admin:
     description: Manage Cartographer2 modules
     default: false
@@ -71,6 +95,7 @@ permissions:
       cartographer.module.reload: true
       cartographer.module.enable: true
       cartographer.module.disable: true
+  # Module permissions
   cartographer.module.list:
     description: View all modules
     default: false
@@ -103,6 +128,98 @@ permissions:
     default: false
     children:
       cartographer.module: true
+  # Module command
   cartographer.module:
     description: Access to the module command
     default: false
+  # Settings admin permission
+  cartographer.settings.admin:
+    description: Manage player settings
+    default: false
+    children:
+      cartographer.settings: true
+      cartographer.settings.set: true
+      cartographer.settings.setother: true
+  # Settings commands
+  # Rotation
+  cartographer.settings.setother.rotate:
+    description: Set whether a player's rotating minimaps are on
+    default: false
+    children:
+      cartographer.settings.setother: true
+      cartographer.settings.getother.rotate: true
+      cartographer.settings: true
+  cartographer.settings.getother.rotate:
+    description: Get whether a player's rotating minimaps are on
+    default: false
+    children:
+      cartographer.settings.getother: true
+      cartographer.settings.get.rotate: true
+      cartographer.settings: true
+  cartographer.settings.set.rotate:
+    description: Get whether rotating minimaps are on
+    default: false
+    children:
+      cartographer.settings.set: true
+      cartographer.settings.get.rotate: true
+      cartographer.settings: true
+  cartographer.settings.get.rotate:
+    description: Set whether rotating minimaps are on
+    default: false
+    children:
+      cartographer.settings.get: true
+      cartographer.settings: true
+  # Cursor
+  cartographer.settings.setother.cursor:
+    description: Set whether a player's cursor is on
+    default: false
+    children:
+      cartographer.settings.setother: true
+      cartographer.settings.getother.cursor: true
+      cartographer.settings: true
+  cartographer.settings.getother.cursor:
+    description: Get whether a player's cursor is on
+    default: false
+    children:
+      cartographer.settings.getother: true
+      cartographer.settings.get.cursor: true
+      cartographer.settings: true
+  cartographer.settings.set.cursor:
+    description: Get whether the cursor is on
+    default: false
+    children:
+      cartographer.settings.set: true
+      cartographer.settings.get.cursor: true
+      cartographer.settings: true
+  cartographer.settings.get.cursor:
+    description: Set whether the cursor is on
+    default: false
+    children:
+      cartographer.settings.get: true
+      cartographer.settings: true
+  # Settings subcommands
+  cartographer.settings.set:
+    description: Set an option
+    default: false
+    children:
+      cartographer.settings.get: true
+      cartographer.settings: true
+  cartographer.settings.get:
+    description: Get an option
+    default: false
+    children:
+      cartographer.settings: true
+  cartographer.settings.setother:
+    description: Set another player's options
+    default: false
+    children:
+      cartographer.settings.getother: true
+      cartographer.settings: true
+  cartographer.settings.getother:
+    description: Get another player's options
+    default: false
+    children:
+      cartographer.settings: true
+  # Settings command
+  cartographer.settings:
+    description: Access to the settings command

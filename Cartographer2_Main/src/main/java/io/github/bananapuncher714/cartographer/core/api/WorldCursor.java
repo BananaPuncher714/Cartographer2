@@ -7,7 +7,6 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 
 public class WorldCursor {
@@ -15,7 +14,6 @@ public class WorldCursor {
 	protected final Location location;
 	protected Type type;
 	protected boolean global;
-	protected PlayerRunnable haction = null, aaction = null;
 
 	/**
 	 * Constructor for a RealWorldCursor.
@@ -141,53 +139,5 @@ public class WorldCursor {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * Set the hover action.
-	 * 
-	 * @param action
-	 * Unused currently. May be null.
-	 */
-	public void setHoverAction( PlayerRunnable action ) {
-		haction = action;
-	}
-	
-	/**
-	 * Set the activate action.
-	 * 
-	 * @param action
-	 * Unused currently. May be null.
-	 */
-	public void setActivateAction( PlayerRunnable action ) {
-		aaction = action;
-	}
-	
-	/**
-	 * Execute the hover action, if not null.
-	 * 
-	 * @param player
-	 * Player involved.
-	 * @param objects
-	 * Extra objects involved.
-	 * @return
-	 * If it successfully executed or was null.
-	 */
-	public boolean executeHover( Player player, Object... objects ) {
-		return haction != null ? haction.execute( player, objects ) : true;
-	}
-	
-	/**
-	 * Execute the activate action, if not null.
-	 * 
-	 * @param player
-	 * Player involved.
-	 * @param objects
-	 * Extra objects involved.
-	 * @return
-	 * If it successfully executed or was null.
-	 */
-	public boolean executeActivate( Player player, Object... objects ) {
-		return aaction != null ? aaction.execute( player, objects ) : true;
 	}
 }

@@ -29,6 +29,7 @@ import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
@@ -51,6 +52,7 @@ public class CartographerRenderer extends MapRenderer {
 
 	protected Map< UUID, Double > scales = new HashMap< UUID, Double >();
 	protected Map< UUID, PlayerSetting > settings = new HashMap< UUID, PlayerSetting >();
+	protected Map< UUID, MapMenu > menus = new HashMap< UUID, MapMenu >();
 	
 	protected Cartographer plugin;
 	
@@ -110,6 +112,15 @@ public class CartographerRenderer extends MapRenderer {
 			Player player = Bukkit.getPlayer( entry.getKey() );
 			if ( player == null ) {
 				iterator.remove();
+				continue;
+			}
+			
+			// If the player is currently engaged in map data
+			MapMenu menu = menus.get( player.getUniqueId() );
+			if ( menu != null ) {
+				menu.view( player, setting );
+				byte[] data = menu.getDisplay();
+				plugin.getHandler().sendDataTo( id, data, null, entry.getKey() );
 				continue;
 			}
 			
@@ -174,6 +185,11 @@ public class CartographerRenderer extends MapRenderer {
 			UUID uuid = info.uuid;
 			plugin.getHandler().sendDataTo( id, data, cursors, uuid );
 		}
+		
+		// Remove the player interacted flag
+		for ( PlayerSetting setting : settings.values() ) {
+			setting.interacted = false;
+		}
 	}
 
 	public void setPlayerMap( Player player, Minimap map ) {
@@ -204,6 +220,26 @@ public class CartographerRenderer extends MapRenderer {
 			setting.setScale( blocksPerPixel );
 		}
 		scales.put( uuid, blocksPerPixel );
+	}
+	
+	public void setMapMenu( UUID uuid, MapMenu menu ) {
+		if ( menu == null ) {
+			menus.remove( uuid );
+		} else {
+			menus.put( uuid, menu );
+		}
+	}
+	
+	public MapMenu getMenu( UUID uuid ) {
+		return menus.get( uuid );
+	}
+	
+	public void activate( UUID uuid, boolean main ) {
+		PlayerSetting setting = settings.get( uuid );
+		if ( setting != null ) {
+			setting.interacted = true;
+			setting.interactedMain = main;
+		}
 	}
 	
 	public boolean isViewing( UUID uuid ) {
@@ -398,6 +434,9 @@ public class CartographerRenderer extends MapRenderer {
 		protected double cursorY;
 		protected double cursorCenter;
 		
+		protected boolean interacted;
+		protected boolean interactedMain;
+		
 		protected PlayerSetting( String map, Location location ) {
 			this.map = map;
 			this.location = location;
@@ -418,6 +457,14 @@ public class CartographerRenderer extends MapRenderer {
 		
 		public double getScale() {
 			return zoomscale;
+		}
+		
+		public boolean isInteracting() {
+			return interacted;
+		}
+		
+		public boolean isInteractingMain() {
+			return interactedMain;
 		}
 		
 		public boolean isMainHand() {

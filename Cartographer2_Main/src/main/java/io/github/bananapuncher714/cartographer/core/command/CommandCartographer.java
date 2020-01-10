@@ -29,11 +29,13 @@ import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 public class CommandCartographer implements CommandExecutor, TabCompleter {
 	private Cartographer plugin;
 	private CommandModule moduleCommand;
+	private CommandSettings settingsCommand;
 	
 	public CommandCartographer( Cartographer plugin ) {
 		this.plugin = plugin;
 		
 		moduleCommand = new CommandModule( plugin );
+		settingsCommand = new CommandSettings( plugin );
 	}
 	
 	@Override
@@ -44,6 +46,9 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 			// Module sub command
 			String[] subArgs = FailSafe.pop( args );
 			aos.addAll( moduleCommand.onTabComplete( sender, command, label, subArgs ) );
+		} else if ( args.length > 1 && args[ 0 ].equalsIgnoreCase( "settings" ) ) {
+			String[] subArgs = FailSafe.pop( args );
+			aos.addAll( settingsCommand.onTabComplete( sender, command, label, subArgs ) );
 		} else if ( args.length == 1 ) {
 			if ( sender.hasPermission( "cartographer.reload" ) || sender.hasPermission( "cartographer.map.reload" ) ) {
 				aos.add( "reload" );
@@ -68,6 +73,9 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 			}
 			if ( sender.hasPermission( "cartographer.module" ) ) {
 				aos.add( "module" );
+			}
+			if ( sender.hasPermission( "cartographer.settings" ) ) {
+				aos.add( "settings" );
 			}
 		} else if ( args.length == 2 ) {
 			if ( ( args[ 0 ].equalsIgnoreCase( "get" ) && ( sender.hasPermission( "cartographer.map.get" ) || sender.hasPermission( "cartographer.map.give" ) ) ) ||
@@ -125,6 +133,8 @@ public class CommandCartographer implements CommandExecutor, TabCompleter {
 					list( sender, args );
 				} else if ( option.equalsIgnoreCase( "module" ) ) {
 					return moduleCommand.onCommand( sender, command, label, args );
+				} else if ( option.equalsIgnoreCase( "settings" ) ) {
+					return settingsCommand.onCommand( sender, command, label, args );
 				} else {
 					sender.sendMessage( ChatColor.RED + "Invalid argument!" );
 				}
