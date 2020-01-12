@@ -1,8 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.internal;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
@@ -23,17 +20,6 @@ import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
 public class Util_1_13 implements GeneralUtil {
-	private static Method GETMAP;
-
-	public Util_1_13( boolean subclass ) {
-		if ( !subclass ) {
-			try {
-				GETMAP = Bukkit.class.getMethod( "getMap", short.class );
-			} catch ( Exception exception ) {
-				exception.printStackTrace();
-			}
-		}
-	}
 
 	@Override
 	public MapView getMapViewFrom( ItemStack item ) {
@@ -51,12 +37,7 @@ public class Util_1_13 implements GeneralUtil {
 
 	@Override
 	public MapView getMap( int id ) {
-		try {
-			return ( MapView ) GETMAP.invoke( null, ( short ) id );
-		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-			e.printStackTrace();
-		}
-		return null;
+		return Bukkit.getMap( id );
 	}
 
 	@Override

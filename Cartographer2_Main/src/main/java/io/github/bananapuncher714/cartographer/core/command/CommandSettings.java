@@ -68,7 +68,6 @@ public class CommandSettings implements CommandExecutor, TabCompleter {
 				}
 			}
 		} else if ( args.length == 3 ) {
-			// TODO can't be bothered
 		}
 		
 		List< String > completions = new ArrayList< String >();

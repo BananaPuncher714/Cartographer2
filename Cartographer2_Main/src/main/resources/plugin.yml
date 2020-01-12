@@ -19,6 +19,7 @@ permissions:
     description: Get all permissions for Cartographer2
     default: op
     children:
+      cartographer: true
       cartographer.reload: true
       cartographer.map.admin: true
       cartographer.module.admin: true
@@ -27,11 +28,18 @@ permissions:
   cartographer.reload:
     description: Reload the plugin's configs
     default: false
+    children:
+      cartographer: true
+  # Cartographer command
+  cartographer:
+    description: Access to the cartographer comand
+    default: false
   # Map admin permission
   cartographer.map.admin:
     description: Get all map related permissions
     default: false
     children:
+      cartographer.map: true
       cartographer.map.give: true
       cartographer.map.create: true
       cartographer.map.delete: true
@@ -85,6 +93,8 @@ permissions:
   cartographer.map:
     description: Access to map commands
     default: false
+    children:
+      cartographer: true
   # Module admin permission
   cartographer.module.admin:
     description: Manage Cartographer2 modules
@@ -132,6 +142,8 @@ permissions:
   cartographer.module:
     description: Access to the module command
     default: false
+    children:
+      cartographer: true
   # Settings admin permission
   cartographer.settings.admin:
     description: Manage player settings
@@ -223,3 +235,6 @@ permissions:
   # Settings command
   cartographer.settings:
     description: Access to the settings command
+    default: op
+    children:
+      cartographer: true 
