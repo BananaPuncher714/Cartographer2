@@ -51,11 +51,13 @@ public class CommandCartographer {
 				.add( new SubCommand( "reload" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.reload" ) )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer reload <map>" ) )
 								.defaultTo( this::reloadMap ) )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
 						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer reload <map>" ) ) )
 				.add( new SubCommand( "list" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.list" ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer list" ) )
 						.defaultTo( this::list ) )
 				.add( new SubCommand( "get" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.get" ) )
@@ -79,6 +81,7 @@ public class CommandCartographer {
 				.add( new SubCommand( "create" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.create" ) )
 						.add( new SubCommand( new InputValidatorCreateMinimap( plugin ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer create <id>" ) )
 								.defaultTo( this::create ) )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "A minimap with that id already exists!" ) )
 						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer create <id>" ) ) )
@@ -132,11 +135,9 @@ public class CommandCartographer {
 	}
 
 	private void create( CommandSender sender, String[] args, CommandParameters parameters ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.map.create" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( args.length == 1, ChatColor.RED + "Usage: /cartographer create <id>" );
-
-		Minimap map = plugin.getMapManager().constructNewMinimap( args[ 0 ] );
-		sender.sendMessage( ChatColor.GREEN + "Created and registered a new minimap with id '" + ChatColor.YELLOW + args[ 0 ] + ChatColor.GREEN + "'" );
+		String name = parameters.getLast( String.class );
+		Minimap map = plugin.getMapManager().constructNewMinimap( name );
+		sender.sendMessage( ChatColor.AQUA + "Created and registered a new minimap with id '" + ChatColor.YELLOW + name + ChatColor.AQUA + "'" );
 	}
 
 	private void get( CommandSender sender, String[] args, CommandParameters parameters ) {

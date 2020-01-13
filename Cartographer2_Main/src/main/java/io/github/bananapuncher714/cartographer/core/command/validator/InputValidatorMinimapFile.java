@@ -33,7 +33,7 @@ public class InputValidatorMinimapFile implements InputValidator< File > {
 
 	@Override
 	public boolean isValid( String input, String[] args ) {
-		File file = new File( Cartographer.getMapSaveDir().listFiles() + "/" + input.replace( "/", "" ) );
+		File file = new File( Cartographer.getMapSaveDir() + "/" + input.replace( "/", "" ) );
 		if ( !file.exists() || !file.isFile() ) {
 			return false;
 		}
@@ -42,7 +42,7 @@ public class InputValidatorMinimapFile implements InputValidator< File > {
 
 	@Override
 	public File get( String input ) {
-		return new File( Cartographer.getMapSaveDir().listFiles() + "/" + input.replace( "/", "" ) );
+		return new File( Cartographer.getMapSaveDir() + "/" + input.replace( "/", "" ) );
 	}
 
 }

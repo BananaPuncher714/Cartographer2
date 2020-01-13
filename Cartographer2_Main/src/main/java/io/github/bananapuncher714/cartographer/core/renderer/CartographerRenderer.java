@@ -159,9 +159,9 @@ public class CartographerRenderer extends MapRenderer {
 			
 			SimpleImage backgroundImage = plugin.getBackground();
 			if ( map.getBackgroundImage() != null ) {
-				overlayImage = map.getBackgroundImage();
+				backgroundImage = map.getBackgroundImage();
 			} else if ( viewer.getBackground() != null ) {
-				overlayImage = viewer.getBackground();
+				backgroundImage = viewer.getBackground();
 			}
 			
 			// Everything after this point can be done async

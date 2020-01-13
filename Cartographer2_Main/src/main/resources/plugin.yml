@@ -12,6 +12,7 @@ commands:
   cartographer:
     description: Main Cartographer2 command
     aliases: []
+    permission: cartographer
 
 permissions:
   # Admin permission
