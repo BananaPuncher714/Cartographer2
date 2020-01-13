@@ -14,13 +14,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 public class CommandSettings implements CommandExecutor, TabCompleter {
 	private Cartographer plugin;
+	private SubCommand settingsCommand;
 	
 	public CommandSettings( Cartographer plugin ) {
 		this.plugin = plugin;
+		
+		settingsCommand = new SubCommand( "settings" );
+	}
+	
+	protected SubCommand getCommand() {
+		return settingsCommand;
 	}
 	
 	@Override

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.Validate;
 
 public class ModuleDescription {
-	private static final Pattern VALID_NAME = Pattern.compile( "^[A-Za-z0-9 _.-]+$" );
+	private static final Pattern VALID_NAME = Pattern.compile( "^[A-Za-z0-9_.-]+$" );
 	
 	protected final String name;
 	protected final String main;

@@ -8,10 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutable;
@@ -152,7 +150,7 @@ public class SubCommand {
 		return tabs;
 	}
 	
-	public SubCommand apply( PluginCommand command ) {
+	public SubCommand applyTo( PluginCommand command ) {
 		command.setExecutor( this::onCommand );
 		command.setTabCompleter( this::onTabComplete );
 		return this;

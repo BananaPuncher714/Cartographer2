@@ -33,5 +33,4 @@ public class InputValidatorInt implements InputValidator< Integer > {
 	public Integer get( String input ) {
 		return Integer.parseInt( input );
 	}
-
 }

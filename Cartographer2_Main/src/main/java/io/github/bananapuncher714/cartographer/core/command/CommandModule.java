@@ -1,134 +1,75 @@
 package io.github.bananapuncher714.cartographer.core.command;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
+import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
+import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
+import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModule;
+import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModuleEnabled;
+import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModuleUnloaded;
 import io.github.bananapuncher714.cartographer.core.module.Module;
-import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * Cartographer2 Module subcommand.
  * 
  * @author BananaPuncher714
  */
-public class CommandModule implements CommandExecutor, TabCompleter {
+public class CommandModule {
 	private Cartographer plugin;
+	private SubCommand moduleCommand;
 	
 	protected CommandModule( Cartographer plugin ) {
 		this.plugin = plugin;
+		
+		moduleCommand = new SubCommand( "module" )
+				.addSenderValidator( new SenderValidatorPermission( "cartographer.module" ) )
+				.add( new SubCommand( "list" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.list" ) )
+						.defaultTo( this::list ) )
+				.add( new SubCommand( "reload" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.reload" ) )
+						.defaultTo( this::reload ) )
+				.add( new SubCommand( "enable" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.enable" ) )
+						.add( new SubCommand( new InputValidatorModuleEnabled( plugin, true ) )
+								.defaultTo( this::enable ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module is already enabled or does not exist!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module enable <module>" ) ) )
+				.add( new SubCommand( "disable" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.disable" ) )
+						.add( new SubCommand( new InputValidatorModuleEnabled( plugin, false ) )
+								.defaultTo( this::disable ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module is already disabled or does not exist!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module disable <module>" ) ) )
+				.add( new SubCommand( "load" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.load" ) )
+						.add( new SubCommand( new InputValidatorModuleUnloaded( plugin ) )
+								.defaultTo( this::load ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This file is already loaded or does not exist!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module load <file>" ) ) )
+				.add( new SubCommand( "unload" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.unload" ) )
+						.add( new SubCommand( new InputValidatorModule( plugin ) )
+								.defaultTo( this::unload ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module does not exist!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module unload <module>" ) ) )
+				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
+				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) );
 	}
 	
-	@Override
-	public List< String > onTabComplete( CommandSender sender, Command arg1, String arg2, String[] args ) {
-		List< String > aos = new ArrayList< String >();
-		
-		if ( args.length == 1 ) {
-			if ( sender.hasPermission( "cartographer.module.list" ) ) {
-				aos.add( "list" );
-			}
-			if ( sender.hasPermission( "cartographer.module.reload" ) ) {
-				aos.add( "reload" );
-			}
-			if ( sender.hasPermission( "cartographer.module.enable" ) ) {
-				aos.add( "enable" );
-			}
-			if ( sender.hasPermission( "cartographer.module.disable" ) ) {
-				aos.add( "disable" );
-			}
-			if ( sender.hasPermission( "cartographer.module.load" ) ) {
-				aos.add( "load" );
-			}
-			if ( sender.hasPermission( "cartographer.module.unload" ) ) {
-				aos.add( "unload" );
-			}
-		} else if ( args.length == 2 ) {
-			if ( args[ 0 ].equalsIgnoreCase( "unload" ) && sender.hasPermission( "cartographer.module.unload" ) ) {
-				for ( Module module : plugin.getModuleManager().getModules() ) {
-					aos.add( module.getName() );
-				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "load" ) && sender.hasPermission( "cartographer.module.load" ) ) {
-				for ( File file : Cartographer.getModuleDir().listFiles() ) {
-					if ( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ) ) {
-						boolean found = false;
-						for ( Module module : plugin.getModuleManager().getModules() ) {
-							File moduleFile = module.getFile();
-							if ( moduleFile.getAbsolutePath().equals( file.getAbsolutePath() ) ) {
-								found = true;
-								break;
-							}
-						}
-						if ( !found ) {
-							aos.add( file.getName() );
-						}
-					}
-				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "enable" ) && sender.hasPermission( "cartographer.module.enable" ) ) {
-				for ( Module module : plugin.getModuleManager().getModules() ) {
-					if ( !module.isEnabled() ) {
-						aos.add( module.getName() );
-					}
-				}
-			} else if ( args[ 0 ].equalsIgnoreCase( "disable" ) && sender.hasPermission( "cartographer.module.disable" ) ) {
-				for ( Module module : plugin.getModuleManager().getModules() ) {
-					if ( module.isEnabled() ) {
-						aos.add( module.getName() );
-					}
-				}
-			}
-		}
-		
-		List< String > completions = new ArrayList< String >();
-		StringUtil.copyPartialMatches( args[ args.length - 1 ], aos, completions );
-		Collections.sort( completions );
-		return completions;
-	}
-
-	@Override
-	public boolean onCommand( CommandSender sender, Command arg1, String arg2, String[] args ) {
-		try {
-			if ( args.length == 0 ) {
-				sender.sendMessage( ChatColor.RED + "You must provide an argument!" );
-			} else if ( args.length > 0 ) {
-				String option = args[ 0 ];
-				args = FailSafe.pop( args );
-				if ( option.equalsIgnoreCase( "list" ) ) {
-					list( sender, args );
-				} else if ( option.equalsIgnoreCase( "reload" ) ) {
-					reload( sender, args );
-				} else if ( option.equalsIgnoreCase( "enable" ) ) {
-					enable( sender, args );
-				} else if ( option.equalsIgnoreCase( "disable" ) ) {
-					disable( sender, args );
-				} else if ( option.equalsIgnoreCase( "unload" ) ) {
-					unload( sender, args );
-				} else if ( option.equalsIgnoreCase( "load" ) ) {
-					load( sender, args );
-				} else {
-					sender.sendMessage( ChatColor.RED + "Invalid argument!" );
-				}
-			}
-		} catch ( IllegalArgumentException exception ) {
-			sender.sendMessage( exception.getMessage() );
-		}
-		return false;
+	protected SubCommand getCommand() {
+		return moduleCommand;
 	}
 	
-	private void list( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.list" ), ChatColor.RED + "You do not have permission to run this command!" );
-		
+	private void list( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Set< Module > modules = plugin.getModuleManager().getModules();
 		if ( modules.isEmpty() ) {
 			sender.sendMessage( ChatColor.GOLD + "There are currently no modules loaded!" );
@@ -156,24 +97,14 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		}
 	}
 	
-	private void reload( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.reload" ), ChatColor.RED + "You do not have permission to run this command!" );
+	private void reload( CommandSender sender, String[] args, CommandParameters parameters ) {
 		plugin.getModuleManager().reload();
 		sender.sendMessage( ChatColor.GOLD + "Reloaded all modules!" );
 	}
 	
-	private void enable( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.enable" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module enable <id>" );
-		StringBuilder builder = new StringBuilder();
-		for ( String string : args  ) {
-			builder.append( string );
-			builder.append( " " );
-		}
-		String moduleName = builder.toString().trim();
-		
-		Module module = plugin.getModuleManager().getModule( moduleName );
-		Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
+	private void enable( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Module module = parameters.getLast( Module.class );
+		String moduleName = module.getName();
 		
 		if ( module.isEnabled() ) {
 			sender.sendMessage( ChatColor.RED + "Module '" + moduleName + "' is already enabled!" );
@@ -189,51 +120,25 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		}
 	}
 	
-	private void disable( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.disable" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module disable <id>"  );
-		StringBuilder builder = new StringBuilder();
-		for ( String string : args  ) {
-			builder.append( string );
-			builder.append( " " );
-		}
-		String moduleName = builder.toString().trim();
-		
-		Module module = plugin.getModuleManager().getModule( moduleName );
-		Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
+	private void disable( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Module module = parameters.getLast( Module.class );
+		String moduleName = module.getName();
 		
 		boolean valid = plugin.getModuleManager().disableModule( module );
 		
 		if ( valid ) {
 			sender.sendMessage( ChatColor.GOLD + "Disabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
 		} else {
+			// Shouldn't occur with the current input validator for the disable command
 			sender.sendMessage( ChatColor.RED + "Module '" + moduleName + "' is already disabled!" );
 		}
 	}
 	
-	private void load( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.load" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module load <id>" );
-		StringBuilder builder = new StringBuilder();
-		for ( String string : args  ) {
-			builder.append( string );
-			builder.append( " " );
-		}
-		String moduleName = builder.toString().trim().replace( "/", "" );
-
-		File file = new File( Cartographer.getModuleDir() + "/" + moduleName );
-		Validate.isTrue( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ), ChatColor.RED + "'" + moduleName + "' does not exist!" );
-		
-		for ( Module module : plugin.getModuleManager().getModules() ) {
-			if ( file.getAbsolutePath().equals( module.getFile().getAbsolutePath() ) ) {
-				sender.sendMessage( ChatColor.RED + "'" + module + "' is already loaded!" );
-				return;
-			}
-		}
-		
+	private void load( CommandSender sender, String[] args, CommandParameters parameters ) {
+		File file = parameters.getLast( File.class );
 		Module module = plugin.getModuleManager().loadModule( file );
 		if ( module == null ) {
-			sender.sendMessage( ChatColor.RED + "Unable to load module '" + moduleName + "', Check the server log for details." );
+			sender.sendMessage( ChatColor.RED + "Unable to load module '" + file.getName() + "', Check the server log for details." );
 			return;
 		}
 		
@@ -242,24 +147,15 @@ public class CommandModule implements CommandExecutor, TabCompleter {
 		boolean valid = plugin.getModuleManager().enableModule( module );
 		
 		if ( valid ) {
-			sender.sendMessage( ChatColor.GOLD + "Loaded and enabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+			sender.sendMessage( ChatColor.GOLD + "Loaded and enabled module '" + ChatColor.YELLOW + module.getName() + ChatColor.GOLD + "'!" );
 		} else {
-			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + moduleName + "', Check the server log for details. (Missing dependencies?)" );
+			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + module.getName() + "', Check the server log for details. (Missing dependencies?)" );
 		}
 	}
 	
-	private void unload( CommandSender sender, String[] args ) {
-		Validate.isTrue( sender.hasPermission( "cartographer.module.unload" ), ChatColor.RED + "You do not have permission to run this command!" );
-		Validate.isTrue( args.length > 0, ChatColor.RED + "Usage: /cartographer module unload <id>"  );
-		StringBuilder builder = new StringBuilder();
-		for ( String string : args  ) {
-			builder.append( string );
-			builder.append( " " );
-		}
-		String moduleName = builder.toString().trim();
-		
-		Module module = plugin.getModuleManager().getModule( moduleName );
-		Validate.isTrue( module != null, ChatColor.RED + "'" + moduleName + "' is not a valid module!" );
+	private void unload( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Module module = parameters.getLast( Module.class );
+		String moduleName = module.getName();
 		
 		if ( plugin.getModuleManager().unloadModule( module ) ) {
 			sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );

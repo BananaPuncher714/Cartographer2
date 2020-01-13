@@ -127,9 +127,7 @@ public class Cartographer extends JavaPlugin {
 		dependencyManager = new DependencyManager( this );
 		playerManager = new PlayerManager( this );
 		
-		command = new CommandCartographer( this );
-		getCommand( "cartographer" ).setExecutor( command );
-		getCommand( "cartographer" ).setTabCompleter( command );
+		command = new CommandCartographer( this, getCommand( "cartographer" ) );
 		
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
