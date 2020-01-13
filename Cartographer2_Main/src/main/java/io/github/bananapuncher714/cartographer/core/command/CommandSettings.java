@@ -25,6 +25,12 @@ public class CommandSettings {
 		this.plugin = plugin;
 		
 		SubCommand setOther = new SubCommand( new InputValidatorPlayer() )
+				.add( new SubCommand( "showname" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.showname" ) )
+						.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
+								.defaultTo( this::setOther ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/off/false)" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/off/false)" ) ) )
 				.add( new SubCommand( "cursor" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.cursor" ) )
 						.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
@@ -41,6 +47,9 @@ public class CommandSettings {
 				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) );
 		
 		SubCommand getOther = new SubCommand( new InputValidatorPlayer() )
+				.add( new SubCommand( "showname" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.showname" ) )
+						.defaultTo( this::getOther ) )
 				.add( new SubCommand( "cursor" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.cursor" ) )
 						.defaultTo( this::getOther ) )
@@ -67,14 +76,20 @@ public class CommandSettings {
 				.add( new SubCommand( "set" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.set" ) )
 						.addSenderValidator( new SenderValidatorPlayer() )
+						.add( new SubCommand( "showname" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.set.showname" ) )
+								.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
+										.defaultTo( this::set ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/off/false)" ) )
+								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/off/false)" ) ) )
 						.add( new SubCommand( "cursor" )
-								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.cursor" ) )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.set.cursor" ) )
 								.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
 										.defaultTo( this::set ) )
 								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/off/false)" ) )
 								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/off/false)" ) ) )
 						.add( new SubCommand( "rotate" )
-								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.rotate" ) )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.set.rotate" ) )
 								.add( new SubCommand( new InputValidatorBooleanOption( new String[] { "on", "true" }, new String[] { "off", "false" }, new String[] { "unset" } ) )
 										.defaultTo( this::set ) )
 								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/unset/off/false)" ) )
@@ -84,11 +99,14 @@ public class CommandSettings {
 				.add( new SubCommand( "get" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.get" ) )
 						.addSenderValidator( new SenderValidatorPlayer() )
+						.add( new SubCommand( "showname" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.get.showname" ) )
+								.defaultTo( this::get ) )
 						.add( new SubCommand( "cursor" )
-								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.cursor" ) )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.get.cursor" ) )
 								.defaultTo( this::get ) )
 						.add( new SubCommand( "rotate" )
-								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.rotate" ) )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.get.rotate" ) )
 								.defaultTo( this::get ) )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid setting!" ) )
 						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) ) )
@@ -133,6 +151,11 @@ public class CommandSettings {
 			}
 			viewer.setRotate( option );
 			sender.sendMessage( ChatColor.GREEN + "Set rotation to " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "showname" ) ) {
+			boolean isOn = parameters.getLast( boolean.class );
+			
+			viewer.setShowName( isOn );
+			sender.sendMessage( ChatColor.GREEN + "Set show name to " + ChatColor.LIGHT_PURPLE + ( isOn ? "on" : "off" ) + ChatColor.GREEN + "." );
 		} else {
 			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}
@@ -153,6 +176,8 @@ public class CommandSettings {
 				rotation = "unset";
 			}
 			sender.sendMessage( ChatColor.GREEN + " Your rotation is " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "showname" ) ) {
+			sender.sendMessage( ChatColor.GREEN + "Show name is turned " + ChatColor.LIGHT_PURPLE + ( viewer.isShowName() ? "on" : "off" ) + ChatColor.GREEN + "." );
 		} else {
 			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}
@@ -179,6 +204,11 @@ public class CommandSettings {
 			}
 			viewer.setRotate( option );
 			sender.sendMessage( ChatColor.GREEN + "Set rotation for " +ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " to " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "showname" ) ) {
+			boolean isOn = parameters.getLast( boolean.class );
+			
+			viewer.setShowName( isOn );
+			sender.sendMessage( ChatColor.GREEN + "Set show name for " + ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " to " + ChatColor.LIGHT_PURPLE + ( isOn ? "on" : "off" ) + ChatColor.GREEN + "." );
 		} else {
 			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}
@@ -199,6 +229,8 @@ public class CommandSettings {
 				rotation = "unset";
 			}
 			sender.sendMessage( ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " has their rotation " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "showname" ) ) {
+			sender.sendMessage( ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " has show name is turned " + ChatColor.LIGHT_PURPLE + ( viewer.isShowName() ? "on" : "off" ) + ChatColor.GREEN + "." );
 		} else {
 			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}

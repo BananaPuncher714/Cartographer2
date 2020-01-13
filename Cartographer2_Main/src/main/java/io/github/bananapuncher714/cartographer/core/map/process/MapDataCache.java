@@ -13,8 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -132,8 +134,10 @@ public class MapDataCache {
 					// Only if our map is set to update or we don't have the location to begin with
 					if ( !data.containsKey( loc ) || setting.isAutoUpdate() ) {
 						// Only if our minimap is willing to render outside of worldborders and such
-						if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( loc ) ) {
-							process( loc );
+						if ( needsRender( loc ) ) {
+							if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( loc ) ) {
+								process( loc );
+							}
 						}
 					}
 				}
@@ -203,7 +207,9 @@ public class MapDataCache {
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		if ( !forcedLoading.contains( location ) || !data.containsKey( location ) || !data.containsKey( south ) ) {
 			if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( south ) ) {
-				chunks.put( location, location.getChunk().getChunkSnapshot() );
+				if ( needsRender( location ) ) {
+					chunks.put( location, location.getChunk().getChunkSnapshot() );
+				}
 			}
 		}
 	}
@@ -277,6 +283,23 @@ public class MapDataCache {
 	
 	public boolean requiresGeneration( ChunkLocation location ) {
 		return !( renderers.containsKey( location ) || data.containsKey( location ) );
+	}
+	
+	public boolean needsRender( ChunkLocation location ) {
+		int cx = location.getX() >> 4 << 8;
+		int cz = location.getZ() >> 4 << 8;
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
+			Location playerLoc = player.getLocation();
+			if ( playerLoc.getWorld() != location.getWorld() ) {
+				continue;
+			}
+			int x = playerLoc.getBlockX();
+			int z = playerLoc.getBlockZ();
+			if ( BlockUtil.distance( cx, cz, x, z ) < 1800 ) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void updateLocation( Location location, MinimapPalette palette ) {

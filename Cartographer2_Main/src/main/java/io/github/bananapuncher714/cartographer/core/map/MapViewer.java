@@ -18,14 +18,15 @@ public class MapViewer {
 	// This stuff gets saved
 	protected UUID uuid;
 	protected BooleanOption rotate = BooleanOption.UNSET;
+	protected boolean showName = true;
 	
+	// For on map menu stuff
+	protected boolean cursorActive = false;
 	
 	// This stuff does not get saved
 	protected SimpleImage overlay;
 	protected SimpleImage background;
 	
-	// For on map menu stuff
-	protected boolean cursorActive = false;
 	
 	public MapViewer( UUID uuid ) {
 		this.uuid = uuid;
@@ -35,6 +36,14 @@ public class MapViewer {
 		return uuid;
 	}
 	
+	public boolean isShowName() {
+		return showName;
+	}
+
+	public void setShowName( boolean showName ) {
+		this.showName = showName;
+	}
+
 	public BooleanOption getRotate() {
 		return rotate;
 	}

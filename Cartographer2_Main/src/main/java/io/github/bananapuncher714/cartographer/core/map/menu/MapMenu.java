@@ -54,6 +54,9 @@ public class MapMenu {
 		}
 	}
 	
+	public void onClose( Player player ) {
+	}
+	
 	public byte[] getDisplay() {
 		return displayData;
 	}

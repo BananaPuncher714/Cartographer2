@@ -156,6 +156,7 @@ permissions:
       cartographer.settings.setother: true
       cartographer.settings.setother.rotate: true
       cartographer.settings.setother.cursor: true
+      cartographer.settings.setother.showname: true
   cartographer.settings.user:
     description: Manage own settings
     default: true
@@ -164,6 +165,7 @@ permissions:
       cartographer.settings.set: true
       cartographer.settings.set.cursor: true
       cartographer.settings.set.rotate: true
+      cartographer.settings.set.showname: true
   # Settings commands
   # Rotation
   cartographer.settings.setother.rotate:
@@ -216,6 +218,34 @@ permissions:
       cartographer.settings.get.cursor: true
       cartographer.settings: true
   cartographer.settings.get.cursor:
+    description: Set whether the cursor is on
+    default: false
+    children:
+      cartographer.settings.get: true
+      cartographer.settings: true
+  # Show name
+  cartographer.settings.setother.showname:
+    description: Set whether a player's cursor is on
+    default: false
+    children:
+      cartographer.settings.setother: true
+      cartographer.settings.getother.showname: true
+      cartographer.settings: true
+  cartographer.settings.getother.showname:
+    description: Get whether a player's cursor is on
+    default: false
+    children:
+      cartographer.settings.getother: true
+      cartographer.settings.get.showname: true
+      cartographer.settings: true
+  cartographer.settings.set.showname:
+    description: Get whether the cursor is on
+    default: false
+    children:
+      cartographer.settings.set: true
+      cartographer.settings.get.showname: true
+      cartographer.settings: true
+  cartographer.settings.get.showname:
     description: Set whether the cursor is on
     default: false
     children:

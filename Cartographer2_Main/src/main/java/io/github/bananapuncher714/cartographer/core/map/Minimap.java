@@ -139,7 +139,7 @@ public class Minimap implements ChunkNotifier {
 				if ( noSave.contains( bigLoc ) ) {
 					continue;
 				}
-				if ( needsRender( location ) || location.isLoaded() ) {
+				if ( cache.needsRender( location ) || location.isLoaded() ) {
 					noSave.add( bigLoc );
 					if ( chunks.containsKey( bigLoc ) ) {
 						chunks.remove( bigLoc );
@@ -164,23 +164,6 @@ public class Minimap implements ChunkNotifier {
 				}
 			}
 		}
-	}
-	
-	public boolean needsRender( ChunkLocation location ) {
-		int cx = location.getX() >> 4 << 8;
-		int cz = location.getZ() >> 4 << 8;
-		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			Location playerLoc = player.getLocation();
-			if ( playerLoc.getWorld() != location.getWorld() ) {
-				continue;
-			}
-			int x = playerLoc.getBlockX();
-			int z = playerLoc.getBlockZ();
-			if ( BlockUtil.distance( cx, cz, x, z ) < 1800 ) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	public MinimapPalette getPalette() {
