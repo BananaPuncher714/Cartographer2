@@ -18,6 +18,12 @@ import io.github.bananapuncher714.cartographer.core.api.command.validator.InputV
 import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidator;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
+/**
+ * A build and run command framework for automatic tab completions and easy branching.
+ * TODO Make a builder for this or something.
+ * 
+ * @author BananaPuncher714
+ */
 public class SubCommand {
 	protected List< SubCommand > subCommands = new ArrayList< SubCommand >();
 	
@@ -26,14 +32,29 @@ public class SubCommand {
 	protected CommandExecutable whenUnknown;
 	protected CommandExecutable whenNone;
 	
+	/**
+	 * Accept anything as a valid input
+	 */
 	public SubCommand() {
 	}
 	
-	// Helped constructor
+	// Helped constructor, really belongs in a factory.
+	/**
+	 * Create a SubCommand with the string as the input validator.
+	 * 
+	 * @param command
+	 * The subcommand value.
+	 */
 	public SubCommand( String command ) {
 		this( new InputValidatorString( command ) );
 	}
 	
+	/**
+	 * Create a SubCommand with the input validator provided.
+	 * 
+	 * @param validator
+	 * Can be null.
+	 */
 	public SubCommand( InputValidator< ? > validator ) {
 		this.validator = validator;
 	}
@@ -48,12 +69,28 @@ public class SubCommand {
 		return this;
 	}
 	
+	/**
+	 * Ran when the arguments provided don't match any SubCommands registered.
+	 * 
+	 * @param executable
+	 * An executable where the arguments will start with the unknown subcommand.
+	 * @return
+	 * Builder pattern return.
+	 */
 	public SubCommand whenUnknown( CommandExecutable executable ) {
 		this.whenUnknown = executable;
 		return this;
 	}
 	
 	// Naming by jetp250
+	/**
+	 * Ran when there are no arguments provided, or if the executable for when unknown is not set.
+	 * 
+	 * @param executable
+	 * If null, nothing will happen.
+	 * @return
+	 * Builder pattern return.
+	 */
 	public SubCommand defaultTo( CommandExecutable executable ) {
 		this.whenNone = executable;
 		return this;
@@ -103,8 +140,6 @@ public class SubCommand {
 		if ( args.length > 0 ) {
 			String arg = args[ 0 ];
 			
-			// Right here, each sub command may match it, so we want to get all the subcommands of each one
-			// Build a new subcommand?
 			boolean found = false;
 			String[] newArgs = FailSafe.pop( args );
 			for ( SubCommand subCommand : subCommands ) {

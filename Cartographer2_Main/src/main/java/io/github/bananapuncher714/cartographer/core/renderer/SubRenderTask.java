@@ -67,6 +67,8 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 			int loading = info.background[ subIndex ];
 
 			// The render location comes next
+			// TODO Perhaps calculate this location here rather than creating an array of 128 * 128 locations?
+			// Not sure how much faster this would be though
 			Location renderLoc = info.locations[ subIndex ];
 			// If renderLoc is null, we know it doesn't exist
 			// Therefore, overwrite it with whatever color mapColor is

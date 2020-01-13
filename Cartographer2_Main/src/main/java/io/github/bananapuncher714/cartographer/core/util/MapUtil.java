@@ -44,6 +44,7 @@ public class MapUtil {
 				double xx = a * cos - b * sin;
 				double yy = a * sin + b * cos;
 
+				// How intensive is the clone method...
 				locations[ x + yHeight ] = center.clone().add( scale * xx, 0, scale * yy );
 			}
 		}
