@@ -20,6 +20,7 @@ public class FrameRenderTask extends RecursiveAction {
 	// There are 128 * 128 pixels that need to be processed
 	// Keep in mind cache lines? Don't want to waste time
 	private static final int SUBTASK_INTERVAL = 128;
+	private static final int CANVAS_SIZE = 128 * 128;
 	
 	protected RenderInfo info;
 	
@@ -30,12 +31,12 @@ public class FrameRenderTask extends RecursiveAction {
 	@Override
 	protected void compute() {
 		// Set up the arrays needed
-		byte[] data = new byte[ 128 * 128 ];
-		int[] higherMapPixels = new int[ 128 * 128 ];
-		int[] lowerMapPixels = new int[ 128 * 128 ];
+		byte[] data = new byte[ CANVAS_SIZE ];
+		int[] higherMapPixels = new int[ CANVAS_SIZE ];
+		int[] lowerMapPixels = new int[ CANVAS_SIZE ];
 		// Make sure it's not null
-		int[] globalOverlay = info.map.getOverlayImage() != null ? info.map.getOverlayImage().getImage() : new int[ 128 * 128 ];
-		int[] loadingBackground = info.map.getBackgroundImage() != null ? info.map.getBackgroundImage().getImage() : new int[ 128 * 128 ];
+		int[] globalOverlay = info.overlayImage != null ? info.overlayImage.getImage() : new int[ CANVAS_SIZE ];
+		int[] loadingBackground = info.backgroundImage != null ? info.backgroundImage.getImage() : new int[ CANVAS_SIZE ];
 		
 		// Set the information to the render info
 		info.data = data;

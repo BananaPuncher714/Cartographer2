@@ -1,8 +1,12 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
+import java.awt.Image;
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
+
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
+import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 
 /**
  * Individual per player settings that take priority over Cartographer's default settings but must conform to minimap settings.
@@ -11,8 +15,14 @@ import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
  * @author BananaPuncher714
  */
 public class MapViewer {
+	// This stuff gets saved
 	protected UUID uuid;
 	protected BooleanOption rotate = BooleanOption.UNSET;
+	
+	
+	// This stuff does not get saved
+	protected SimpleImage overlay;
+	protected SimpleImage background;
 	
 	// For on map menu stuff
 	protected boolean cursorActive = false;
@@ -30,6 +40,7 @@ public class MapViewer {
 	}
 
 	public void setRotate( BooleanOption rotate ) {
+		Validate.notNull( rotate );
 		this.rotate = rotate;
 	}
 
@@ -39,6 +50,28 @@ public class MapViewer {
 
 	public void setCursorActive( boolean cursorActive ) {
 		this.cursorActive = cursorActive;
+	}
+
+	public SimpleImage getOverlay() {
+		return overlay;
+	}
+
+	public void setOverlay( SimpleImage overlay ) {
+		if ( overlay != null ) {
+			overlay = new SimpleImage( overlay, 128, 128, Image.SCALE_REPLICATE );
+		}
+		this.overlay = overlay;
+	}
+
+	public SimpleImage getBackground() {
+		return background;
+	}
+
+	public void setBackground( SimpleImage background ) {
+		if ( background != null ) {
+			background = new SimpleImage( background, 128, 128, Image.SCALE_REPLICATE );
+		}
+		this.background = background;
 	}
 
 	@Override

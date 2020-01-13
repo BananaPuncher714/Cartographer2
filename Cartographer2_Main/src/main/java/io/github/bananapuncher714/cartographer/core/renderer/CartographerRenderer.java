@@ -147,6 +147,22 @@ public class CartographerRenderer extends MapRenderer {
 			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
 			
 			MapDataCache cache = map.getDataCache();
+
+			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+			
+			SimpleImage overlayImage = plugin.getOverlay();
+			if ( map.getOverlayImage() != null ) {
+				overlayImage = map.getOverlayImage();
+			} else if ( viewer.getOverlay() != null ) {
+				overlayImage = viewer.getOverlay();
+			}
+			
+			SimpleImage backgroundImage = plugin.getBackground();
+			if ( map.getBackgroundImage() != null ) {
+				overlayImage = map.getBackgroundImage();
+			} else if ( viewer.getBackground() != null ) {
+				overlayImage = viewer.getBackground();
+			}
 			
 			// Everything after this point can be done async
 			RenderInfo renderInfo = new RenderInfo();
@@ -160,6 +176,9 @@ public class CartographerRenderer extends MapRenderer {
 			renderInfo.worldCursors = realWorldCursors;
 			renderInfo.mapPixels = pixels;
 			renderInfo.mapCursors = localCursors;
+			
+			renderInfo.overlayImage = overlayImage;
+			renderInfo.backgroundImage = backgroundImage;
 			
 			// Create a new task per player and run
 			FrameRenderTask task = new FrameRenderTask( renderInfo );

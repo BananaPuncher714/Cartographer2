@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
+import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
@@ -40,4 +41,7 @@ public class RenderInfo {
 	
 	protected Minimap map;
 	protected MapDataCache cache;
+	
+	protected SimpleImage overlayImage;
+	protected SimpleImage backgroundImage;
 }
