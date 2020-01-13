@@ -316,6 +316,17 @@ public class CartographerRenderer extends MapRenderer {
 			
 			Location location = player.getLocation();
 			
+			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+			Minimap map = getMinimap();
+			boolean rotating = Cartographer.getInstance().isRotateByDefault();
+			if ( map != null ) {
+				if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
+					rotating = map.getSettings().getRotation().isTrue();
+				} else if ( viewer.getRotate() != BooleanOption.UNSET ) {
+					rotating = viewer.getRotate().isTrue();
+				}
+			}
+			setting.rotating = rotating;
 			
 			setting.location = location;
 			setting.mainhand = mainHand;

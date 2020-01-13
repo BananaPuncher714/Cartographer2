@@ -150,8 +150,19 @@ permissions:
     default: false
     children:
       cartographer.settings: true
+      cartographer.settings.user: true
       cartographer.settings.set: true
       cartographer.settings.setother: true
+      cartographer.settings.setother.rotate: true
+      cartographer.settings.setother.cursor: true
+  cartographer.settings.user:
+    description: Manage own settings
+    default: true
+    children:
+      cartographer.settings: true
+      cartographer.settings.set: true
+      cartographer.settings.set.cursor: true
+      cartographer.settings.set.rotate: true
   # Settings commands
   # Rotation
   cartographer.settings.setother.rotate:

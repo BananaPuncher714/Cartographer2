@@ -1,105 +1,187 @@
 package io.github.bananapuncher714.cartographer.core.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
+import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
 import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
-import io.github.bananapuncher714.cartographer.core.util.FailSafe;
+import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorBoolean;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorBooleanOption;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorPlayer;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPlayer;
+import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 
-public class CommandSettings implements CommandExecutor, TabCompleter {
+public class CommandSettings {
 	private Cartographer plugin;
 	private SubCommand settingsCommand;
 	
 	public CommandSettings( Cartographer plugin ) {
 		this.plugin = plugin;
 		
-		settingsCommand = new SubCommand( "settings" );
+		settingsCommand = new SubCommand( "settings" )
+				.addSenderValidator( new SenderValidatorPermission( "cartographer.settings" ) )
+				.add( new SubCommand( "set" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.set" ) )
+						.addSenderValidator( new SenderValidatorPlayer() )
+						.add( new SubCommand( "cursor" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.cursor" ) )
+								.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
+										.defaultTo( this::set ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/off/false)" ) )
+								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/off/false)" ) ) )
+						.add( new SubCommand( "rotate" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.rotate" ) )
+								.add( new SubCommand( new InputValidatorBooleanOption( new String[] { "on", "true" }, new String[] { "off", "false" }, new String[] { "unset" } ) )
+										.defaultTo( this::set ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/unset/off/false)" ) )
+								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/unset/off/false)" ) ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid setting!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) ) )
+				.add( new SubCommand( "get" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.get" ) )
+						.addSenderValidator( new SenderValidatorPlayer() )
+						.add( new SubCommand( "cursor" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.cursor" ) )
+								.defaultTo( this::get ) )
+						.add( new SubCommand( "rotate" )
+								.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.rotate" ) )
+								.defaultTo( this::get ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid setting!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) ) )
+				.add( new SubCommand( "setother" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother" ) )
+						.add( new SubCommand( new InputValidatorPlayer() )
+								.add( new SubCommand( "cursor" )
+										.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.cursor" ) )
+										.add( new SubCommand( new InputValidatorBoolean( new String[] { "on", "true" }, new String[] { "off", "false" } ) )
+												.defaultTo( this::setOther ) )
+										.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/off/false)" ) )
+										.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/off/false)" ) ) )
+								.add( new SubCommand( "rotate" )
+										.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.setother.rotate" ) )
+										.add( new SubCommand( new InputValidatorBooleanOption( new String[] { "on", "true" }, new String[] { "off", "false" }, new String[] { "unset" } ) )
+												.defaultTo( this::setOther ) )
+										.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid value! (on/true/unset/off/false)" ) )
+										.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a value! (on/true/unset/off/false)" ) ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid setting!" ) )
+								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "That player is not online!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer settings setother <player> <setting> <value>" ) ) )
+				.add( new SubCommand( "getother" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother" ) )
+						.add( new SubCommand( new InputValidatorPlayer() )
+								.add( new SubCommand( "cursor" )
+										.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.cursor" ) )
+										.defaultTo( this::getOther ) )
+								.add( new SubCommand( "rotate" )
+										.addSenderValidator( new SenderValidatorPermission( "cartographer.settings.getother.rotate" ) )
+										.defaultTo( this::getOther ) )
+								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid setting!" ) )
+								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a setting!" ) ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "That player is not online!" ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer settings getother <player> <setting>" ) ) )
+				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
+				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) );
 	}
 	
 	protected SubCommand getCommand() {
 		return settingsCommand;
 	}
 	
-	@Override
-	public List< String > onTabComplete( CommandSender sender, Command arg1, String arg2, String[] args ) {
-		List< String > aos = new ArrayList< String >();
+	private void set( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Player player = ( Player ) sender;
+		String property = parameters.getLast( String.class );
 		
-		// TODO there must be a better way of doing this...
-		// Perhaps like the new brigadier system...!?
-		if ( args.length == 1 ) {
-			if ( sender instanceof Player ) {
-				if ( sender.hasPermission( "cartographer.settings.set" ) ) {
-					aos.add( "set" );
-				}
-				if ( sender.hasPermission( "cartographer.settings.get" ) ) {
-					aos.add( "get" );
-				}
+		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+		if ( property.equalsIgnoreCase( "cursor" ) ) {
+			boolean isOn = parameters.getLast( boolean.class );
+			
+			viewer.setCursorActive( isOn );
+			sender.sendMessage( ChatColor.GREEN + "Set cursor to " + ChatColor.LIGHT_PURPLE + ( isOn ? "on" : "off" ) + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "rotate" ) ) {
+			BooleanOption option = parameters.getLast( BooleanOption.class );
+			
+			String rotation = "off";
+			if ( option.isTrue() ) {
+				rotation = "on";
+			} else if ( option.isUnset() ) {
+				rotation = "unset";
 			}
-			if ( sender.hasPermission( "cartographer.settings.setother" ) ) {
-				aos.add( "setother" );
-			}
-			if ( sender.hasPermission( "cartographer.settings.getother" ) ) {
-				aos.add( "getother" );
-			}
-		} else if ( args.length == 2 ) {
-			if ( sender instanceof Player ) {
-				if ( args[ 0 ].equalsIgnoreCase( "set" ) && sender.hasPermission( "cartographer.settings.set" ) ) {
-					if ( sender.hasPermission( "cartographer.settings.set.rotate" ) ) {
-						aos.add( "rotate" );
-					}
-					if ( sender.hasPermission( "cartographer.settings.set.cursor" ) ) {
-						aos.add( "cursor" );
-					}
-				} else if ( args[ 0 ].equalsIgnoreCase( "get" ) && sender.hasPermission( "cartographer.settings.get" ) ) {
-					if ( sender.hasPermission( "cartographer.settings.get.rotate" ) ) {
-						aos.add( "rotate" );
-					}
-					if ( sender.hasPermission( "cartographer.settings.get.cursor" ) ) {
-						aos.add( "cursor" );
-					}
-				}
-			} else if ( ( args[ 0 ].equalsIgnoreCase( "setother" ) && sender.hasPermission( "cartographer.settings.setother" ) ) ||
-					( args[ 0 ].equalsIgnoreCase( "getother" ) && sender.hasPermission( "cartographer.settings.getother" ) ) ) {
-				for ( Player player : Bukkit.getOnlinePlayers() ) {
-					aos.add( player.getName() );
-				}
-			}
-		} else if ( args.length == 3 ) {
+			viewer.setRotate( option );
+			sender.sendMessage( ChatColor.GREEN + "Set rotation to " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else {
+			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}
+	}
+	
+	private void get( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Player player = ( Player ) sender;
+		String property = parameters.getLast( String.class );
 		
-		List< String > completions = new ArrayList< String >();
-		StringUtil.copyPartialMatches( args[ args.length - 1 ], aos, completions );
-		Collections.sort( completions );
-		return completions;
+		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+		if ( property.equalsIgnoreCase( "cursor" ) ) {
+			sender.sendMessage( ChatColor.GREEN + "Your cursor is " + ChatColor.LIGHT_PURPLE + ( viewer.isCursorActive() ? "on" : "off" ) + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "rotate" ) ) {
+			String rotation = "off";
+			if ( viewer.getRotate().isTrue() ) {
+				rotation = "on";
+			} else if ( viewer.getRotate().isUnset() ) {
+				rotation = "unset";
+			}
+			sender.sendMessage( ChatColor.GREEN + " Your rotation is " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else {
+			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
+		}
+	}
+	
+	private void setOther( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Player player = parameters.getLast( Player.class );
+		String property = parameters.getLast( String.class );
+		
+		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+		if ( property.equalsIgnoreCase( "cursor" ) ) {
+			boolean isOn = parameters.getLast( boolean.class );
+			
+			viewer.setCursorActive( isOn );
+			sender.sendMessage( ChatColor.GREEN + "Set cursor for " + ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " to " + ChatColor.LIGHT_PURPLE + ( isOn ? "on" : "off" ) + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "rotate" ) ) {
+			BooleanOption option = parameters.getLast( BooleanOption.class );
+			
+			String rotation = "off";
+			if ( option.isTrue() ) {
+				rotation = "on";
+			} else if ( option.isUnset() ) {
+				rotation = "unset";
+			}
+			viewer.setRotate( option );
+			sender.sendMessage( ChatColor.GREEN + "Set rotation for " +ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " to " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else {
+			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
+		}
 	}
 
-	@Override
-	public boolean onCommand( CommandSender sender, Command arg1, String arg2, String[] args ) {
-		try {
-			if ( args.length == 0 ) {
-				sender.sendMessage( ChatColor.RED + "You must provide an argument!" );
-			} else if ( args.length > 0 ) {
-				String option = args[ 0 ];
-				args = FailSafe.pop( args );
-				if ( option.equalsIgnoreCase( "set" ) ) {
-					sender.sendMessage( ChatColor.RED + "Invalid argument!" );
-				}
+	private void getOther( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Player player = parameters.getLast( Player.class );
+		String property = parameters.getLast( String.class );
+		
+		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+		if ( property.equalsIgnoreCase( "cursor" ) ) {
+			sender.sendMessage( ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " has their cursor " + ChatColor.LIGHT_PURPLE + ( viewer.isCursorActive() ? "on" : "off" ) + ChatColor.GREEN + "." );
+		} else if ( property.equalsIgnoreCase( "rotate" ) ) {
+			String rotation = "off";
+			if ( viewer.getRotate().isTrue() ) {
+				rotation = "on";
+			} else if ( viewer.getRotate().isUnset() ) {
+				rotation = "unset";
 			}
-		} catch ( IllegalArgumentException exception ) {
-			sender.sendMessage( exception.getMessage() );
+			sender.sendMessage( ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.GREEN + " has their rotation " + ChatColor.LIGHT_PURPLE + rotation + ChatColor.GREEN + "." );
+		} else {
+			sender.sendMessage( ChatColor.RED + "'" + property + "' has not been implemented yet! Please contact the developers for assistance!" );
 		}
-		return false;
 	}
-
 }
