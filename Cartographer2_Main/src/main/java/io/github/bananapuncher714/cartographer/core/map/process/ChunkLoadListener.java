@@ -28,8 +28,12 @@ public enum ChunkLoadListener implements Listener {
 	@EventHandler
 	private void onChunkLoadEvent( ChunkLoadEvent event ) {
 		ChunkLocation location = new ChunkLocation( event.getChunk() );
-		for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
-			minimap.getDataCache().registerSnapshot( location );
+		if ( Cartographer.getInstance().isServerOverloaded() ) {
+			loadChunk( location );
+		} else {
+			for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
+				minimap.getDataCache().registerSnapshot( location );
+			}
 		}
 	}
 	
