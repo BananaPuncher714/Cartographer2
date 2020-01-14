@@ -27,6 +27,7 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.internal.Util_1_8;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
@@ -161,7 +162,7 @@ public class NMSHandler implements PacketHandler {
 					viewer.getEquipment().setItemInMainHand( item );
 					
 					// Activate the drop
-					Cartographer.getInstance().getMapManager().activateDrop( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS );
+					Cartographer.getInstance().getMapManager().activate( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS ? MapInteraction.CTRLQ : MapInteraction.Q );
 					return null;
 				}
 			}

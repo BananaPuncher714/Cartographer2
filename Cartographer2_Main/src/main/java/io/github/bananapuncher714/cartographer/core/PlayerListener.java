@@ -19,6 +19,8 @@ import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 
 public class PlayerListener implements Listener {
@@ -41,82 +43,82 @@ public class PlayerListener implements Listener {
 		if ( !plugin.getHandler().getUtil().isValidHand( event ) ) {
 			return;
 		}
-
+		if ( event.getAction() == Action.PHYSICAL ) {
+			return;
+		}
+		
 		Player player = event.getPlayer();
 		
 		ItemStack item = event.getItem();
 		
 		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() && plugin.getMapManager().isMinimapItem( item ) ) {
-			plugin.getMapManager().update( item );
 			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
-			plugin.getMapManager().update( item );
-			Minimap currentMap = null;
-			ZoomScale newScale = null;
-			for ( MapRenderer renderer : view.getRenderers() ) {
-				if ( renderer instanceof CartographerRenderer ) {
-					CartographerRenderer cr = ( CartographerRenderer ) renderer;
-					if ( !cr.isViewing( player.getUniqueId() ) ) {
-						continue;
-					}
-					Minimap map = cr.getMinimap();
-					if ( map == null ) {
-						continue;
-					}
-					currentMap = map;
-					
-					ZoomScale scale = cr.getScale( player.getUniqueId() );
-					
-					boolean zoom = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
-					if ( map.getSettings().isCircularZoom() ) {
+			CartographerRenderer renderer = plugin.getMapManager().getRendererFrom( view );
+			
+			MapMenu menu = renderer.getMenu( player.getUniqueId() );
+			if ( menu != null ) {
+				renderer.interact( player, event.getAction().name().contains( "LEFT" ) ? MapInteraction.LEFT : MapInteraction.RIGHT );
+			} else {
+				plugin.getMapManager().update( item );
+				CartographerRenderer cr = renderer;
+				if ( !cr.isViewing( player.getUniqueId() ) ) {
+					return;
+				}
+				Minimap map = cr.getMinimap();
+				if ( map == null ) {
+					return;
+				}
+
+				ZoomScale scale = cr.getScale( player.getUniqueId() );
+
+				boolean zoom = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
+				if ( map.getSettings().isCircularZoom() ) {
+					scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
+					while ( !map.getSettings().isValidZoom( scale ) ) {
 						scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
-						while ( !map.getSettings().isValidZoom( scale ) ) {
-							scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
+					}
+				} else {
+					if ( zoom ) {
+						ZoomScale lastValid = scale;
+						scale = scale.zoom( false );
+						while ( !map.getSettings().isValidZoom( scale ) && !scale.isMostZoomed() ) {
+							scale = scale.zoom( false );
+						}
+						if ( !map.getSettings().isValidZoom( scale ) ) {
+							scale = lastValid;
 						}
 					} else {
-						if ( zoom ) {
-							ZoomScale lastValid = scale;
-							scale = scale.zoom( false );
-							while ( !map.getSettings().isValidZoom( scale ) && !scale.isMostZoomed() ) {
-								scale = scale.zoom( false );
-							}
-							if ( !map.getSettings().isValidZoom( scale ) ) {
-								scale = lastValid;
-							}
-						} else {
-							ZoomScale lastValid = scale;
+						ZoomScale lastValid = scale;
+						scale = scale.unzoom( false );
+						while ( !map.getSettings().isValidZoom( scale ) && !scale.isLeastZoomed() ) {
 							scale = scale.unzoom( false );
-							while ( !map.getSettings().isValidZoom( scale ) && !scale.isLeastZoomed() ) {
-								scale = scale.unzoom( false );
-							}
-							if ( !map.getSettings().isValidZoom( scale ) ) {
-								scale = lastValid;
-							}
+						}
+						if ( !map.getSettings().isValidZoom( scale ) ) {
+							scale = lastValid;
 						}
 					}
-					newScale = scale;
-					
-					cr.setScale( player.getUniqueId(), scale.getBlocksPerPixel() );
+				}
+
+				cr.setScale( player.getUniqueId(), scale.getBlocksPerPixel() );
+
+				if ( plugin.getHandler().mapBug() ) {
+					ItemStack newMap = plugin.getMapManager().getItemFor( map );
+					MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
+					final ZoomScale finScale = scale;
+					Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
+						@Override
+						public void run() {
+							for ( MapRenderer renderer : newView.getRenderers() ) {
+								if ( renderer instanceof CartographerRenderer ) {
+									CartographerRenderer cr = ( CartographerRenderer ) renderer;
+									cr.setScale( player.getUniqueId(), finScale.getBlocksPerPixel() );
+								}
+							}
+						}
+					} );
+					player.getEquipment().setItemInHand( newMap );
 				}
 			}
-			
-			if ( currentMap != null && plugin.getHandler().mapBug() ) {
-				ItemStack newMap = plugin.getMapManager().getItemFor( currentMap );
-				MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
-				final ZoomScale finScale = newScale;
-				Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
-					@Override
-					public void run() {
-						for ( MapRenderer renderer : newView.getRenderers() ) {
-							if ( renderer instanceof CartographerRenderer ) {
-								CartographerRenderer cr = ( CartographerRenderer ) renderer;
-								cr.setScale( player.getUniqueId(), finScale.getBlocksPerPixel() );
-							}
-						}
-					}
-				} );
-				player.getEquipment().setItemInHand( newMap );
-			}
-			
 			event.setCancelled( true );
 		}
 	}

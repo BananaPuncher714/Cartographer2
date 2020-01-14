@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.entity.Player;
 
 import io.github.bananapuncher714.cartographer.core.map.menu.Frame;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MenuComponent;
 
 public class MenuComponentSolid implements MenuComponent {
@@ -33,10 +34,7 @@ public class MenuComponentSolid implements MenuComponent {
 	}
 
 	@Override
-	public boolean onInteract( Player player, double x, double y, boolean main ) {
-		if ( main ) { 
-			
-		}
-		return !main;
+	public boolean onInteract( Player player, double x, double y, MapInteraction interaction ) {
+		return interaction == MapInteraction.CTRLQ;
 	}
 }

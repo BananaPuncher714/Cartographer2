@@ -208,6 +208,7 @@ public class MapDataCache {
 		if ( !forcedLoading.contains( location ) || !data.containsKey( location ) || !data.containsKey( south ) ) {
 			if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( south ) ) {
 				if ( needsRender( location ) ) {
+					// TODO Getting the chunksnapshot here is pretty laggy. It computes lighting and unnecessary data when all we're looking for is the block types and potentially biome data.
 					chunks.put( location, location.getChunk().getChunkSnapshot() );
 				}
 			}

@@ -8,9 +8,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 
-import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
-import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 
 public class MapUtil {
 	/**

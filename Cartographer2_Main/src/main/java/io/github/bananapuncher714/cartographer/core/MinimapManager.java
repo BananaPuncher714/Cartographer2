@@ -14,8 +14,10 @@ import org.bukkit.map.MapView;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapDeleteEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapLoadEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapUnloadEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererCreateEvent;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
@@ -96,12 +98,11 @@ public class MinimapManager {
 		return item;
 	}
 	
-	
-	public void activateDrop( Player player, boolean dropAll ) {
+	public void activate( Player player, MapInteraction interaction ) {
 		ItemStack item = Cartographer.getUtil().getMainHandItem( player );
 		CartographerRenderer renderer = getRendererFrom( Cartographer.getUtil().getMapViewFrom( item ) );
 		Bukkit.getScheduler().runTask( plugin, () -> {
-			renderer.activate( player.getUniqueId(), !dropAll );
+			renderer.interact( player, interaction );
 		} );
 	}
 	
@@ -127,6 +128,8 @@ public class MinimapManager {
 			plugin.getRenderers().put( getId( view ), renderer );
 			view.addRenderer( renderer );
 			plugin.getHandler().registerMap( getId( view ) );
+			
+			new CartographerRendererCreateEvent( renderer ).callEvent();
 		}
 	}
 	

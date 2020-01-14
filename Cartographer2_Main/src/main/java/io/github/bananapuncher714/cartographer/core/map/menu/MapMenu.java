@@ -45,14 +45,6 @@ public class MapMenu {
 	}
 	
 	public boolean view( Player player, PlayerSetting setting ) {
-		if ( setting.isInteracting() ) {
-			for ( MenuComponent component : components ) {
-				if ( component.onInteract( player, setting.getCursorX() + 127, setting.getCursorY() + 127, setting.isInteractingMain() ) ) {
-					return true;
-				}
-			}
-		}
-		
 		for ( MenuComponent component : components ) {
 			if ( component.onView( player, setting.getCursorX() + 127, setting.getCursorY() + 127 ) ) {
 				dirty = component.isDirty() || dirty;
@@ -62,6 +54,15 @@ public class MapMenu {
 		
 		if ( dirty ) {
 			update();
+		}
+		return false;
+	}
+	
+	public boolean interact( Player player, PlayerSetting setting ) {
+		for ( MenuComponent component : components ) {
+			if ( component.onInteract( player, setting.getCursorX() + 127, setting.getCursorY() + 127, setting.getInteraction() ) ) {
+				return true;
+			}
 		}
 		return false;
 	}

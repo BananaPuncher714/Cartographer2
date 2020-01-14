@@ -36,5 +36,5 @@ public interface MenuComponent {
 	 * @return
 	 * If this menu should be closed.
 	 */
-	boolean onInteract( Player player, double x, double y, boolean main );
+	boolean onInteract( Player player, double x, double y, MapInteraction interaction );
 }

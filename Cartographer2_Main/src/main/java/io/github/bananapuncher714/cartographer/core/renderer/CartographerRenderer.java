@@ -16,9 +16,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursor;
+import org.bukkit.map.MapCursor.Type;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
@@ -27,10 +27,13 @@ import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
+import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererActivateEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererDeactivateEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererInteractEvent;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.DefaultPointerCursorProvider;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
@@ -55,7 +58,6 @@ public class CartographerRenderer extends MapRenderer {
 
 	protected Map< UUID, Double > scales = new HashMap< UUID, Double >();
 	protected Map< UUID, PlayerSetting > settings = new HashMap< UUID, PlayerSetting >();
-	protected Map< UUID, MapMenu > menus = new HashMap< UUID, MapMenu >();
 	
 	protected Cartographer plugin;
 	
@@ -107,10 +109,9 @@ public class CartographerRenderer extends MapRenderer {
 			
 			// Stop updating people who aren't holding this map anymore, if it's been UPDATE_THRESHOLD ticks since they've last been called
 			if ( System.currentTimeMillis() - setting.lastUpdated > UPDATE_THRESHOLD ) {
-				MapMenu menu = menus.remove( entry.getKey() ); 
-				if ( menu != null ) {
-					menu.onClose( entry.getKey() );
-				}
+				new CartographerRendererDeactivateEvent( entry.getKey(), this ).callEvent();
+				
+				setting.deactivate();
 				iterator.remove();
 				continue;
 			}
@@ -118,37 +119,34 @@ public class CartographerRenderer extends MapRenderer {
 			// Make sure the player is online
 			Player player = Bukkit.getPlayer( entry.getKey() );
 			if ( player == null ) {
-				MapMenu menu = menus.remove( entry.getKey() ); 
-				if ( menu != null ) {
-					menu.onClose( entry.getKey() );
-				}
+				new CartographerRendererDeactivateEvent( entry.getKey(), this ).callEvent();
+				
+				setting.deactivate();
 				iterator.remove();
 				continue;
 			}
 			
 			// If the player is currently engaged in map data
-			MapMenu menu = menus.get( player.getUniqueId() );
-			if ( menu != null && setting.isMainHand() ) {
+			MapMenu menu = setting.menu;
+			if ( menu != null ) {
 				boolean close = menu.view( player, setting );
-				setting.interacted = false;
-				byte[] data = menu.getDisplay();
-
-				Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
-
-				int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );
-				int y = ( int ) Math.max( -127, Math.min( 127, setting.getCursorY() ) );
-
-				MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
-
-				plugin.getHandler().sendDataTo( id, data, new MapCursor[] { cursor }, entry.getKey() );
-				
 				// TODO Make this a bit more cleaner, and support left and right clicks too. Make a proper enum.
 				// TODO If it goes into your offhand it should reset the menu too.
 				if ( close ) {
 					menu.onClose( entry.getKey() );
-					menus.remove( entry.getKey() );
+					setting.menu = null;
+				} else {
+					byte[] data = menu.getDisplay();
+					
+					Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
+					
+					int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );
+					int y = ( int ) Math.max( -127, Math.min( 127, setting.getCursorY() ) );
+					
+					MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
+					
+					plugin.getHandler().sendDataTo( id, data, new MapCursor[] { cursor }, entry.getKey() );
 				}
-				
 				continue;
 			}
 			
@@ -235,18 +233,18 @@ public class CartographerRenderer extends MapRenderer {
 		
 		// Remove the player interacted flag
 		for ( PlayerSetting setting : settings.values() ) {
-			setting.interacted = false;
+			setting.interaction = null;
 		}
 	}
 
-	public void setPlayerMap( Player player, Minimap map ) {
-		PlayerSetting setting = new PlayerSetting( map.getId(), player.getLocation() );
-		if ( settings.containsKey( player.getUniqueId() ) ) {
-			setting.zoomscale = settings.get( player.getUniqueId() ).zoomscale;
-		} else {
+	public boolean setPlayerMap( Player player, Minimap map ) {
+		PlayerSetting setting = settings.get( player.getUniqueId() );
+		if ( setting != null ) {
+			setting.map = map == null ? null : map.getId();
 			setting.zoomscale = map.getSettings().getDefaultZoom().getBlocksPerPixel();
+			return true;
 		}
-		settings.put( player.getUniqueId(), setting );
+		return false;
 	}
 	
 	public ZoomScale getScale( UUID uuid ) {
@@ -270,26 +268,40 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public void setMapMenu( UUID uuid, MapMenu menu ) {
-		MapMenu oldMenu;
-		if ( menu == null ) {
-			oldMenu = menus.remove( uuid );
-		} else {
-			oldMenu = menus.put( uuid, menu );
-		}
-		if ( oldMenu != null ) {
-			oldMenu.onClose( uuid );
+		PlayerSetting setting = settings.get( uuid );
+		if ( setting != null ) {
+			MapMenu oldMenu = setting.getMenu();
+			if ( oldMenu != null ) {
+				oldMenu.onClose( uuid );
+			}
+			setting.menu = menu;
 		}
 	}
 	
 	public MapMenu getMenu( UUID uuid ) {
-		return menus.get( uuid );
-	}
-	
-	public void activate( UUID uuid, boolean main ) {
 		PlayerSetting setting = settings.get( uuid );
 		if ( setting != null ) {
-			setting.interacted = true;
-			setting.interactedMain = main;
+			return setting.getMenu();
+		}
+		return null;
+	}
+	
+	public void interact( Player player, MapInteraction interaction ) {
+		PlayerSetting setting = settings.get( player.getUniqueId() );
+		if ( setting != null ) {
+			setting.interaction = interaction;
+			
+			MapMenu menu = setting.getMenu();
+			if ( menu != null ) {
+				CartographerRendererInteractEvent event = new CartographerRendererInteractEvent( player, this, menu, interaction );
+				event.callEvent();
+				if ( !event.isCancelled() ) {
+					if ( menu.interact( player, setting ) ) {
+						menu.onClose( player.getUniqueId() );
+						setting.menu = null;
+					}
+				}
+			}
 		}
 	}
 	
@@ -335,6 +347,9 @@ public class CartographerRenderer extends MapRenderer {
 			PlayerSetting setting = entry.getValue();
 			
 			if ( player == null ) {
+				new CartographerRendererDeactivateEvent( entry.getKey(), this ).callEvent();
+				
+				setting.deactivate();
 				iterator.remove();
 				continue;
 			}
@@ -360,11 +375,9 @@ public class CartographerRenderer extends MapRenderer {
 			}
 			
 			if ( !inHand ) {
-				scales.put( player.getUniqueId(), setting.getScale() );
-				MapMenu menu = menus.remove( entry.getKey() );
-				if ( menu != null ) {
-					menu.onClose( entry.getKey() );
-				}
+				new CartographerRendererDeactivateEvent( entry.getKey(), this ).callEvent();
+				
+				setting.deactivate();
 				iterator.remove();
 				continue;
 			}
@@ -381,11 +394,6 @@ public class CartographerRenderer extends MapRenderer {
 					rotating = viewer.getRotate().isTrue();
 				}
 			}
-			setting.rotating = rotating;
-			
-			setting.location = location;
-			setting.mainhand = mainHand;
-			setting.lastUpdated = System.currentTimeMillis();
 			
 			if ( mainHand ) {
 				double center = 180 - setting.getCursorYaw();
@@ -402,6 +410,17 @@ public class CartographerRenderer extends MapRenderer {
 				pitch = pitch / 20.0;
 				setting.setCursorY( pitch * 127 );
 			}
+			
+			setting.rotating = rotating;
+			setting.location = location;
+			if ( setting.mainhand != mainHand ) {
+				new CartographerRendererDeactivateEvent( entry.getKey(), this ).callEvent();
+				setting.deactivate();
+				
+				setting.mainhand = mainHand;
+				new CartographerRendererActivateEvent( player, this, mainHand ).callEvent();
+			}
+			setting.lastUpdated = System.currentTimeMillis();
 		}
 		
 		if ( !ASYNC_RENDER ) {
@@ -434,10 +453,14 @@ public class CartographerRenderer extends MapRenderer {
 			}
 		}
 		
+		// If the player isn't holding the map...
 		if ( !inHand ) {
 			PlayerSetting setting = settings.remove( player.getUniqueId() );
 			if ( setting != null ) {
-				scales.put( player.getUniqueId(), setting.getScale() );
+				// Deactivate the map if it's active
+				new CartographerRendererDeactivateEvent( player.getUniqueId(), this ).callEvent();
+				
+				setting.deactivate();
 			}
 			return;
 		}
@@ -452,9 +475,11 @@ public class CartographerRenderer extends MapRenderer {
 				rotating = viewer.getRotate().isTrue();
 			}
 		}
+		
+		
 		if ( !settings.containsKey( player.getUniqueId() ) ) {
 			Location location = player.getLocation();
-			PlayerSetting setting = new PlayerSetting( mapId, location );
+			PlayerSetting setting = new PlayerSetting( player.getUniqueId(), mapId, location );
 			setting.rotating = rotating;
 			setting.mainhand = mainHand;
 			setting.lastUpdated = System.currentTimeMillis();
@@ -469,6 +494,7 @@ public class CartographerRenderer extends MapRenderer {
 				setting.setCursorY( 0 );
 				setting.setCursorYaw( ( ( location.getYaw() % 360 ) + 360 ) % 360 );
 			}
+			new CartographerRendererActivateEvent( player, this, mainHand ).callEvent();
 		} else if ( !TICK_RENDER ) {
 			PlayerSetting setting = settings.get( player.getUniqueId() );
 			setting.mainhand = mainHand;
@@ -490,6 +516,7 @@ public class CartographerRenderer extends MapRenderer {
 	
 	public class PlayerSetting {
 		protected long lastUpdated = System.currentTimeMillis();
+		protected UUID playerUUID;
 		protected Location location;
 		protected double zoomscale = 1;
 		protected String map;
@@ -500,10 +527,11 @@ public class CartographerRenderer extends MapRenderer {
 		protected double cursorY;
 		protected double cursorCenter;
 		
-		protected boolean interacted;
-		protected boolean interactedMain;
+		protected MapInteraction interaction;
+		protected MapMenu menu;
 		
-		protected PlayerSetting( String map, Location location ) {
+		protected PlayerSetting( UUID uuid, String map, Location location ) {
+			this.playerUUID = uuid;
 			this.map = map;
 			this.location = location;
 		}
@@ -511,6 +539,10 @@ public class CartographerRenderer extends MapRenderer {
 		public PlayerSetting setScale( double scale ) {
 			this.zoomscale = scale;
 			return this;
+		}
+		
+		public UUID getUUID() {
+			return playerUUID;
 		}
 		
 		public boolean isRotating() {
@@ -521,16 +553,16 @@ public class CartographerRenderer extends MapRenderer {
 			return map;
 		}
 		
+		public MapMenu getMenu() {
+			return menu;
+		}
+		
 		public double getScale() {
 			return zoomscale;
 		}
 		
-		public boolean isInteracting() {
-			return interacted;
-		}
-		
-		public boolean isInteractingMain() {
-			return interactedMain;
+		public MapInteraction getInteraction() {
+			return interaction;
 		}
 		
 		public boolean isMainHand() {
@@ -563,6 +595,14 @@ public class CartographerRenderer extends MapRenderer {
 
 		public Location getLocation() {
 			return location.clone();
+		}
+		
+		protected void deactivate() {
+			scales.put( playerUUID, zoomscale );
+			if ( menu != null ) {
+				menu.onClose( playerUUID );
+				menu = null;
+			}
 		}
 	}
 }
