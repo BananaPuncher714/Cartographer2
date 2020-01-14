@@ -3,6 +3,11 @@ package io.github.bananapuncher714.cartographer.core.map.menu;
 import org.bukkit.entity.Player;
 
 public interface MenuComponent {
+	
+	Frame getFrame();
+	
+	boolean isDirty();
+	
 	/**
 	 * Called when a player is viewing a menu.
 	 * 
@@ -12,8 +17,10 @@ public interface MenuComponent {
 	 * The X coordinate of the cursor relative to the top left of this icon, from 0 to 255.
 	 * @param y
 	 * The Y coordinate of the cursor relative to the top left of this icon, from 0 to 255.
+	 * @return
+	 * If this menu should be closed.
 	 */
-	void onView( Player player, double x, double y );
+	boolean onView( Player player, double x, double y );
 	
 	/**
 	 * Called when a player interacts with a menu, either from pressing Q, or CTRL+Q.
@@ -26,6 +33,8 @@ public interface MenuComponent {
 	 * The Y coordinate of the cursor relative to the top left of this icon, from 0 to 255.
 	 * @param main
 	 * Whether or not the interaction was by pressing Q.
+	 * @return
+	 * If this menu should be closed.
 	 */
-	void onInteract( Player player, double x, double y, boolean main );
+	boolean onInteract( Player player, double x, double y, boolean main );
 }

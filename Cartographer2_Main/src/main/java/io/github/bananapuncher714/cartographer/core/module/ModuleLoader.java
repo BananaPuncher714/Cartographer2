@@ -180,12 +180,7 @@ public class ModuleLoader {
 		
 		// Remove commands
 		for ( PluginCommand command : tracker.getCommands() ) {
-			if ( classes.contains( command.getExecutor().getClass().getName() ) ) {
-				command.setExecutor( null );
-			}
-			if ( classes.contains( command.getTabCompleter().getClass().getName() ) ) {
-				command.setTabCompleter( null );
-			}
+			plugin.getHandler().unregisterCommand( command );
 		}
 		tracker.getCommands().clear();
 		

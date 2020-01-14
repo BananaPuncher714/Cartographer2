@@ -14,7 +14,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.ModuleManager;
-import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 /**
  * An addon for Cartographer2. Allows for extreme customization.
@@ -80,15 +79,11 @@ public abstract class Module {
 	 * @return
 	 * A new PluginCommand registered under Cartographer2, or an existing command.
 	 */
-	protected final PluginCommand getCommand( String id ) {
-		Validate.notNull( id );
-		PluginCommand command = plugin.getCommand( id );
-		if ( command == null ) {
-			command = BukkitUtil.createPluginCommandFor( description.getName(), id );
-		}
-		tracker.getCommands().add( command );
+	protected final void registerCommand( PluginCommand command ) {
+		Validate.notNull( command );
+		plugin.getHandler().registerCommand( plugin.getName() + ":" + getName(), command );
 		
-		return command;
+		tracker.getCommands().add( command );
 	}
 	
 	protected BukkitTask runTaskTimer( Runnable runnable, long delay, long interval ) {

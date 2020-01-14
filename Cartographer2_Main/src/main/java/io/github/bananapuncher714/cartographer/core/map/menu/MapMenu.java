@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.map.menu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
@@ -13,7 +14,8 @@ public class MapMenu {
 	protected int width;
 	protected int[] data;
 	protected byte[] displayData;
-	protected boolean dither;
+	protected boolean dither = true;
+	protected boolean dirty = false;
 	
 	protected List< MenuComponent > components = new ArrayList< MenuComponent >();
 	
@@ -42,32 +44,62 @@ public class MapMenu {
 		return dither;
 	}
 	
-	public void view( Player player, PlayerSetting setting ) {
+	public boolean view( Player player, PlayerSetting setting ) {
 		if ( setting.isInteracting() ) {
 			for ( MenuComponent component : components ) {
-				component.onInteract( player, setting.getCursorX() + 127, setting.getCursorY() + 127, setting.isInteractingMain() );
+				if ( component.onInteract( player, setting.getCursorX() + 127, setting.getCursorY() + 127, setting.isInteractingMain() ) ) {
+					return true;
+				}
 			}
 		}
 		
 		for ( MenuComponent component : components ) {
-			component.onView( player, setting.getCursorX() + 127, setting.getCursorY() + 127 );
+			if ( component.onView( player, setting.getCursorX() + 127, setting.getCursorY() + 127 ) ) {
+				dirty = component.isDirty() || dirty;
+				return true;
+			}
 		}
+		
+		if ( dirty ) {
+			update();
+		}
+		return false;
 	}
 	
-	public void onClose( Player player ) {
+	public void onClose( UUID uuid ) {
 	}
 	
 	public byte[] getDisplay() {
 		return displayData;
 	}
 	
-	public MapMenu addComponent( MenuComponent component ) {
-		components.add( component );
+	public MapMenu addComponent( MenuComponent... components ) {
+		for ( MenuComponent component : components ) {
+			this.components.add( component );
+		}
+		update();
 		return this;
 	}
 	
 	public List< MenuComponent > getComponents() {
 		return components;
+	}
+	
+	private void update() {
+		for ( MenuComponent component : components ) {
+			Frame frame = component.getFrame();
+			if ( frame != null ) {
+				apply( frame );
+			}
+		}
+
+		if ( dither ) {
+			displayData = JetpImageUtil.dither( this.width, data );
+		} else {
+			displayData = JetpImageUtil.simplify( data );
+		}
+		
+		dirty = false;
 	}
 	
 	public void apply( Frame frame ) {
@@ -80,16 +112,13 @@ public class MapMenu {
 		int width = Math.min( this.width - frame.x, frame.width );
 		int height = Math.min( this.height - frame.y, frameHeight );
 		
-		for ( int x = 0; x < width; x++ ) {
-			for ( int y = 0; y < height; y++ ) {
-				data[ x + topX + ( y + topY ) * width ] = frameDisplay[ x + y * frame.width ];
+		for ( int y = 0; y < height; y++ ) {
+			int ly = ( y + topY ) * width;
+			int fy = y * frame.width;
+			for ( int x = 0; x < width; x++ ) {
+				int lx = x + topX;
+				data[ lx + ly ] = frameDisplay[ x + fy ];
 			}
-		}
-		
-		if ( dither ) {
-			displayData = JetpImageUtil.dither( this.width, data );
-		} else {
-			displayData = JetpImageUtil.simplify( data );
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -95,6 +96,14 @@ public class MinimapManager {
 		return item;
 	}
 	
+	
+	public void activateDrop( Player player, boolean dropAll ) {
+		ItemStack item = Cartographer.getUtil().getMainHandItem( player );
+		CartographerRenderer renderer = getRendererFrom( Cartographer.getUtil().getMapViewFrom( item ) );
+		Bukkit.getScheduler().runTask( plugin, () -> {
+			renderer.activate( player.getUniqueId(), !dropAll );
+		} );
+	}
 	
 	/**
 	 * Change the given MapView to a Cartographer2 {@link Minimap}.

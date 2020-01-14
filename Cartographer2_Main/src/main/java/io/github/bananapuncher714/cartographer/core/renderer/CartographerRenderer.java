@@ -18,6 +18,7 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
@@ -27,10 +28,12 @@ import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.DefaultPointerCursorProvider;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
 /**
@@ -104,6 +107,10 @@ public class CartographerRenderer extends MapRenderer {
 			
 			// Stop updating people who aren't holding this map anymore, if it's been UPDATE_THRESHOLD ticks since they've last been called
 			if ( System.currentTimeMillis() - setting.lastUpdated > UPDATE_THRESHOLD ) {
+				MapMenu menu = menus.remove( entry.getKey() ); 
+				if ( menu != null ) {
+					menu.onClose( entry.getKey() );
+				}
 				iterator.remove();
 				continue;
 			}
@@ -111,16 +118,37 @@ public class CartographerRenderer extends MapRenderer {
 			// Make sure the player is online
 			Player player = Bukkit.getPlayer( entry.getKey() );
 			if ( player == null ) {
+				MapMenu menu = menus.remove( entry.getKey() ); 
+				if ( menu != null ) {
+					menu.onClose( entry.getKey() );
+				}
 				iterator.remove();
 				continue;
 			}
 			
 			// If the player is currently engaged in map data
 			MapMenu menu = menus.get( player.getUniqueId() );
-			if ( menu != null ) {
-				menu.view( player, setting );
+			if ( menu != null && setting.isMainHand() ) {
+				boolean close = menu.view( player, setting );
+				setting.interacted = false;
 				byte[] data = menu.getDisplay();
-				plugin.getHandler().sendDataTo( id, data, null, entry.getKey() );
+
+				Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
+
+				int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );
+				int y = ( int ) Math.max( -127, Math.min( 127, setting.getCursorY() ) );
+
+				MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
+
+				plugin.getHandler().sendDataTo( id, data, new MapCursor[] { cursor }, entry.getKey() );
+				
+				// TODO Make this a bit more cleaner, and support left and right clicks too. Make a proper enum.
+				// TODO If it goes into your offhand it should reset the menu too.
+				if ( close ) {
+					menu.onClose( entry.getKey() );
+					menus.remove( entry.getKey() );
+				}
+				
 				continue;
 			}
 			
@@ -242,10 +270,14 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public void setMapMenu( UUID uuid, MapMenu menu ) {
+		MapMenu oldMenu;
 		if ( menu == null ) {
-			menus.remove( uuid );
+			oldMenu = menus.remove( uuid );
 		} else {
-			menus.put( uuid, menu );
+			oldMenu = menus.put( uuid, menu );
+		}
+		if ( oldMenu != null ) {
+			oldMenu.onClose( uuid );
 		}
 	}
 	
@@ -329,6 +361,10 @@ public class CartographerRenderer extends MapRenderer {
 			
 			if ( !inHand ) {
 				scales.put( player.getUniqueId(), setting.getScale() );
+				MapMenu menu = menus.remove( entry.getKey() );
+				if ( menu != null ) {
+					menu.onClose( entry.getKey() );
+				}
 				iterator.remove();
 				continue;
 			}

@@ -1,18 +1,24 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_8_R3;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
@@ -30,10 +36,13 @@ import net.minecraft.server.v1_8_R3.IBlockData;
 import net.minecraft.server.v1_8_R3.MapIcon;
 import net.minecraft.server.v1_8_R3.MinecraftKey;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.PacketPlayInBlockDig;
+import net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType;
 import net.minecraft.server.v1_8_R3.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
 	private static Field[] MAP_FIELDS = new Field[ 8 ];
+	private static Field SIMPLECOMMANDMAP_COMMANDS;
 	
 	static {
 		try {
@@ -49,6 +58,9 @@ public class NMSHandler implements PacketHandler {
 			for ( Field field : MAP_FIELDS ) {
 				field.setAccessible( true );
 			}
+			
+			SIMPLECOMMANDMAP_COMMANDS = SimpleCommandMap.class.getDeclaredField( "knownCommands" );
+			SIMPLECOMMANDMAP_COMMANDS.setAccessible( true );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -121,6 +133,23 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
+		if ( packet instanceof PacketPlayInBlockDig ) {
+			// Check for the drop packet
+			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
+
+			EnumPlayerDigType type = digPacket.c();
+			if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
+				ItemStack item = viewer.getEquipment().getItemInHand();
+				if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
+					// Update the player's hand
+					viewer.getEquipment().setItemInHand( item );
+					
+					// Activate the drop
+					Cartographer.getInstance().getMapManager().activateDrop( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS );
+					return null;
+				}
+			}
+		}
 		return packet;
 	}
 	
@@ -185,6 +214,23 @@ public class NMSHandler implements PacketHandler {
 		Validate.notNull( fallbackPrefix );
 		Validate.notNull( command );
 		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
+	}
+	
+	@Override
+	public void unregisterCommand( PluginCommand command ) {
+		Validate.notNull( command );
+		try {
+			SimpleCommandMap map = ( ( CraftServer ) Bukkit.getServer() ).getCommandMap();
+			Map< String, Command > commands = ( Map< String, Command > ) SIMPLECOMMANDMAP_COMMANDS.get( map );
+			for ( Iterator< Entry< String, Command > > iterator = commands.entrySet().iterator(); iterator.hasNext(); ) {
+				Entry< String, Command > entry = iterator.next();
+				if ( entry.getValue() == command ) {
+					iterator.remove();
+				}
+			}
+		} catch ( IllegalArgumentException | IllegalAccessException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

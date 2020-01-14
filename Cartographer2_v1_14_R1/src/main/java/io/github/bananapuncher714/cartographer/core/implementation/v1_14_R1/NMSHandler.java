@@ -1,20 +1,27 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_14_R1;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
@@ -35,11 +42,15 @@ import net.minecraft.server.v1_14_R1.IRegistry;
 import net.minecraft.server.v1_14_R1.MapIcon;
 import net.minecraft.server.v1_14_R1.MinecraftKey;
 import net.minecraft.server.v1_14_R1.MinecraftServer;
+import net.minecraft.server.v1_14_R1.PacketPlayInBlockDig;
+import net.minecraft.server.v1_14_R1.PacketPlayInBlockDig.EnumPlayerDigType;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
 	private static Field[] MAP_FIELDS = new Field[ 10 ];
 	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
+	private static Field SIMPLECOMMANDMAP_COMMANDS;
+	private static Method CRAFTSERVER_SYNCCOMMANDS;
 	
 	static {
 		try {
@@ -57,6 +68,12 @@ public class NMSHandler implements PacketHandler {
 			for ( Field field : MAP_FIELDS ) {
 				field.setAccessible( true );
 			}
+			
+			SIMPLECOMMANDMAP_COMMANDS = SimpleCommandMap.class.getDeclaredField( "knownCommands" );
+			SIMPLECOMMANDMAP_COMMANDS.setAccessible( true );
+			
+			CRAFTSERVER_SYNCCOMMANDS = CraftServer.class.getDeclaredMethod( "syncCommands" );
+			CRAFTSERVER_SYNCCOMMANDS.setAccessible( true );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -159,6 +176,23 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
+		if ( packet instanceof PacketPlayInBlockDig ) {
+			// Check for the drop packet
+			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
+
+			EnumPlayerDigType type = digPacket.d();
+			if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
+				ItemStack item = viewer.getEquipment().getItemInMainHand();
+				if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
+					// Update the player's hand
+					viewer.getEquipment().setItemInMainHand( item );
+					
+					// Activate the drop
+					Cartographer.getInstance().getMapManager().activateDrop( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS );
+					return null;
+				}
+			}
+		}
 		return packet;
 	}
 	
@@ -217,7 +251,38 @@ public class NMSHandler implements PacketHandler {
 	public boolean registerCommand( String fallbackPrefix, PluginCommand command ) {
 		Validate.notNull( fallbackPrefix );
 		Validate.notNull( command );
-		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
+		boolean registered = ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( fallbackPrefix, command );
+		
+		try {
+			CRAFTSERVER_SYNCCOMMANDS.invoke( Bukkit.getServer() );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+		}
+		
+		return registered;
+	}
+
+	@Override
+	public void unregisterCommand( PluginCommand command ) {
+		Validate.notNull( command );
+		try {
+			SimpleCommandMap map = ( ( CraftServer ) Bukkit.getServer() ).getCommandMap();
+			Map< String, Command > commands = ( Map< String, Command > ) SIMPLECOMMANDMAP_COMMANDS.get( map );
+			for ( Iterator< Entry< String, Command > > iterator = commands.entrySet().iterator(); iterator.hasNext(); ) {
+				Entry< String, Command > entry = iterator.next();
+				if ( entry.getValue() == command ) {
+					iterator.remove();
+				}
+			}
+			
+			try {
+				CRAFTSERVER_SYNCCOMMANDS.invoke( Bukkit.getServer() );
+			} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+				e.printStackTrace();
+			}
+		} catch ( IllegalArgumentException | IllegalAccessException e ) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

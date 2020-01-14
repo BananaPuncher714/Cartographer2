@@ -2,6 +2,8 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import java.util.UUID;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
@@ -145,6 +147,14 @@ public interface PacketHandler {
 	 * Whether the command was registered successfully.
 	 */
 	boolean registerCommand( PluginCommand command );
+	
+	/**
+	 * Unregister a command.
+	 * 
+	 * @param command
+	 * The command to unregister, cannot be null.
+	 */
+	void unregisterCommand( PluginCommand command );
 	
 	/**
 	 * Get the {@link GeneralUtil} for this PacketHandler.

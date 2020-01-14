@@ -16,7 +16,7 @@ public class PermissionBuilder {
 		return this;
 	}
 	
-	public PermissionBuilder setDescription( PermissionDefault permDefault ) {
+	public PermissionBuilder setDefault( PermissionDefault permDefault ) {
 		permission.setDefault( permDefault );
 		return this;
 	}

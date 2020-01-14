@@ -42,7 +42,7 @@ public class BukkitUtil {
 		}
 	}
 	
-	private static PluginCommand constructCommand( String id ) {
+	public static PluginCommand constructCommand( String id ) {
 		PluginCommand command = null;
 		try {
 			command = PLUGINCOMMAND_CONSTRUCTOR.newInstance( id, Cartographer.getInstance() );
@@ -50,40 +50,6 @@ public class BukkitUtil {
 			e.printStackTrace();
 			return null;
 		}
-		return command;
-	}
-	
-	/**
-	 * Create and register a command with the given fallback and id
-	 * 
-	 * @param fallbackPrefix
-	 * The fallback prefix, like "bukkit" or "minecraft"
-	 * @param id
-	 * The id of the command, what the user types in
-	 * @return
-	 * A plugin registered under Cartographer 2
-	 */
-	public static PluginCommand createPluginCommandFor( String fallbackPrefix, String id ) {
-		PluginCommand command = constructCommand( id );
-		
-		Cartographer.getInstance().getHandler().registerCommand( Cartographer.getInstance().getName() + ":" + fallbackPrefix, command );
-		
-		return command;
-	}
-	
-	/**
-	 * Create and register command
-	 * 
-	 * @param id
-	 * What the user types in
-	 * @return
-	 * A PluginCommand registered under Cartographer 2
-	 */
-	public static PluginCommand createPluginCommandFor( String id ) {
-		PluginCommand command = constructCommand( id );
-		
-		Cartographer.getInstance().getHandler().registerCommand( command );
-		
 		return command;
 	}
 	
