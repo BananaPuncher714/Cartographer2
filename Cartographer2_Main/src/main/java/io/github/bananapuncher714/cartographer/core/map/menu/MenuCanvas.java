@@ -97,6 +97,17 @@ public class MenuCanvas {
 		markDirty();
 	}
 	
+	public void drawLine( int x1, int y1, int x2, int y2, Color color ) {
+		int s = Math.max( Math.abs( x1 - x2 ), Math.abs( y1 - y2 ) );
+		for ( double i = 0; i <= s; i++ ) {
+			int xPoint = ( int ) ( x2 + ( x1 - x2 ) * ( i / s ) );
+			int yPoint = ( int ) ( y2 + ( y1 - y2 ) * ( i / s ) );
+			if ( xPoint >= 0 && yPoint >= 0 && xPoint < width && yPoint < height) {
+				drawPixel( xPoint, yPoint, color );
+			}
+		}
+	}
+	
 	public void fill( Color color ) {
 		Arrays.fill( data, color.getRGB() );
 		markDirty();
