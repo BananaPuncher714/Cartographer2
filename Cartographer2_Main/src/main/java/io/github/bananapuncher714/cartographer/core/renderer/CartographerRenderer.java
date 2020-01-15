@@ -130,8 +130,6 @@ public class CartographerRenderer extends MapRenderer {
 			MapMenu menu = setting.menu;
 			if ( menu != null ) {
 				boolean close = menu.view( player, setting );
-				// TODO Make this a bit more cleaner, and support left and right clicks too. Make a proper enum.
-				// TODO If it goes into your offhand it should reset the menu too.
 				if ( close ) {
 					menu.onClose( entry.getKey() );
 					setting.menu = null;
@@ -140,8 +138,8 @@ public class CartographerRenderer extends MapRenderer {
 					
 					Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
 					
-					int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );
-					int y = ( int ) Math.max( -127, Math.min( 127, setting.getCursorY() ) );
+					int x = ( int ) Math.max( -128, Math.min( 127, setting.getCursorX() ) );
+					int y = ( int ) Math.max( -128, Math.min( 127, setting.getCursorY() ) );
 					
 					MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
 					
@@ -287,6 +285,11 @@ public class CartographerRenderer extends MapRenderer {
 	}
 	
 	public void interact( Player player, MapInteraction interaction ) {
+		if ( interaction == MapInteraction.LEFT ) {
+			// Disregard left clicks since they trigger when a player presses 'Q' as well.
+			return;
+		}
+		
 		PlayerSetting setting = settings.get( player.getUniqueId() );
 		if ( setting != null ) {
 			setting.interaction = interaction;
@@ -400,9 +403,9 @@ public class CartographerRenderer extends MapRenderer {
 				double yaw = ( ( ( location.getYaw() + center ) % 360 ) + 360 ) % 360;
 				// Deviation is how far off in degrees it is from the center
 				double deviation = ( 180 - yaw );
-				center = deviation * ( 127 / 40.0 );
+				center = deviation * ( 128 / 40.0 );
 				
-				center = Math.min( 127, Math.max( -127, center ) );
+				center = Math.min( 128, Math.max( -127, center ) );
 				setting.setCursorX( -center );
 				
 				if ( deviation < -40 ) {

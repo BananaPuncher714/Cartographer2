@@ -428,7 +428,6 @@ public final class JetpImageUtil {
 	    return a1 << 24 | r << 16 | g << 8 | b;
 	}
 	
-	// TODO: Come up with a transparent color mixing method and finish the minimap overlay feature
 	public static int mixColors( int color1, int color2 ) {
 		int a2 = color2 >> 24 & 0xFF;
 		int r2 = color2 >> 16 & 0xFF;

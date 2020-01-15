@@ -23,7 +23,7 @@ public class MapMenu {
 	public boolean view( Player player, PlayerSetting setting ) {
 		viewers.add( player.getUniqueId() );
 		for ( MenuComponent component : components ) {
-			if ( component.onView( canvas, player, setting.getCursorX() + 127, setting.getCursorY() + 127 ) ) {
+			if ( component.onView( canvas, player, setting.getCursorX() / 2.0 + 64, setting.getCursorY() / 2.0 + 64 ) ) {
 				return true;
 			}
 		}
@@ -32,7 +32,7 @@ public class MapMenu {
 	
 	public boolean interact( Player player, PlayerSetting setting ) {
 		for ( MenuComponent component : components ) {
-			if ( component.onInteract( player, setting.getCursorX() + 127, setting.getCursorY() + 127, setting.getInteraction() ) ) {
+			if ( component.onInteract( player, setting.getCursorX() / 2.0 + 64, setting.getCursorY() / 2.0 + 64, setting.getInteraction() ) ) {
 				return true;
 			}
 		}

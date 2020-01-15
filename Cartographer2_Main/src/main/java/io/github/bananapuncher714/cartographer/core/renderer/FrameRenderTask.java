@@ -106,8 +106,8 @@ public class FrameRenderTask extends RecursiveAction {
 			if ( cursor.isGlobal() ||
 					( scaledX > -128 && scaledX < 128 &&
 					  scaledZ > -128 && scaledZ < 128 ) ) {
-				int normalizedX = ( int ) Math.min( 127, Math.max( -127, scaledX ) );
-				int normalizedZ = ( int ) Math.min( 127, Math.max( -127, scaledZ ) );
+				int normalizedX = ( int ) Math.min( 127, Math.max( -128, scaledX ) );
+				int normalizedZ = ( int ) Math.min( 127, Math.max( -128, scaledZ ) );
 				
 				cursorList.add( Cartographer.getInstance().getHandler().constructMapCursor( normalizedX, normalizedZ, yaw, cursor.getType(), cursor.getName() ) );
 			}

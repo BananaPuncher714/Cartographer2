@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -36,6 +37,12 @@ public class PlayerListener implements Listener {
 	private void update() {
 		updateMap( updateSet.toArray( new Location[ updateSet.size() ] ) );
 		updateSet.clear();
+	}
+	
+	@EventHandler
+	private void onPlayerSneakEvent( PlayerToggleSneakEvent event ) {
+		MapInteraction interaction = event.isSneaking() ? MapInteraction.SHIFT : MapInteraction.UNSHIFT;
+		plugin.getMapManager().activate( event.getPlayer(), interaction );
 	}
 	
 	@EventHandler

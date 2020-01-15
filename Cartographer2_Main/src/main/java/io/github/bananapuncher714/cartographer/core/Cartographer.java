@@ -78,14 +78,16 @@ public class Cartographer extends JavaPlugin {
 	
 	private boolean loaded = false;
 	
+	static {
+		// Disable java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper from showing up
+		System.setProperty( "javax.accessibility.assistive_technologies", " " );
+		// No GUI present, so we want to enforce that
+		System.setProperty( "java.awt.headless", "true" );
+	}
+	
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
-		
-		// Disable java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper from showing up
-		System.setProperty( "javax.accessibility.assistive_technologies", "" );
-		// No GUI present, so we want to enforce that
-		System.setProperty( "java.awt.headless", "true" );
 		
 		// BStats
 		Metrics metric = new Metrics( this );

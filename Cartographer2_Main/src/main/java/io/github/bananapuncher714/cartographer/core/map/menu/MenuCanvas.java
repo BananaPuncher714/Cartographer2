@@ -69,9 +69,11 @@ public class MenuCanvas {
 	
 	public void drawImage( Image image, int x, int y ) {
 		BufferedImage bImage = JetpImageUtil.toBufferedImage( image );
-		int imageWidth = bImage.getWidth();
-		int imageHeight = bImage.getHeight();
-		int[] rgbData = JetpImageUtil.getRGBArray( bImage );
+		drawImage( JetpImageUtil.getRGBArray( bImage ), bImage.getWidth(), x, y );
+	}
+
+	public void drawImage( int[] image, int imageWidth, int x, int y ) {
+		int imageHeight = image.length / imageWidth;
 		
 		int[] globalX = JetpImageUtil.getSubsegment( 0, width, x, imageWidth );
 		int gxStart = globalX[ 0 ];
@@ -89,7 +91,7 @@ public class MenuCanvas {
 				int ix = px - x;
 				
 				int prevColor = data[ cx + cy ];
-				data[ cx + cy ] = JetpImageUtil.overwriteColor( prevColor, rgbData[ ix + iy ] );
+				data[ cx + cy ] = JetpImageUtil.overwriteColor( prevColor, image[ ix + iy ] );
 			}
 		}
 		markDirty();

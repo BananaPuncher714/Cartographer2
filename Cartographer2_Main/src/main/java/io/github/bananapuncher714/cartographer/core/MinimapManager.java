@@ -101,9 +101,11 @@ public class MinimapManager {
 	public void activate( Player player, MapInteraction interaction ) {
 		ItemStack item = Cartographer.getUtil().getMainHandItem( player );
 		CartographerRenderer renderer = getRendererFrom( Cartographer.getUtil().getMapViewFrom( item ) );
-		Bukkit.getScheduler().runTask( plugin, () -> {
-			renderer.interact( player, interaction );
-		} );
+		if ( renderer != null ) {
+			Bukkit.getScheduler().runTask( plugin, () -> {
+				renderer.interact( player, interaction );
+			} );
+		}
 	}
 	
 	/**

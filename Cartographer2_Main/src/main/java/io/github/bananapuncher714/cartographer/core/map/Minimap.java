@@ -38,7 +38,6 @@ import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
-import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 public class Minimap implements ChunkNotifier {

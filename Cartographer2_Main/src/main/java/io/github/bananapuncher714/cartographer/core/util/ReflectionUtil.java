@@ -35,20 +35,4 @@ public final class ReflectionUtil {
 			return null;
 		}
 	}
-	
-	// TODO Add modular loading
-	public static void loadJar( File file ) {
-		try {
-			URLClassLoader child = new URLClassLoader(
-			        new URL[] { file.toURI().toURL() },
-			        ReflectionUtil.class.getClassLoader()
-			);
-			Class classToLoad = Class.forName( "com.MyClass", true, child );
-			Method method = classToLoad.getDeclaredMethod( "myMethod" );
-			Object instance = classToLoad.newInstance();
-			Object result = method.invoke(instance);
-		} catch ( MalformedURLException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e ) {
-			e.printStackTrace();
-		}
-	}
 }
