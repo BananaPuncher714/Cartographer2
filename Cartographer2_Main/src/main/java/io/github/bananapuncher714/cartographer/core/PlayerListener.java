@@ -31,7 +31,7 @@ public class PlayerListener implements Listener {
 	protected PlayerListener( Cartographer plugin ) {
 		this.plugin = plugin;
 		
-		Bukkit.getScheduler().runTaskTimer( plugin, this::update, 1, 2 );
+		Bukkit.getScheduler().runTaskTimer( plugin, this::update, 1, 5 );
 	}
 	
 	private void update() {
@@ -60,9 +60,11 @@ public class PlayerListener implements Listener {
 		
 		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() && plugin.getMapManager().isMinimapItem( item ) ) {
 			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
+			plugin.getMapManager().update( item );
 			CartographerRenderer renderer = plugin.getMapManager().getRendererFrom( view );
 			
 			MapMenu menu = renderer.getMenu( player.getUniqueId() );
+			
 			if ( menu != null ) {
 				renderer.interact( player, event.getAction().name().contains( "LEFT" ) ? MapInteraction.LEFT : MapInteraction.RIGHT );
 			} else {

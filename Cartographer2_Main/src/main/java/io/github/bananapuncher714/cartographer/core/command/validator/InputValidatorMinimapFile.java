@@ -34,15 +34,14 @@ public class InputValidatorMinimapFile implements InputValidator< File > {
 	@Override
 	public boolean isValid( String input, String[] args ) {
 		File file = new File( Cartographer.getMapSaveDir() + "/" + input.replace( "/", "" ) );
-		if ( !file.exists() || !file.isFile() ) {
+		if ( !file.exists() || !file.isDirectory() ) {
 			return false;
 		}
-		return plugin.getMapManager().getMinimaps().containsKey( file.getName() );
+		return !plugin.getMapManager().getMinimaps().containsKey( file.getName() );
 	}
 
 	@Override
 	public File get( String input ) {
 		return new File( Cartographer.getMapSaveDir() + "/" + input.replace( "/", "" ) );
 	}
-
 }

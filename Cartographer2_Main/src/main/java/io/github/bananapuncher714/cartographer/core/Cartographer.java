@@ -164,7 +164,7 @@ public class Cartographer extends JavaPlugin {
 		}
 		loaded = true;
 		
-		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 1 );
+		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 20 );
 		
 		// Enable the modules afterwards
 		getLogger().info( "Enabling modules..." );
