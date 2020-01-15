@@ -398,9 +398,21 @@ public class CartographerRenderer extends MapRenderer {
 			if ( mainHand ) {
 				double center = 180 - setting.getCursorYaw();
 				double yaw = ( ( ( location.getYaw() + center ) % 360 ) + 360 ) % 360;
-				center = ( 180 - yaw ) * ( 127 / 40.0 );
+				// Deviation is how far off in degrees it is from the center
+				double deviation = ( 180 - yaw );
+				center = deviation * ( 127 / 40.0 );
+				
 				center = Math.min( 127, Math.max( -127, center ) );
 				setting.setCursorX( -center );
+				
+				if ( deviation < -40 ) {
+					deviation += 40;
+				} else if ( deviation > 40 ) {
+					deviation -= 40;
+				} else {
+					deviation = 0;
+				}
+				setting.cursorCenter -= deviation;
 				
 				// The pitch varies from 50 to 90
 				double pitch = location.getPitch();
