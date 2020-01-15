@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JLabel;
@@ -54,7 +55,7 @@ public class CartographerFont {
 		int width = metrics.stringWidth( message );
 		BufferedImage image = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
 		Graphics2D graphics = image.createGraphics();
-		graphics.setColor( new Color( 0, 0, 0, 0 ) );
+		graphics.setColor( new Color( 0, true ) );
 		graphics.fillRect( 0, 0, width, height );
 		graphics.setColor( color );
 		graphics.setFont( font );
@@ -64,4 +65,15 @@ public class CartographerFont {
 		return image;
 	}
 	
+	public static Font getFontFromSystem( String name ) {
+		Font family = null;
+		for ( Font font : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts() ) {
+			if ( font.getFontName().equalsIgnoreCase( name ) ) {
+				return font;
+			} else if ( font.getFamily().equalsIgnoreCase( name ) ) {
+				family = font;
+			}
+		}
+		return family;
+	}
 }

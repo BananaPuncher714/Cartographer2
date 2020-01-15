@@ -3,11 +3,6 @@ package io.github.bananapuncher714.cartographer.core.map.menu;
 import org.bukkit.entity.Player;
 
 public interface MenuComponent {
-	
-	Frame getFrame();
-	
-	boolean isDirty();
-	
 	/**
 	 * Called when a player is viewing a menu.
 	 * 
@@ -20,7 +15,7 @@ public interface MenuComponent {
 	 * @return
 	 * If this menu should be closed.
 	 */
-	boolean onView( Player player, double x, double y );
+	boolean onView( MenuCanvas canvas, Player player, double x, double y );
 	
 	/**
 	 * Called when a player interacts with a menu, either from pressing Q, or CTRL+Q.
