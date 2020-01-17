@@ -35,8 +35,8 @@ import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkDataProvider;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 /**

@@ -10,7 +10,7 @@ import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.map.MapCursorProvider;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 public class DefaultPointerCursorProvider implements MapCursorProvider {

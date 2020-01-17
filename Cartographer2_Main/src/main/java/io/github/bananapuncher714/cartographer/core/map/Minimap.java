@@ -35,9 +35,9 @@ import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkQueue;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkNotifier;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 public class Minimap implements ChunkNotifier {

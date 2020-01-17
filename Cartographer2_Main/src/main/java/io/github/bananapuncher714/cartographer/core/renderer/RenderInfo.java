@@ -15,7 +15,6 @@ import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
 
 public class RenderInfo {
 	// These have to be generated

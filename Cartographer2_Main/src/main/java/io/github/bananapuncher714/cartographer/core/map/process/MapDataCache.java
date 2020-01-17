@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -328,42 +327,5 @@ public class MapDataCache {
 	
 	public void terminate() {
 		service.shutdown();
-	}
-	
-	public class ChunkProcessor implements Callable< ChunkData > {
-		private final ChunkSnapshot snapshot;
-		private ChunkDataProvider provider;
-		
-		ChunkProcessor( ChunkSnapshot snapshot, ChunkDataProvider provider ) {
-			this.snapshot = snapshot;
-			this.provider = provider;
-		}
-		
-		public ChunkSnapshot getSnapshot() {
-			return snapshot;
-		}
-		
-		public ChunkLocation getChunkLocation() {
-			return new ChunkLocation( snapshot );
-		}
-		
-		public ChunkDataProvider getDataProvider() {
-			return provider;
-		}
-		
-		public void setDataProvider( ChunkDataProvider provider ) {
-			this.provider = provider;
-		}
-		
-		@Override
-		public ChunkData call() throws Exception {
-			return provider.process( snapshot );
-		}
-		
-	}
-	
-	public interface ChunkNotifier {
-		ChunkData onChunkLoad( ChunkLocation location, ChunkData data );
-		ChunkData onChunkProcessed( ChunkLocation location, ChunkData data );
 	}
 }

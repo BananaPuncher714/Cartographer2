@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 /**
  * Provides a {@link Minimap} with what {@link MapPixel} will appear on the canvas, may be called extremely frequently(Several times per tick).

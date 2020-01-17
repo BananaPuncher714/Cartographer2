@@ -20,7 +20,7 @@ public final class FailSafe {
 	public static < T extends Enum<?> > T getEnum( Class< T > clazz, String... values ) {
 		if ( !clazz.isEnum() ) return null;
 		T[] constants = clazz.getEnumConstants();
-		if ( values == null ) return constants[ 0 ];
+		if ( values == null || values.length == 0 ) return constants[ 0 ];
 		for ( Object object : constants ) {
 			if ( object.toString().equals( values[ 0 ] ) ) {
 				return ( T ) object;

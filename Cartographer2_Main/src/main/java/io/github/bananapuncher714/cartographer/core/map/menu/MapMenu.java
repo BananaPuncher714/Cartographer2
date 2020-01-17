@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 public class MapMenu {
 	protected MenuCanvas canvas;

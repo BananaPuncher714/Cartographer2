@@ -11,7 +11,7 @@ import org.bukkit.map.MapCursor.Type;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 public class VanillaWorldCursorProvider implements WorldCursorProvider {
 	protected VanillaPlus module;

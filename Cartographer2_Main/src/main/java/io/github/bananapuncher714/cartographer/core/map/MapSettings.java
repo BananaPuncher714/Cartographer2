@@ -38,7 +38,7 @@ public class MapSettings {
 		defaultZoom = ZoomScale.valueOf( config.getString( "default-zoom", "ONE" ).toUpperCase() );
 		circularZoom = config.getBoolean( "circular-zoom", false );
 		autoUpdate = config.getBoolean( "auto-update", true );
-		rotation = FailSafe.getEnum( BooleanOption.class, config.getString( "rotate", "UNSET" ) );
+		rotation = FailSafe.getEnum( BooleanOption.class, config.getString( "rotate", "UNSET" ).toUpperCase() );
 		renderOutOfBorder = config.getBoolean( "render-out-of-border", false );
 		for ( String string : config.getStringList( "allowed-zooms" ) ) {
 			allowedZooms.add( ZoomScale.valueOf( string.toUpperCase() ) );

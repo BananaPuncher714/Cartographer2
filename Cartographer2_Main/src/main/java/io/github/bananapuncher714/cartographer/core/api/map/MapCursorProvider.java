@@ -7,7 +7,7 @@ import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 /**
  * Provides a {@link Minimap} with cursors that will appear on the canvas, may be called extremely frequently(Several times per tick).

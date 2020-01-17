@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -26,7 +27,8 @@ public abstract class Module {
 	private ModuleDescription description;
 	private ModuleTracker tracker;
 	private File dataFolder;
-
+	private ModuleLogger logger;
+	
 	/**
 	 * There should always be an empty constructor for initialization by Cartographer2's ModuleLoader
 	 */
@@ -51,6 +53,7 @@ public abstract class Module {
 		this.tracker = new ModuleTracker();
 		this.description = description;
 		this.dataFolder = file;
+		this.logger = new ModuleLogger( this );
 	}
 	
 	public final void unload() {
@@ -164,6 +167,10 @@ public abstract class Module {
 	 */
 	public final Cartographer getCartographer() {
 		return plugin;
+	}
+	
+	public final Logger getLogger() {
+		return logger;
 	}
 	
 	/**

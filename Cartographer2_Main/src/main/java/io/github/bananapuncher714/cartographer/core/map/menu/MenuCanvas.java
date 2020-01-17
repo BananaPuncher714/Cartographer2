@@ -63,6 +63,10 @@ public class MenuCanvas {
 		markDirty();
 	}
 	
+	public void drawCanvas( MenuCanvas canvas, int x, int y ) {
+		drawImage( canvas.data, canvas.width, x, y );
+	}
+	
 	public void drawImage( SimpleImage image, int x, int y ) {
 		drawImage( image.getBufferedImage(), x, y );
 	}
@@ -113,10 +117,27 @@ public class MenuCanvas {
 		markDirty();
 	}
 	
+	public void clear() {
+		data = new int[ width * height ];
+		markDirty();
+	}
+	
 	public Color getPixel( int x, int y ) {
 		return new Color( data[ x + y * width ], true );
 	}
 	
+	public int getHeight() {
+		return height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int[] getData() {
+		return data;
+	}
+
 	protected void markDirty() {
 		dirty = true;
 	}

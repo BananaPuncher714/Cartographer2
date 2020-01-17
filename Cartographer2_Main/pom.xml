@@ -5,9 +5,10 @@
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>Cartographer2_Master</artifactId>
-		<version>${plugin.version}</version>
+		<version>2</version>
 	</parent>
 	<artifactId>Cartographer2_Main</artifactId>
+	<version>2</version>
 
 	<repositories>
 		<repository>
