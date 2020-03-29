@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -103,6 +102,10 @@ public class CommandCartographer {
 								.defaultTo( this::unload ) )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
 						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer unload <id>" ) ) )
+				.add( new SubCommand( "help" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.help" ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer help" ) )
+						.defaultTo( this::help ) )
 				.add( moduleCommand.getCommand() )
 				.add( settingsCommand.getCommand() )
 				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
@@ -198,5 +201,16 @@ public class CommandCartographer {
 		Minimap map = plugin.getMapManager().load( mapDir );
 
 		sender.sendMessage( ChatColor.AQUA + "Loaded minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
+	}
+	
+	private void help( CommandSender sender, String[] args, CommandParameters parameters ) {
+		sender.sendMessage( ChatColor.AQUA + "=== Cartographer Commands ===" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer reload [map]" + ChatColor.GOLD + " - Reload Cartographer2 or a minimap" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer list" + ChatColor.GOLD + " - View all loaded minimaps" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer get <map> [player] [slot]" + ChatColor.GOLD + " - Get or give a minimap" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer create <map>" + ChatColor.GOLD + " - Create a new minimap" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer delete <map>" + ChatColor.GOLD + " - Delete a minimap" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer load <map>" + ChatColor.GOLD + " - Load a minimap" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer unload <map>" + ChatColor.GOLD + " - Unload a minimap" );
 	}
 }

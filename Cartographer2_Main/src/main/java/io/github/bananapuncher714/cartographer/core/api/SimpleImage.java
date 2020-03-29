@@ -30,6 +30,49 @@ public class SimpleImage {
 	private final int frameCount;
 	private final int totalTime;
 	
+	public SimpleImage( File file ) throws IOException {
+		Validate.notNull( file );
+		Validate.isTrue( file.exists() );
+		Validate.isTrue( file.isFile() );
+		
+		if ( file.getName().endsWith( ".gif" ) ) {
+			FileInputStream stream = new FileInputStream( file );
+			GifImage image = GifDecoder.read( new FileInputStream( file ) );
+			stream.close();
+			
+			width = image.getWidth();
+			height = image.getHeight();
+			
+			frameCount = image.getFrameCount();
+			
+			images = new BufferedImage[ frameCount ];
+			data = new int[ frameCount ][];
+			delays = new int[ frameCount ];
+			
+			int sum = 0;
+			for ( int i = 0; i < frameCount; i++ ) {
+				delays[ i ] = image.getDelay( i ) * 10;
+				sum += delays[ i ];
+				BufferedImage bImage = image.getFrame( i );
+				images[ i ] = bImage;
+				data[ i ] = JetpImageUtil.getRGBArray( JetpImageUtil.toBufferedImage( image.getFrame( i ) ) );
+		    }
+			
+			totalTime = sum;
+		} else {
+			frameCount = 1;
+			BufferedImage image = JetpImageUtil.toBufferedImage( ImageIO.read( file ) );
+			width = image.getWidth();
+			height = image.getHeight();
+			images = new BufferedImage[] { image };
+			data = new int[][] { JetpImageUtil.getRGBArray( image ) };
+			delays = new int[] { 0 };
+			totalTime = 0;
+		}
+		
+		time = System.currentTimeMillis();
+	}
+	
 	/**
 	 * Construct a SimpleImage with the arguments provided.
 	 * 

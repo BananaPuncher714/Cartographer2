@@ -1,6 +1,6 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.12.16
+version: 2.12.17
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
@@ -31,6 +31,11 @@ permissions:
     default: false
     children:
       cartographer: true
+  cartographer.help:
+    description: View all the map and regular commands
+    default: false
+    children:
+      cartographer: true
   # Cartographer command
   cartographer:
     description: Access to the cartographer comand
@@ -40,6 +45,7 @@ permissions:
     description: Get all map related permissions
     default: false
     children:
+      cartographer.help: true
       cartographer.map: true
       cartographer.map.give: true
       cartographer.map.create: true
@@ -102,6 +108,7 @@ permissions:
     default: false
     children:
       cartographer.module: true
+      cartographer.module.help: true
       cartographer.module.list: true
       cartographer.module.reload: true
       cartographer.module.enable: true
@@ -139,6 +146,11 @@ permissions:
     default: false
     children:
       cartographer.module: true
+  cartographer.module.help:
+    description: View module commands and their usage
+    default: false
+    children:
+      cartographer.module: true
   # Module command
   cartographer.module:
     description: Access to the module command
@@ -151,6 +163,7 @@ permissions:
     default: false
     children:
       cartographer.settings: true
+      cartographer.settings.help: true
       cartographer.settings.user: true
       cartographer.settings.set: true
       cartographer.settings.setother: true
@@ -166,6 +179,11 @@ permissions:
       cartographer.settings.set.cursor: true
       cartographer.settings.set.rotate: true
       cartographer.settings.set.showname: true
+  cartographer.settings.help:
+    description: View settings commands and their usage
+    default: false
+    children:
+      cartographer.settings: true
   # Settings commands
   # Rotation
   cartographer.settings.setother.rotate:

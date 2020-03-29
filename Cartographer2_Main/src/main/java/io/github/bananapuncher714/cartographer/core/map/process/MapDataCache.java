@@ -72,10 +72,13 @@ public class MapDataCache {
 			if ( entry.getValue().isDone() ) {
 				ChunkData chunkData = null;
 				try {
+					// Shouldn't throw any exceptions at this point
 					chunkData = entry.getValue().get();
 				} catch ( InterruptedException | ExecutionException e ) {
 					e.printStackTrace();
 				}
+				
+				// Get the northern and southern chunk
 				ChunkLocation location = entry.getKey();
 				ChunkLocation north = new ChunkLocation( location ).subtract( 0, 1 );
 				ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
@@ -98,20 +101,17 @@ public class MapDataCache {
 						// If not, then we simply mark the chunk as loaded
 						loaded.add( location );
 					}
-					iterator.remove();
 					
-					ChunkData newData = notifier != null ? notifier.onChunkProcessed( location, chunkData ) : null;
-					if ( newData != null ) {
-						data.put( location, newData );
-					} else {
-						data.put( location, chunkData );
-					}
+					ChunkData newData = notifier != null ? notifier.onChunkProcessed( location, chunkData ) : chunkData;
+					data.put( location, newData );
 				} else {
 					if ( forcedLoading.contains( location ) ) {
 						addToProcessQueue( north );
 					}
-					iterator.remove();
 				}
+				
+				// Remove from loading
+				iterator.remove();
 			}
 		}
 		

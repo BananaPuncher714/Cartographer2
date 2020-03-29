@@ -9,6 +9,7 @@ import java.nio.file.NoSuchFileException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -34,9 +35,12 @@ import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
+import io.github.bananapuncher714.cartographer.core.map.menu.MenuComponent;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkDataProvider;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
+import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 import io.github.bananapuncher714.cartographer.core.util.BukkitUtil;
 
 /**
@@ -177,6 +181,24 @@ public class ModuleLoader {
 			HandlerList.unregisterAll( listener );
 		}
 		tracker.getListeners().clear();
+		
+		for ( CartographerRenderer renderer : plugin.getRenderers().values() ) {
+			for ( UUID uuid : renderer.getActiveMapMenuViewers() ) {
+				MapMenu menu = renderer.getMenu( uuid );
+				if ( menu != null ) {
+					boolean found = false;
+					for ( MenuComponent component : menu.getComponents() ) {
+						if ( classes.contains( component.getClass().getName() ) ) {
+							found = true;
+							break;
+						}
+					}
+					if ( found ) {
+						renderer.setMapMenu( uuid, null );
+					}
+				}
+			}
+		}
 		
 		// Remove commands
 		for ( PluginCommand command : tracker.getCommands() ) {

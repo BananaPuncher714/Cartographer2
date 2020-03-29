@@ -3,10 +3,12 @@ package io.github.bananapuncher714.cartographer.core.renderer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +24,7 @@ import org.bukkit.map.MapView;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
+import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
@@ -35,6 +38,7 @@ import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
@@ -219,7 +223,20 @@ public class CartographerRenderer extends MapRenderer {
 
 			// Queue the locations that need loading
 			for ( BigChunkLocation location : info.needsRender ) {
-				info.map.getQueue().load( location );
+				// TODO Check if the location needs loading and load somewhere else maybe?
+				int cx = location.getX() << 4;
+				int cz = location.getZ() << 4;
+				boolean renderRequired = false;
+				for ( int x = 0; x < 16 && !renderRequired; x++ ) {
+					for ( int z = 0; z < 16 && !renderRequired; z++ ) {
+						ChunkLocation cLocation = new ChunkLocation( location.getWorld(), cx + x, cz + z );
+						renderRequired = info.cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation );
+					}
+				}
+				if ( renderRequired ) {
+					info.map.getQueue().load( location );
+				}
+				
 			}
 			
 			// Send the packet
@@ -282,6 +299,20 @@ public class CartographerRenderer extends MapRenderer {
 			return setting.getMenu();
 		}
 		return null;
+	}
+	
+	public Set< UUID > getActiveMapMenuViewers() {
+		Set< UUID > viewers = new HashSet< UUID >();
+		
+		for ( UUID uuid : settings.keySet() ) {
+			PlayerSetting setting = settings.get( uuid );
+			
+			if ( setting.getMenu() != null ) {
+				viewers.add( uuid );
+			}
+		}
+		
+		return viewers;
 	}
 	
 	public void interact( Player player, MapInteraction interaction ) {

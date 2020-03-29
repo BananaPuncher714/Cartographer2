@@ -22,7 +22,7 @@ import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
-import io.github.bananapuncher714.cartographer.core.util.NBTEditor;
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 
 public class MinimapManager {
 	private static final Object[] MAP_ID = { "io", "github", "bananapuncher714", "cartographer", "map-id" };

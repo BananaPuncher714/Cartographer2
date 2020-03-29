@@ -92,9 +92,12 @@ public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
 				// This is for dynamic colors
 				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
 			} else {
-				if ( info.cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
+				// Don't check if it requires generation, or if the chunk is being loaded here
+				// It should be done somewhere else
+				// Just add it to the collection and check it later
+//				if ( info.cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
 					subRenderInfo.requiresRender.add( new BigChunkLocation( cLocation ) );
-				}
+//				}
 
 				localColor = loading;
 			}

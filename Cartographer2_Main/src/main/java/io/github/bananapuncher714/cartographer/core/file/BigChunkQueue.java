@@ -101,6 +101,7 @@ public class BigChunkQueue {
 	 */
 	public void load( BigChunkLocation coord ) {
 		Validate.notNull( coord );
+		// If the chunk is not being loaded or saved
 		if ( saving.containsKey( coord ) || loading.containsKey( coord ) ) {
 			return;
 		}

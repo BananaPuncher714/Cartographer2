@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
@@ -58,24 +59,35 @@ public class Cartographer extends JavaPlugin {
 	private DependencyManager dependencyManager;
 	private PlayerManager playerManager;
 	
+	// Blacklist of map ids to NOT use
 	private Set< Integer > invalidIds = new HashSet< Integer >();
+	// Inventories that minimaps cannot be put into
 	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
 	
+	// Contains all the renderers in use right now, with the key being map id assigned to each renderer
 	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
 	
 	private CommandCartographer command;
 	
+	// Minimum tick limit allowed before pausing expensive operations
+	// such as drawing the map, or loading chunks
 	private int tickLimit = 18;
+	// Chunks that can be loaded per second
 	private int chunksPerSecond = 1;
+	// How long in ticks until the map can be updated again
 	private int renderDelay;
+	// Whether or not to force loading all chunks visible, regardless if they are loaded in or not
 	private boolean forceLoad = false;
+	// Global default for rotation setting
 	private boolean rotateByDefault = true;
+	// Print out debug information regarding missing colors and materials in the console
 	private boolean paletteDebug;
 	
 	private SimpleImage loadingBackground;
 	private SimpleImage overlay;
 	private SimpleImage missingMapImage;
 	
+	// If the server has been completely loaded. Something to do with modules and plugins and dependencies
 	private boolean loaded = false;
 	
 	static {
@@ -89,7 +101,7 @@ public class Cartographer extends JavaPlugin {
 	public void onEnable() {
 		INSTANCE = this;
 		
-		// BStats
+		// bStats
 		Metrics metric = new Metrics( this );
 		
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
@@ -129,8 +141,10 @@ public class Cartographer extends JavaPlugin {
 		dependencyManager = new DependencyManager( this );
 		playerManager = new PlayerManager( this );
 		
+		// Create our base command
 		command = new CommandCartographer( this, getCommand( "cartographer" ) );
 		
+		// Update the chunk listener every half second
 		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
 		
 		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
@@ -138,6 +152,7 @@ public class Cartographer extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
 		Bukkit.getPluginManager().registerEvents( new CartographerListener(), this );
 		
+		// Start loading everything sequentially
 		load();
 		
 		// Load the modules in beforehand
@@ -159,6 +174,7 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	protected void onServerLoad() {
+		// Don't load things again, just once
 		if ( loaded ) {
 			return;
 		}
@@ -236,8 +252,8 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadInit() {
+		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 		if ( !README_FILE.exists() ) {
-			FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
 			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder() + "/" + "overlay.gif" ), false );
 			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder() + "/" + "background.gif" ), false );
@@ -258,8 +274,12 @@ public class Cartographer extends JavaPlugin {
 					String id = data.getString( "custom-renderer-ids." + key );
 					int mapId = Integer.parseInt( key );
 					Minimap map = mapManager.getMinimaps().get( id );
+					MapView view = handler.getUtil().getMap( mapId );
 					
-					mapManager.convert( handler.getUtil().getMap( mapId ), map );
+					// Do not want to convert maps that do not exist
+					if ( map != null && view != null ) {
+						mapManager.convert( view, map );
+					}
 				}
 			}
 		}
@@ -423,7 +443,7 @@ public class Cartographer extends JavaPlugin {
 		return playerManager;
 	}
 	
-	protected Map< Integer, CartographerRenderer > getRenderers() {
+	public Map< Integer, CartographerRenderer > getRenderers() {
 		return renderers;
 	}
 	

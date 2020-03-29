@@ -61,6 +61,10 @@ public class CommandModule {
 								.defaultTo( this::unload ) )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module does not exist!" ) )
 						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module unload <module>" ) ) )
+				.add( new SubCommand( "help" )
+						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.help" ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module help" ) )
+						.defaultTo( this::help ) )
 				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
 				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) );
 	}
@@ -162,5 +166,15 @@ public class CommandModule {
 		} else {
 			sender.sendMessage( ChatColor.GOLD + "Could not unload module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'! Was not loaded by Cartographer2!" );
 		}
+	}
+	
+	private void help( CommandSender sender, String[] args, CommandParameters parameters ) {
+		sender.sendMessage( ChatColor.AQUA + "=== Cartographer Module Commands ===" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module list" + ChatColor.GOLD + " - View all loaded modules" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module reload" + ChatColor.GOLD + " - Reload all modules" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module enable <module>" + ChatColor.GOLD + " - Enable a module" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module disable <module>" + ChatColor.GOLD + " - Disable a module" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module load <module>" + ChatColor.GOLD + " - Load a module" );
+		sender.sendMessage( ChatColor.YELLOW + "/cartographer module unload <module>" + ChatColor.GOLD + " - Unload a module" );
 	}
 }

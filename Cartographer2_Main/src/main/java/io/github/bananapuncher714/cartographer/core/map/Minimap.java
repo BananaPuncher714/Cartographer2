@@ -129,34 +129,51 @@ public class Minimap implements ChunkNotifier {
 	public void update() {
 		cache.update();
 		queue.update();
+		// Every 5 ticks, attempt to save and unload regions that are not in use
 		if ( tick++ % 100 == 0 ) {
+			// Set for locations that are still needed
 			Set< BigChunkLocation > noSave = new HashSet< BigChunkLocation >();
+			// Chunks to save
 			Map< BigChunkLocation, BigChunk > chunks = new HashMap< BigChunkLocation, BigChunk >();
 			for ( Entry< ChunkLocation, ChunkData > entry : cache.getData().entrySet() ) {
 				ChunkLocation location = entry.getKey();
 				BigChunkLocation bigLoc = new BigChunkLocation( location );
+				
+				// Make sure this chunk is no longer necessary
 				if ( noSave.contains( bigLoc ) ) {
 					continue;
 				}
-				if ( cache.needsRender( location ) || location.isLoaded() ) {
+				
+				// If not already marked as "in use", then check if it is loaded, or is waiting to be rendered
+				if ( cache.needsRender( location )
+						|| location.isLoaded()
+						|| cache.isProcessing( location ) ) {
+					// Add the location
 					noSave.add( bigLoc );
+					// Remove it from chunks to save if it is already queued to be saved
 					if ( chunks.containsKey( bigLoc ) ) {
 						chunks.remove( bigLoc );
 					}
 					continue;
 				}
 				
-				BigChunk chunk = chunks.containsKey( bigLoc ) ? chunks.get( bigLoc ) : new BigChunk( location );
+				// Get the big chunk that needs to be saved
+				BigChunk chunk = chunks.getOrDefault( bigLoc, new BigChunk( location ) );
+				
+				// Add the current location and add to queue
 				chunk.set( location, entry.getValue() );
 				chunks.put( bigLoc, chunk );
 			}
 			
 			for ( BigChunkLocation loc : chunks.keySet() ) {
 				BigChunk chunk = chunks.get( loc );
+				// Attempt to save the chunk
+				// If it doesn't for some reason, then don't do anything
 				if ( queue.save( loc, chunk ) ) {
 					for ( int x = 0; x < 16; x++ ) {
 						for ( int z = 0; z < 16; z++ ) {
 							ChunkLocation location = new ChunkLocation( loc.getWorld(), ( loc.getX() << 4 ) + x, ( loc.getZ() << 4 ) + z );
+							// Remove the corresponding chunk from our cache
 							cache.getData().remove( location );
 						}
 					}

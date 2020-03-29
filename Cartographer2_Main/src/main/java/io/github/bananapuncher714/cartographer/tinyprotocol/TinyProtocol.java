@@ -56,8 +56,11 @@ public abstract class TinyProtocol {
 	private static final Class<Object> serverConnectionClass = Reflection.getUntypedClass("{nms}.ServerConnection");
 	private static final FieldAccessor<Object> getMinecraftServer = Reflection.getField("{obc}.CraftServer", minecraftServerClass, 0);
 	private static final FieldAccessor<Object> getServerConnection = Reflection.getField(minecraftServerClass, serverConnectionClass, 0);
-	private static final MethodInvoker getNetworkMarkers = Reflection.getTypedMethod(serverConnectionClass, null, List.class, serverConnectionClass);
-
+	
+	// Stop accessing synthetic methods if possible?
+	private static FieldAccessor< List > networkMarkersB;
+	private static MethodInvoker getNetworkMarkers;
+	
 	// Packets we have to intercept
 	private static final Class<?> PACKET_LOGIN_IN_START = Reflection.getMinecraftClass("PacketLoginInStart");
 	private static final FieldAccessor<GameProfile> getGameProfile = Reflection.getField(PACKET_LOGIN_IN_START, GameProfile.class, 0);
@@ -85,6 +88,20 @@ public abstract class TinyProtocol {
 	protected volatile boolean closed;
 	protected Plugin plugin;
 
+	static {
+		try {
+			networkMarkersB = Reflection.getField( serverConnectionClass, "connectedChannels", List.class );
+		} catch ( Exception exception ) {
+			// Not sure what I'm supposed to be catching here...
+		}
+		
+		try {
+			getNetworkMarkers = Reflection.getTypedMethod(serverConnectionClass, null, List.class, serverConnectionClass);
+		} catch ( Exception exception ) {
+			// ???
+		}
+	}
+	
 	/**
 	 * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
 	 * <p>
@@ -202,7 +219,11 @@ public abstract class TinyProtocol {
 		boolean looking = true;
 
 		// We need to synchronize against this list
-		networkManagers = (List<Object>) getNetworkMarkers.invoke(null, serverConnection);
+		if ( getNetworkMarkers == null ) {
+			networkManagers = ( List< Object > ) networkMarkersB.get( serverConnection );
+		} else {
+			networkManagers = (List<Object>) getNetworkMarkers.invoke( null, serverConnection);
+		}
 		createServerChannelHandler();
 
 		// Find the correct list, or implicitly throw an exception

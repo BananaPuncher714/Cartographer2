@@ -17,8 +17,8 @@ public class MenuCanvas {
 	protected boolean dirty = false;
 	
 	public MenuCanvas( int width, int height ) {
-		this.height = width;
-		this.width = height;
+		this.width = width;
+		this.height = height;
 		
 		data = new int[ width * height ];
 		displayData = new byte[ width * height ];
@@ -54,7 +54,7 @@ public class MenuCanvas {
 		int rgb = color.getRGB();
 		
 		for ( int py = 0; py < height; py++ ) {
-			int yVal = py * this.width + y;
+			int yVal = ( py + y ) * this.width;
 			for ( int px = 0; px < width; px++ ) {
 				int index = yVal + px + x;
 				data[ index ] = JetpImageUtil.overwriteColor( data[ index ], rgb );
@@ -143,7 +143,11 @@ public class MenuCanvas {
 	}
 	
 	protected void update() {
-		displayData = JetpImageUtil.dither( width, data );
+		if ( dither ) {
+			displayData = JetpImageUtil.dither( width, data );
+		} else {
+			displayData = JetpImageUtil.simplify( data );
+		}
 		dirty = false;
 	}
 	
