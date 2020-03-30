@@ -1,0 +1,38 @@
+blacklist: true
+blacklisted-worlds: []
+
+# Find the cursor types here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/map/MapCursor.Type.html
+# Not every icon may be available in your version
+#
+# Visibility options are FULL, PARTIAL, and NONE
+
+# Cursors for basic icons
+cursors:
+  spawn:
+    enabled: true
+    icon: MANSION WHITE_CIRCLE
+    default-visibility: FULL
+    show-name: true
+  death:
+    enabled: true
+    icon: RED_X WHITE_CROSS
+    default-visibility: FULL
+    show-name: true
+
+# Options for displaying other players
+players:
+  icon: BLUE_POINTER
+  
+  default-visibility: PARTIAL
+  show-name: true
+
+# Options for displaying entities
+# Find a list of all the entitytypes here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
+# Required permissions are cartographer.addon.vanilla.cursor.entity.<entitytype>
+entity:
+  SKELETON:
+    icon: RED_POINTER, BLUE_POINTER
+    range: 20
+    default-visibility: PARTIAL
+    show-name: true
+    item-type: 

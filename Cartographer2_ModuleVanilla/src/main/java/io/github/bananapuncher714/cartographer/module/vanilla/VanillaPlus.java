@@ -1,11 +1,14 @@
 package io.github.bananapuncher714.cartographer.module.vanilla;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,9 +26,17 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorConverter;
 
 public class VanillaPlus extends Module {
 	private Map< UUID, Location > deaths = new HashMap< UUID, Location >();
+	
+	private boolean isBlacklist;
+	private Set< String > blacklistedWorlds = new HashSet< String >();
+	
+	private Set< CursorConverter > defaultConverters = new HashSet< CursorConverter >();
+
+	private Map< UUID, PlayerViewer > viewers = new HashMap< UUID, PlayerViewer >();
 	
 	@Override
 	public void onEnable() {
@@ -78,5 +89,27 @@ public class VanillaPlus extends Module {
 		} else {
 			deaths.put( uuid, loc.clone() );
 		}
+	}
+	
+	public boolean isWhitelisted( World world ) {
+		return isBlacklist ^ blacklistedWorlds.contains( world.getName() );
+	}
+	
+	public CursorConverter getConverterFor( Object object ) {
+		for ( CursorConverter converter : defaultConverters ) {
+			if ( converter.convertable( object ) ) {
+				return converter;
+			}
+		}
+		return null;
+	}
+	
+	public PlayerViewer getViewerFor( UUID uuid ) {
+		PlayerViewer viewer = viewers.get( uuid );
+		if ( viewer == null ) {
+			viewer = new PlayerViewer( this );
+			viewers.put( uuid, viewer );
+		}
+		return viewer;
 	}
 }

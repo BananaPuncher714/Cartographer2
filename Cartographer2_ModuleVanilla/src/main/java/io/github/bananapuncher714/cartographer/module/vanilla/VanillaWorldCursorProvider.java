@@ -1,20 +1,32 @@
 package io.github.bananapuncher714.cartographer.module.vanilla;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorProviderDeathLocation;
+import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorProviderEntity;
+import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorProviderPlayer;
+import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorProviderSpawnLocation;
 
 public class VanillaWorldCursorProvider implements WorldCursorProvider {
 	protected VanillaPlus module;
+	
+	private CursorProviderPlayer playerProvider;
+	private Map< EntityType, CursorProviderEntity > entityProviders = new HashMap< EntityType, CursorProviderEntity >();
+	private CursorProviderDeathLocation deathLoc;
+	private CursorProviderSpawnLocation spawnLoc;
+	
 	
 	protected VanillaWorldCursorProvider( VanillaPlus module ) {
 		this.module = module;
@@ -24,23 +36,33 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 	public Collection< WorldCursor > getCursors( Player player, Minimap map, PlayerSetting setting ) {
 		Set< WorldCursor > cursors = new HashSet< WorldCursor >();
 		
-		Location playerLoc = player.getLocation();
-		
-		Location deathLoc = module.getDeathOf( player.getUniqueId() );
-		if ( deathLoc != null ) {
-			Location loc = deathLoc.clone();
-			loc.setYaw( setting.isRotating() ? playerLoc.getYaw() : 180 );
+		if ( module.isWhitelisted( setting.getLocation().getWorld() ) ) {
+			PlayerViewer viewer = module.getViewerFor( player.getUniqueId() );
 			
-			cursors.add( new WorldCursor( "Death", loc, Type.RED_X, true ) );
+			// Add their last death location
+			Set< NamedLocation > deathLocs = deathLoc.getFor( player, setting );
+			for ( NamedLocation loc : deathLocs ) {
+				cursors.add( viewer.convert( loc, player, setting ) );
+			}
+			
+			// Add their spawn location
+			Set< NamedLocation > spawnLocs = spawnLoc.getFor( player, setting );
+			for ( NamedLocation loc : spawnLocs ) {
+				cursors.add( viewer.convert( loc, player, setting ) );
+			}
+			
+			// Add other players
+			for ( Player tracking: playerProvider.getFor( player, setting ) ) {
+				cursors.add( viewer.convert( tracking, player, setting ) );
+			}
+			
+			// Add all the entities
+			for ( CursorProviderEntity entityProvider : entityProviders.values() ) {
+				for ( Entity entity : entityProvider.getFor( player, setting ) ) {
+					cursors.add( viewer.convert( entity, player, setting ) );
+				}
+			}
 		}
-		
-		Location spawnLoc = player.getBedSpawnLocation();
-		if ( spawnLoc == null ) {
-			spawnLoc = player.getWorld().getSpawnLocation();
-		}
-		spawnLoc = spawnLoc.clone();
-		spawnLoc.setYaw( setting.isRotating() ? playerLoc.getYaw() : 180 );
-		cursors.add( new WorldCursor( "Spawn", spawnLoc, Type.MANSION, true ) );
 		
 		return cursors;
 	}

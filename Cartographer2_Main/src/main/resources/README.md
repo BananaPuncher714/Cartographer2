@@ -12,7 +12,8 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 ## Commands
 **Ⓟ** - Player command only
 **₵** - Command line only
-- `/cartographer  <create|get|delete|reload|unload|load|module|settings> ...` - Requires `cartographer`.
+- `/cartographer  <help|create|get|delete|reload|unload|load|module|settings> ...` - Requires `cartographer`.
+  - `/cartographer help` - View all the commands relating to maps and base Cartographer. Requires `cartographer.help`.
   - `/cartographer create <id>` - Create a minimap with the given id. Minimaps can span worlds, so normally one is enough. Requires `cartographer.map.create`.
   - `/cartographer delete <id>` - Delete the minimap with the given id. Removes it from the server and from disk. Requires `cartographer.map.delete`.
   - **Ⓟ** `/cartographer get <id>` - Get a map item for the minimap with the given id. Requires `cartographer.map.get`.
@@ -21,14 +22,16 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
   - `/cartographer reload <id>` -  Reload a minimap. Requires `cartographer.map.reload`.
   - `/cartographer unload <id>` - Unload a minimap with the given id. Requires `cartographer.map.unload`.
   - `/cartographer load <id>` - Load an unloaded minimap with the given id. Requires `cartographer.map.load`.
-  - `/cartographer module <list|reload|enable|disable> ...` Requires `cartographer.module`.
+  - `/cartographer module <help|list|reload|enable|disable> ...` Requires `cartographer.module`.
+    - `cartographer module help` - View all commands related to modules. Requires `cartographer.module.help`.
     - `/cartographer module list` - List all the modules, regardless if they are disabled. Requires `cartographer.module.list`.
     - `/cartographer module reload` - Reload all the modules. Requires `cartographer.module.reload`.
     - `/cartographer module enable <id>` - Enable the specified module. Requires `cartographer.module.enble`.
     - `/cartographer module disable <id>` - Disable the specified module. Requires `cartographer.module.disable`.
     - `/cartographer module load <file>` - Load the specified file. Requires `cartographer.module.load`.
     - `/cartographer module unload <id>` - Unload the specified module. Requires `cartographer.module.unload`.
-  - `/cartographer settings <set|get|setother|getother> ...` - Requires `cartographer.settings`.
+  - `/cartographer settings <help|set|get|setother|getother> ...` - Requires `cartographer.settings`.
+    - `/cartographer settings help` - View all commands related to settings. Requires `cartographer.settings.help`.
     - **Ⓟ** `/cartographer settings set <property> <value>` - Set a setting to a given property. Requires `cartographer.settings.set.<property>`.
     - **Ⓟ**  `/cartographer settings get <property>` - Get the value of the property. Requires `cartographer.settings.get.<property>`.
     - **Ⓟ** `/cartographer settings setother <player> <property> <value>` - Set the given property of another player. Requires `cartographer.settings.setother.<property>`.
@@ -40,6 +43,7 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer` - Allows access to the cartographer command.
 - `cartographer.admin` - Master permission.
 - `cartographer.reload` - Reload Cartographer2's settings and images.
+- `cartographer.help` - View all the map and regular commands.
 - `cartographer.map` - Allows access to the map related commands.
 - `cartographer.map.admin` - Master permission for maps.
 - `cartographer.map.list` - List all minimaps.
@@ -52,6 +56,7 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer.map.delete` - Delete a minimap.
 - `cartographer.module` - Allows access to the module sub-command.
 - `cartographer.module.admin` - Master permission for modules.
+- `cartographer.module.help` - View all the commands relating to modules.
 - `cartographer.module.list` - List all modules.
 - `cartographer.module.reload` - Reload all modules. Inherits `cartographer.module.load` and `cartographer.module.unload`
 - `cartographer.module.load` - Load a given module.
@@ -60,6 +65,7 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer.module.enable` - Enable a given module.
 - `cartographer.settings` - Allows access to the settings sub-command.
 - `cartographer.settings.admin` - Master permission for settings
+- `cartographer.settings.help` - View all the commands related to settings.
 - `cartographer.settings.set` - Set and get the values for properties of yourself. Inherits `cartographer.settings.get`
 - `cartographer.settings.get` - Get the values for properties of yourself.
 - `cartographer.settings.setother` - Set and get values for properties of other people and yourself. Inherits `cartographer.settings.getother` and `cartographer.settings.set`
