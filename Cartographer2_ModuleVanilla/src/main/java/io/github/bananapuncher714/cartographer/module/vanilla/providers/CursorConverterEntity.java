@@ -24,7 +24,7 @@ public class CursorConverterEntity implements CursorConverter {
 	@Override
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
 		Validate.isTrue( convertable( object ) );
-		Entity tracking = ( Player ) object;
+		Entity tracking = ( Entity ) object;
 		String name = null;
 		if ( tracking instanceof Nameable ) {
 			name = ( ( Nameable ) tracking ).getCustomName();
@@ -37,7 +37,7 @@ public class CursorConverterEntity implements CursorConverter {
 
 	@Override
 	public boolean convertable( Object type ) {
-		return type instanceof Entity && ( ( Entity ) type ).getType() == type;
+		return type instanceof Entity && ( ( Entity ) type ).getType() == this.type;
 	}
 	
 	public EntityType getType() {

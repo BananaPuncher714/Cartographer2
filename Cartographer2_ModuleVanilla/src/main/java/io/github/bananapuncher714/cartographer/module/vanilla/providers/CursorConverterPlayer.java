@@ -24,7 +24,7 @@ public class CursorConverterPlayer implements CursorConverter {
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
 		Validate.isTrue( convertable( object ) );
 		Player tracking = ( Player ) object;
-		if ( visibility != CursorVisibility.NONE ) {
+		if ( visibility != CursorVisibility.NONE && tracking != player ) {
 			return new WorldCursor( showName ? tracking.getName() : null, tracking.getLocation(), icon, visibility == CursorVisibility.FULL );
 		}
 		return null;
@@ -32,11 +32,16 @@ public class CursorConverterPlayer implements CursorConverter {
 
 	@Override
 	public boolean convertable( Object type ) {
-		return type instanceof Player && ( ( Player ) type ).getUniqueId().equals( player );
+		return type instanceof Player && ( player == null || ( ( Player ) type ).getUniqueId().equals( player ) );
 	}
 	
 	public UUID getUUID() {
 		return player;
+	}
+	
+	public CursorConverterPlayer setUUID( UUID uuid ) {
+		player = uuid;
+		return this;
 	}
 	
 	public Type getIcon() {

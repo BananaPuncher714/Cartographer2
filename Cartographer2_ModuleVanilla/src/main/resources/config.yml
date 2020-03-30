@@ -13,26 +13,35 @@ cursors:
     icon: MANSION WHITE_CIRCLE
     default-visibility: FULL
     show-name: true
+    display-name: "Spawn"
   death:
     enabled: true
     icon: RED_X WHITE_CROSS
     default-visibility: FULL
     show-name: true
+    display-name: "§cDeath"
 
 # Options for displaying other players
 players:
   icon: BLUE_POINTER
-  
+  range: 512
   default-visibility: PARTIAL
   show-name: true
 
 # Options for displaying entities
 # Find a list of all the entitytypes here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
 # Required permissions are cartographer.addon.vanilla.cursor.entity.<entitytype>
+# Use "MATERIAL:DURABILITY" format for the items, if durability is required.
 entity:
   SKELETON:
-    icon: RED_POINTER, BLUE_POINTER
+    icon: RED_POINTER BLUE_POINTER
     range: 20
     default-visibility: PARTIAL
     show-name: true
-    item-type: 
+    item: BONE
+  PIG:
+    icon: GREEN_POINTER
+    range: 30
+    default-visibility: PARTIAL
+    show-name: true
+    item: PORKCHOP

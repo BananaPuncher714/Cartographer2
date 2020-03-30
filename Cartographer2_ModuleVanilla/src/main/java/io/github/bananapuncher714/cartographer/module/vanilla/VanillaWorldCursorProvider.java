@@ -30,6 +30,9 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 	
 	protected VanillaWorldCursorProvider( VanillaPlus module ) {
 		this.module = module;
+		
+		deathLoc = new CursorProviderDeathLocation( module );
+		spawnLoc = new CursorProviderSpawnLocation();
 	}
 	
 	@Override
@@ -42,29 +45,48 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			// Add their last death location
 			Set< NamedLocation > deathLocs = deathLoc.getFor( player, setting );
 			for ( NamedLocation loc : deathLocs ) {
-				cursors.add( viewer.convert( loc, player, setting ) );
+				WorldCursor cursor = viewer.convert( loc, player, setting );
+				if ( cursor != null ) {
+					cursors.add( cursor );
+				}
 			}
 			
 			// Add their spawn location
 			Set< NamedLocation > spawnLocs = spawnLoc.getFor( player, setting );
 			for ( NamedLocation loc : spawnLocs ) {
-				cursors.add( viewer.convert( loc, player, setting ) );
+				WorldCursor cursor = viewer.convert( loc, player, setting );
+				if ( cursor != null ) {
+					cursors.add( cursor );
+				}
 			}
 			
 			// Add other players
 			for ( Player tracking: playerProvider.getFor( player, setting ) ) {
-				cursors.add( viewer.convert( tracking, player, setting ) );
+				WorldCursor cursor = viewer.convert( tracking, player, setting );
+				if ( cursor != null ) {
+					cursors.add( cursor );
+				}
 			}
 			
 			// Add all the entities
 			for ( CursorProviderEntity entityProvider : entityProviders.values() ) {
 				for ( Entity entity : entityProvider.getFor( player, setting ) ) {
-					cursors.add( viewer.convert( entity, player, setting ) );
+					WorldCursor cursor = viewer.convert( entity, player, setting );
+					if ( cursor != null ) {
+						cursors.add( cursor );
+					}
 				}
 			}
 		}
 		
 		return cursors;
 	}
-
+	
+	protected void setPlayerProvider( CursorProviderPlayer provider ) {
+		this.playerProvider = provider;
+	}
+	
+	protected void addEntityProvider( CursorProviderEntity provider ) {
+		entityProviders.put( provider.getType(), provider );
+	}
 }

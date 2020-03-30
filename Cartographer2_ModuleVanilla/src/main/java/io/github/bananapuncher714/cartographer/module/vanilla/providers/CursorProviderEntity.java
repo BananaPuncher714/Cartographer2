@@ -18,6 +18,10 @@ public class CursorProviderEntity implements ObjectProvider< Entity > {
 		this.range = range;
 	}
 	
+	public EntityType getType() {
+		return type;
+	}
+	
 	@Override
 	public Set< Entity > getFor( Player player, PlayerSetting settings ) {
 		return settings.getLocation().getWorld().getNearbyEntities( settings.getLocation(), range, range, range ).stream()

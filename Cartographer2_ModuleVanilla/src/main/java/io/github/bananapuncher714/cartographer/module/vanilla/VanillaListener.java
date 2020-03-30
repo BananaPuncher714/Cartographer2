@@ -3,6 +3,8 @@ package io.github.bananapuncher714.cartographer.module.vanilla;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapLoadEvent;
 
@@ -15,11 +17,21 @@ public class VanillaListener implements Listener {
 	
 	@EventHandler
 	private void onEvent( MinimapLoadEvent event ) {
-		event.getMinimap().registerProvider( new VanillaWorldCursorProvider( plugin ) );
+		event.getMinimap().registerProvider( plugin.getCursorProvider() );
 	}
 	
 	@EventHandler
 	private void onEvent( PlayerDeathEvent event ) {
 		plugin.setDeathOf( event.getEntity().getUniqueId(), event.getEntity().getLocation() );
+	}
+	
+	@EventHandler
+	private void onEvent( PlayerJoinEvent event ) {
+		
+	}
+	
+	@EventHandler
+	private void onEvent( PlayerQuitEvent event ) {
+		
 	}
 }
