@@ -20,6 +20,7 @@ public class CursorProviderPlayer implements ObjectProvider< Player > {
 		return settings.getLocation().getWorld().getPlayers().stream()
 				.filter( pl -> pl.getLocation().distanceSquared( settings.getLocation() ) <= rangeSquared )
 				.filter( pl -> !pl.hasPotionEffect( PotionEffectType.INVISIBILITY ) )
+				.filter( pl -> !pl.hasPermission( "vanillaplus.invisible" ) )
 				.filter( pl -> pl.isSneaking() )
 				.collect( Collectors.toSet() );
 	}
