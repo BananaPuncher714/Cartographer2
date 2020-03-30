@@ -43,7 +43,7 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			PlayerViewer viewer = module.getViewerFor( player.getUniqueId() );
 
 			// Add their last death location
-			if ( player.hasPermission( "vanillaplus.location.death" ) ) {
+			if ( player.hasPermission( "vanillaplus.location.death" ) && module.isDeathLocEnabled() ) {
 				Set< NamedLocation > deathLocs = deathLoc.getFor( player, setting );
 				for ( NamedLocation loc : deathLocs ) {
 					WorldCursor cursor = viewer.convert( loc, player, setting );
@@ -54,7 +54,7 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			}
 
 			// Add their spawn location
-			if ( player.hasPermission( "vanillaplus.location.spawn" ) ) {
+			if ( player.hasPermission( "vanillaplus.location.spawn" ) && module.isSpawnLocEnabled() ) {
 				Set< NamedLocation > spawnLocs = spawnLoc.getFor( player, setting );
 				for ( NamedLocation loc : spawnLocs ) {
 					WorldCursor cursor = viewer.convert( loc, player, setting );
@@ -65,7 +65,7 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			}
 
 			// Add other players
-			if ( player.hasPermission( "vanillaplus.cursor.players" ) ) {
+			if ( player.hasPermission( "vanillaplus.cursor.players" ) && module.isPlayerEnabled() ) {
 				for ( Player tracking: playerProvider.getFor( player, setting ) ) {
 					WorldCursor cursor = viewer.convert( tracking, player, setting );
 					if ( cursor != null ) {

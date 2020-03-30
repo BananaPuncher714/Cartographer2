@@ -57,6 +57,7 @@ public class VanillaPlus extends Module {
 	
 	private boolean deathLocEnabled = true;
 	private boolean spawnLocEnabled = true;
+	private boolean playerEnabled = true;
 	
 	@Override
 	public void onEnable() {
@@ -137,13 +138,14 @@ public class VanillaPlus extends Module {
 		if ( config.contains( "cursors" ) ) {
 			ConfigurationSection cursorSection = config.getConfigurationSection( "cursors" );
 			for ( String key : cursorSection.getKeys( false ) ) {
-				if ( !cursorSection.getBoolean( key + ".enabled" ) ) continue;
 				
 				ObjectProvider< NamedLocation > provider = null;
 				if ( key.equalsIgnoreCase( "spawn" ) ) {
 					provider = new CursorProviderSpawnLocation();
+					spawnLocEnabled = cursorSection.getBoolean( key + ".enabled" );
 				} else if ( key.equalsIgnoreCase( "death" ) ) {
 					provider = new CursorProviderDeathLocation( this );
+					deathLocEnabled = cursorSection.getBoolean( key + ".enabled" );
 				}
 				
 				if ( provider != null ) {
@@ -164,6 +166,7 @@ public class VanillaPlus extends Module {
 		}
 		
 		if ( config.contains( "players" ) ) {
+			playerEnabled = config.getBoolean( "players.enabled" );
 			String iconTypes = config.getString( "players.icon" );
 			Type type = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
 			CursorVisibility visibility = FailSafe.getEnum( CursorVisibility.class, config.getString( "players.default-visibility" ) );
@@ -267,5 +270,13 @@ public class VanillaPlus extends Module {
 
 	public void setSpawnLocEnabled( boolean spawnLocEnabled ) {
 		this.spawnLocEnabled = spawnLocEnabled;
+	}
+
+	public boolean isPlayerEnabled() {
+		return playerEnabled;
+	}
+
+	public void setPlayerEnabled( boolean playerEnabled ) {
+		this.playerEnabled = playerEnabled;
 	}
 }

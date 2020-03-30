@@ -23,6 +23,7 @@ cursors:
 
 # Options for displaying other players
 players:
+  enabled: true
   icon: WHITE_POINTER
   range: 512
   default-visibility: PARTIAL
@@ -34,25 +35,25 @@ players:
 # Use "MATERIAL:DURABILITY" format for the items, if durability is required.
 entity:
   SKELETON:
-    icon: RED_POINTER BLUE_POINTER
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
     range: 20
     default-visibility: PARTIAL
     show-name: true
     item: BONE
   ZOMBIE:
-    icon: RED_POINTER BLUE_POINTER
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
     range: 20
     default-visibility: PARTIAL
     show-name: true
     item: ROTTEN_FLESH
   CREEPER:
-    icon: RED_POINTER BLUE_POINTER
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
     range: 20
     default-visibility: PARTIAL
     show-name: true
     item: GUNPOWDER
   SPIDER:
-    icon: RED_POINTER BLUE_POINTER
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
     range: 20
     default-visibility: PARTIAL
     show-name: true
