@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
@@ -18,6 +19,8 @@ public class CursorProviderPlayer implements ObjectProvider< Player > {
 	public Set< Player > getFor( Player player, PlayerSetting settings ) {
 		return settings.getLocation().getWorld().getPlayers().stream()
 				.filter( pl -> pl.getLocation().distanceSquared( settings.getLocation() ) <= rangeSquared )
+				.filter( pl -> !pl.hasPotionEffect( PotionEffectType.INVISIBILITY ) )
+				.filter( pl -> pl.isSneaking() )
 				.collect( Collectors.toSet() );
 	}
 }

@@ -27,11 +27,11 @@ public class VanillaListener implements Listener {
 	
 	@EventHandler
 	private void onEvent( PlayerJoinEvent event ) {
-		
+		// TODO Load player data
 	}
 	
 	@EventHandler
 	private void onEvent( PlayerQuitEvent event ) {
-		
+		// TODO Save player data
 	}
 }

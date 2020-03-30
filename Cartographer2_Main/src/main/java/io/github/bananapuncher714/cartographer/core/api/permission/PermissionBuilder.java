@@ -27,12 +27,12 @@ public class PermissionBuilder {
 	}
 	
 	public PermissionBuilder register() {
-		Bukkit.getPluginManager().removePermission( permission.getName() );
 		Bukkit.getPluginManager().addPermission( build() );
 		return this;
 	}
 	
 	public Permission build() {
+		Bukkit.getPluginManager().removePermission( permission.getName() );
 		permission.recalculatePermissibles();
 		return permission;
 	}

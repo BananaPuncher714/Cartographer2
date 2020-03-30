@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
@@ -26,6 +28,7 @@ public class CursorProviderEntity implements ObjectProvider< Entity > {
 	public Set< Entity > getFor( Player player, PlayerSetting settings ) {
 		return settings.getLocation().getWorld().getNearbyEntities( settings.getLocation(), range, range, range ).stream()
 				.filter( ent -> ent.getType() == type )
+				.filter( ent -> !( ent instanceof LivingEntity && ( ( LivingEntity ) ent ).hasPotionEffect( PotionEffectType.INVISIBILITY ) ) )
 				.collect( Collectors.toSet() );
 	}
 }

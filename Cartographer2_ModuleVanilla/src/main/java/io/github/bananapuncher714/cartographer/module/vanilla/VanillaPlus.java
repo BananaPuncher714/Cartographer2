@@ -19,15 +19,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor.Type;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
-import io.github.bananapuncher714.cartographer.core.api.command.CommandBase;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
-import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
-import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
-import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorInt;
-import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPlayer;
 import io.github.bananapuncher714.cartographer.core.api.permission.PermissionBuilder;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
@@ -57,31 +53,55 @@ public class VanillaPlus extends Module {
 	private Map< UUID, PlayerViewer > viewers = new HashMap< UUID, PlayerViewer >();
 	private Map< EntityType, CrossVersionMaterial > entityMaterials = new HashMap< EntityType, CrossVersionMaterial >();
 	
-	private VanillaWorldCursorProvider cursorProvider = new VanillaWorldCursorProvider( this );
+	private VanillaWorldCursorProvider cursorProvider;
+	
+	private boolean deathLocEnabled = true;
+	private boolean spawnLocEnabled = true;
 	
 	@Override
 	public void onEnable() {
 		registerListener( new VanillaListener( this ) );
 		
+		cursorProvider = new VanillaWorldCursorProvider( this );
+		
 		for ( Minimap minimap : getCartographer().getMapManager().getMinimaps().values() ) {
 			minimap.registerProvider( cursorProvider );
 		}
 		
-		registerCommand( new CommandBase( "test" )
-				.setSubCommand( new SubCommand( "test" )
-						.add( new SubCommand( new InputValidatorInt( 0, 0xFFFFFF ) )
-								.addSenderValidator( new SenderValidatorPlayer() )
-								.defaultTo( this::showMenu ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "You must provide a color!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) ) )
-				.setDescription( "Test command" )
-				.setPermission( new PermissionBuilder( "test" ).setDefault( PermissionDefault.OP ).register().build() )
-				.build() );
+//		registerCommand( new CommandBase( "test" )
+//				.setSubCommand( new SubCommand( "test" )
+//						.add( new SubCommand( new InputValidatorInt( 0, 0xFFFFFF ) )
+//								.addSenderValidator( new SenderValidatorPlayer() )
+//								.defaultTo( this::showMenu ) )
+//						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "You must provide a color!" ) )
+//						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) ) )
+//				.setDescription( "Test command" )
+//				.setPermission( new PermissionBuilder( "test" ).setDefault( PermissionDefault.OP ).register().build() )
+//				.build() );
 		
 		FileUtil.saveToFile( getResource( "README.md" ), new File( getDataFolder() + "/README.md" ), true );
 		FileUtil.saveToFile( getResource( "config.yml" ), new File( getDataFolder() + "/config.yml" ), false );
 		
 		loadConfig();
+		
+		Permission death = new PermissionBuilder( "vanillaplus.cursor.location.death" ).setDefault( PermissionDefault.TRUE ).register().build();
+		Permission spawn = new PermissionBuilder( "vanillaplus.cursor.location.spawn" ).setDefault( PermissionDefault.TRUE ).register().build();
+		Permission players = new PermissionBuilder( "vanillaplus.cursor.players" ).setDefault( PermissionDefault.TRUE ).register().build();
+		PermissionBuilder admin = new PermissionBuilder( "vanillaplus.admin" ).setDefault( PermissionDefault.OP )
+				.addChild( death, true )
+				.addChild( spawn, true )
+				.addChild( players, true );
+
+		Set< Permission > entityPermissions = new HashSet< Permission >();
+		for ( EntityType type : EntityType.values() ) {
+			Permission permission = new PermissionBuilder( "vanillaplus.cursor.entity." + type.name().toLowerCase() ).setDefault( PermissionDefault.TRUE ).register().build();
+			entityPermissions.add( permission );
+			admin.addChild( permission, true );
+		}
+		Permission invisible = new PermissionBuilder( "vanillaplus.invisible" ).setDefault( PermissionDefault.FALSE ).register().build();
+		admin.addChild( invisible, true );
+		
+		admin.register();
 	}
 	
 	private void showMenu( CommandSender sender, String[] args, CommandParameters parameters ) {
@@ -103,6 +123,10 @@ public class VanillaPlus extends Module {
 	
 	@Override
 	public void onDisable() {
+		blacklistedWorlds.clear();
+		viewers.clear();
+		entityMaterials.clear();
+		defaultConverters.clear();
 	}
 	
 	private void loadConfig() {
@@ -227,5 +251,21 @@ public class VanillaPlus extends Module {
 	
 	public VanillaWorldCursorProvider getCursorProvider() {
 		return cursorProvider;
+	}
+
+	public boolean isDeathLocEnabled() {
+		return deathLocEnabled;
+	}
+
+	public void setDeathLocEnabled( boolean deathLocEnabled ) {
+		this.deathLocEnabled = deathLocEnabled;
+	}
+
+	public boolean isSpawnLocEnabled() {
+		return spawnLocEnabled;
+	}
+
+	public void setSpawnLocEnabled( boolean spawnLocEnabled ) {
+		this.spawnLocEnabled = spawnLocEnabled;
 	}
 }
