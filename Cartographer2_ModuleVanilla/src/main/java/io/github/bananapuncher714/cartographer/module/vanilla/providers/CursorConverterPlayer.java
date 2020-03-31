@@ -24,7 +24,7 @@ public class CursorConverterPlayer implements CursorConverter {
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
 		Validate.isTrue( convertable( object ) );
 		Player tracking = ( Player ) object;
-		if ( visibility != CursorVisibility.NONE && tracking != player ) {
+		if ( visibility != CursorVisibility.NONE ) {
 			return new WorldCursor( showName ? tracking.getName() : null, tracking.getLocation(), icon, visibility == CursorVisibility.FULL );
 		}
 		return null;

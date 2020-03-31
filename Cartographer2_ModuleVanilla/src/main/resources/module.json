@@ -2,9 +2,8 @@
     "name": "VanillaPlus",
 	"main": "io.github.bananapuncher714.cartographer.module.vanilla.VanillaPlus",
 	"description": "Adds vanilla integration with Cartographer2",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "BananaPuncher714",
 	"website": "aaaaahhhhhhh.com",
-	"depend": [ "Cartographer2" ],
-	"module-depend": []
+	"depend": [ "Cartographer2" ]
 }
