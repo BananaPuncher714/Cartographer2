@@ -55,7 +55,12 @@
 						<relocation>
 							<pattern>org.bstats</pattern>
 							<!-- Replace this with your package! -->
-							<shadedPattern>io.github.bananapuncher714.cartographer</shadedPattern>
+							<shadedPattern>io.github.bananapuncher714.cartographer.bstats</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>io.github.bananapuncher714.nbteditor</pattern>
+							<!-- Replace this with your package! -->
+							<shadedPattern>io.github.bananapuncher714.cartographer.nbteditor</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>

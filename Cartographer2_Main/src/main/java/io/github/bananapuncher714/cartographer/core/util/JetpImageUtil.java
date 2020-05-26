@@ -12,8 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.map.MapPalette;
 
-import io.github.bananapuncher714.cartographer.core.renderer.FrameRenderTask;
-
 /**
  * What a piece of optimization;
  * Performs incredibly fast Minecraft color conversion and dithering.

@@ -13,7 +13,7 @@ import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
  * 
  * @author BananaPuncher714
  */
-public interface WorldPixelProvider {
+public interface WorldPixelProvider extends MapProvider {
 	/**
 	 * Get a collection of the {@link WorldPixel} to draw based on the {@link Minimap} and {@link PlayerSetting} provided.
 	 * To place pixels relative to the map canvas, use a {@link MapPixelProvider}.

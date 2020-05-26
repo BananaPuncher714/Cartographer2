@@ -2,14 +2,7 @@
 skip-ids:
 - 107
 
-# Whether or not forced loading of chunks should happen
-# If set to true, then the server will attempt to load ALL chunks that are missing on a minimap
-# If set to false, then the server will only load chunks that have been naturally loaded
-# Force loading chunks is highly server resource intensive, and should only be used if pre-loading the map
-# It is equivalent to using Worldborder to load the entire world, or rendering with Dynmap
-# Note that this does not mean your server will be lagging all the time, only when there are chunks that need loading
-force-load: false
-
+# Whether or not the map rotates by default
 rotate-by-default: true
 
 # A list of blacklisted inventories that maps are not allowed to be put into,
@@ -29,3 +22,27 @@ render-delay: 1
 # How low the tps can get until Cartographer2 starts delaying some of its functions, such as map loading and chunk processing.
 # For example, if the limit is 16, Cartographer will keep operating until the tps drops below 16
 tick-limit: 18
+
+# Delay between updating blocks that change on the map, like water flowing and blocks growing.
+block-update-tick-delay: 5
+
+chunk:
+  # Regular chunk processing
+  # Delay in ticks between each update
+  update-delay: 10
+  # Amount of chunks that get cached per update, if they're loaded
+  cache-per-update: 100
+  
+  # Whether or not forced loading of chunks should happen
+  # If set to true, then the server will attempt to load ALL chunks that are missing on a minimap
+  # If set to false, then the server will only load chunks that have been naturally loaded
+  # Force loading chunks is highly server resource intensive, and should only be used if pre-loading the map
+  # It is equivalent to using Worldborder to load the entire world, or rendering with Dynmap
+  # Note that this does not mean your server will be lagging all the time, only when there are chunks that need loading
+  force-load: false
+  
+  # These two only apply if force-load is enabled
+  # Amount of chunks that get loaded per update, if they exist but aren't loaded
+  load-per-update: 20
+  # Amount of chunks that get generated per update, if they don't exist
+  generate-per-update: 1

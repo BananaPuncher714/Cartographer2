@@ -1,12 +1,13 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.12.17
+version: 2.13.0
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
 softdepend:
 - "Multiverse-Core"
 - "WorldBorder"
+- "DimensionalBlocks"
 
 commands:
   cartographer:

@@ -20,7 +20,7 @@ public class DefaultPointerCursorProvider implements MapCursorProvider {
 
 		MapViewer viewer = Cartographer.getInstance().getPlayerManager().getViewerFor( player.getUniqueId() );
 
-		if ( viewer.isCursorActive() && setting.isMainHand() ) {
+		if ( viewer.getSetting( MapViewer.CURSOR ) && setting.isMainHand() ) {
 			Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
 
 			int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );

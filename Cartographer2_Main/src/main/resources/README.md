@@ -78,10 +78,16 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer.settings.get.rotate` - Get the value for the rotate property of yourself. `true` by default
 - `cartographer.settings.setother.rotate` - Set the value of the rotate property for another player. Inherits `cartographer.settings.getother.rotate`.
 - `cartographer.settings.getother.rotate` - Get the value of the rotate property for another player. Inherits `cartographer.settings.getother`.
+- `cartographer.settings.set.showname` - Set the showname property for yourself. `true` by default. Inherits `cartographer.settings.get.showname`.
+- `cartographer.settings.get.showname` - Get the value for the showname property of yourself. `true` by default
+- `cartographer.settings.setother.showname` - Set the value of the showname property for another player. Inherits `cartographer.settings.getother.showname`.
+- `cartographer.settings.getother.showname` - Get the value of the showname property for another player. Inherits `cartographer.settings.getother`.
 
 ## Settings:
 - `cursor` - Whether or not the cursor is active and visible. Can be set to `true` or `false`.
 - `rotate` - Whether or not rotation is on. Can be set to `true`, `false`, or `unset`.
+- `showname` - Whether or not the player's name is visible on their cursor. Can be set to `true` or `false`.
+Additional settings may be added by modules.
 
 ## Module ideas
 - Show land claims

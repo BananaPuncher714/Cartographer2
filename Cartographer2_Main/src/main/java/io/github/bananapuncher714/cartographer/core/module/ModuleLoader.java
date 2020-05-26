@@ -34,6 +34,8 @@ import io.github.bananapuncher714.cartographer.core.api.map.MapCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
+import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
+import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.menu.MenuComponent;
@@ -135,6 +137,10 @@ public class ModuleLoader {
 		}
 		
 		Set< String > classes = loader.getClassNames();
+		
+		for ( SettingState< ? > state : module.getSettingStates() ) {
+			MapViewer.removeSetting( state );
+		}
 		
 		// Remove integration from maps
 		MinimapManager manager = plugin.getMapManager();

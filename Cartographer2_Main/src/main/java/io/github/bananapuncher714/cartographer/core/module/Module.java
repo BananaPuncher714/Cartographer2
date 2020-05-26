@@ -15,6 +15,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.ModuleManager;
+import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
+import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 
 /**
  * An addon for Cartographer2. Allows for extreme customization.
@@ -69,6 +71,10 @@ public abstract class Module {
 	 */
 	public void onDisable() {
 	}
+	
+	public SettingState< ? >[] getSettingStates() {
+		return new SettingState< ? >[ 0 ];
+	}
 
 	protected final ModuleTracker getTracker() {
 		return tracker;
@@ -113,6 +119,11 @@ public abstract class Module {
 		if ( isEnabled == enabled ) {
 			return false;
 		} else if ( enabled ) {
+			// Register all the states with the MapViewer
+			for ( SettingState< ? > state : getSettingStates() ) {
+				MapViewer.addSetting( state );
+			}
+			
 			onEnable();
 		} else {
 			onDisable();

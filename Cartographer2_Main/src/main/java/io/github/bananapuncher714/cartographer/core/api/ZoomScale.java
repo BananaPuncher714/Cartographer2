@@ -9,6 +9,7 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
  * TODO Make this not an enum, and let maps freely assign whatever scales they want
  * 
  * @author BananaPuncher714
+ * @deprecated
  */
 public enum ZoomScale {
 	SIXTY_FOURTH( .015625 ),

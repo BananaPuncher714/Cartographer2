@@ -14,7 +14,7 @@ import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
  * 
  * @author BananaPuncher714
  */
-public interface MapCursorProvider {
+public interface MapCursorProvider extends MapProvider {
 	/**
 	 * Get a collection of cursors that can be placed on the map. To place cursors relative to the Minecraft world, use a {@link WorldCursorProvider}.
 	 * 

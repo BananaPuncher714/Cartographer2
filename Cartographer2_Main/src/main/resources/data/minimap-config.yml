@@ -19,17 +19,20 @@ palettes:
 - "vanilla"
 - "palette-1.15.1"
 
-default-zoom: ONE
+# Zooms are measured in decimal points now
+default-zoom: 1
 circular-zoom: false
 allowed-zooms:
-#- SIXTY_FOURTH
-#- THIRTY_SECONDTH
-#- SIXTEENTH
-- EIGHTH
-- FOURTH
-- HALF
-- ONE
-- TWO
-- FOUR
-- EIGHT
-- SIXTEEN
+#- 0.015625
+#- 0.03125
+#- 0.0625
+- 0.125
+- 0.25
+- 0.5
+- 1
+- 2
+- 4
+- 8
+- 16
+#- 32
+#- 64

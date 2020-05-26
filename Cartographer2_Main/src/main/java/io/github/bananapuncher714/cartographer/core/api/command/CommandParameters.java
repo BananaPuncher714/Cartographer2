@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.api.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.primitives.Primitives;
 
@@ -55,5 +56,10 @@ public class CommandParameters {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return "CommandParameters[" + parameters.stream().map( Object::toString ).collect( Collectors.joining( ", " ) ) + "]";
 	}
 }

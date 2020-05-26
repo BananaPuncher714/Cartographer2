@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
+import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 
 public class PlayerSetting {
 	protected long lastUpdated = System.currentTimeMillis();
@@ -91,6 +92,10 @@ public class PlayerSetting {
 
 	public Location getLocation() {
 		return location.clone();
+	}
+	
+	public int[] getMapCoordOf( Location point ) {
+		return MapUtil.getLocationToPixel( location, point, zoomscale, rotating ? ( location.getYaw() + 180 ) : 0 );
 	}
 	
 	protected void deactivate() {

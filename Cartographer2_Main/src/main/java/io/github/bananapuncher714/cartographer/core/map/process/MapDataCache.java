@@ -295,7 +295,11 @@ public class MapDataCache {
 			}
 			int x = playerLoc.getBlockX();
 			int z = playerLoc.getBlockZ();
-			if ( BlockUtil.distance( cx, cz, x, z ) < 1800 ) {
+			// Distance of the corner from the farthest zoom
+			double farthest = setting.getFarthestZoom();
+			double dist = 91 * farthest + farthest * 2;
+			
+			if ( BlockUtil.distance( cx, cz, x, z ) < dist ) {
 				return true;
 			}
 		}

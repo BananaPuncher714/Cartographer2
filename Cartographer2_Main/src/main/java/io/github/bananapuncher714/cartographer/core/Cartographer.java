@@ -68,16 +68,17 @@ public class Cartographer extends JavaPlugin {
 	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
 	
 	private CommandCartographer command;
+	private PlayerListener playerListener;
 	
 	// Minimum tick limit allowed before pausing expensive operations
 	// such as drawing the map, or loading chunks
 	private int tickLimit = 18;
-	// Chunks that can be loaded per second
-	private int chunksPerSecond = 1;
+	// How long in ticks to update the chunk listener
+	private int chunkUpdateDelay = 10;
+	// How long in ticks to update blocks on the map
+	private int blockUpdateDelay = 10;
 	// How long in ticks until the map can be updated again
 	private int renderDelay;
-	// Whether or not to force loading all chunks visible, regardless if they are loaded in or not
-	private boolean forceLoad = false;
 	// Global default for rotation setting
 	private boolean rotateByDefault = true;
 	// Print out debug information regarding missing colors and materials in the console
@@ -139,21 +140,25 @@ public class Cartographer extends JavaPlugin {
 		mapManager = new MinimapManager( this );
 		moduleManager = new ModuleManager( this, MODULE_DIR );
 		dependencyManager = new DependencyManager( this );
-		playerManager = new PlayerManager( this );
+		playerManager = new PlayerManager( this, new File( getDataFolder() + "/" + "players" ) );
 		
 		// Create our base command
 		command = new CommandCartographer( this, getCommand( "cartographer" ) );
+		playerListener = new PlayerListener( this );
 		
-		// Update the chunk listener every half second
-		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, 10 );
-		
-		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
+		Bukkit.getPluginManager().registerEvents( playerListener, this );
 		Bukkit.getPluginManager().registerEvents( new MapListener( this ), this );
 		Bukkit.getPluginManager().registerEvents( ChunkLoadListener.INSTANCE, this );
 		Bukkit.getPluginManager().registerEvents( new CartographerListener(), this );
 		
 		// Start loading everything sequentially
 		load();
+		
+		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::getViewerFor );
+		
+		// Update the chunk listener sometime
+		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, chunkUpdateDelay );
+		Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, blockUpdateDelay );
 		
 		// Load the modules in beforehand
 		moduleManager.loadModules();
@@ -171,6 +176,10 @@ public class Cartographer extends JavaPlugin {
 		mapManager.terminate();
 		getLogger().info( "Saving map data complete!" );
 		saveData();
+		
+		getLogger().info( "Saving player data..." );
+		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::unload );
+		getLogger().info( "Saving player data complete!" );
 	}
 	
 	protected void onServerLoad() {
@@ -293,8 +302,16 @@ public class Cartographer extends JavaPlugin {
 		tickLimit = config.getInt( "tick-limit", 16 );
 		renderDelay = config.getInt( "render-delay", 1 );
 		paletteDebug = config.getBoolean( "palette-debug", false );
-		forceLoad = config.getBoolean( "force-load" );
 		rotateByDefault = config.getBoolean( "rotate-by-default", true );
+
+		blockUpdateDelay = config.getInt( "block-update-tick-delay", 5 );
+		
+		// Chunk load settings
+		chunkUpdateDelay = config.getInt( "chunk.update-delay", 10 );
+		ChunkLoadListener.INSTANCE.setForceLoad( config.getBoolean( "chunk.force-load", false ) );
+		ChunkLoadListener.INSTANCE.setCacheAmount( config.getInt( "chunk.cache-per-update", 50 ) );
+		ChunkLoadListener.INSTANCE.setLoadAmount( config.getInt( "chunk.load-per-update", 20 ) );
+		ChunkLoadListener.INSTANCE.setGenerateAmount( config.getInt( "chunk.generate-per-update", 1 ) );
 		
 		for ( String string : config.getStringList( "blacklisted-inventories" ) ) {
 			try {
@@ -423,6 +440,10 @@ public class Cartographer extends JavaPlugin {
 		return handler;
 	}
 	
+	public CommandCartographer getCommand() {
+		return command;
+	}
+	
 	public MinimapManager getMapManager() {
 		return mapManager;
 	}
@@ -451,20 +472,12 @@ public class Cartographer extends JavaPlugin {
 		return invalidIds;
 	}
 	
-	public int getChunksPerSecond() {
-		return chunksPerSecond;
-	}
-	
 	public int getRenderDelay() {
 		return renderDelay;
 	}
 	
 	public boolean isServerOverloaded() {
 		return tickLimit > handler.getTPS();
-	}
-	
-	public boolean isForceLoad() {
-		return forceLoad;
 	}
 	
 	public boolean isRotateByDefault() {

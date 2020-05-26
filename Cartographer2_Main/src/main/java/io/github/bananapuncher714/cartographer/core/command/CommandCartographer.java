@@ -42,6 +42,20 @@ public class CommandCartographer {
 		settingsCommand = new CommandSettings( plugin );
 		
 		this.command = command;
+		rebuildCommand();
+	}
+	
+	public CommandSettings getSettingsCommand() {
+		return settingsCommand;
+	}
+	
+	public CommandModule getModuleCommand() {
+		return moduleCommand;
+	}
+
+	public void rebuildCommand() {
+		settingsCommand.rebuildCommand();
+		
 		mainCommand = new SubCommand( "cartographer" )
 				.addSenderValidator( new SenderValidatorPermission( "cartographer" ) )
 				.add( new SubCommand( "reload" )
@@ -112,7 +126,7 @@ public class CommandCartographer {
 				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) )
 				.applyTo( command );
 	}
-
+	
 	private void list( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Set< String > minimaps = plugin.getMapManager().getMinimaps().keySet();
 		if ( minimaps.isEmpty() ) {

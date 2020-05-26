@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
 		Bukkit.getScheduler().runTaskTimer( plugin, this::update, 1, 5 );
 	}
 	
-	private void update() {
+	protected void update() {
 		updateMap( updateSet.toArray( new Location[ updateSet.size() ] ) );
 		updateSet.clear();
 	}
@@ -78,49 +78,24 @@ public class PlayerListener implements Listener {
 					return;
 				}
 
-				ZoomScale scale = cr.getScale( player.getUniqueId() );
+				double scale = cr.getScale( player.getUniqueId() );
 
 				boolean zoom = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
-				if ( map.getSettings().isCircularZoom() ) {
-					scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
-					while ( !map.getSettings().isValidZoom( scale ) ) {
-						scale = zoom ? scale.unzoom( map.getSettings().isCircularZoom() ) : scale.zoom( map.getSettings().isCircularZoom() );
-					}
-				} else {
-					if ( zoom ) {
-						ZoomScale lastValid = scale;
-						scale = scale.zoom( false );
-						while ( !map.getSettings().isValidZoom( scale ) && !scale.isMostZoomed() ) {
-							scale = scale.zoom( false );
-						}
-						if ( !map.getSettings().isValidZoom( scale ) ) {
-							scale = lastValid;
-						}
-					} else {
-						ZoomScale lastValid = scale;
-						scale = scale.unzoom( false );
-						while ( !map.getSettings().isValidZoom( scale ) && !scale.isLeastZoomed() ) {
-							scale = scale.unzoom( false );
-						}
-						if ( !map.getSettings().isValidZoom( scale ) ) {
-							scale = lastValid;
-						}
-					}
-				}
-
-				cr.setScale( player.getUniqueId(), scale.getBlocksPerPixel() );
+				scale = zoom ? map.getSettings().getPreviousZoom( scale ) : map.getSettings().getNextZoom( scale );
+				
+				cr.setScale( player.getUniqueId(), scale );
 
 				if ( plugin.getHandler().mapBug() ) {
 					ItemStack newMap = plugin.getMapManager().getItemFor( map );
 					MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
-					final ZoomScale finScale = scale;
+					final double finScale = scale;
 					Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
 						@Override
 						public void run() {
 							for ( MapRenderer renderer : newView.getRenderers() ) {
 								if ( renderer instanceof CartographerRenderer ) {
 									CartographerRenderer cr = ( CartographerRenderer ) renderer;
-									cr.setScale( player.getUniqueId(), finScale.getBlocksPerPixel() );
+									cr.setScale( player.getUniqueId(), finScale );
 								}
 							}
 						}
@@ -130,10 +105,6 @@ public class PlayerListener implements Listener {
 			}
 			event.setCancelled( true );
 		}
-	}
-	
-	@EventHandler
-	private void onPlayerLoginEvent( PlayerLoginEvent event ) {
 	}
 	
 	// This is probably the laggiest part of the plugin, mostly since the BlockPhysicsEvent fires a ton
@@ -151,8 +122,14 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
+	private void onPlayerJoinEvent( PlayerJoinEvent event ) {
+		plugin.getPlayerManager().getViewerFor( event.getPlayer().getUniqueId() );
+	}
+
+	@EventHandler
 	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
 		plugin.getProtocol().removeChannel( event.getPlayer() );
+		plugin.getPlayerManager().unload( event.getPlayer().getUniqueId() );
 	}
 	
 	private void addLocation( Location location ) {

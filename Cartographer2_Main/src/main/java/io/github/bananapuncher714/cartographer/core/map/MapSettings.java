@@ -1,6 +1,8 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,8 +20,8 @@ import io.github.bananapuncher714.cartographer.core.util.FailSafe;
  */
 public class MapSettings {
 	// Zoom settings
-	protected Set< ZoomScale > allowedZooms = new HashSet< ZoomScale >();
-	protected ZoomScale defaultZoom = ZoomScale.ONE;
+	protected List< Double > allowedZooms = new ArrayList< Double >();
+	protected double defaultZoom = 1;
 	protected boolean circularZoom = false;
 	
 	// Auto update the map as needed
@@ -35,24 +37,34 @@ public class MapSettings {
 	protected MinimapPalette palette;
 	
 	public MapSettings( FileConfiguration config ) {
-		defaultZoom = ZoomScale.valueOf( config.getString( "default-zoom", "ONE" ).toUpperCase() );
+		String defaultZoomConfigVal = config.getString( "default-zoom", "1" );
+		try {
+			defaultZoom = Double.valueOf( defaultZoomConfigVal );
+		} catch ( NumberFormatException exception ) {
+			defaultZoom = ZoomScale.valueOf( defaultZoomConfigVal.toUpperCase() ).getBlocksPerPixel();
+		}
 		circularZoom = config.getBoolean( "circular-zoom", false );
 		autoUpdate = config.getBoolean( "auto-update", true );
 		rotation = FailSafe.getEnum( BooleanOption.class, config.getString( "rotate", "UNSET" ).toUpperCase() );
 		renderOutOfBorder = config.getBoolean( "render-out-of-border", false );
 		for ( String string : config.getStringList( "allowed-zooms" ) ) {
-			allowedZooms.add( ZoomScale.valueOf( string.toUpperCase() ) );
+			double zoomVal = 1;
+			try {
+				zoomVal = Double.valueOf( string );
+			} catch ( NumberFormatException exception ) {
+				zoomVal = ZoomScale.valueOf( string.toUpperCase() ).getBlocksPerPixel();
+			}
+			allowedZooms.add( zoomVal );
 		}
-		allowedZooms.add( defaultZoom );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
 	
-	public ZoomScale getDefaultZoom() {
+	public double getDefaultZoom() {
 		return defaultZoom;
 	}
 	
-	public void setDefaultZoom( ZoomScale defaultZoom ) {
+	public void setDefaultZoom( double defaultZoom ) {
 		this.defaultZoom = defaultZoom;
 	}
 	
@@ -64,7 +76,7 @@ public class MapSettings {
 		circularZoom = circular;
 	}
 	
-	public boolean isValidZoom( ZoomScale scale) {
+	public boolean isValidZoom( double scale ) {
 		return allowedZooms.contains( scale );
 	}
 	
@@ -98,5 +110,43 @@ public class MapSettings {
 	
 	public void setPalette( MinimapPalette palette ) {
 		this.palette = palette;
+	}
+
+	public double getPreviousZoom( double currentZoom ) {
+		int index = 0;
+		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {
+			index++;
+		}
+		
+		if ( circularZoom && index == 0 ) {
+			return allowedZooms.get( allowedZooms.size() - 1 );
+		} else if ( index == allowedZooms.size() ) {
+			return defaultZoom;
+		} else {
+			return allowedZooms.get( Math.max( 0, index - 1 ) );
+		}
+	}
+	
+	public double getNextZoom( double currentZoom ) {
+		int index = 0;
+		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {
+			index++;
+		}
+		
+		if ( circularZoom && index + 1 == allowedZooms.size() ) {
+			return allowedZooms.get( 0 );
+		} else if ( index == allowedZooms.size() ) {
+			return defaultZoom;
+		} else {
+			return allowedZooms.get( Math.min( allowedZooms.size() - 1, index + 1 ) );
+		}
+	}
+	
+	public double getFarthestZoom() {
+		double farthest = Double.MIN_VALUE;
+		for ( double z : allowedZooms ) {
+			farthest = Math.max( z, farthest );
+		}
+		return farthest;
 	}
 }

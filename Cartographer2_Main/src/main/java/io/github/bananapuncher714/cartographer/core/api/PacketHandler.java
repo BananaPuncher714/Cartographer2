@@ -2,8 +2,6 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import java.util.UUID;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;

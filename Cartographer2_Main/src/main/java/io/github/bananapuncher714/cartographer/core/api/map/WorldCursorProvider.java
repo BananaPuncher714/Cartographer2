@@ -13,7 +13,7 @@ import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
  * 
  * @author BananaPuncher714
  */
-public interface WorldCursorProvider {
+public interface WorldCursorProvider extends MapProvider {
 	/**
 	 * Get a collection of {@link WorldCursor} that will be placed on the map. To place cursors relative to the map canvas, use a {@link MapCursorProvider}.
 	 * 

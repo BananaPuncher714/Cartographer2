@@ -63,6 +63,16 @@ public class MapUtil {
 		return center.clone().add( scale * xx, 0, scale * yy );
 	}
 	
+	/**
+	 * Convert a Location to a relative point on the map
+	 * 
+	 * @param center
+	 * @param point
+	 * @param scale
+	 * @param radians
+	 * Amount of radians to rotate by. Add pi or 180 degrees if using a player's yaw.
+	 * @return
+	 */
 	public static int[] getLocationToPixel( Location center, Location point, double scale, double radians ) {
 		double cos = RivenMath.cos( ( float ) radians );
 		double sin = RivenMath.sin( ( float ) radians );

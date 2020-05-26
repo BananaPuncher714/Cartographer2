@@ -28,6 +28,7 @@ import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkProces
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MapUpdateBlockEvent;
 import io.github.bananapuncher714.cartographer.core.api.map.MapCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.MapPixelProvider;
+import io.github.bananapuncher714.cartographer.core.api.map.MapProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
 import io.github.bananapuncher714.cartographer.core.file.BigChunk;
@@ -268,6 +269,36 @@ public class Minimap implements ChunkNotifier {
 			}
 		}
 		return cursors;
+	}
+	
+	public void register( MapProvider provider ) {
+		if ( provider instanceof WorldPixelProvider ) {
+			registerProvider( ( WorldPixelProvider ) provider );
+		}
+		if ( provider instanceof WorldCursorProvider ) {
+			registerProvider( ( WorldCursorProvider ) provider );
+		}
+		if ( provider instanceof MapPixelProvider ) {
+			registerProvider( ( MapPixelProvider ) provider );
+		}
+		if ( provider instanceof MapCursorProvider ) {
+			registerProvider( ( MapCursorProvider ) provider );
+		}
+	}
+	
+	public void unregister( MapProvider provider ) {
+		if ( provider instanceof WorldPixelProvider ) {
+			unregisterProvider( ( WorldPixelProvider ) provider );
+		}
+		if ( provider instanceof WorldCursorProvider ) {
+			unregisterProvider( ( WorldCursorProvider ) provider );
+		}
+		if ( provider instanceof MapPixelProvider ) {
+			unregisterProvider( ( MapPixelProvider ) provider );
+		}
+		if ( provider instanceof MapCursorProvider ) {
+			unregisterProvider( ( MapCursorProvider ) provider );
+		}
 	}
 	
 	public void registerProvider( WorldPixelProvider provider ) {

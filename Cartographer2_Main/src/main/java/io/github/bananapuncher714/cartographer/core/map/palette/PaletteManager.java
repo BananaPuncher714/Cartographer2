@@ -283,6 +283,10 @@ public class PaletteManager {
 		 */
 		RGB( "^\\D*?(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D*?$" ),
 		/**
+		 * RGBA form, accepts 4 bytes with the 4th being the alpha of the color. Ex: '( 255, 128, 0, 170 )'
+		 */
+		RGBA( "^\\D*?(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D+(\\d{1,3})\\D*?$" ),
+		/**
 		 * Integer form, accepts an 8 digit number only. Ex: '219203'
 		 */
 		INT( "^([0-9]?){8}$" );

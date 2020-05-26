@@ -256,18 +256,18 @@ public class CartographerRenderer extends MapRenderer {
 		PlayerSetting setting = settings.get( player.getUniqueId() );
 		if ( setting != null ) {
 			setting.map = map == null ? null : map.getId();
-			setting.zoomscale = map.getSettings().getDefaultZoom().getBlocksPerPixel();
+			setting.zoomscale = map.getSettings().getDefaultZoom();
 			return true;
 		}
 		return false;
 	}
 	
-	public ZoomScale getScale( UUID uuid ) {
+	public double getScale( UUID uuid ) {
 		PlayerSetting setting = settings.get( uuid );
 		if ( setting == null ) {
-			return null;
+			return plugin.getMapManager().getMinimaps().get( mapId ).getSettings().getDefaultZoom();
 		}
-		return ZoomScale.getScale( setting.zoomscale );
+		return setting.getScale();
 	}
 	
 	public void setScale( UUID uuid, ZoomScale scale ) {
@@ -424,8 +424,8 @@ public class CartographerRenderer extends MapRenderer {
 			if ( map != null ) {
 				if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
 					rotating = map.getSettings().getRotation().isTrue();
-				} else if ( viewer.getRotate() != BooleanOption.UNSET ) {
-					rotating = viewer.getRotate().isTrue();
+				} else if ( viewer.getSetting( MapViewer.ROTATE ) != BooleanOption.UNSET ) {
+					rotating = viewer.getSetting( MapViewer.ROTATE ).isTrue();
 				}
 			}
 			
@@ -517,8 +517,8 @@ public class CartographerRenderer extends MapRenderer {
 		if ( map != null ) {
 			if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
 				rotating = map.getSettings().getRotation().isTrue();
-			} else if ( viewer.getRotate() != BooleanOption.UNSET ) {
-				rotating = viewer.getRotate().isTrue();
+			} else if ( viewer.getSetting( MapViewer.ROTATE ) != BooleanOption.UNSET ) {
+				rotating = viewer.getSetting( MapViewer.ROTATE ).isTrue();
 			}
 		}
 		
@@ -529,7 +529,7 @@ public class CartographerRenderer extends MapRenderer {
 			setting.rotating = rotating;
 			setting.mainhand = mainHand;
 			setting.lastUpdated = System.currentTimeMillis();
-			setting.zoomscale = scales.getOrDefault( player.getUniqueId(), 1.0 );
+			setting.zoomscale = scales.getOrDefault( player.getUniqueId(), map.getSettings().getDefaultZoom() );
 			settings.put( player.getUniqueId(), setting );
 			
 			if ( mainHand ) {

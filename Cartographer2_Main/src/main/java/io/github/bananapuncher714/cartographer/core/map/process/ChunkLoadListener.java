@@ -25,6 +25,11 @@ public enum ChunkLoadListener implements Listener {
 	private final Queue< ChunkLocation > loading = new ArrayDeque< ChunkLocation >();
 	private final Set< ChunkLocation > checkSet = new HashSet< ChunkLocation >();
 	
+	private boolean isForceLoad = false;
+	private int cacheAmount = 50;
+	private int loadAmount = 10;
+	private int generateAmount = 1;
+	
 	@EventHandler
 	private void onChunkLoadEvent( ChunkLoadEvent event ) {
 		ChunkLocation location = new ChunkLocation( event.getChunk() );
@@ -53,11 +58,8 @@ public enum ChunkLoadListener implements Listener {
 			return;
 		}
 		
-		for ( int i = 0; i < 100; i++ ) {
-			if ( loading.isEmpty() ) {
-				break;
-			}
-			
+		double percentage = 0;
+		while ( percentage < 1 && !loading.isEmpty() ) {
 			ChunkLocation location = loading.poll();
 			checkSet.remove( location );
 			
@@ -65,9 +67,9 @@ public enum ChunkLoadListener implements Listener {
 				for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
 					minimap.getDataCache().registerSnapshot( location );
 				}
-				i++;
-			} else if ( Cartographer.getInstance().isForceLoad() ) {
-				i += location.exists() ? 5 : 10;
+				percentage += 1.0 / cacheAmount;
+			} else if ( isForceLoad ) {
+				percentage += 1.0 / ( location.exists() ? loadAmount : generateAmount );
 				location.load();
 			}
 		}
@@ -107,5 +109,37 @@ public enum ChunkLoadListener implements Listener {
 	 */
 	public Set< ChunkLocation > getChunks() {
 		return checkSet;
+	}
+
+	public boolean isForceLoad() {
+		return isForceLoad;
+	}
+
+	public void setForceLoad( boolean isForceLoad ) {
+		this.isForceLoad = isForceLoad;
+	}
+
+	public int getCacheAmount() {
+		return cacheAmount;
+	}
+
+	public void setCacheAmount( int cacheAmount ) {
+		this.cacheAmount = cacheAmount;
+	}
+
+	public int getLoadAmount() {
+		return loadAmount;
+	}
+
+	public void setLoadAmount( int loadAmount ) {
+		this.loadAmount = loadAmount;
+	}
+
+	public int getGenerateAmount() {
+		return generateAmount;
+	}
+
+	public void setGenerateAmount( int generateAmount ) {
+		this.generateAmount = generateAmount;
 	}
 }
