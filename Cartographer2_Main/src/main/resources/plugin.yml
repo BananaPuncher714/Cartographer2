@@ -1,6 +1,6 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.13.0
+version: 2.13.1
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
@@ -39,7 +39,7 @@ permissions:
       cartographer: true
   # Cartographer command
   cartographer:
-    description: Access to the cartographer comand
+    description: Access to the cartographer command
     default: false
   # Map admin permission
   cartographer.map.admin:

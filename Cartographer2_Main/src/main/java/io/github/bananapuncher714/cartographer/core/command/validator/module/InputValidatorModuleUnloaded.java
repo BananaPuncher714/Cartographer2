@@ -55,7 +55,6 @@ public class InputValidatorModuleUnloaded implements InputValidator< File > {
 
 	@Override
 	public File get( String input ) {
-		return new File( plugin.getModuleDir() + "/" + input.replace( "/", "" ) );
+		return new File( Cartographer.getModuleDir() + "/" + input.replace( "/", "" ) );
 	}
-
 }

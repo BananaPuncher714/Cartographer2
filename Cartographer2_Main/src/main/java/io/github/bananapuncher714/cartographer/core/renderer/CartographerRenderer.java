@@ -32,6 +32,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.api.ZoomScale;
 import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererActivateEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererDeactivateEvent;
+import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererDisabledEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererInteractEvent;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
@@ -158,6 +159,23 @@ public class CartographerRenderer extends MapRenderer {
 				SimpleImage missingImage = plugin.getMissingMapImage();
 				byte[] missingMapData = JetpImageUtil.dither( missingImage.getWidth(), missingImage.getImage() );
 				plugin.getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
+				continue;
+			}
+			
+			if ( map.getSettings().isBlacklisted( setting.getLocation().getWorld().getName() ) ) {
+				SimpleImage image = map.getDisabledImage();
+				if ( image == null ) {
+					image = plugin.getDisabledMapImage();
+				}
+				byte[] data = new byte[ 128 * 128 ];
+				if ( image != null ) {
+					data = JetpImageUtil.dither( image.getWidth(), image.getImage() );
+				}
+				CartographerRendererDisabledEvent event = new CartographerRendererDisabledEvent( this, data );
+				event.callEvent();
+				data = event.getData();
+				
+				plugin.getHandler().sendDataTo( id, data, null, entry.getKey() );
 				continue;
 			}
 			
@@ -514,7 +532,9 @@ public class CartographerRenderer extends MapRenderer {
 		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 		Minimap map = getMinimap();
 		boolean rotating = Cartographer.getInstance().isRotateByDefault();
+		double defaultZoom = 1;
 		if ( map != null ) {
+			defaultZoom = map.getSettings().getDefaultZoom();
 			if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
 				rotating = map.getSettings().getRotation().isTrue();
 			} else if ( viewer.getSetting( MapViewer.ROTATE ) != BooleanOption.UNSET ) {
@@ -529,7 +549,7 @@ public class CartographerRenderer extends MapRenderer {
 			setting.rotating = rotating;
 			setting.mainhand = mainHand;
 			setting.lastUpdated = System.currentTimeMillis();
-			setting.zoomscale = scales.getOrDefault( player.getUniqueId(), map.getSettings().getDefaultZoom() );
+			setting.zoomscale = scales.getOrDefault( player.getUniqueId(), defaultZoom );
 			settings.put( player.getUniqueId(), setting );
 			
 			if ( mainHand ) {

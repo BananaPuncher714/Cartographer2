@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -46,6 +50,7 @@ public class Minimap implements ChunkNotifier {
 	
 	protected final File OVERLAY_IMAGE_FILE;
 	protected final File BACKGROUND_IMAGE_FILE;
+	protected final File DISABLED_IMAGE_FILE;
 	
 	protected MinimapPalette palette;
 	protected MapDataCache cache;
@@ -56,12 +61,15 @@ public class Minimap implements ChunkNotifier {
 	// Local images
 	protected SimpleImage overlay;
 	protected SimpleImage background;
+	protected SimpleImage disabled;
 	
 	protected Set< WorldCursorProvider > cursorProviders = new HashSet< WorldCursorProvider >();
 	protected Set< MapCursorProvider > localCursorProviders = new HashSet< MapCursorProvider >();
 	protected Set< MapPixelProvider > pixelProviders = new HashSet< MapPixelProvider >();
 	protected Set< WorldPixelProvider > worldPixelProviders = new HashSet< WorldPixelProvider >();
 	
+	protected MinimapLogger logger;
+
 	private long tick = 0;
 	
 	public Minimap( String id, MinimapPalette palette, MapDataCache cache, File saveDir, MapSettings settings ) {
@@ -74,49 +82,44 @@ public class Minimap implements ChunkNotifier {
 		
 		OVERLAY_IMAGE_FILE = FileUtil.getImageFile( saveDir, "overlay" );
 		BACKGROUND_IMAGE_FILE = FileUtil.getImageFile( saveDir, "background" );
+		DISABLED_IMAGE_FILE = FileUtil.getImageFile( saveDir, "disabled" );
 		
 		cache.setNotifier( this );
 		
+		logger = new MinimapLogger( this );
+		
 		load();
+		
+		logger.info( "Default rotation set to " + settings.getRotation() );
+		logger.info( "Auto update set to " + settings.isAutoUpdate() );
+		logger.info( "Circular zoom set to " + settings.isCircularZoom() );
+		logger.info( "Render out of border set to " + settings.isRenderOutOfBorder() );
+		logger.info( "Default zoom set to " + settings.getDefaultZoom() );
+		logger.info( "Allowed zooms: " + String.join( ", ", settings.allowedZooms.stream()
+				.map( d -> { return String.valueOf( d ); } )
+				.collect( Collectors.toList() ) ) );
+		logger.info( "Blacklisted worlds: " + String.join( ", ", settings.blacklistedWorlds ) );
 		
 		// Show at least the player, if nothing else
 		registerProvider( new DefaultPlayerCursorProvider() );
 		registerProvider( new DefaultPointerCursorProvider() );
-		
-//		registerWorldCursorProvider( new WorldCursorProvider() {
-//			@Override
-//			public Collection< RealWorldCursor > getCursors( Player player, Minimap map ) {
-//				Set< RealWorldCursor > cursors = new HashSet< RealWorldCursor >();
-//				for ( Entity entity : player.getNearbyEntities( 20, 10, 20 ) ) {
-//					cursors.add( new RealWorldCursor( entity.getName(), entity.getLocation(), Type.BLUE_POINTER, true ) );
-//				}
-//				return cursors;
-//			}
-//		} );
-//		
-//		Font font = new JLabel().getFont();
-//		CartographerFont cFont = new CartographerFont( font );
-//		BufferedImage image = cFont.write( "Welcome to Cartographer", Color.BLACK, 12 );
-//		Collection< MapPixel > pixels = MapUtil.getPixelsFor( image, 0, 64 );
-//		
-//		pixelProviders.add( new MapPixelProvider() {
-//			@Override
-//			public Collection< MapPixel > getMapPixels( Player player, Minimap map ) {
-//				return pixels;
-//			}
-//		} );
 	}
 	
 	protected void load() {
 		try {
 			if ( OVERLAY_IMAGE_FILE.exists() ) {
 				overlay = new SimpleImage( OVERLAY_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				Cartographer.getInstance().getLogger().info( "[Minimap] [" + id + "] Loaded overlay image '" + OVERLAY_IMAGE_FILE + "'" );
+				logger.info( "Loaded overlay image '" + OVERLAY_IMAGE_FILE.getName() + "'" );
 			}
 			
 			if ( BACKGROUND_IMAGE_FILE.exists() ) {
 				background = new SimpleImage( BACKGROUND_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				Cartographer.getInstance().getLogger().info( "[Minimap] [" + id + "] Loaded background image '" + BACKGROUND_IMAGE_FILE + "'" );
+				logger.info( "Loaded background image '" + BACKGROUND_IMAGE_FILE.getName() + "'" );
+			}
+			
+			if ( DISABLED_IMAGE_FILE.exists() ) {
+				disabled = new SimpleImage( DISABLED_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
+				logger.info( "Loaded disabled image '" + DISABLED_IMAGE_FILE.getName() + "'" );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();
@@ -183,6 +186,10 @@ public class Minimap implements ChunkNotifier {
 		}
 	}
 	
+	public Logger getLogger() {
+		return logger;
+	}
+	
 	public MinimapPalette getPalette() {
 		return palette;
 	}
@@ -216,6 +223,16 @@ public class Minimap implements ChunkNotifier {
 	public void setBackgroundImage( SimpleImage image ) {
 		if ( image != null ) {
 			background = new SimpleImage( image, 128, 128, Image.SCALE_REPLICATE );
+		}
+	}
+	
+	public SimpleImage getDisabledImage() {
+		return disabled;
+	}
+	
+	public void setDisabledImage( SimpleImage image ) {
+		if ( image != null ) {
+			disabled = new SimpleImage( image, 218, 128, Image.SCALE_REPLICATE );
 		}
 	}
 	
@@ -401,5 +418,23 @@ public class Minimap implements ChunkNotifier {
 		Bukkit.getPluginManager().callEvent( event );
 		
 		return event.getData();
+	}
+	
+	private class MinimapLogger extends Logger {
+		private String format = "[%s] [Minimap] [%s] %s";
+		private String mapName;
+		
+		protected MinimapLogger( Minimap map ) {
+			super( map.getId(), null );
+			mapName = map.getId();
+			setParent( Cartographer.getInstance().getLogger() );
+			setLevel( Level.ALL );
+		}
+
+		@Override
+		public void log( LogRecord record ) {
+			record.setMessage( String.format( format, Cartographer.getInstance().getName(), mapName, record.getMessage() ) );
+			super.log( record );
+		}
 	}
 }

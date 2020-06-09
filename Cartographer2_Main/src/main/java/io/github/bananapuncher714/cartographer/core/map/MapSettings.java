@@ -24,6 +24,8 @@ public class MapSettings {
 	protected double defaultZoom = 1;
 	protected boolean circularZoom = false;
 	
+	protected Set< String > blacklistedWorlds = new HashSet< String >();
+	
 	// Auto update the map as needed
 	protected boolean autoUpdate = true;
 	
@@ -56,6 +58,8 @@ public class MapSettings {
 			}
 			allowedZooms.add( zoomVal );
 		}
+		
+		blacklistedWorlds.addAll( config.getStringList( "world-blacklist" ) );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
@@ -112,6 +116,10 @@ public class MapSettings {
 		this.palette = palette;
 	}
 
+	public boolean isBlacklisted( String world ) {
+		return blacklistedWorlds.contains( world );
+	}
+	
 	public double getPreviousZoom( double currentZoom ) {
 		int index = 0;
 		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {

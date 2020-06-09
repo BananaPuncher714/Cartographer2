@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.CartographerLogger;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 
@@ -29,6 +31,8 @@ public class PaletteManager {
 	protected Cartographer plugin;
 	
 	protected Map< String, MinimapPalette > palettes = new HashMap< String, MinimapPalette >();
+	
+	protected Logger logger = new CartographerLogger( "PaletteManager" );
 	
 	/**
 	 * Only one PaletteManager is recommended. To get the current one in use, call {@link Cartographer#getPaletteManager()}.
@@ -68,7 +72,7 @@ public class PaletteManager {
 		for ( String id : palettes ) {
 			MinimapPalette template = this.palettes.get( id );
 			if ( template == null ) {
-				plugin.getLogger().warning( id + " palette not found!" );
+				logger.warning( id + " palette not found!" );
 				continue;
 			}
 		
@@ -122,7 +126,7 @@ public class PaletteManager {
 				String b = matcher.group( 3 );
 				color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
 			} else {
-				plugin.getLogger().warning( "Cannot parse default color. Invalid value: " + defColor );
+				logger.warning( "Cannot parse default color. Invalid value: " + defColor );
 				color = new Color( 0 );
 			}
 			palette.setDefaultColor( color );
@@ -134,7 +138,7 @@ public class PaletteManager {
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
 					if ( plugin.isPaletteDebug() ) {
-						plugin.getLogger().warning( key + " is an invalid material!" );
+						logger.warning( key + " is an invalid material!" );
 					}
 					continue;
 				}
@@ -162,7 +166,7 @@ public class PaletteManager {
 					String b = matcher.group( 3 );
 					color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
 				} else {
-					plugin.getLogger().warning( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
+					logger.warning( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
 					continue;
 				}
 				palette.setColor( cvMaterial, color );
@@ -176,7 +180,7 @@ public class PaletteManager {
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
 					if ( plugin.isPaletteDebug() ) {
-						plugin.getLogger().warning( val + " is an invalid material!" );
+						logger.warning( val + " is an invalid material!" );
 					}
 					continue;
 				}
@@ -266,6 +270,10 @@ public class PaletteManager {
 	public String toString( Color color, ColorType type ) {
 		Validate.notNull( color );
 		return toString( color.getRGB(), type );
+	}
+	
+	public Logger getLogger() {
+		return logger;
 	}
 	
 	/**

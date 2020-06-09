@@ -95,7 +95,7 @@ public class PlayerSetting {
 	}
 	
 	public int[] getMapCoordOf( Location point ) {
-		return MapUtil.getLocationToPixel( location, point, zoomscale, rotating ? ( location.getYaw() + 180 ) : 0 );
+		return MapUtil.getLocationToPixel( location, point, zoomscale, Math.toRadians( rotating ? ( location.getYaw() + 180 ) : 0 ) );
 	}
 	
 	protected void deactivate() {

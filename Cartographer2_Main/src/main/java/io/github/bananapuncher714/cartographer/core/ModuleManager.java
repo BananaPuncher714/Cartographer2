@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
@@ -23,6 +24,8 @@ public class ModuleManager {
 	protected ModuleLoader loader;
 	protected Map< String, Module > modules = new HashMap< String, Module >();
 	protected File moduleFolder;
+	
+	protected Logger logger = new CartographerLogger( "ModuleManager" );
 	
 	protected ModuleManager( Cartographer plugin, File moduleFolder ) {
 		this.plugin = plugin;
@@ -46,16 +49,16 @@ public class ModuleManager {
 	}
 	
 	public void reload() {
-		plugin.getLogger().info( "[ModuleManager] Reloading modules..." );
+		logger.info( "Reloading modules..." );
 		unloadModules();
 		loadModules();
 		enableModules();
-		plugin.getLogger().info( "[ModuleManager] Done reloading modules");
+		logger.info( "Done reloading modules");
 	}
 	
 	public Module loadModule( File file ) {
 		ModuleDescription description = loader.getDescriptionFor( file );
-		plugin.getLogger().info( "[ModuleManager] Loading " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+		logger.info( "Loading " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 		
 		Module module = loader.load( description );
 		
@@ -108,7 +111,7 @@ public class ModuleManager {
 		
 		disableModule( module );
 		
-		plugin.getLogger().info( "[ModuleManager] Unloading " + module.getName() );
+		logger.info( "Unloading " + module.getName() );
 		if ( !loader.unload( module ) ) {
 			return false;
 		}
@@ -144,7 +147,7 @@ public class ModuleManager {
 			}
 		}
 		if ( allDependenciesLoaded ) {
-			plugin.getLogger().info( "[ModuleManager] Enabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+			logger.info( "Enabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 			for ( SettingState< ? > state : module.getSettingStates() ) {
 				MapViewer.addSetting( state );
 			}
@@ -152,7 +155,7 @@ public class ModuleManager {
 			module.setEnabled( true );
 			new ModuleEnableEvent( module ).callEvent();
 		} else {
-			plugin.getLogger().warning( "[ModuleManager] Unable to enable " + description.getName() + " due to the missing dependencies: " + missingDeps.toString().trim() );
+			logger.info( "Unable to enable " + description.getName() + " due to the missing dependencies: " + missingDeps.toString().trim() );
 			return false;
 		}
 		return true;
@@ -172,7 +175,7 @@ public class ModuleManager {
 		if ( module.isEnabled() ) {
 			ModuleDescription description = module.getDescription();
 			new ModuleDisableEvent( module ).callEvent();
-			plugin.getLogger().info( "[ModuleManager] Disabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
+			logger.info( "Disabling " + description.getName() + " v" + description.getVersion() + " by " + description.getAuthor() );
 			module.setEnabled( false );
 			for ( SettingState< ? > state : module.getSettingStates() ) {
 				MapViewer.removeSetting( state );

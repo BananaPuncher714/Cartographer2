@@ -49,6 +49,7 @@ public class Cartographer extends JavaPlugin {
 	private static File MISSING_MAP_IMAGE;
 	private static File OVERLAY_IMAGE;
 	private static File BACKGROUND_IMAGE;
+	private static File DISABLED_MAP_IMAGE;
 	
 	private TinyProtocol protocol;
 	private PacketHandler handler;
@@ -87,6 +88,7 @@ public class Cartographer extends JavaPlugin {
 	private SimpleImage loadingBackground;
 	private SimpleImage overlay;
 	private SimpleImage missingMapImage;
+	private SimpleImage disabledMap;
 	
 	// If the server has been completely loaded. Something to do with modules and plugins and dependencies
 	private boolean loaded = false;
@@ -94,6 +96,7 @@ public class Cartographer extends JavaPlugin {
 	static {
 		// Disable java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper from showing up
 		System.setProperty( "javax.accessibility.assistive_technologies", " " );
+		
 		// No GUI present, so we want to enforce that
 		System.setProperty( "java.awt.headless", "true" );
 	}
@@ -267,6 +270,7 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder() + "/" + "overlay.gif" ), false );
 			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder() + "/" + "background.gif" ), false );
 			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder() + "/" + "missing.png" ), false );
+			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder() + "/" + "disabled.png" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
@@ -325,13 +329,13 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadPalettes() {
-		getLogger().info( "Constructing vanilla palette..." );
+		paletteManager.getLogger().info( "Constructing vanilla palette..." );
 		MinimapPalette vanilla = handler.getVanillaPalette();
 		paletteManager.register( "default", vanilla );
 		
 		File vanillaPalette = new File( PALETTE_DIR + "/" + "vanilla.yml" );
 		if ( !vanillaPalette.exists() ) {
-			getLogger().info( "Vanilla palette not found, saving..." );
+			paletteManager.getLogger().info( "Vanilla palette not found, saving..." );
 			
 			PALETTE_DIR.mkdirs();
 			try {
@@ -350,9 +354,9 @@ public class Cartographer extends JavaPlugin {
 			}
 		}
 		
-		getLogger().info( ( vanilla.getMaterials().size() + vanilla.getTransparentBlocks().size() ) + " materials mapped for vanilla" );
+		paletteManager.getLogger().info( ( vanilla.getMaterials().size() + vanilla.getTransparentBlocks().size() ) + " materials mapped for vanilla" );
 		
-		getLogger().info( "Loading local palette files..." );
+		paletteManager.getLogger().info( "Loading local palette files..." );
 		if ( PALETTE_DIR.exists() ) {
 			for ( File file : PALETTE_DIR.listFiles() ) {
 				if ( !file.isDirectory() ) {
@@ -362,11 +366,11 @@ public class Cartographer extends JavaPlugin {
 					String id = file.getName().replaceAll( "\\.yml$", "" );
 					paletteManager.register( id, palette );
 					
-					getLogger().info( "Loaded palette '" + id + "' successfully!" );
+					paletteManager.getLogger().info( "Loaded palette '" + id + "' successfully!" );
 				}
 			}
 		} else {
-			getLogger().warning( "Palette folder not discovered!" );
+			paletteManager.getLogger().warning( "Palette folder not discovered!" );
 		}
 	}
 	
@@ -374,6 +378,7 @@ public class Cartographer extends JavaPlugin {
 		OVERLAY_IMAGE = FileUtil.getImageFile( getDataFolder(), "overlay" );
 		BACKGROUND_IMAGE = FileUtil.getImageFile( getDataFolder(), "background" );
 		MISSING_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "missing" );
+		DISABLED_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "disabled" );
 		
 		try {
 			if ( OVERLAY_IMAGE.exists() ) {
@@ -395,6 +400,13 @@ public class Cartographer extends JavaPlugin {
 				missingMapImage = new SimpleImage( MISSING_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			} else {
 				getLogger().warning( "Missing map image does not exist!" );
+			}
+			
+			if ( DISABLED_MAP_IMAGE.exists() ) {
+				getLogger().info( "Disabled map image detected!" );
+				disabledMap = new SimpleImage( DISABLED_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+			} else {
+				getLogger().warning( "Disabled map image does not exist!" );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();
@@ -500,6 +512,10 @@ public class Cartographer extends JavaPlugin {
 
 	public SimpleImage getMissingMapImage() {
 		return missingMapImage;
+	}
+	
+	public SimpleImage getDisabledMapImage() {
+		return disabledMap;
 	}
 	
 	public boolean isValidInventory( InventoryType type ) {

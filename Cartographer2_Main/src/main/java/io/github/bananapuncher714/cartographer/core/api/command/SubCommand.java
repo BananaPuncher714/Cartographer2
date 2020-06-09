@@ -193,7 +193,9 @@ public class SubCommand {
 
 	private boolean onCommand( CommandSender sender, Command command, String arg2, String[] args ) {
 		CommandParameters parameters = new CommandParameters();
-		submit( sender, command.getName(), args, parameters ).execute( sender );
+		if ( matches( sender ) ) {
+			submit( sender, command.getName(), args, parameters ).execute( sender );
+		}
 		return false;
 	}
 	

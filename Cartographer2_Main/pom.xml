@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
 			<artifactId>NBTEditor</artifactId>
-			<version>7.13</version>
+			<version>7.15</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wimbli.WorldBorder</groupId>
@@ -48,18 +48,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.1.0</version>
-				<!-- Do not include the <configuration>...</configuration> part if you 
-					are using Sponge! -->
 				<configuration>
 					<relocations>
 						<relocation>
 							<pattern>org.bstats</pattern>
-							<!-- Replace this with your package! -->
 							<shadedPattern>io.github.bananapuncher714.cartographer.bstats</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>io.github.bananapuncher714.nbteditor</pattern>
-							<!-- Replace this with your package! -->
 							<shadedPattern>io.github.bananapuncher714.cartographer.nbteditor</shadedPattern>
 						</relocation>
 					</relocations>

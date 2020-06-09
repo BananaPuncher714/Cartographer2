@@ -19,6 +19,9 @@ palettes:
 - "vanilla"
 - "palette-1.15.1"
 
+world-blacklist:
+- world_nether
+
 # Zooms are measured in decimal points now
 default-zoom: 1
 circular-zoom: false
