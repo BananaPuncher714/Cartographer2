@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
 			<artifactId>NBTEditor</artifactId>
-			<version>7.15</version>
+			<version>7.16</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wimbli.WorldBorder</groupId>

@@ -17,8 +17,9 @@ rotate: UNSET
 palettes:
 #- "default"
 - "vanilla"
-- "palette-1.15.1"
+- "palette-1.16.1"
 
+world-whitelist: false
 world-blacklist:
 - world_nether
 

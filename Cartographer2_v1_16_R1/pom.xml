@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.github.bananapuncher714</groupId>
+		<artifactId>Cartographer2_Master</artifactId>
+		<version>2</version>
+	</parent>
+	<artifactId>Cartographer2_v1_16_R1</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.16.1-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.bananapuncher714</groupId>
+			<artifactId>Cartographer2_Main</artifactId>
+			<version>2</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>

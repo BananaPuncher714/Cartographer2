@@ -21,6 +21,7 @@
 		<module>Cartographer2_v1_15_R1</module>
 		<module>Cartographer2</module>
 		<module>Cartographer2_ModuleVanilla</module>
+		<module>Cartographer2_v1_16_R1</module>
 	</modules>
 
 	<build>

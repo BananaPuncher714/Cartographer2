@@ -29,8 +29,6 @@ public class PlayerListener implements Listener {
 	
 	protected PlayerListener( Cartographer plugin ) {
 		this.plugin = plugin;
-		
-		Bukkit.getScheduler().runTaskTimer( plugin, this::update, 1, 5 );
 	}
 	
 	protected void update() {
@@ -132,7 +130,10 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void addLocation( Location location ) {
-		updateSet.add( new Location( location.getWorld(), location.getBlockX(), 0, location.getBlockZ() ) );
+		// Only update if the map requests it
+		if ( plugin.getBlockUpdateDelay() > 0 ) {
+			updateSet.add( new Location( location.getWorld(), location.getBlockX(), 0, location.getBlockZ() ) );
+		}
 	}
 	
 	private void updateMap( Location... locations ) {

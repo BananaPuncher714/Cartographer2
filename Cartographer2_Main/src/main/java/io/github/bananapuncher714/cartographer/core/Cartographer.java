@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
@@ -64,6 +65,9 @@ public class Cartographer extends JavaPlugin {
 	private Set< Integer > invalidIds = new HashSet< Integer >();
 	// Inventories that minimaps cannot be put into
 	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
+	
+	// List of all running timers
+	private Set< BukkitTask > tasks = new HashSet< BukkitTask >();
 	
 	// Contains all the renderers in use right now, with the key being map id assigned to each renderer
 	private Map< Integer, CartographerRenderer > renderers = new HashMap< Integer, CartographerRenderer >();
@@ -159,10 +163,6 @@ public class Cartographer extends JavaPlugin {
 		
 		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::getViewerFor );
 		
-		// Update the chunk listener sometime
-		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, chunkUpdateDelay );
-		Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, blockUpdateDelay );
-		
 		// Load the modules in beforehand
 		moduleManager.loadModules();
 	}
@@ -249,6 +249,9 @@ public class Cartographer extends JavaPlugin {
 		// Load the palettes
 		getLogger().info( "Loading palettes..." );
 		loadPalettes();
+		
+		// Load the runnables
+		loadTimers();
 	}
 	
 	private void loadAfter() {
@@ -275,6 +278,7 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.15.1.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.16.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.16.1.yml" ), false );
 		}
 		FileUtil.saveToFile( getResource( "README.md" ), README_FILE, true );
 	}
@@ -421,6 +425,18 @@ public class Cartographer extends JavaPlugin {
 		}
 	}
 	
+	private void loadTimers() {
+		tasks.forEach( t -> t.cancel() );
+		tasks.clear();
+		
+		// Update the chunk listener sometime
+		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, chunkUpdateDelay );
+		// Only run the block updater if it's more than 0 ticks of delay
+		if ( chunkUpdateDelay > 0 ) {
+			Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, blockUpdateDelay );
+		}
+	}
+	
 	/**
 	 * Purely for configs, palettes and images
 	 * Does not load modules
@@ -498,6 +514,10 @@ public class Cartographer extends JavaPlugin {
 	
 	public boolean isPaletteDebug() {
 		return paletteDebug;
+	}
+	
+	public int getBlockUpdateDelay() {
+		return blockUpdateDelay;
 	}
 	
 	public SimpleImage getBackground() {

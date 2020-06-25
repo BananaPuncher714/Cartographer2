@@ -1,6 +1,8 @@
-package io.github.bananapuncher714.cartographer.core.implementation.v1_12_R1;
+package io.github.bananapuncher714.cartographer.core.implementation.v1_16_R1;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,8 +18,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R1.util.CraftLegacy;
+import org.bukkit.craftbukkit.v1_16_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
@@ -26,28 +29,32 @@ import org.bukkit.map.MapCursor.Type;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
-import io.github.bananapuncher714.cartographer.core.internal.Util_1_9;
+import io.github.bananapuncher714.cartographer.core.internal.Util_1_14;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
-import net.minecraft.server.v1_12_R1.Block;
-import net.minecraft.server.v1_12_R1.EnumRenderType;
-import net.minecraft.server.v1_12_R1.IBlockAccess;
-import net.minecraft.server.v1_12_R1.IBlockData;
-import net.minecraft.server.v1_12_R1.MapIcon;
-import net.minecraft.server.v1_12_R1.MinecraftKey;
-import net.minecraft.server.v1_12_R1.MinecraftServer;
-import net.minecraft.server.v1_12_R1.PacketPlayInBlockDig;
-import net.minecraft.server.v1_12_R1.PacketPlayInBlockDig.EnumPlayerDigType;
-import net.minecraft.server.v1_12_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_16_R1.Block;
+import net.minecraft.server.v1_16_R1.BlockBase;
+import net.minecraft.server.v1_16_R1.ChatComponentText;
+import net.minecraft.server.v1_16_R1.EnumRenderType;
+import net.minecraft.server.v1_16_R1.IRegistry;
+import net.minecraft.server.v1_16_R1.MapIcon;
+import net.minecraft.server.v1_16_R1.Material;
+import net.minecraft.server.v1_16_R1.MinecraftKey;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
+import net.minecraft.server.v1_16_R1.PacketPlayInBlockDig;
+import net.minecraft.server.v1_16_R1.PacketPlayInBlockDig.EnumPlayerDigType;
+import net.minecraft.server.v1_16_R1.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
-	private static Field[] MAP_FIELDS = new Field[ 9 ];
+	private static Field[] MAP_FIELDS = new Field[ 10 ];
 	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
 	private static Field SIMPLECOMMANDMAP_COMMANDS;
+	private static Method CRAFTSERVER_SYNCCOMMANDS;
+	private static Field BLOCKBASE_MATERIAL;
 	
 	static {
 		try {
@@ -60,6 +67,7 @@ public class NMSHandler implements PacketHandler {
 			MAP_FIELDS[ 6 ] = PacketPlayOutMap.class.getDeclaredField( "g" );
 			MAP_FIELDS[ 7 ] = PacketPlayOutMap.class.getDeclaredField( "h" );
 			MAP_FIELDS[ 8 ] = PacketPlayOutMap.class.getDeclaredField( "i" );
+			MAP_FIELDS[ 9 ] = PacketPlayOutMap.class.getDeclaredField( "j" );
 
 			for ( Field field : MAP_FIELDS ) {
 				field.setAccessible( true );
@@ -67,24 +75,47 @@ public class NMSHandler implements PacketHandler {
 			
 			SIMPLECOMMANDMAP_COMMANDS = SimpleCommandMap.class.getDeclaredField( "knownCommands" );
 			SIMPLECOMMANDMAP_COMMANDS.setAccessible( true );
+			
+			CRAFTSERVER_SYNCCOMMANDS = CraftServer.class.getDeclaredMethod( "syncCommands" );
+			CRAFTSERVER_SYNCCOMMANDS.setAccessible( true );
+			
+			BLOCKBASE_MATERIAL = BlockBase.class.getDeclaredField( "material" );
+			BLOCKBASE_MATERIAL.setAccessible( true );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
 		
 		CURSOR_TYPES.put( MapCursor.Type.WHITE_POINTER, MapIcon.Type.PLAYER );
 		CURSOR_TYPES.put( MapCursor.Type.GREEN_POINTER, MapIcon.Type.FRAME );
-		CURSOR_TYPES.put( MapCursor.Type.RED_POINTER, MapIcon.Type.PLAYER_OFF_LIMITS );
+		CURSOR_TYPES.put( MapCursor.Type.RED_POINTER, MapIcon.Type.TARGET_POINT );
 		CURSOR_TYPES.put( MapCursor.Type.BLUE_POINTER, MapIcon.Type.BLUE_MARKER );
 		CURSOR_TYPES.put( MapCursor.Type.WHITE_CROSS, MapIcon.Type.TARGET_X );
 		CURSOR_TYPES.put( MapCursor.Type.RED_MARKER, MapIcon.Type.RED_MARKER );
-		CURSOR_TYPES.put( MapCursor.Type.WHITE_CIRCLE, MapIcon.Type.PLAYER );
-		CURSOR_TYPES.put( MapCursor.Type.SMALL_WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_MAP );
+		CURSOR_TYPES.put( MapCursor.Type.WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_MAP );
+		CURSOR_TYPES.put( MapCursor.Type.SMALL_WHITE_CIRCLE, MapIcon.Type.PLAYER_OFF_LIMITS );
 		CURSOR_TYPES.put( MapCursor.Type.MANSION, MapIcon.Type.MANSION );
 		CURSOR_TYPES.put( MapCursor.Type.TEMPLE, MapIcon.Type.MONUMENT );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_WHITE, MapIcon.Type.BANNER_WHITE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_ORANGE, MapIcon.Type.BANNER_ORANGE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_MAGENTA, MapIcon.Type.BANNER_MAGENTA );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIGHT_BLUE, MapIcon.Type.BANNER_LIGHT_BLUE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_YELLOW, MapIcon.Type.BANNER_YELLOW );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIME, MapIcon.Type.BANNER_LIME );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_PINK, MapIcon.Type.BANNER_PINK );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_GRAY, MapIcon.Type.BANNER_GRAY );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_LIGHT_GRAY, MapIcon.Type.BANNER_LIGHT_GRAY );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_CYAN, MapIcon.Type.BANNER_CYAN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_PURPLE, MapIcon.Type.BANNER_PURPLE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BLUE, MapIcon.Type.BANNER_BLUE );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BROWN, MapIcon.Type.BANNER_BROWN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_GREEN, MapIcon.Type.BANNER_GREEN );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_RED, MapIcon.Type.BANNER_RED );
+		CURSOR_TYPES.put( MapCursor.Type.BANNER_BLACK, MapIcon.Type.BANNER_BLACK );
+		CURSOR_TYPES.put( MapCursor.Type.RED_X, MapIcon.Type.RED_X );
 	}
 
 	private final Set< Integer > maps = new TreeSet< Integer >();
-	private Util_1_9 util = new Util_1_9();
+	private Util_1_14 util = new Util_1_14();
 	
 	@Override
 	public void sendDataTo( int id, byte[] data, @Nullable MapCursor[] cursors, UUID... uuids ) {
@@ -97,7 +128,7 @@ public class NMSHandler implements PacketHandler {
 			for ( int index = 0; index < cursors.length; index++ ) {
 				MapCursor cursor = cursors[ index ];
 				
-				icons[ index ] = new MapIcon( CURSOR_TYPES.get( cursor.getType() ), cursor.getX(), cursor.getY(), cursor.getDirection() );
+				icons[ index ] = new MapIcon( CURSOR_TYPES.get( cursor.getType() ), cursor.getX(), cursor.getY(), cursor.getDirection(), cursor.getCaption() != null ? new ChatComponentText( cursor.getCaption() ) : null );
 			}
 		}
 		
@@ -107,12 +138,13 @@ public class NMSHandler implements PacketHandler {
 			MAP_FIELDS[ 0 ].set( packet, id );
 			MAP_FIELDS[ 1 ].set( packet, ( byte ) 0 );
 			MAP_FIELDS[ 2 ].set( packet, false );
-			MAP_FIELDS[ 3 ].set( packet, icons );
-			MAP_FIELDS[ 4 ].set( packet, 0 );
+			MAP_FIELDS[ 3 ].set( packet, false );
+			MAP_FIELDS[ 4 ].set( packet, icons );
 			MAP_FIELDS[ 5 ].set( packet, 0 );
-			MAP_FIELDS[ 6 ].set( packet, 128 );
+			MAP_FIELDS[ 6 ].set( packet, 0 );
 			MAP_FIELDS[ 7 ].set( packet, 128 );
-			MAP_FIELDS[ 8 ].set( packet, data );
+			MAP_FIELDS[ 8 ].set( packet, 128 );
+			MAP_FIELDS[ 9 ].set( packet, data );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -155,7 +187,7 @@ public class NMSHandler implements PacketHandler {
 			// Check for the drop packet
 			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
 
-			EnumPlayerDigType type = digPacket.c();
+			EnumPlayerDigType type = digPacket.d();
 			if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
 				ItemStack item = viewer.getEquipment().getItemInMainHand();
 				if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
@@ -188,27 +220,26 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public MapCursor constructMapCursor( int x, int y, double yaw, Type cursorType, String name ) {
-		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true );
+		return new MapCursor( ( byte ) x, ( byte ) y, MapUtil.getDirection( yaw ), cursorType, true, name );
 	}
 	
 	@Override
 	public MinimapPalette getVanillaPalette() {
 		MinimapPalette palette = new MinimapPalette();
-		for ( MinecraftKey key : Block.REGISTRY.keySet() ) {
-			Block block = Block.REGISTRY.get( key );
-			for ( IBlockData data : block.s().a() ) {
-				boolean transparent = data.i() == EnumRenderType.INVISIBLE;
-				CrossVersionMaterial material = new CrossVersionMaterial( CraftMagicNumbers.getMaterial( block ), block.toLegacyData( data ) );
-				
-				if ( transparent ) {
-					palette.addTransparentMaterial( material );
-				} else {
-					try {
-						int color = block.c( data, ( IBlockAccess ) null, null ).ac;
-						palette.setColor( material, color );
-					} catch ( NullPointerException exception ) {
-						// Looks like one of the arguments wasn't meant to be null
-					}
+		// For some reason IRegistry.BLOCK contains only a few blocks, and it's not a consistent amount.
+		for ( MinecraftKey key : IRegistry.BLOCK.keySet() ) {
+			Block block = IRegistry.BLOCK.get( key );
+			CrossVersionMaterial material = new CrossVersionMaterial( CraftLegacy.fromLegacy( CraftMagicNumbers.getMaterial( block ) ) );
+			boolean transparent = block.b( block.getBlockData() ) == EnumRenderType.INVISIBLE;
+			if ( transparent ) {
+				palette.addTransparentMaterial( material );
+			} else {
+				try {
+					Material mat = ( Material ) BLOCKBASE_MATERIAL.get( block );
+					int color = mat.h().rgb;
+					palette.setColor( material, color );
+				} catch ( IllegalArgumentException | IllegalAccessException e ) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -229,10 +260,19 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public boolean registerCommand( String fallbackPrefix, PluginCommand command ) {
 		Validate.notNull( fallbackPrefix );
-		Validate.notNull( command );		
-		return ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( command.getPlugin().getName(), command );
+		Validate.notNull( command );
+		boolean registered = ( ( CraftServer ) Bukkit.getServer() ).getCommandMap().register( fallbackPrefix, command );
+		
+		try {
+			// Pretty dumb, but apparently you need to re-sync the commands after you do your business or else it won't tab complete properly for players
+			CRAFTSERVER_SYNCCOMMANDS.invoke( Bukkit.getServer() );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+		}
+		
+		return registered;
 	}
-	
+
 	@Override
 	public void unregisterCommand( PluginCommand command ) {
 		Validate.notNull( command );
@@ -244,6 +284,12 @@ public class NMSHandler implements PacketHandler {
 				if ( entry.getValue() == command ) {
 					iterator.remove();
 				}
+			}
+			
+			try {
+				CRAFTSERVER_SYNCCOMMANDS.invoke( Bukkit.getServer() );
+			} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+				e.printStackTrace();
 			}
 		} catch ( IllegalArgumentException | IllegalAccessException e ) {
 			e.printStackTrace();
