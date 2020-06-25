@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -38,11 +39,14 @@ import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_16_R1.Block;
 import net.minecraft.server.v1_16_R1.BlockBase;
+import net.minecraft.server.v1_16_R1.BlockBase.Info;
 import net.minecraft.server.v1_16_R1.ChatComponentText;
 import net.minecraft.server.v1_16_R1.EnumRenderType;
+import net.minecraft.server.v1_16_R1.IBlockData;
 import net.minecraft.server.v1_16_R1.IRegistry;
 import net.minecraft.server.v1_16_R1.MapIcon;
 import net.minecraft.server.v1_16_R1.Material;
+import net.minecraft.server.v1_16_R1.MaterialMapColor;
 import net.minecraft.server.v1_16_R1.MinecraftKey;
 import net.minecraft.server.v1_16_R1.MinecraftServer;
 import net.minecraft.server.v1_16_R1.PacketPlayInBlockDig;
@@ -54,7 +58,8 @@ public class NMSHandler implements PacketHandler {
 	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
 	private static Field SIMPLECOMMANDMAP_COMMANDS;
 	private static Method CRAFTSERVER_SYNCCOMMANDS;
-	private static Field BLOCKBASE_MATERIAL;
+	private static Field BLOCKBASE_INFO;
+	private static Field INFO_FUNCTION;
 	
 	static {
 		try {
@@ -79,8 +84,11 @@ public class NMSHandler implements PacketHandler {
 			CRAFTSERVER_SYNCCOMMANDS = CraftServer.class.getDeclaredMethod( "syncCommands" );
 			CRAFTSERVER_SYNCCOMMANDS.setAccessible( true );
 			
-			BLOCKBASE_MATERIAL = BlockBase.class.getDeclaredField( "material" );
-			BLOCKBASE_MATERIAL.setAccessible( true );
+			BLOCKBASE_INFO = BlockBase.class.getDeclaredField( "aB" );
+			BLOCKBASE_INFO.setAccessible( true );
+			
+			INFO_FUNCTION = Info.class.getDeclaredField( "b" );
+			INFO_FUNCTION.setAccessible( true );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -235,9 +243,14 @@ public class NMSHandler implements PacketHandler {
 				palette.addTransparentMaterial( material );
 			} else {
 				try {
-					Material mat = ( Material ) BLOCKBASE_MATERIAL.get( block );
-					int color = mat.h().rgb;
-					palette.setColor( material, color );
+					Info info = ( Info ) BLOCKBASE_INFO.get( block );
+					Function< IBlockData, MaterialMapColor > function = ( Function< IBlockData, MaterialMapColor > ) INFO_FUNCTION.get( info );
+					int color = function.apply( block.getBlockData() ).rgb;
+					if ( color == 0 ) {
+						palette.addTransparentMaterial( material );
+					} else {
+						palette.setColor( material, color );
+					}
 				} catch ( IllegalArgumentException | IllegalAccessException e ) {
 					e.printStackTrace();
 				}
