@@ -27,7 +27,7 @@ public final class FileUtil {
 		}
 		updateConfigFromFile( output, stream, trim );
 	}
-	
+
 	public static void saveToFile( InputStream stream, File output, boolean force ) {
 		if ( force && output.exists() ) {
 			output.delete();
@@ -36,12 +36,12 @@ public final class FileUtil {
 			output.getParentFile().mkdirs();
 			try ( OutputStream outStream = new FileOutputStream( output ) ) {
 				byte[] buffer = new byte[ stream.available() ];
-			 
-			    int len;
-			    while ( ( len = stream.read( buffer ) ) > 0)  {
-		          outStream.write( buffer, 0, len );
-		        }
-		        stream.close();
+
+				int len;
+				while ( ( len = stream.read( buffer ) ) > 0)  {
+					outStream.write( buffer, 0, len );
+				}
+				stream.close();
 			} catch ( FileNotFoundException e ) {
 				e.printStackTrace();
 			} catch ( IOException e ) {
@@ -49,21 +49,21 @@ public final class FileUtil {
 			}
 		}
 	}
-	
+
 	public static void updateConfigFromFile( File toUpdate, InputStream toCopy ) {
 		updateConfigFromFile( toUpdate, toCopy, false );
 	}
-	
+
 	public static void updateConfigFromFile( File toUpdate, InputStream toCopy, boolean trim ) {
 		FileConfiguration config = YamlConfiguration.loadConfiguration( new InputStreamReader( toCopy ) );
 		FileConfiguration old = YamlConfiguration.loadConfiguration( toUpdate );
-		
+
 		for ( String key : config.getKeys( true ) ) {
 			if ( !old.contains( key ) ) {
 				old.set( key, config.get( key ) );
 			}
 		}
-		
+
 		if ( trim ) {
 			for ( String key : old.getKeys( true ) ) {
 				if ( !config.contains( key ) ) {
@@ -71,14 +71,14 @@ public final class FileUtil {
 				}
 			}
 		}
-		
+
 		try {
 			old.save( toUpdate );
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	public static boolean move( File original, File dest, boolean force ) {
 		if ( dest.exists() ) {
 			if ( !force ) {
@@ -92,7 +92,7 @@ public final class FileUtil {
 		recursiveDelete( original );
 		return true;
 	}
-	
+
 	public static void recursiveDelete( File file ) {
 		if ( !file.exists() ) {
 			return;
@@ -104,41 +104,37 @@ public final class FileUtil {
 		}
 		file.delete();
 	}
-	
-	public static < T extends Serializable > T readObject( Class< T > clazz, File file ) {
+
+	public static < T extends Serializable > T readObject( Class< T > clazz, File file ) throws IOException, ClassNotFoundException {
 		if ( !file.exists() ) {
 			return null;
 		}
 		T head = null;
-		try {
-			FileInputStream fis = new FileInputStream( file );
-			ObjectInputStream ois = new ObjectInputStream( fis );
-			
-			head = ( T ) ois.readObject();
-			
-			ois.close();
-			fis.close();
-		} catch ( Exception exception ) {
-			exception.printStackTrace();
-		}
+		FileInputStream fis = new FileInputStream( file );
+		ObjectInputStream ois = new ObjectInputStream( fis );
+
+		head = ( T ) ois.readObject();
+
+		ois.close();
+		fis.close();
 		return head;
 	}
-	
+
 	public static void writeObject( Serializable object, File file ) {
 		file.getParentFile().mkdirs();
 		try {
 			FileOutputStream fos = new FileOutputStream( file );
 			ObjectOutputStream oos = new ObjectOutputStream( fos );
-			
+
 			oos.writeObject( object );
-			
+
 			oos.close();
 			fos.close();
 		} catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	public static File getImageFile( File dir, String prefix ) {
 		File image = new File( dir + "/" + prefix + ".png" );
 		for ( File file : dir.listFiles() ) {

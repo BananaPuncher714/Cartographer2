@@ -27,6 +27,11 @@ tick-limit: 18
 # Change this to 0 if you want to disable updating for block physics events.
 block-update-tick-delay: 5
 
+# Determines whether the player should be allowed to drop the minimap
+prevent-drop: true
+# Whether or not to use packets or the item drop event
+use-drop-packet: true
+
 chunk:
   # Regular chunk processing
   # Delay in ticks between each update

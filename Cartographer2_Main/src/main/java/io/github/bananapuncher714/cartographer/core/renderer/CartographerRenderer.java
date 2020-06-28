@@ -41,6 +41,7 @@ import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkLoadListener;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkState;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
@@ -242,19 +243,36 @@ public class CartographerRenderer extends MapRenderer {
 			// Queue the locations that need loading
 			for ( BigChunkLocation location : info.needsRender ) {
 				// TODO Check if the location needs loading and load somewhere else maybe?
+				/*
+				 *  TODO Keep track of the current state of the chunk data
+				 * A chunk can have one of the following states:
+				 * NONE						The chunk is not being processed, nor has it undergone processing
+				 * WAITING_FOR_LOAD			The chunk is waiting to be loaded from the vanilla world
+				 * WAITING_FOR_PROCESSING	The chunk is waiting to be processed
+				 * PROCESSING				The chunk is currently being processed
+				 * CACHED					The chunk has been cached
+				 * WAITING_FOR_FILE_LOAD	The chunk is waiting to be loaded in from Cartographer2 local files
+				 * FILE_LOADING				The chunk is being loaded in from Cartographer2 files
+				 * WAITING_FOR_SAVING		The chunk is waiting to be saved to file
+				 * SAVING					The chunk is being saved to file
+				 */
 				int cx = location.getX() << 4;
 				int cz = location.getZ() << 4;
 				boolean renderRequired = false;
 				for ( int x = 0; x < 16 && !renderRequired; x++ ) {
 					for ( int z = 0; z < 16 && !renderRequired; z++ ) {
 						ChunkLocation cLocation = new ChunkLocation( location.getWorld(), cx + x, cz + z );
-						renderRequired = info.cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation );
+						// Check if this location has a state of NONE
+						ChunkState state = MapDataCache.getStateOf( info.map, cLocation );
+						
+						// Add this location only if a chunk isn't cached or involved in anything
+						renderRequired = state == ChunkState.NONE;
 					}
 				}
 				if ( renderRequired ) {
+					// Try to load it from file first
 					info.map.getQueue().load( location );
 				}
-				
 			}
 			
 			// Send the packet

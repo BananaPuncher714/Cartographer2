@@ -24,6 +24,7 @@ public enum ChunkLoadListener implements Listener {
 	
 	private final Queue< ChunkLocation > loading = new ArrayDeque< ChunkLocation >();
 	private final Set< ChunkLocation > checkSet = new HashSet< ChunkLocation >();
+	private final Set< ChunkLocation > beingLoaded = new HashSet< ChunkLocation >();
 	
 	private boolean isForceLoad = false;
 	private int cacheAmount = 50;
@@ -34,12 +35,15 @@ public enum ChunkLoadListener implements Listener {
 	private void onChunkLoadEvent( ChunkLoadEvent event ) {
 		ChunkLocation location = new ChunkLocation( event.getChunk() );
 		if ( Cartographer.getInstance().isServerOverloaded() ) {
-			loadChunk( location );
+			// Add it back to the queue for when ther server isn't overloaded to be processed
+			queueChunk( location );
 		} else {
 			for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
 				minimap.getDataCache().registerSnapshot( location );
 			}
 		}
+		// The chunk has been loaded, even if we can't process it immediately
+		beingLoaded.remove( location );
 	}
 	
 	@EventHandler
@@ -48,6 +52,7 @@ public enum ChunkLoadListener implements Listener {
 		for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
 			minimap.getDataCache().unregisterSnapshot( location );
 		}
+		beingLoaded.remove( location );
 	}
 	
 	/**
@@ -60,8 +65,7 @@ public enum ChunkLoadListener implements Listener {
 		
 		double percentage = 0;
 		while ( percentage < 1 && !loading.isEmpty() ) {
-			ChunkLocation location = loading.poll();
-			checkSet.remove( location );
+			ChunkLocation location = loading.peek();
 			
 			if ( location.isLoaded() ) {
 				for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
@@ -70,8 +74,17 @@ public enum ChunkLoadListener implements Listener {
 				percentage += 1.0 / cacheAmount;
 			} else if ( isForceLoad ) {
 				percentage += 1.0 / ( location.exists() ? loadAmount : generateAmount );
+				// Add it to the list of locations being loaded
+				beingLoaded.add( location );
 				location.load();
 			}
+			
+			// Remove the current chunk from the queue
+			// Either it's loaded and sent off for processing
+			// or it's being forcefully loaded
+			// or nothing has happened, but an attempt was made
+			loading.remove();
+			checkSet.remove( location );
 		}
 	}
 	
@@ -83,7 +96,7 @@ public enum ChunkLoadListener implements Listener {
 	 * @return
 	 * Whether or not it is being queued for loading.
 	 */
-	public static boolean isLoading( ChunkLocation location ) {
+	public static boolean isQueued( ChunkLocation location ) {
 		return INSTANCE.checkSet.contains( location );
 	}
 	
@@ -93,12 +106,17 @@ public enum ChunkLoadListener implements Listener {
 	 * @param location
 	 * A {@link ChunkLocation} that needs loading.
 	 */
-	public static void loadChunk( ChunkLocation location ) {
-		if ( INSTANCE.checkSet.contains( location ) ) {
+	public static void queueChunk( ChunkLocation location ) {
+		// Only queue the chunk if it isn't already queued or being loaded
+		if ( INSTANCE.checkSet.contains( location ) || INSTANCE.beingLoaded.contains( location ) ) {
 			return;
 		}
 		INSTANCE.loading.add( location );
 		INSTANCE.checkSet.add( location );
+	}
+	
+	public static boolean isLoading( ChunkLocation location ) {
+		return INSTANCE.beingLoaded.contains( location );
 	}
 	
 	/**

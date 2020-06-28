@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_16_R1;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -191,7 +192,7 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
-		if ( packet instanceof PacketPlayInBlockDig ) {
+		if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
 			// Check for the drop packet
 			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
 
@@ -256,6 +257,11 @@ public class NMSHandler implements PacketHandler {
 				}
 			}
 		}
+		palette.getTransparentBlocks().remove( new CrossVersionMaterial( org.bukkit.Material.WATER ) );
+		palette.getTransparentBlocks().remove( new CrossVersionMaterial( org.bukkit.Material.LAVA ) );
+		palette.setColor( new CrossVersionMaterial( org.bukkit.Material.WATER ), new Color( 64, 64, 255 ) );
+		palette.setColor( new CrossVersionMaterial( org.bukkit.Material.LAVA ), new Color( 255, 0, 0 ) );
+		
 		return palette;
 	}
 	

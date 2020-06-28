@@ -20,7 +20,9 @@ import org.bukkit.entity.Player;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.events.chunk.ChunkPreProcessEvent;
+import io.github.bananapuncher714.cartographer.core.file.BigChunkQueue;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
+import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.BlockUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
@@ -133,7 +135,7 @@ public class MapDataCache {
 					// Only if our map is set to update or we don't have the location to begin with
 					if ( !data.containsKey( loc ) || setting.isAutoUpdate() ) {
 						// Only if our minimap is willing to render outside of worldborders and such
-						if ( needsRender( loc ) ) {
+						if ( withinVisiblePlayerRange( loc ) ) {
 							if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( loc ) ) {
 								process( loc );
 							}
@@ -206,7 +208,7 @@ public class MapDataCache {
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		if ( !forcedLoading.contains( location ) || !data.containsKey( location ) || !data.containsKey( south ) ) {
 			if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( south ) ) {
-				if ( needsRender( location ) ) {
+				if ( withinVisiblePlayerRange( location ) ) {
 					// TODO Getting the chunksnapshot here is pretty laggy. It computes lighting and unnecessary data when all we're looking for is the block types and potentially biome data.
 					chunks.put( location, location.getChunk().getChunkSnapshot() );
 				}
@@ -258,7 +260,7 @@ public class MapDataCache {
 	 */
 	public void addToProcessQueue( ChunkLocation location ) {
 		forcedLoading.add( location );
-		ChunkLoadListener.loadChunk( location );
+		ChunkLoadListener.queueChunk( location );
 	}
 	
 	public void process( ChunkLocation location ) {
@@ -281,11 +283,18 @@ public class MapDataCache {
 		return renderers.containsKey( location );
 	}
 	
-	public boolean requiresGeneration( ChunkLocation location ) {
-		return !( renderers.containsKey( location ) || data.containsKey( location ) );
+	/**
+	 * Check if it is stored anywhere
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public boolean absent( ChunkLocation location ) {
+		// Check if the location is already awaiting processing, if the data contains the key, or if the processors are doing something
+		return !( renderers.containsKey( location ) || data.containsKey( location ) || chunks.containsKey( location ) );
 	}
 	
-	public boolean needsRender( ChunkLocation location ) {
+	public boolean withinVisiblePlayerRange( ChunkLocation location ) {
 		int cx = location.getX() >> 4 << 8;
 		int cz = location.getZ() >> 4 << 8;
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
@@ -304,6 +313,30 @@ public class MapDataCache {
 			}
 		}
 		return false;
+	}
+	
+	public static ChunkState getStateOf( Minimap map, ChunkLocation location ) {
+		MapDataCache cache = map.getDataCache();
+		BigChunkQueue queue = map.getQueue();
+		
+		// Check if it's being loaded somehow
+		if ( ChunkLoadListener.isLoading( location ) ) {
+			return ChunkState.LOADING;
+		} else if ( ChunkLoadListener.isQueued( location ) ) {
+			return ChunkState.QUEUED;
+		} else if ( queue.isLoading( location ) ) {
+			return ChunkState.FILE_LOADING;
+		} else if ( queue.isSaving( location ) ) {
+			return ChunkState.FILE_SAVING;
+		} else if ( cache.containsDataAt( location ) ) {
+			return ChunkState.CACHED;
+		} else if ( cache.isProcessing( location ) ) {
+			return ChunkState.PROCESSING;
+		} else if ( cache.hasSnapshot( location ) ) {
+			return ChunkState.WAITING_FOR_PROCESSING;
+		} else {
+			return ChunkState.NONE;
+		}
 	}
 	
 	public void updateLocation( Location location, MinimapPalette palette ) {
@@ -331,5 +364,16 @@ public class MapDataCache {
 	
 	public void terminate() {
 		service.shutdown();
+	}
+	
+	public static enum ChunkState {
+		NONE,
+		QUEUED,
+		LOADING,
+		WAITING_FOR_PROCESSING,
+		PROCESSING,
+		FILE_LOADING,
+		FILE_SAVING,
+		CACHED;
 	}
 }

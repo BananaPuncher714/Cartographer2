@@ -89,6 +89,9 @@ public class Cartographer extends JavaPlugin {
 	// Print out debug information regarding missing colors and materials in the console
 	private boolean paletteDebug;
 	
+	private boolean preventDrop = true;
+	private boolean packetDrop = true;
+	
 	private SimpleImage loadingBackground;
 	private SimpleImage overlay;
 	private SimpleImage missingMapImage;
@@ -314,6 +317,9 @@ public class Cartographer extends JavaPlugin {
 
 		blockUpdateDelay = config.getInt( "block-update-tick-delay", 5 );
 		
+		preventDrop = config.getBoolean( "prevent-drop", true );
+		packetDrop = config.getBoolean( "use-drop-packet", true );
+		
 		// Chunk load settings
 		chunkUpdateDelay = config.getInt( "chunk.update-delay", 10 );
 		ChunkLoadListener.INSTANCE.setForceLoad( config.getBoolean( "chunk.force-load", false ) );
@@ -514,6 +520,14 @@ public class Cartographer extends JavaPlugin {
 	
 	public boolean isPaletteDebug() {
 		return paletteDebug;
+	}
+	
+	public boolean isPreventDrop() {
+		return preventDrop;
+	}
+	
+	public boolean isUseDropPacket() {
+		return packetDrop;
 	}
 	
 	public int getBlockUpdateDelay() {

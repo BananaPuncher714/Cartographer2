@@ -18,6 +18,7 @@ import org.apache.commons.lang.Validate;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache.ChunkState;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 /**
@@ -136,25 +137,29 @@ public class BigChunkQueue {
 				int relX = coord.getX() << 4;
 				int relZ = coord.getZ() << 4;
 				if ( value != null ) {
+					// There *was* something on file after all
 					ChunkData[] data = value.getData();
 					
 					for ( int index = 0; index < data.length; index++ ) {
 						ChunkData chunkData = data[ index ];
 						ChunkLocation location = new ChunkLocation( coord.getWorld(), relX + index % 16, relZ + index / 16 );
-						if ( !cache.requiresGeneration( location ) ) {
-							continue;
-						}
 						if ( chunkData == null ) {
+							// If it doesn't have the chunk data we're looking for, then don't bother
 							cache.addToProcessQueue( location );
-						} else {
-							cache.getData().put( location, chunkData );
+						} else if ( cache.absent( location ) ){
+							// If the cache contains a more up to date version
+							// then might as well skip this
+							// Otherwise, add it in
+							cache.loadData( location, chunkData );
 						}
 					}
 				} else {
+					// Nothing was loaded from file
 					for ( int x = 0; x < 16; x++ ) {
 						for ( int z = 0; z < 16; z++ ) {
 							ChunkLocation location = new ChunkLocation( coord.getWorld(), relX + x, relZ + z );
-							if ( cache.requiresGeneration( location ) ) {
+							if ( cache.absent( location ) ) {
+								// Only add it to the process queue if it's not already stored in the cache somewhere
 								cache.addToProcessQueue( location );
 							}
 						}
@@ -163,6 +168,14 @@ public class BigChunkQueue {
 				iterator.remove();
 			}
 		}
+	}
+	
+	public boolean isSaving( ChunkLocation location ) {
+		return saving.containsKey( new BigChunkLocation( location ) );
+	}
+	
+	public boolean isLoading( ChunkLocation location ) {
+		return loading.containsKey( new BigChunkLocation( location ) );
 	}
 	
 	/**

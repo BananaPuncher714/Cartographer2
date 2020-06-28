@@ -150,7 +150,7 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
-		if ( packet instanceof PacketPlayInBlockDig ) {
+		if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
 			// Check for the drop packet
 			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
 

@@ -149,7 +149,7 @@ public class Minimap implements ChunkNotifier {
 				}
 				
 				// If not already marked as "in use", then check if it is loaded, or is waiting to be rendered
-				if ( cache.needsRender( location )
+				if ( cache.withinVisiblePlayerRange( location )
 						|| location.isLoaded()
 						|| cache.isProcessing( location ) ) {
 					// Add the location
