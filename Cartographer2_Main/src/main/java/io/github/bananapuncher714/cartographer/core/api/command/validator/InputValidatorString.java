@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 
 public class InputValidatorString implements InputValidator< String > {
 	protected Set< String > values = new HashSet< String >();

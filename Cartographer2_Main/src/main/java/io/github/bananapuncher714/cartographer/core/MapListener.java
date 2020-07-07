@@ -5,11 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
-import net.minecraft.server.v1_15_R1.PacketPlayInBlockDig.EnumPlayerDigType;
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 
 public class MapListener implements Listener {
 	private Cartographer plugin;
@@ -62,6 +63,15 @@ public class MapListener implements Listener {
 			if ( event.getInventorySlots().contains( slot ) ) {
 				event.setCancelled( true );
 				return;
+			}
+		}
+	}
+	
+	@EventHandler
+	private void onEvent( PrepareItemCraftEvent event ) {
+		for ( ItemStack item : event.getInventory().getMatrix() ) {
+			if ( item != null && plugin.getMapManager().isMinimapItem( item ) ) {
+				event.getInventory().setResult( new ItemStack( Material.AIR ) );
 			}
 		}
 	}

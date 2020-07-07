@@ -46,7 +46,6 @@ import net.minecraft.server.v1_16_R1.EnumRenderType;
 import net.minecraft.server.v1_16_R1.IBlockData;
 import net.minecraft.server.v1_16_R1.IRegistry;
 import net.minecraft.server.v1_16_R1.MapIcon;
-import net.minecraft.server.v1_16_R1.Material;
 import net.minecraft.server.v1_16_R1.MaterialMapColor;
 import net.minecraft.server.v1_16_R1.MinecraftKey;
 import net.minecraft.server.v1_16_R1.MinecraftServer;

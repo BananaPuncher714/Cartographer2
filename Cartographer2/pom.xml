@@ -13,7 +13,7 @@
 		<version>2</version>
 	</parent>
 	<artifactId>Cartographer2</artifactId>
-	<version>2.13.3</version>
+	<version>2.13.4</version>
 
 	<build>
 		<plugins>
@@ -33,19 +33,6 @@
 						</relocation>
 					</relocations>
 				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

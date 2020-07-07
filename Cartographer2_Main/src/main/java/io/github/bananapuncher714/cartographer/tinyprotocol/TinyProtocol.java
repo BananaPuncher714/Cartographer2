@@ -191,12 +191,13 @@ public abstract class TinyProtocol {
 			public final void onPlayerLogin(PlayerLoginEvent e) {
 				if (closed)
 					return;
-
-				Channel channel = getChannel(e.getPlayer());
-
-				// Don't inject players that have been explicitly uninjected
-				if (!uninjectedChannels.contains(channel)) {
-					injectPlayer(e.getPlayer());
+				
+				try {
+					inject( e.getPlayer() );
+				} catch ( NullPointerException exception ) {
+					// Using fast login or something?
+					// See if it resolves after a few ticks or such
+					Bukkit.getScheduler().runTaskLater( plugin, () -> { inject( e.getPlayer() ); }, 2 );
 				}
 			}
 
@@ -204,6 +205,15 @@ public abstract class TinyProtocol {
 			public final void onPluginDisable(PluginDisableEvent e) {
 				if (e.getPlugin().equals(plugin)) {
 					close();
+				}
+			}
+			
+			private void inject( Player player ) {
+				Channel channel = getChannel( player );
+				
+				// Don't inject players that have been explicitly uninjected
+				if (!uninjectedChannels.contains(channel)) {
+					injectPlayer( player );
 				}
 			}
 
