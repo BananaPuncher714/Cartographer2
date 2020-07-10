@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.tinyprotocol;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -15,7 +16,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,6 +32,7 @@ import io.github.bananapuncher714.cartographer.tinyprotocol.Reflection.MethodInv
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
@@ -188,35 +192,31 @@ public abstract class TinyProtocol {
 		listener = new Listener() {
 
 			@EventHandler(priority = EventPriority.LOWEST)
-			public final void onPlayerLogin(PlayerLoginEvent e) {
+			private final void onPlayerLogin( PlayerJoinEvent e) {
 				if (closed)
 					return;
 				
-				try {
-					inject( e.getPlayer() );
-				} catch ( NullPointerException exception ) {
-					// Using fast login or something?
-					// See if it resolves after a few ticks or such
-					Bukkit.getScheduler().runTaskLater( plugin, () -> { inject( e.getPlayer() ); }, 2 );
+				Channel channel = getChannel( e.getPlayer() );
+				
+				// Don't inject players that have been explicitly uninjected
+				if (!uninjectedChannels.contains(channel)) {
+					injectPlayer( e.getPlayer() );
 				}
+			}
+			
+			@EventHandler( priority = EventPriority.LOWEST )
+			private final void onPlayerQuitEvent( PlayerQuitEvent event ) {
+				// Remove all channels cached for the player
+				channelLookup.remove( event.getPlayer().getName() );
+				uuidChannelLookup.remove( event.getPlayer().getUniqueId() );
 			}
 
 			@EventHandler
-			public final void onPluginDisable(PluginDisableEvent e) {
+			private final void onPluginDisable(PluginDisableEvent e) {
 				if (e.getPlugin().equals(plugin)) {
 					close();
 				}
 			}
-			
-			private void inject( Player player ) {
-				Channel channel = getChannel( player );
-				
-				// Don't inject players that have been explicitly uninjected
-				if (!uninjectedChannels.contains(channel)) {
-					injectPlayer( player );
-				}
-			}
-
 		};
 
 		plugin.getServer().getPluginManager().registerEvents(listener, plugin);

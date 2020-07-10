@@ -2,7 +2,7 @@ package io.github.bananapuncher714.cartographer.module.vanilla.providers;
 
 import java.util.UUID;
 
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 

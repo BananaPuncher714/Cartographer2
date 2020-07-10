@@ -199,7 +199,7 @@ public class VanillaPlus extends Module {
 				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
-					material = Material.SPAWNER;
+					material = Material.DIAMOND;
 				}
 				CrossVersionMaterial cvMaterial = new CrossVersionMaterial( material, durability );
 				entityMaterials.put( type, cvMaterial );

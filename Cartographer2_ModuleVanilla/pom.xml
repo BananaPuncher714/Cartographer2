@@ -8,19 +8,19 @@
 		<version>2</version>
 	</parent>
 	<artifactId>Cartographer2_ModuleVanilla</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>1.15.1-R0.1-SNAPSHOT</version>
+			<artifactId>spigot-api</artifactId>
+			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2</artifactId>
-			<version>2.12.17</version>
+			<artifactId>Cartographer2_Main</artifactId>
+			<version>2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

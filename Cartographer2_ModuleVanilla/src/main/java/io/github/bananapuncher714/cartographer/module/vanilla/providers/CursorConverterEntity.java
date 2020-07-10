@@ -1,7 +1,6 @@
 package io.github.bananapuncher714.cartographer.module.vanilla.providers;
 
-import org.bukkit.Nameable;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -25,9 +24,9 @@ public class CursorConverterEntity implements CursorConverter {
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
 		Validate.isTrue( convertable( object ) );
 		Entity tracking = ( Entity ) object;
-		String name = null;
-		if ( tracking instanceof Nameable ) {
-			name = ( ( Nameable ) tracking ).getCustomName();
+		String name = tracking.getCustomName();
+		if ( name == null || name.isEmpty() ) {
+			name = null;
 		}
 		if ( visibility != CursorVisibility.NONE ) {
 			return new WorldCursor( showName ? name : null, tracking.getLocation(), icon, visibility == CursorVisibility.FULL );
