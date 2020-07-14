@@ -24,15 +24,10 @@ public class CommandExecutableMessageLocale implements CommandExecutable {
 	
 	@Override
 	public void execute( CommandSender sender, String[] args, CommandParameters params ) {
-		String message;
 		if ( module == null ) {
-			message = Cartographer.getInstance().getLocaleManager().translateFor( sender, key, params );
+			Cartographer.getInstance().getLocaleManager().translateAndSend( sender, key, params );
 		} else {
-			message = module.translate( sender, key, params );
-		}
-		
-		if ( message != null && !message.isEmpty() ) {
-			sender.sendMessage( message );
+			module.translateAndSend( sender, key, params );
 		}
 	}
 }

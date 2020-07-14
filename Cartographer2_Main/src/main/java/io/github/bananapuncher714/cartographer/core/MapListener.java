@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
-import io.github.bananapuncher714.nbteditor.NBTEditor;
 
 public class MapListener implements Listener {
 	private Cartographer plugin;

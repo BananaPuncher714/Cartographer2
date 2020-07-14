@@ -90,6 +90,22 @@ public class LocaleManager {
 		return plugin.getLocaleManager().translate( locale, sender, key, params );
 	}
 	
+	public String translateAndSend( String code, CommandSender sender, String key, Object... params ) {
+		String message = translate( code, sender, key, params );
+		if ( message != null && !message.isEmpty() ) {
+			sender.sendMessage( message );
+		}
+		return message;
+	}
+	
+	public String translateAndSend( CommandSender sender, String key, Object... params ) {
+		String message = translateFor( sender, key, params );
+		if ( message != null && !message.isEmpty() ) {
+			sender.sendMessage( message );
+		}
+		return message;
+	}
+	
 	public Locale getLocale( String code ) {
 		return locales.get( code );
 	}
@@ -110,7 +126,7 @@ public class LocaleManager {
 	}
 	
 	public void add( String code, String key, LocaleMessage message ) {
-		Locale locale = new Locale( "Unknown", "Unknown" , key );
+		Locale locale = new Locale( "Unknown", "Unknown", "Unknown", key );
 		locale.add( key, message );
 		if ( locales.containsKey( code ) ) {
 			Locale l = locales.get( code );
@@ -130,14 +146,13 @@ public class LocaleManager {
 		logger.info( "Loading default locale" );
 		Locale internal = load( plugin.getResource( INTERNAL_DEFAULT_LOCALE_LOCATION ) );
 		locales.put( defaultLocale, internal );
-		logger.infoTr( "locale.loaded-internal-locale", defaultLocale );
+		logger.infoTr( LocaleConstants.LOCALE_INTERNAL_LOCALE_LOADED, defaultLocale );
 		for ( File file : dataFolder.listFiles() ) {
 			if ( file.getName().endsWith( ".yml" ) ) {
 				try {
 					Locale loaded = load( file );
 					register( loaded );
-					logger.infoTr( LocaleConstants.LOCALE_LOCALE_LOADED, loaded.getName(), loaded.getLanguage(), loaded.getCode() );
-					
+					logger.infoTr( LocaleConstants.LOCALE_LOCALE_LOADED, loaded.getName(), loaded.getLocation(), loaded.getCode() );
 				} catch ( IllegalArgumentException e ) {
 					logger.severeTr( LocaleConstants.LOCALE_FILE_LOAD_ERROR, file.getName() );
 					e.printStackTrace();
@@ -180,12 +195,13 @@ public class LocaleManager {
 	public Locale load( FileConfiguration config, String prefix ) {
 		String name = config.getString( "name", "Unknown" );
 		String lang = config.getString( "language", "Unknown" );
+		String loc = config.getString( "location", "Unknown" );
 		String code = config.getString( "locale-code" );
 		if ( code == null || code.isEmpty() ) {
 			throw new IllegalArgumentException( "Locale file must have a code!" );
 		}
 		
-		Locale locale = new Locale( name, lang, code );
+		Locale locale = new Locale( name, lang, loc, code );
 		
 		ConfigurationSection section = config.getConfigurationSection( "messages" );
 		for ( String key : section.getKeys( true ) ) {

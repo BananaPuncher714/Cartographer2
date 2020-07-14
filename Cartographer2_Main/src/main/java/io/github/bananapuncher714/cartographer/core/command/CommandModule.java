@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
 import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
-import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
+import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessageLocale;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
 import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModule;
 import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModuleEnabled;
@@ -42,32 +42,32 @@ public class CommandModule {
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.enable" ) )
 						.add( new SubCommand( new InputValidatorModuleEnabled( plugin, false ) )
 								.defaultTo( this::enable ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module is already enabled or does not exist!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module enable <module>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_MESSAGE_ALREADY_ENABLED ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_ENABLE_USAGE ) ) )
 				.add( new SubCommand( "disable" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.disable" ) )
 						.add( new SubCommand( new InputValidatorModuleEnabled( plugin, true ) )
 								.defaultTo( this::disable ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module is already disabled or does not exist!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module disable <module>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_MESSAGE_ALREADY_DISABLED ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_DISABLE_USAGE ) ) )
 				.add( new SubCommand( "load" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.load" ) )
 						.add( new SubCommand( new InputValidatorModuleUnloaded( plugin ) )
 								.defaultTo( this::load ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This file is already loaded or does not exist!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module load <file>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_MESSAGE_INVALID_FILE ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_LOAD_USAGE ) ) )
 				.add( new SubCommand( "unload" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.unload" ) )
 						.add( new SubCommand( new InputValidatorModule( plugin ) )
 								.defaultTo( this::unload ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "This module does not exist!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module unload <module>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_MESSAGE_NOT_REAL ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_UNLOAD_USAGE ) ) )
 				.add( new SubCommand( "help" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.module.help" ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer module help" ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MODULE_HELP_USAGE ) )
 						.defaultTo( this::help ) )
-				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
-				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) );
+				.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_ARGUMENT ) )
+				.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_PROVIDE_ARGUMENT ) );
 	}
 	
 	protected SubCommand getCommand() {
@@ -77,9 +77,9 @@ public class CommandModule {
 	private void list( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Set< Module > modules = plugin.getModuleManager().getModules();
 		if ( modules.isEmpty() ) {
-			sender.sendMessage( plugin.getLocaleManager().translateFor( sender, LocaleConstants.COMMAND_MODULE_LIST_EMPTY ) );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_LIST_EMPTY );
 		} else {
-			StringBuilder builder = new StringBuilder( plugin.getLocaleManager().translateFor( sender, LocaleConstants.COMMAND_MODULE_LIST_FORMAT, modules.size() ) );
+			StringBuilder builder = new StringBuilder();
 			for ( Iterator< Module > iterator = modules.iterator(); iterator.hasNext(); ) {
 				Module module = iterator.next();
 				if ( module.isEnabled() ) {
@@ -94,13 +94,14 @@ public class CommandModule {
 					builder.append( ", " );
 				}
 			}
-			sender.sendMessage( builder.toString() );
+
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_LIST_FORMAT, modules.size(), builder.toString() );
 		}
 	}
 	
 	private void reload( CommandSender sender, String[] args, CommandParameters parameters ) {
 		plugin.getModuleManager().reload();
-		sender.sendMessage( ChatColor.GOLD + "Reloaded all modules!" );
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_RELOAD_SUCESS );
 	}
 	
 	private void enable( CommandSender sender, String[] args, CommandParameters parameters ) {
@@ -108,16 +109,16 @@ public class CommandModule {
 		String moduleName = module.getName();
 		
 		if ( module.isEnabled() ) {
-			sender.sendMessage( ChatColor.RED + "Module '" + moduleName + "' is already enabled!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_ENABLE_ENABLE_ERROR, moduleName );
 			return;
 		}
 		
 		boolean valid = plugin.getModuleManager().enableModule( module );
 		
 		if ( valid ) {
-			sender.sendMessage( ChatColor.GOLD + "Enabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_ENABLE_SUCCESS, moduleName );
 		} else {
-			sender.sendMessage( ChatColor.RED + "Unable to load module '" + moduleName + "', Check the server log for details. (Missing dependencies?)" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_ENABLE_LOAD_ERROR, moduleName );
 		}
 	}
 	
@@ -128,10 +129,10 @@ public class CommandModule {
 		boolean valid = plugin.getModuleManager().disableModule( module );
 		
 		if ( valid ) {
-			sender.sendMessage( ChatColor.GOLD + "Disabled module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_DISABLE_SUCCESS, moduleName );
 		} else {
 			// Shouldn't occur with the current input validator for the disable command
-			sender.sendMessage( ChatColor.RED + "Module '" + moduleName + "' is already disabled!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_DISABLE_ERROR, moduleName );
 		}
 	}
 	
@@ -139,7 +140,7 @@ public class CommandModule {
 		File file = parameters.getLast( File.class );
 		Module module = plugin.getModuleManager().loadModule( file );
 		if ( module == null ) {
-			sender.sendMessage( ChatColor.RED + "Unable to load module '" + file.getName() + "', Check the server log for details." );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_LOAD_LOAD_ERROR, file.getName() );
 			return;
 		}
 		
@@ -148,9 +149,9 @@ public class CommandModule {
 		boolean valid = plugin.getModuleManager().enableModule( module );
 		
 		if ( valid ) {
-			sender.sendMessage( ChatColor.GOLD + "Loaded and enabled module '" + ChatColor.YELLOW + module.getName() + ChatColor.GOLD + "'!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_LOAD_SUCCESS, module.getName() );
 		} else {
-			sender.sendMessage( ChatColor.RED + "Unable to enable module '" + module.getName() + "', Check the server log for details. (Missing dependencies?)" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_LOAD_ENABLE_ERROR, module.getName() );
 		}
 	}
 	
@@ -159,19 +160,15 @@ public class CommandModule {
 		String moduleName = module.getName();
 		
 		if ( plugin.getModuleManager().unloadModule( module, true ) ) {
-			sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_UNLOAD_SUCCESS, moduleName );
 		} else {
-			sender.sendMessage( ChatColor.GOLD + "Could not unload module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'! Was not loaded by Cartographer2!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_MODULE_UNLOAD_ERROR, moduleName );
 		}
 	}
 	
 	private void help( CommandSender sender, String[] args, CommandParameters parameters ) {
-		sender.sendMessage( ChatColor.AQUA + "=== Cartographer Module Commands ===" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module list" + ChatColor.GOLD + " - View all loaded modules" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module reload" + ChatColor.GOLD + " - Reload all modules" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module enable <module>" + ChatColor.GOLD + " - Enable a module" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module disable <module>" + ChatColor.GOLD + " - Disable a module" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module load <module>" + ChatColor.GOLD + " - Load a module" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer module unload <module>" + ChatColor.GOLD + " - Unload a module" );
+		for ( int i = 0; i < 20; i++ ) {
+			plugin.getLocaleManager().translateAndSend( sender, String.format( LocaleConstants.COMMAND_MODULE_HELP_FORMAT, i ) );
+		}
 	}
 }

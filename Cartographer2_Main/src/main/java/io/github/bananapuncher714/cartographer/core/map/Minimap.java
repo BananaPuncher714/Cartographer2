@@ -38,6 +38,7 @@ import io.github.bananapuncher714.cartographer.core.api.map.WorldPixelProvider;
 import io.github.bananapuncher714.cartographer.core.file.BigChunk;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkQueue;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
@@ -90,18 +91,19 @@ public class Minimap implements ChunkNotifier {
 		
 		load();
 		
-		logger.info( "Default rotation set to " + settings.getRotation() );
-		logger.info( "Auto update set to " + settings.isAutoUpdate() );
-		logger.info( "Circular zoom set to " + settings.isCircularZoom() );
-		logger.info( "Render out of border set to " + settings.isRenderOutOfBorder() );
-		logger.info( "Default zoom set to " + settings.getDefaultZoom() );
-		logger.info( "Allowed zooms: " + String.join( ", ", settings.allowedZooms.stream()
+		logger.infoTr( LocaleConstants.MINIMAP_DEFAULT_ROTATION, settings.getRotation() );
+		logger.infoTr( LocaleConstants.MINIMAP_AUTO_UPDATE, settings.isAutoUpdate() );
+		logger.infoTr( LocaleConstants.MINIMAP_ZOOM_CIRCULAR, settings.isCircularZoom() );
+		logger.infoTr( LocaleConstants.MINIMAP_RENDER, settings.isRenderOutOfBorder() );
+		logger.infoTr( LocaleConstants.MINIMAP_ZOOM_DEFAULT, settings.getDefaultZoom() );
+		logger.infoTr( LocaleConstants.MINIMAP_ZOOM_ALLOWED, String.join( ", ", settings.allowedZooms.stream()
 				.map( d -> { return String.valueOf( d ); } )
 				.collect( Collectors.toList() ) ) );
+		
 		if ( settings.isWhitelist ) {
-			
+			logger.infoTr( LocaleConstants.MINIMAP_WORLD_WHITELIST, String.join( ", ", settings.blacklistedWorlds ) );
 		} else {
-			logger.info( "Blacklisted worlds: " + String.join( ", ", settings.blacklistedWorlds ) );
+			logger.infoTr( LocaleConstants.MINIMAP_WORLD_BLACKLIST, String.join( ", ", settings.blacklistedWorlds ) );
 		}
 		
 		// Show at least the player, if nothing else
@@ -113,17 +115,17 @@ public class Minimap implements ChunkNotifier {
 		try {
 			if ( OVERLAY_IMAGE_FILE.exists() ) {
 				overlay = new SimpleImage( OVERLAY_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.info( "Loaded overlay image '" + OVERLAY_IMAGE_FILE.getName() + "'" );
+				logger.infoTr( LocaleConstants.MINIMAP_LOADED_OVERLAY, OVERLAY_IMAGE_FILE.getName() );
 			}
 			
 			if ( BACKGROUND_IMAGE_FILE.exists() ) {
 				background = new SimpleImage( BACKGROUND_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.info( "Loaded background image '" + BACKGROUND_IMAGE_FILE.getName() + "'" );
+				logger.infoTr( LocaleConstants.MINIMAP_LOADED_BACKGROUND, BACKGROUND_IMAGE_FILE.getName() );
 			}
 			
 			if ( DISABLED_IMAGE_FILE.exists() ) {
 				disabled = new SimpleImage( DISABLED_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.info( "Loaded disabled image '" + DISABLED_IMAGE_FILE.getName() + "'" );
+				logger.infoTr( LocaleConstants.MINIMAP_LOADED_DISABLED, DISABLED_IMAGE_FILE.getName() );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();

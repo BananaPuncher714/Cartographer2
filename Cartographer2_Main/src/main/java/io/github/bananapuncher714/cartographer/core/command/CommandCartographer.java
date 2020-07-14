@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
 import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
-import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
+import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessageLocale;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorInt;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorPlayer;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
@@ -20,6 +20,7 @@ import io.github.bananapuncher714.cartographer.core.api.command.validator.sender
 import io.github.bananapuncher714.cartographer.core.command.validator.InputValidatorCreateMinimap;
 import io.github.bananapuncher714.cartographer.core.command.validator.InputValidatorMinimap;
 import io.github.bananapuncher714.cartographer.core.command.validator.InputValidatorMinimapFile;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
 /**
@@ -64,79 +65,75 @@ public class CommandCartographer {
 				.add( new SubCommand( "reload" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.reload" ) )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
-								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer reload <map>" ) )
+								.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_RELOAD_USAGE ) )
 								.defaultTo( this::reloadMap ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer reload <map>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_RELOAD_USAGE ) ) )
 				.add( new SubCommand( "list" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.list" ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer list" ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_LIST_USAGE ) )
 						.defaultTo( this::list ) )
 				.add( new SubCommand( "get" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.get" ) )
 						.addSenderValidator( new SenderValidatorPlayer() )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
 								.defaultTo( this::get ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a minimap!" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_PROVIDE_MINIMAP ) ) )
 				.add( new SubCommand( "get" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.give" ) )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
 								.add( new SubCommand( new InputValidatorPlayer() )
 										.add( new SubCommand( new InputValidatorInt( 0, 40 ) )
 												.defaultTo( this::give ) )
-										.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid slot! (0-40)" ) )
+										.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_SLOT ) )
 										.defaultTo( this::give ) )
-								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "That player is not online!" ) )
-								.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide a player!!" ) ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer get <map> <player> [slot]" ) ) )
+								.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_PLAYER_MISSING ) )
+								.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_PROVIDE_PLAYER) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_GET_USAGE ) ) )
 				.add( new SubCommand( "create" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.create" ) )
 						.add( new SubCommand( new InputValidatorCreateMinimap( plugin ) )
-								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer create <id>" ) )
+								.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_CREATE_USAGE ) )
 								.defaultTo( this::create ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "A minimap with that id already exists!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer create <id>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_MINIMAP_EXISTS ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_CREATE_USAGE ) ) )
 				.add( new SubCommand( "delete" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.delete" ) )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
 								.defaultTo( this::delete ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer delete <id>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_DELETE_USAGE ) ) )
 				.add( new SubCommand( "load" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.load" ) )
 						.add( new SubCommand( new InputValidatorMinimapFile( plugin ) )
 								.defaultTo( this::load ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "That minimap does not exist!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer load <id>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_LOAD_USAGE ) ) )
 				.add( new SubCommand( "unload" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.map.unload" ) )
 						.add( new SubCommand( new InputValidatorMinimap( plugin ) )
 								.defaultTo( this::unload ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid minimap!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer unload <id>" ) ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_MINIMAP ) )
+						.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_UNLOAD_USAGE ) ) )
 				.add( new SubCommand( "help" )
 						.addSenderValidator( new SenderValidatorPermission( "cartographer.help" ) )
-						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer help" ) )
+						.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_CARTOGRAPHER_HELP_USAGE ) )
 						.defaultTo( this::help ) )
 				.add( moduleCommand.getCommand() )
 				.add( settingsCommand.getCommand() )
-				.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "Invalid argument!" ) )
-				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) )
+				.whenUnknown( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_INVALID_ARGUMENT ) )
+				.defaultTo( new CommandExecutableMessageLocale( LocaleConstants.COMMAND_MESSAGE_PROVIDE_ARGUMENT ) )
 				.applyTo( command );
 	}
 	
 	private void list( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Set< String > minimaps = plugin.getMapManager().getMinimaps().keySet();
 		if ( minimaps.isEmpty() ) {
-			sender.sendMessage( ChatColor.AQUA + "There are currently no minimaps loaded!" );
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_LIST_EMPTY );
 		} else {
 			StringBuilder builder = new StringBuilder();
-			builder.append( ChatColor.AQUA );
-			builder.append( "Cartographer2 Minimaps (" );
-			builder.append( minimaps.size() );
-			builder.append( "): " );
 			for ( Iterator< String > iterator = minimaps.iterator(); iterator.hasNext(); ) {
 				String minimap = iterator.next();
 				builder.append( ChatColor.YELLOW );
@@ -147,14 +144,15 @@ public class CommandCartographer {
 					builder.append( ", " );
 				}
 			}
-			sender.sendMessage( builder.toString() );
+			
+			plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_LIST_FORMAT, minimaps.size(), builder.toString() );
 		}
 	}
 
 	private void create( CommandSender sender, String[] args, CommandParameters parameters ) {
 		String name = parameters.getLast( String.class );
 		Minimap map = plugin.getMapManager().constructNewMinimap( name );
-		sender.sendMessage( ChatColor.AQUA + "Created and registered a new minimap with id '" + ChatColor.YELLOW + name + ChatColor.AQUA + "'" );
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_CREATE_SUCCESS, map.getId() );
 	}
 
 	private void get( CommandSender sender, String[] args, CommandParameters parameters ) {
@@ -182,13 +180,13 @@ public class CommandCartographer {
 	private void delete( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Minimap map = parameters.getLast( Minimap.class );
 		plugin.getMapManager().remove( map );
-		sender.sendMessage( ChatColor.AQUA + "Deleted minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_DELETE_SUCCESS, map.getId() );
 	}
 	
 	private void reload( CommandSender sender, String[] args, CommandParameters parameters ) {
 		// Reload the Cartographer config and whatnot
 		plugin.reload();
-		sender.sendMessage( ChatColor.AQUA + "Reloaded Cartographer2 settings" );
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_RELOAD_PLUGIN );
 	}
 
 	private void reloadMap( CommandSender sender, String[] args, CommandParameters parameters ) {
@@ -199,14 +197,15 @@ public class CommandCartographer {
 
 		plugin.getMapManager().unload( map );
 		plugin.getMapManager().load( saveDir );
-
-		sender.sendMessage( ChatColor.AQUA + "Reloaded minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
+		
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_RELOAD_MINIMAP, map.getId() );
 	}
 
 	private void unload( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Minimap map = parameters.getLast( Minimap.class );
 		plugin.getMapManager().unload( map );
-		sender.sendMessage( ChatColor.AQUA + "Unloaded minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
+		
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_UNLOAD_SUCCESS, map.getId() );
 	}
 
 	private void load( CommandSender sender, String[] args, CommandParameters parameters ) {
@@ -214,17 +213,12 @@ public class CommandCartographer {
 
 		Minimap map = plugin.getMapManager().load( mapDir );
 
-		sender.sendMessage( ChatColor.AQUA + "Loaded minimap '" + ChatColor.YELLOW + map.getId() + ChatColor.AQUA + "'" );
+		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_LOAD_SUCCESS, map.getId() );
 	}
 	
 	private void help( CommandSender sender, String[] args, CommandParameters parameters ) {
-		sender.sendMessage( ChatColor.AQUA + "=== Cartographer Commands ===" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer reload [map]" + ChatColor.GOLD + " - Reload Cartographer2 or a minimap" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer list" + ChatColor.GOLD + " - View all loaded minimaps" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer get <map> [player] [slot]" + ChatColor.GOLD + " - Get or give a minimap" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer create <map>" + ChatColor.GOLD + " - Create a new minimap" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer delete <map>" + ChatColor.GOLD + " - Delete a minimap" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer load <map>" + ChatColor.GOLD + " - Load a minimap" );
-		sender.sendMessage( ChatColor.YELLOW + "/cartographer unload <map>" + ChatColor.GOLD + " - Unload a minimap" );
+		for ( int i = 0; i < 20; i++ ) {
+			plugin.getLocaleManager().translateAndSend( sender, String.format( LocaleConstants.COMMAND_CARTOGRAPHER_HELP_FORMAT, i ) );
+		}
 	}
 }

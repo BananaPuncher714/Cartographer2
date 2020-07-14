@@ -10,6 +10,12 @@ import io.github.bananapuncher714.cartographer.core.api.command.CommandParameter
 import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutable;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 
+/**
+ * @deprecated
+ * An unused example
+ * 
+ * @author BananaPuncher714
+ */
 public class CommandMapReloadExecutable implements CommandExecutable {
 	protected Cartographer plugin;
 	

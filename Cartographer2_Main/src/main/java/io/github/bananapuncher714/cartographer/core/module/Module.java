@@ -138,7 +138,7 @@ public abstract class Module {
 	}
 	
 	protected final Locale convertToDefaultLocale( Locale locale ) {
-		return locale.copyOf( null, null, plugin.getLocaleManager().getDefaultLocale() );
+		return locale.copyOf( null, null, null, plugin.getLocaleManager().getDefaultLocale() );
 	}
 	
 	protected final Locale loadLocale( InputStream stream ) {

@@ -307,6 +307,7 @@ public class Cartographer extends JavaPlugin {
 		if ( !LOCALE_README_FILE.exists() ) {
 			FileUtil.saveToFile( getResource( "data/locale/README.md" ), LOCALE_README_FILE, false );
 			FileUtil.saveToFile( getResource( "data/locale/en_us.yml" ), new File( LOCALE_DIR, "en_us.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/en_pt.yml" ), new File( LOCALE_DIR, "en_pt.yml" ), false );
 		}
 	}
 	

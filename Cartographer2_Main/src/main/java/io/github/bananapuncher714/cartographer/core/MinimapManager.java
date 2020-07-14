@@ -15,6 +15,7 @@ import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapDe
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapLoadEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapUnloadEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.renderer.CartographerRendererCreateEvent;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
@@ -148,7 +149,7 @@ public class MinimapManager {
 	}
 	
 	public Minimap constructNewMinimap( String id ) {
-		logger.info( "Loading minimap '" + id + "'" );
+		logger.infoTr( LocaleConstants.MANAGER_MINIMAP_LOADING, id );
 		File dir = plugin.getAndConstructMapDir( id );
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
@@ -169,7 +170,7 @@ public class MinimapManager {
 	}
 	
 	public Minimap constructNewMinimap( File dir ) {
-		logger.info( "Loading minimap '" + dir.getName() + "'" );
+		logger.infoTr( LocaleConstants.MANAGER_MINIMAP_LOADING, dir.getName() );
 		plugin.saveMapFiles( dir );
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
@@ -186,7 +187,7 @@ public class MinimapManager {
 	}
 	
 	public void unload( Minimap map ) {
-		logger.info( "Unloading minimap '" + map.getId() + "'" );
+		logger.infoTr( LocaleConstants.MANAGER_MINIMAP_UNLOADING, map.getId() );
 		new MinimapUnloadEvent( map ).callEvent();
 		
 		minimaps.remove( map.getId() );
@@ -196,7 +197,7 @@ public class MinimapManager {
 	}
 	
 	public void remove( Minimap map ) {
-		logger.info( "Deleting minimap '" + map.getId() + "'" );
+		logger.infoTr( LocaleConstants.MANAGER_MINIMAP_DELETING, map.getId() );
 		new MinimapDeleteEvent( map ).callEvent();
 		
 		minimaps.remove( map.getId() );

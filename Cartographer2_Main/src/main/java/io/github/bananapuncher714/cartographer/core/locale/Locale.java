@@ -9,13 +9,15 @@ import org.bukkit.command.CommandSender;
 public class Locale {
 	private final String name;
 	private final String language;
+	private final String location;
 	private final String code;
 	
 	private Map< String, LocaleMessage > messages = new HashMap< String, LocaleMessage >();
 
-	public Locale( String name, String language, String code ) {
+	public Locale( String name, String language, String location, String code ) {
 		this.name = name;
 		this.language = language;
+		this.location = location;
 		this.code = code;
 	}
 
@@ -25,6 +27,10 @@ public class Locale {
 	
 	public String getLanguage() {
 		return language;
+	}
+	
+	public String getLocation() {
+		return location;
 	}
 	
 	public String getCode() {
@@ -54,10 +60,10 @@ public class Locale {
 	}
 	
 	public Locale copyOf() {
-		return copyOf( name, language, code );
+		return copyOf( name, language, location, code );
 	}
 	
-	public Locale copyOf( String name, String language, String code ) {
+	public Locale copyOf( String name, String language, String location, String code ) {
 		if ( name == null ) {
 			name = this.name;
 		}
@@ -66,10 +72,14 @@ public class Locale {
 			language = this.language;
 		}
 		
+		if ( location == null ) {
+			location = this.location;
+		}
+		
 		if ( code == null || code.isEmpty() ) {
 			code = this.code;
 		}
 		
-		return new Locale( name, language, code ).merge( this );
+		return new Locale( name, language, location, code ).merge( this );
 	}
 }
