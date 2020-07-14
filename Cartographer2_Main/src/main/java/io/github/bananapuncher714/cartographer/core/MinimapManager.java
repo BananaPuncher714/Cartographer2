@@ -3,7 +3,6 @@ package io.github.bananapuncher714.cartographer.core;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,7 +30,7 @@ public class MinimapManager {
 	protected Cartographer plugin;
 	protected Map< String, Minimap > minimaps = new ConcurrentHashMap< String, Minimap >();
 
-	protected Logger logger = new CartographerLogger( "MapManager" );
+	protected CartographerLogger logger = new CartographerLogger( "MapManager" );
 	
 	public MinimapManager( Cartographer plugin ) {
 		this.plugin = plugin;

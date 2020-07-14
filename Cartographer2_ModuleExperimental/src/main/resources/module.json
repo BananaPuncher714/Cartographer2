@@ -1,0 +1,9 @@
+{
+    "name": "Experimental",
+	"main": "io.github.bananapuncher714.cartographer.module.experimental.ExperimentalModule",
+	"description": "Latest experimental updates for Cartographer2",
+	"version": "0.0.1",
+	"author": "BananaPuncher714",
+	"website": "aaaaahhhhhhh.com",
+	"depend": [ "Cartographer2" ]
+}

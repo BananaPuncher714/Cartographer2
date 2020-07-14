@@ -158,7 +158,12 @@ public class CartographerRenderer extends MapRenderer {
 			Minimap map = setting.map == null ? null : plugin.getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
 				SimpleImage missingImage = plugin.getMissingMapImage();
-				byte[] missingMapData = JetpImageUtil.dither( missingImage.getWidth(), missingImage.getImage() );
+				byte[] missingMapData;
+				if ( plugin.isDitherMissingMapImage() ) {
+					missingMapData = JetpImageUtil.dither2Minecraft( missingImage.getImage(), missingImage.getWidth() ).array();
+				} else {
+					missingMapData = JetpImageUtil.simplify( missingImage.getImage() );
+				}
 				plugin.getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
 				continue;
 			}
@@ -170,7 +175,11 @@ public class CartographerRenderer extends MapRenderer {
 				}
 				byte[] data = new byte[ 128 * 128 ];
 				if ( image != null ) {
-					data = JetpImageUtil.dither( image.getWidth(), image.getImage() );
+					if ( map.getSettings().isDitherBlacklisted() ) {
+						data = JetpImageUtil.dither2Minecraft( image.getImage(), image.getWidth() ).array();
+					} else {
+						data = JetpImageUtil.simplify( image.getImage() );
+					}
 				}
 				CartographerRendererDisabledEvent event = new CartographerRendererDisabledEvent( this, data );
 				event.callEvent();

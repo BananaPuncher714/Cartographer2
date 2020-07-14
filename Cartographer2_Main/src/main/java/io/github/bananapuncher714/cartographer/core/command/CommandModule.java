@@ -15,6 +15,7 @@ import io.github.bananapuncher714.cartographer.core.api.command.validator.sender
 import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModule;
 import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModuleEnabled;
 import io.github.bananapuncher714.cartographer.core.command.validator.module.InputValidatorModuleUnloaded;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 
 /**
@@ -76,13 +77,9 @@ public class CommandModule {
 	private void list( CommandSender sender, String[] args, CommandParameters parameters ) {
 		Set< Module > modules = plugin.getModuleManager().getModules();
 		if ( modules.isEmpty() ) {
-			sender.sendMessage( ChatColor.GOLD + "There are currently no modules loaded!" );
+			sender.sendMessage( plugin.getLocaleManager().translateFor( sender, LocaleConstants.COMMAND_MODULE_LIST_EMPTY ) );
 		} else {
-			StringBuilder builder = new StringBuilder();
-			builder.append( ChatColor.GOLD );
-			builder.append( "Cartographer2 Modules (" );
-			builder.append( modules.size() );
-			builder.append( "): " );
+			StringBuilder builder = new StringBuilder( plugin.getLocaleManager().translateFor( sender, LocaleConstants.COMMAND_MODULE_LIST_FORMAT, modules.size() ) );
 			for ( Iterator< Module > iterator = modules.iterator(); iterator.hasNext(); ) {
 				Module module = iterator.next();
 				if ( module.isEnabled() ) {
@@ -161,7 +158,7 @@ public class CommandModule {
 		Module module = parameters.getLast( Module.class );
 		String moduleName = module.getName();
 		
-		if ( plugin.getModuleManager().unloadModule( module ) ) {
+		if ( plugin.getModuleManager().unloadModule( module, true ) ) {
 			sender.sendMessage( ChatColor.GOLD + "Unloaded module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'!" );
 		} else {
 			sender.sendMessage( ChatColor.GOLD + "Could not unload module '" + ChatColor.YELLOW + moduleName + ChatColor.GOLD + "'! Was not loaded by Cartographer2!" );

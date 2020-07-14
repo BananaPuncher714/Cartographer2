@@ -171,9 +171,12 @@ public class SubCommand {
 			String[] newArgs = FailSafe.pop( args );
 			for ( SubCommand subCommand : subCommands ) {
 				if ( subCommand.matches( sender ) ) {
-					if ( subCommand.matches( arg, newArgs ) ) {
+					// Check if the subcommand matches the argument, and if it has subcommands of its own
+					if ( subCommand.matches( arg, newArgs ) && !subCommand.getSubCommands().isEmpty() ) {
 						tabs.addAll( subCommand.getTabCompletions( sender, newArgs ) );
 					} else if ( args.length == 1 ) {
+						// If not, and this is the last argument, add all possible tab completes
+						// This allows for "recommendations"
 						Collection< String > completions = subCommand.getTabCompletes();
 						if ( completions != null ) {
 							tabs.addAll( completions );
@@ -182,6 +185,7 @@ public class SubCommand {
 				}
 			}
 		}
+		
 		return tabs;
 	}
 	

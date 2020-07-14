@@ -91,7 +91,7 @@ public class CommandSettings {
 						.addSenderValidator( new SenderValidatorNotPlayer() )
 						.add( getOther )
 						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "That player is not online!" ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer settings getother <player> <setting>" ) ) )
+						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "Usage: /cartographer settings get <player> <setting>" ) ) )
 				.add( set )
 				.add( get )
 				.add( new SubCommand( "setother" )

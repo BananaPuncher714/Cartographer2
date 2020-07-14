@@ -52,3 +52,10 @@ chunk:
   load-per-update: 20
   # Amount of chunks that get generated per update, if they don't exist
   generate-per-update: 1
+ 
+# Whether or not to dither the missing map image. Works best with images of real things
+dither-missing: false
+
+# The default locale
+# 'default' is always present
+default-locale: "default"

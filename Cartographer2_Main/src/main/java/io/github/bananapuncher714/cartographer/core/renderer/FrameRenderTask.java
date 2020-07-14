@@ -35,8 +35,27 @@ public class FrameRenderTask extends RecursiveAction {
 		int[] higherMapPixels = new int[ CANVAS_SIZE ];
 		int[] lowerMapPixels = new int[ CANVAS_SIZE ];
 		// Make sure it's not null
-		int[] globalOverlay = info.overlayImage != null ? info.overlayImage.getImage() : new int[ CANVAS_SIZE ];
-		int[] loadingBackground = info.backgroundImage != null ? info.backgroundImage.getImage() : new int[ CANVAS_SIZE ];
+		int[] globalOverlay;
+		if ( info.overlayImage != null ) {
+			globalOverlay = info.overlayImage.getImage();
+			if ( info.map.getSettings().isDitherOverlay() ) {
+				globalOverlay = globalOverlay.clone();
+				JetpImageUtil.dither( globalOverlay, 128 );
+			}
+		} else {
+			globalOverlay = new int[ CANVAS_SIZE ];
+		}
+		
+		int[] loadingBackground;
+		if ( info.backgroundImage != null ) {
+			loadingBackground = info.backgroundImage.getImage();
+			if ( info.map.getSettings().isDitherBackground() ) {
+				loadingBackground = loadingBackground.clone();
+				JetpImageUtil.dither( loadingBackground, 128 );
+			}
+		} else {
+			loadingBackground = new int[ CANVAS_SIZE ];
+		}
 		
 		// Set the information to the render info
 		info.data = data;

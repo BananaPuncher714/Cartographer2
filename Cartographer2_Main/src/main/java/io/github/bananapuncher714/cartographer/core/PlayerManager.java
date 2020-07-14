@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -42,6 +43,16 @@ public class PlayerManager {
 			viewers.put( uuid, viewer );
 		}
 		return viewer;
+	}
+	
+	public String getLocale( UUID uuid ) {
+		return getViewerFor( uuid ).getSetting( MapViewer.LOCALE );
+	}
+	
+	public void setLocale( UUID uuid, String locale ) {
+		Bukkit.getScheduler().runTask( plugin, () -> {
+			getViewerFor( uuid ).setSetting( MapViewer.LOCALE, locale );
+		} );
 	}
 	
 	protected MapViewer load( UUID uuid ) {

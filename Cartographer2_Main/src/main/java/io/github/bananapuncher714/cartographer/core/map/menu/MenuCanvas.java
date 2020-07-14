@@ -29,7 +29,7 @@ public class MenuCanvas {
 			this.dither = dither;
 			
 			if ( dither ) {
-				displayData = JetpImageUtil.dither( width, data );
+				displayData = JetpImageUtil.dither2Minecraft( data, width ).array();
 			} else {
 				displayData = JetpImageUtil.simplify( data );
 			}
@@ -144,7 +144,7 @@ public class MenuCanvas {
 	
 	protected void update() {
 		if ( dither ) {
-			displayData = JetpImageUtil.dither( width, data );
+			displayData = JetpImageUtil.dither2Minecraft( data, width ).array();
 		} else {
 			displayData = JetpImageUtil.simplify( data );
 		}

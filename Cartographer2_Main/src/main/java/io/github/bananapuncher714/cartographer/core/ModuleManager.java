@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
@@ -25,7 +24,7 @@ public class ModuleManager {
 	protected Map< String, Module > modules = new HashMap< String, Module >();
 	protected File moduleFolder;
 	
-	protected Logger logger = new CartographerLogger( "ModuleManager" );
+	protected CartographerLogger logger = new CartographerLogger( "ModuleManager" );
 	
 	protected ModuleManager( Cartographer plugin, File moduleFolder ) {
 		this.plugin = plugin;
@@ -36,7 +35,7 @@ public class ModuleManager {
 	
 	protected void terminate() {
 		disableModules();
-		unloadModules();
+		unloadModules( false );
 	}
 	
 	public void registerModule( Module module ) {
@@ -50,10 +49,10 @@ public class ModuleManager {
 	
 	public void reload() {
 		logger.info( "Reloading modules..." );
-		unloadModules();
+		unloadModules( true );
 		loadModules();
 		enableModules();
-		logger.info( "Done reloading modules");
+		logger.info( "Done reloading modules" );
 	}
 	
 	public Module loadModule( File file ) {
@@ -97,16 +96,19 @@ public class ModuleManager {
 		new ModuleLoadEvent( module ).callEvent();
 	}
 	
-	protected void unloadModules() {
+	protected void unloadModules( boolean reloadLocale ) {
 		Set< String > keys = new HashSet< String >( modules.keySet() );
 		for ( String id : keys ) {
 			Module module = modules.get( id );
 			
-			unloadModule( module );
+			unloadModule( module, false );
+		}
+		if ( reloadLocale ) {
+			plugin.getLocaleManager().reload();
 		}
 	}
 	
-	public boolean unloadModule( Module module ) {
+	public boolean unloadModule( Module module, boolean reloadLocale ) {
 		module.unload();
 		
 		disableModule( module );
@@ -117,6 +119,13 @@ public class ModuleManager {
 		}
 		
 		modules.remove( module.getName() );
+
+		if ( reloadLocale ) {
+			// Reload the locale manager and clear out any changes
+			// that it may have made or added
+			plugin.getLocaleManager().reload();
+		}
+		
 		return true;
 	}
 	

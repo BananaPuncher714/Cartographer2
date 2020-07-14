@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.dependency;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
@@ -11,6 +12,7 @@ public class DependencyManager {
 	
 	protected DependencyWorldBorderAPI dependencyWorldBorder;
 	protected DependencyVanilla dependencyVanilla;
+	protected DependencyPlaceholderAPI dependencyPlaceholder;
 	
 	public DependencyManager( Plugin plugin ) {
 		this.plugin = plugin;
@@ -18,6 +20,11 @@ public class DependencyManager {
 		Plugin worldBorderAPI = Bukkit.getPluginManager().getPlugin( "WorldBorder" );
 		if ( worldBorderAPI != null && worldBorderAPI.isEnabled() ) {
 			dependencyWorldBorder = new DependencyWorldBorderAPI();
+		}
+		
+		Plugin placeholderAPI = Bukkit.getPluginManager().getPlugin( "PlaceholderAPI" ); 
+		if ( placeholderAPI != null ) {
+			dependencyPlaceholder = new DependencyPlaceholderAPI();
 		}
 		
 		dependencyVanilla = new DependencyVanilla();
@@ -60,5 +67,14 @@ public class DependencyManager {
 		}
 		
 		return loaded;
+	}
+	
+	public String translateString( CommandSender sender, String string ) {
+		if ( dependencyPlaceholder != null ) {
+			if ( string != null ) {
+				return dependencyPlaceholder.translate( sender, string );
+			}
+		}
+		return string;
 	}
 }

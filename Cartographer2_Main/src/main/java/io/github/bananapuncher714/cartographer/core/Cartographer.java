@@ -23,6 +23,8 @@ import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.command.CommandCartographer;
 import io.github.bananapuncher714.cartographer.core.dependency.DependencyManager;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
+import io.github.bananapuncher714.cartographer.core.locale.LocaleManager;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
@@ -42,10 +44,12 @@ public class Cartographer extends JavaPlugin {
 	private static File MODULE_DIR;
 	private static File MAP_DIR;
 	private static File CACHE_DIR;
+	private static File LOCALE_DIR;
 	
 	private static File README_FILE;
 	private static File CONFIG_FILE;
 	private static File DATA_FILE;
+	private static File LOCALE_README_FILE;
 	
 	private static File MISSING_MAP_IMAGE;
 	private static File OVERLAY_IMAGE;
@@ -60,6 +64,7 @@ public class Cartographer extends JavaPlugin {
 	private ModuleManager moduleManager;
 	private DependencyManager dependencyManager;
 	private PlayerManager playerManager;
+	private LocaleManager localeManager;
 	
 	// Blacklist of map ids to NOT use
 	private Set< Integer > invalidIds = new HashSet< Integer >();
@@ -88,9 +93,11 @@ public class Cartographer extends JavaPlugin {
 	private boolean rotateByDefault = true;
 	// Print out debug information regarding missing colors and materials in the console
 	private boolean paletteDebug;
-	
+	// Catch the drop item packet
 	private boolean preventDrop = true;
 	private boolean packetDrop = true;
+	// Dither the missing map image
+	private boolean ditherMissing = false;
 	
 	private SimpleImage loadingBackground;
 	private SimpleImage overlay;
@@ -118,18 +125,33 @@ public class Cartographer extends JavaPlugin {
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
 		MODULE_DIR = new File( getDataFolder() + "/" + "modules/" );
 		MAP_DIR = new File( getDataFolder() + "/" + "maps/" );
-		CACHE_DIR = new File( getDataFolder() + "/" + "cache/" );
+		CACHE_DIR = new File( getDataFolder() + "/" + "players/" );
+		LOCALE_DIR = new File( getDataFolder() + "/" + "locale/" );
 		
-		README_FILE = new File( getDataFolder() + "/" + "README.md" );
-		CONFIG_FILE = new File( getDataFolder() + "/" + "config.yml" );
-		DATA_FILE = new File( getDataFolder() + "/" + "data.yml" );
+		README_FILE = new File( getDataFolder(), "README.md" );
+		CONFIG_FILE = new File( getDataFolder(), "config.yml" );
+		DATA_FILE = new File( getDataFolder(), "data.yml" );
+		LOCALE_README_FILE = new File( LOCALE_DIR, "README.md" );
 		
 		JetpImageUtil.init();
 		
+		// Save the locale files
+		loadLocaleFiles();
+		
+		paletteManager = new PaletteManager( this );
+		mapManager = new MinimapManager( this );
+		moduleManager = new ModuleManager( this, MODULE_DIR );
+		playerManager = new PlayerManager( this, CACHE_DIR );
+		dependencyManager = new DependencyManager( this );
+		localeManager = new LocaleManager( this, LOCALE_DIR );
+		
+		getLogger().info( "Loading locales..." );
+		localeManager.reload();
+		
 		handler = ReflectionUtil.getNewPacketHandlerInstance();
 		if ( handler == null ) {
-			getLogger().severe( "This version(" + ReflectionUtil.VERSION + ") is not supported currently!" );
-			getLogger().severe( "Disabling..." );
+			loggerSevere( LocaleConstants.CORE_UNSUPPORTED_VERSION, ReflectionUtil.VERSION );
+			loggerSevere( LocaleConstants.CORE_PLUGIN_DISABLE );
 			Bukkit.getPluginManager().disablePlugin( this );
 			return;
 		}
@@ -145,12 +167,6 @@ public class Cartographer extends JavaPlugin {
 				return handler.onPacketInterceptIn( player, packet );
 			}
 		};
-		
-		paletteManager = new PaletteManager( this );
-		mapManager = new MinimapManager( this );
-		moduleManager = new ModuleManager( this, MODULE_DIR );
-		dependencyManager = new DependencyManager( this );
-		playerManager = new PlayerManager( this, new File( getDataFolder() + "/" + "players" ) );
 		
 		// Create our base command
 		command = new CommandCartographer( this, getCommand( "cartographer" ) );
@@ -172,20 +188,20 @@ public class Cartographer extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		getLogger().info( "Disabling modules..." );
+		loggerInfo( LocaleConstants.CORE_DISABLE_MODULES_DISABLE );
 		moduleManager.terminate();
 		
 		for ( CartographerRenderer renderer : renderers.values() ) {
 			renderer.terminate();
 		}
-		getLogger().info( "Saving map data. This may take a while..." );
+		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_MAP_START );
 		mapManager.terminate();
-		getLogger().info( "Saving map data complete!" );
+		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_MAP_FINISH );
 		saveData();
 		
-		getLogger().info( "Saving player data..." );
+		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_PLAYER_START );
 		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::unload );
-		getLogger().info( "Saving player data complete!" );
+		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_PLAYER_FINISH );
 	}
 	
 	protected void onServerLoad() {
@@ -198,7 +214,7 @@ public class Cartographer extends JavaPlugin {
 		Bukkit.getScheduler().runTaskTimer( this, this::update, 5, 20 );
 		
 		// Enable the modules afterwards
-		getLogger().info( "Enabling modules..." );
+		loggerInfo( LocaleConstants.CORE_ENABLE_MODULES_ENABLE );
 		moduleManager.enableModules();
 		
 		loadAfter();
@@ -244,13 +260,13 @@ public class Cartographer extends JavaPlugin {
 		loadInit();
 		
 		// Load the config and images first
-		getLogger().info( "Loading config..." );
+		loggerInfo( LocaleConstants.CORE_ENABLE_LOAD_CONFIG );
 		loadConfig();
-		getLogger().info( "Loading images..." );
+		loggerInfo( LocaleConstants.CORE_ENABLE_LOAD_IMAGES );
 		loadImages();
 		
 		// Load the palettes
-		getLogger().info( "Loading palettes..." );
+		loggerInfo( LocaleConstants.CORE_ENABLE_LOAD_PALETTES );
 		loadPalettes();
 		
 		// Load the runnables
@@ -258,7 +274,7 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadAfter() {
-		getLogger().info( "Loading minimaps and data..." );
+		loggerInfo( LocaleConstants.CORE_ENABLE_LOAD_DATA );
 		
 		// Load the maps
 		// Requires palettes
@@ -273,17 +289,25 @@ public class Cartographer extends JavaPlugin {
 		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 		if ( !README_FILE.exists() ) {
 			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
-			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder() + "/" + "overlay.gif" ), false );
-			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder() + "/" + "background.gif" ), false );
-			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder() + "/" + "missing.png" ), false );
-			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder() + "/" + "disabled.png" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.13.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.11.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR + "/" + "palette-1.12.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.15.1.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.16.1.yml" ), new File( PALETTE_DIR + "/" + "palette-1.16.1.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder(), "overlay.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder(), "background.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder(), "missing.png" ), false );
+			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder(), "disabled.png" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR, "palette-1.13.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR, "palette-1.11.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR, "palette-1.12.2.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR, "palette-1.15.1.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/palettes/palette-1.16.1.yml" ), new File( PALETTE_DIR, "palette-1.16.1.yml" ), false );
 		}
+		
 		FileUtil.saveToFile( getResource( "README.md" ), README_FILE, true );
+	}
+	
+	private void loadLocaleFiles() {
+		if ( !LOCALE_README_FILE.exists() ) {
+			FileUtil.saveToFile( getResource( "data/locale/README.md" ), LOCALE_README_FILE, false );
+			FileUtil.saveToFile( getResource( "data/locale/en_us.yml" ), new File( LOCALE_DIR, "en_us.yml" ), false );
+		}
 	}
 	
 	private void loadData() {
@@ -320,6 +344,10 @@ public class Cartographer extends JavaPlugin {
 		preventDrop = config.getBoolean( "prevent-drop", true );
 		packetDrop = config.getBoolean( "use-drop-packet", true );
 		
+		ditherMissing = config.getBoolean( "dither-missing", false );
+		
+		localeManager.setDefaultLocale( config.getString( "default-locale", "default" ) );
+		
 		// Chunk load settings
 		chunkUpdateDelay = config.getInt( "chunk.update-delay", 10 );
 		ChunkLoadListener.INSTANCE.setForceLoad( config.getBoolean( "chunk.force-load", false ) );
@@ -331,21 +359,21 @@ public class Cartographer extends JavaPlugin {
 			try {
 				InventoryType invalid = InventoryType.valueOf( string );
 				invalidInventoryTypes.add( invalid );
-				getLogger().info( "Added '" + string + "' as a blacklisted inventory" );
+				loggerInfo( LocaleConstants.CORE_ENABLE_CONFIG_INVENTORY_ADDED, string );
 			} catch ( IllegalArgumentException exception ) {
-				getLogger().warning( "No such inventory type '" + string + "'" );
+				loggerWarning( LocaleConstants.CORE_ENABLE_CONFIG_INVENTORY_UNKNOWN, string );
 			}
 		}
 	}
 	
 	private void loadPalettes() {
-		paletteManager.getLogger().info( "Constructing vanilla palette..." );
+		paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_VANILLA_CREATE );
 		MinimapPalette vanilla = handler.getVanillaPalette();
 		paletteManager.register( "default", vanilla );
 		
 		File vanillaPalette = new File( PALETTE_DIR + "/" + "vanilla.yml" );
 		if ( !vanillaPalette.exists() ) {
-			paletteManager.getLogger().info( "Vanilla palette not found, saving..." );
+			paletteManager.getLogger().warningTr( LocaleConstants.CORE_ENABLE_PALETTE_VANILLA_MISSING );
 			
 			PALETTE_DIR.mkdirs();
 			try {
@@ -364,9 +392,9 @@ public class Cartographer extends JavaPlugin {
 			}
 		}
 		
-		paletteManager.getLogger().info( ( vanilla.getMaterials().size() + vanilla.getTransparentBlocks().size() ) + " materials mapped for vanilla" );
+		paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_VANILLA_MAPPED, vanilla.getMaterials().size() + vanilla.getTransparentBlocks().size() );
 		
-		paletteManager.getLogger().info( "Loading local palette files..." );
+		paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_LOADING );
 		if ( PALETTE_DIR.exists() ) {
 			for ( File file : PALETTE_DIR.listFiles() ) {
 				if ( !file.isDirectory() ) {
@@ -376,11 +404,11 @@ public class Cartographer extends JavaPlugin {
 					String id = file.getName().replaceAll( "\\.yml$", "" );
 					paletteManager.register( id, palette );
 					
-					paletteManager.getLogger().info( "Loaded palette '" + id + "' successfully!" );
+					paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_LOADING_DONE, id );
 				}
 			}
 		} else {
-			paletteManager.getLogger().warning( "Palette folder not discovered!" );
+			paletteManager.getLogger().warningTr( LocaleConstants.CORE_ENABLE_PALETTE_FOLDER_MISSING );
 		}
 	}
 	
@@ -392,31 +420,31 @@ public class Cartographer extends JavaPlugin {
 		
 		try {
 			if ( OVERLAY_IMAGE.exists() ) {
-				getLogger().info( "Overlay detected!" );
+				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_OVERLAY_FOUND );
 				this.overlay = new SimpleImage( OVERLAY_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			} else {
-				getLogger().warning( "Overlay image does not exist!" );
+				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_OVERLAY_MISSING );
 			}
 
 			if ( BACKGROUND_IMAGE.exists() ) {
-				getLogger().info( "Background detected!" );
+				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_BACKGROUND_FOUND );
 				this.loadingBackground = new SimpleImage( BACKGROUND_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			} else {
-				getLogger().warning( "Background image does not exist!" );
+				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_BACKGROUND_MISSING );
 			}
 			
 			if ( MISSING_MAP_IMAGE.exists() ) {
-				getLogger().info( "Missing map image detected!" );
+				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_MISSING_FOUND );
 				missingMapImage = new SimpleImage( MISSING_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			} else {
-				getLogger().warning( "Missing map image does not exist!" );
+				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_MISSING_MISSING );
 			}
 			
 			if ( DISABLED_MAP_IMAGE.exists() ) {
-				getLogger().info( "Disabled map image detected!" );
+				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_DISABLED_FOUND );
 				disabledMap = new SimpleImage( DISABLED_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
 			} else {
-				getLogger().warning( "Disabled map image does not exist!" );
+				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_DISABLED_MISSING );
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();
@@ -443,11 +471,38 @@ public class Cartographer extends JavaPlugin {
 		}
 	}
 	
+	private void loggerInfo( String key, Object... params ) {
+		String message = localeManager.translateDefault( Bukkit.getConsoleSender(), key, params );
+		if ( message != null && !message.isEmpty() ) {
+			getLogger().info( message );
+		}
+	}
+	
+	private void loggerWarning( String key, Object... params ) {
+		String message = localeManager.translateDefault( Bukkit.getConsoleSender(), key, params );
+		if ( message != null && !message.isEmpty() ) {
+			getLogger().warning( message );
+		}
+	}
+	
+	private void loggerSevere( String key, Object... params ) {
+		String message = localeManager.translateDefault( Bukkit.getConsoleSender(), key, params );
+		if ( message != null && !message.isEmpty() ) {
+			getLogger().severe( message );
+		}
+	}
+	
 	/**
 	 * Purely for configs, palettes and images
 	 * Does not load modules
 	 */
 	public void reload() {
+		// Re-save all locale files
+		loadLocaleFiles();
+		
+		// Reload the locale manager before all
+		localeManager.reload();
+		
 		load();
 	}
 	
@@ -498,6 +553,10 @@ public class Cartographer extends JavaPlugin {
 		return playerManager;
 	}
 	
+	public LocaleManager getLocaleManager() {
+		return localeManager;
+	}
+	
 	public Map< Integer, CartographerRenderer > getRenderers() {
 		return renderers;
 	}
@@ -528,6 +587,10 @@ public class Cartographer extends JavaPlugin {
 	
 	public boolean isUseDropPacket() {
 		return packetDrop;
+	}
+	
+	public boolean isDitherMissingMapImage() {
+		return ditherMissing;
 	}
 	
 	public int getBlockUpdateDelay() {

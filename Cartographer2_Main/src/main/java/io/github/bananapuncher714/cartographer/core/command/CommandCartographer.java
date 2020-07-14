@@ -188,7 +188,7 @@ public class CommandCartographer {
 	private void reload( CommandSender sender, String[] args, CommandParameters parameters ) {
 		// Reload the Cartographer config and whatnot
 		plugin.reload();
-		sender.sendMessage( ChatColor.AQUA + "Reloaded Cartographer2 settings");
+		sender.sendMessage( ChatColor.AQUA + "Reloaded Cartographer2 settings" );
 	}
 
 	private void reloadMap( CommandSender sender, String[] args, CommandParameters parameters ) {

@@ -3,10 +3,10 @@ package io.github.bananapuncher714.cartographer.core.implementation.v1_8_R3;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -39,6 +39,7 @@ import net.minecraft.server.v1_8_R3.MinecraftKey;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayInBlockDig;
 import net.minecraft.server.v1_8_R3.PacketPlayInBlockDig.EnumPlayerDigType;
+import net.minecraft.server.v1_8_R3.PacketPlayInSettings;
 import net.minecraft.server.v1_8_R3.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
@@ -150,6 +151,9 @@ public class NMSHandler implements PacketHandler {
 					return null;
 				}
 			}
+		} else if ( packet instanceof PacketPlayInSettings ) {
+			PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
+			Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.a() );
 		}
 		return packet;
 	}

@@ -36,6 +36,11 @@ public class MapSettings {
 	// Default rotation option
 	protected BooleanOption rotation = BooleanOption.UNSET;
 	
+	// If the images should be dithered
+	protected boolean ditherOverlay = false;
+	protected boolean ditherBackground = false;
+	protected boolean ditherDisabled = false;
+	
 	// Default palette
 	protected MinimapPalette palette;
 	
@@ -62,6 +67,10 @@ public class MapSettings {
 		
 		isWhitelist = config.getBoolean( "world-whitelist", false );
 		blacklistedWorlds.addAll( config.getStringList( "world-blacklist" ) );
+		
+		ditherOverlay = config.getBoolean( "dither-overlay", false );
+		ditherBackground = config.getBoolean( "dither-background", false );
+		ditherDisabled = config.getBoolean( "dither-blacklisted", false );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
@@ -110,6 +119,30 @@ public class MapSettings {
 		this.rotation = rotation;
 	}
 	
+	public boolean isDitherOverlay() {
+		return ditherOverlay;
+	}
+
+	public void setDitherOverlay( boolean ditherOverlay ) {
+		this.ditherOverlay = ditherOverlay;
+	}
+
+	public boolean isDitherBackground() {
+		return ditherBackground;
+	}
+
+	public void setDitherBackground( boolean ditherBackground ) {
+		this.ditherBackground = ditherBackground;
+	}
+
+	public boolean isDitherBlacklisted() {
+		return ditherDisabled;
+	}
+
+	public void setDitherBlacklisted( boolean ditherBlacklisted ) {
+		this.ditherDisabled = ditherBlacklisted;
+	}
+
 	public MinimapPalette getPalette() {
 		return palette;
 	}

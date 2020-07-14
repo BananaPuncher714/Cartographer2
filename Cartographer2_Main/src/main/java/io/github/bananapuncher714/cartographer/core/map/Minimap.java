@@ -98,7 +98,11 @@ public class Minimap implements ChunkNotifier {
 		logger.info( "Allowed zooms: " + String.join( ", ", settings.allowedZooms.stream()
 				.map( d -> { return String.valueOf( d ); } )
 				.collect( Collectors.toList() ) ) );
-		logger.info( "Blacklisted worlds: " + String.join( ", ", settings.blacklistedWorlds ) );
+		if ( settings.isWhitelist ) {
+			
+		} else {
+			logger.info( "Blacklisted worlds: " + String.join( ", ", settings.blacklistedWorlds ) );
+		}
 		
 		// Show at least the player, if nothing else
 		registerProvider( new DefaultPlayerCursorProvider() );
@@ -235,7 +239,7 @@ public class Minimap implements ChunkNotifier {
 			disabled = new SimpleImage( image, 218, 128, Image.SCALE_REPLICATE );
 		}
 	}
-	
+
 	public File getDataFolder() {
 		return saveFile;
 	}
@@ -435,6 +439,27 @@ public class Minimap implements ChunkNotifier {
 		public void log( LogRecord record ) {
 			record.setMessage( String.format( format, Cartographer.getInstance().getName(), mapName, record.getMessage() ) );
 			super.log( record );
+		}
+		
+		public void infoTr( String key, Object... params ) {
+			String message = Cartographer.getInstance().getLocaleManager().translateFor( Bukkit.getConsoleSender(), key, params );
+			if ( message != null && !message.isEmpty() ) {
+				info( message );
+			}
+		}
+		
+		public void warningTr( String key, Object... params ) {
+			String message = Cartographer.getInstance().getLocaleManager().translateFor( Bukkit.getConsoleSender(), key, params );
+			if ( message != null && !message.isEmpty() ) {
+				warning( message );
+			}
+		}
+		
+		public void severeTr( String key, Object... params ) {
+			String message = Cartographer.getInstance().getLocaleManager().translateFor( Bukkit.getConsoleSender(), key, params );
+			if ( message != null && !message.isEmpty() ) {
+				severe( message );
+			}
 		}
 	}
 }

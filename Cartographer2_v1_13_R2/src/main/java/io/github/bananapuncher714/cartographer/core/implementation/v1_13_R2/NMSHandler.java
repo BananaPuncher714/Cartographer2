@@ -6,10 +6,10 @@ import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +45,7 @@ import net.minecraft.server.v1_13_R2.MinecraftKey;
 import net.minecraft.server.v1_13_R2.MinecraftServer;
 import net.minecraft.server.v1_13_R2.PacketPlayInBlockDig;
 import net.minecraft.server.v1_13_R2.PacketPlayInBlockDig.EnumPlayerDigType;
+import net.minecraft.server.v1_13_R2.PacketPlayInSettings;
 import net.minecraft.server.v1_13_R2.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
@@ -191,6 +192,9 @@ public class NMSHandler implements PacketHandler {
 					return null;
 				}
 			}
+		} else if ( packet instanceof PacketPlayInSettings ) {
+			PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
+			Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.b() );
 		}
 		return packet;
 	}

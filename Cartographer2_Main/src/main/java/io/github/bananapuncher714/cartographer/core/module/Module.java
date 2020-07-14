@@ -3,19 +3,29 @@ package io.github.bananapuncher714.cartographer.core.module;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.ModuleManager;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
+import io.github.bananapuncher714.cartographer.core.locale.Locale;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 
 /**
@@ -105,6 +115,118 @@ public abstract class Module {
 		BukkitTask task = Bukkit.getScheduler().runTaskLater( Cartographer.getInstance(), runnable, delay );
 		tracker.getTasks().add( task );
 		return task;
+	}
+
+	/**
+	 * Get a list of supported locales for this module
+	 * 
+	 * @return
+	 */
+	public Collection< Locale > getLocales() {
+		return new ArrayList< Locale >();
+	}
+	
+	/**
+	 * Call to register locales with the locale manager
+	 * 
+	 * Should be done in the onEnable method
+	 */
+	protected final void registerLocales() {
+		for ( Locale locale : getLocales() ) {
+			plugin.getLocaleManager().register( locale );
+		}
+	}
+	
+	protected final Locale convertToDefaultLocale( Locale locale ) {
+		return locale.copyOf( null, null, plugin.getLocaleManager().getDefaultLocale() );
+	}
+	
+	protected final Locale loadLocale( InputStream stream ) {
+		FileConfiguration config = null;
+		InputStreamReader reader = new InputStreamReader( stream, StandardCharsets.UTF_8 );
+		config = YamlConfiguration.loadConfiguration( reader );
+		try {
+			reader.close();
+			stream.close();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+		return plugin.getLocaleManager().load( config, "modules." + getName() );
+	}
+	
+	protected final Collection< Locale > loadLocale( File file ) {
+		// Load the locales in the directory, if it's a folder
+		List< Locale > locales = new ArrayList< Locale >();
+		if ( file.exists() ) {
+			if ( file.isDirectory() ) {
+				for ( File localeFile : dataFolder.listFiles() ) {
+					if ( localeFile.getName().endsWith( ".yml" ) ) {
+						try {
+							// Load it under the module prefix, since we don't want it to get mixed with global keys
+							FileConfiguration config = YamlConfiguration.loadConfiguration( localeFile );
+							locales.add( plugin.getLocaleManager().load( config, getLocalePrefix() ) );
+						} catch ( IllegalArgumentException e ) {
+							// TODO Translate this
+							logger.severe( "Unable to load locale file " + file.getName() );
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				FileConfiguration config = YamlConfiguration.loadConfiguration( file );
+				locales.add( plugin.getLocaleManager().load( config, getLocalePrefix() ) );
+			}
+		}
+		return locales;
+	}
+	
+	public String translate( String code, CommandSender sender, String key, Object... params ) {
+		// First try to get the translated message for the module
+		String message = plugin.getLocaleManager().translate( code, sender, getLocalePrefix() + "." + key, params );
+		// If it doesn't exist, then check the global locales
+		if ( message == null ) {
+			message = plugin.getLocaleManager().translate( code, sender, key, params );
+		}
+		return message;
+	}
+	
+	public String translate( CommandSender sender, String key, Object... params ) {
+		String locale = plugin.getLocaleManager().getDefaultLocale();
+		if ( sender instanceof Player ) {
+			Player player = ( Player ) sender;
+			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
+			locale = viewer.getSetting( MapViewer.LOCALE );
+		}
+		
+		String message = plugin.getLocaleManager().translate( locale, sender, getLocalePrefix() + "." + key, params );
+		if ( message == null ) {
+			message = plugin.getLocaleManager().translate( locale, sender, key, params );
+		}
+		return message;
+	}
+	
+	public String translateAndSend( String code, CommandSender sender, String key, Object... params ) {
+		String message = translate( code, sender, key, params );
+		
+		if ( message != null && !message.isEmpty() ) {
+			sender.sendMessage( message );
+		}
+		
+		return message;
+	}
+	
+	public String translateAndSend( CommandSender sender, String key, Object... params ) {
+		String message = translate( sender, key, params );
+		
+		if ( message != null && !message.isEmpty() ) {
+			sender.sendMessage( message );
+		}
+		
+		return message;
+	}
+	
+	private String getLocalePrefix() {
+		return "modules." + getName();
 	}
 	
 	/**

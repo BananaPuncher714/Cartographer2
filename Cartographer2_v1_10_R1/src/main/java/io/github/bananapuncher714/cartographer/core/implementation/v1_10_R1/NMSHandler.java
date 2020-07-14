@@ -40,6 +40,7 @@ import net.minecraft.server.v1_10_R1.MinecraftKey;
 import net.minecraft.server.v1_10_R1.MinecraftServer;
 import net.minecraft.server.v1_10_R1.PacketPlayInBlockDig;
 import net.minecraft.server.v1_10_R1.PacketPlayInBlockDig.EnumPlayerDigType;
+import net.minecraft.server.v1_10_R1.PacketPlayInSettings;
 import net.minecraft.server.v1_10_R1.PacketPlayOutMap;
 
 public class NMSHandler implements PacketHandler {
@@ -153,6 +154,9 @@ public class NMSHandler implements PacketHandler {
 					return null;
 				}
 			}
+		} else if ( packet instanceof PacketPlayInSettings ) {
+			PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
+			Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.a() );
 		}
 		return packet;
 	}

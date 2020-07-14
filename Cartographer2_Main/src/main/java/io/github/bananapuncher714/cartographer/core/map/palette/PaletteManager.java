@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +31,7 @@ public class PaletteManager {
 	
 	protected Map< String, MinimapPalette > palettes = new HashMap< String, MinimapPalette >();
 	
-	protected Logger logger = new CartographerLogger( "PaletteManager" );
+	protected CartographerLogger logger = new CartographerLogger( "PaletteManager" );
 	
 	/**
 	 * Only one PaletteManager is recommended. To get the current one in use, call {@link Cartographer#getPaletteManager()}.
@@ -272,7 +271,7 @@ public class PaletteManager {
 		return toString( color.getRGB(), type );
 	}
 	
-	public Logger getLogger() {
+	public CartographerLogger getLogger() {
 		return logger;
 	}
 	

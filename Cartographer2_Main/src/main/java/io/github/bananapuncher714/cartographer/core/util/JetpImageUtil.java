@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,7 +42,7 @@ public final class JetpImageUtil {
 				rgb[ j ] = random.nextInt() & 0xFFFFFF;
 			}
 			long start = System.nanoTime();
-			dither( width, rgb );
+			dither( rgb, width );
 			long end = System.nanoTime();
 			float passed = ( end - start ) / 1000000.0f;
 			System.out.printf( "Took %fms%n", passed );
@@ -50,6 +51,7 @@ public final class JetpImageUtil {
 
 	private static final int[] PALETTE;
 	private static final byte[] COLOR_MAP = new byte[ 128 * 128 * 128 ];
+	private static final int[] FULL_COLOR_MAP = new int[ 128 * 128 * 128 ];
 	private static final float[] COLOR_MULTIPLIERS = { 0.4375f, 0.1875f, 0.3125f, 0.0625f };
 
 	public final static void init() {
@@ -91,6 +93,7 @@ public final class JetpImageUtil {
 			int ci = i << 14;
 			for ( int si = 0; si < 16384; si++ ) {
 				COLOR_MAP[ ci + si ] = sub[ si ];
+				FULL_COLOR_MAP[ ci + si ] = PALETTE[ Byte.toUnsignedInt( sub[ si ] ) ];
 			}
 		}
 		
@@ -153,6 +156,10 @@ public final class JetpImageUtil {
 		return COLOR_MAP[ red >> 1 << 14 | green >> 1 << 7 | blue >> 1 ];
 	}
 	
+	public static int getBestFullColor( int red, int green, int blue ) {
+		return FULL_COLOR_MAP[ red >> 1 << 14 | green >> 1 << 7 | blue >> 1 ];
+	}
+	
 	private static byte computeNearest( int[] palette, int red, int green, int blue ) {
 		int val = 0;
 		float best_distance = Float.MAX_VALUE;
@@ -205,7 +212,268 @@ public final class JetpImageUtil {
 	
 	public static byte[] dither( Image image ) {
 		BufferedImage bImage = toBufferedImage( image );
-		return dither( bImage.getWidth(), bImage.getRGB( 0, 0, bImage.getWidth(), bImage.getHeight(), null, 0, bImage.getWidth() ) );
+		return dither2Minecraft( bImage.getRGB( 0, 0, bImage.getWidth(), bImage.getHeight(), null, 0, bImage.getWidth() ), bImage.getWidth() ).array();
+	}
+	
+	/**
+	 * Floyd-steinberg dithering with serpentine scanning
+	 */
+	public static void dither( int[] buffer, int width ) {
+		int height = buffer.length / width;
+
+		int widthMinus = width - 1;
+		int heightMinus = height - 1;
+		
+		int[][] dither_buffer = new int[ 2 ][ width + width << 1 ];
+		
+		for ( int y = 0; y < height; y++ ) {
+			boolean hasNextY = y < heightMinus;
+			
+			int yIndex = y * width;
+			if ( y % 2 == 0 ) {
+				// Go left to right
+				int bufferIndex = 0;
+				int[] buf1 = dither_buffer[ 0 ];
+				int[] buf2 = dither_buffer[ 1 ];
+				for ( int x = 0; x < width; x++ ) {
+					boolean hasPrevX = x > 0;
+					boolean hasNextX = x < widthMinus;
+					
+					int index = yIndex + x;
+					int rgb = buffer[ index ];
+					
+					int red   = rgb >> 16 & 0xFF;
+					int green = rgb >> 8  & 0xFF;
+					int blue  = rgb       & 0xFF;
+					
+					// Get the previous error and add
+					red   = ( red   += buf1[ bufferIndex++ ] ) > 255 ? 255 : red   < 0 ? 0 : red;
+					green = ( green += buf1[ bufferIndex++ ] ) > 255 ? 255 : green < 0 ? 0 : green;
+					blue  = ( blue  += buf1[ bufferIndex++ ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
+					
+					// Get the closest color to the modified pixel
+					int closest = getBestFullColor( red, green, blue );
+					
+					// Find the error
+					int delta_r = red   - ( closest >> 16 & 0xFF );
+					int delta_g = green - ( closest >> 8  & 0xFF );
+					int delta_b = blue  - ( closest       & 0xFF );
+					
+					// Add to the next pixel
+					if ( hasNextX ) {
+						buf1[ bufferIndex     ] = ( int ) ( 0.4375 * delta_r );
+						buf1[ bufferIndex + 1 ] = ( int ) ( 0.4375 * delta_g );
+						buf1[ bufferIndex + 2 ] = ( int ) ( 0.4375 * delta_b );
+					}
+					
+					if ( hasNextY ) {
+						if ( hasPrevX ) {
+							buf2[ bufferIndex - 6 ] = ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex - 5 ] = ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex - 4 ] = ( int ) ( 0.1875 * delta_b );
+						}
+						
+						buf2[ bufferIndex - 3 ] = ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex - 2 ] = ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex - 1 ] = ( int ) ( 0.3125 * delta_b );
+						
+						if ( hasNextX ) {
+							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_r );
+							buf2[ bufferIndex + 1 ] = ( int ) ( 0.0625 * delta_g );
+							buf2[ bufferIndex + 2 ] = ( int ) ( 0.0625 * delta_b );
+						}
+					}
+					
+					buffer[ index ] = closest;
+				}
+			} else {
+				// Go right to left
+				int bufferIndex = width + ( width << 1 ) - 1;
+				int[] buf1 = dither_buffer[ 1 ];
+				int[] buf2 = dither_buffer[ 0 ];
+				for ( int x = width - 1; x >= 0; x-- ) {
+					boolean hasPrevX = x < widthMinus;
+					boolean hasNextX = x > 0;
+					
+					int index = yIndex + x;
+					int rgb = buffer[ index ];
+					
+					int red   = rgb >> 16 & 0xFF;
+					int green = rgb >> 8  & 0xFF;
+					int blue  = rgb       & 0xFF;
+					
+					// Get the previous error and add
+					blue  = ( blue  += buf1[ bufferIndex-- ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
+					green = ( green += buf1[ bufferIndex-- ] ) > 255 ? 255 : green < 0 ? 0 : green;
+					red   = ( red   += buf1[ bufferIndex-- ] ) > 255 ? 255 : red   < 0 ? 0 : red;
+					
+					// Get the closest color to the modified pixel
+					int closest = getBestFullColor( red, green, blue );
+					
+					// Find the error
+					int delta_r = red   - ( closest >> 16 & 0xFF );
+					int delta_g = green - ( closest >> 8  & 0xFF );
+					int delta_b = blue  - ( closest       & 0xFF );
+					
+					// Add to the next pixel
+					if ( hasNextX ) {
+						buf1[ bufferIndex     ] = ( int ) ( 0.4375 * delta_b );
+						buf1[ bufferIndex - 1 ] = ( int ) ( 0.4375 * delta_g );
+						buf1[ bufferIndex - 2 ] = ( int ) ( 0.4375 * delta_r );
+					}
+					
+					if ( hasNextY ) {
+						if ( hasPrevX ) {
+							buf2[ bufferIndex + 6 ] = ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex + 5 ] = ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex + 4 ] = ( int ) ( 0.1875 * delta_r );
+						}
+						
+						buf2[ bufferIndex + 3 ] = ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex + 2 ] = ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex + 1 ] = ( int ) ( 0.3125 * delta_r );
+						
+						if ( hasNextX ) {
+							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_b );
+							buf2[ bufferIndex - 1 ] = ( int ) ( 0.0625 * delta_g );
+							buf2[ bufferIndex - 2 ] = ( int ) ( 0.0625 * delta_r );
+						}
+					}
+					
+					buffer[ index ] = closest;
+				}
+			}
+		}
+	}
+	
+	public static ByteBuffer dither2Minecraft( int[] buffer, int width ) {
+		int height = buffer.length / width;
+
+		int widthMinus = width - 1;
+		int heightMinus = height - 1;
+		
+		int[][] dither_buffer = new int[ 2 ][ width + width << 1 ];
+		
+		ByteBuffer data = ByteBuffer.allocate( buffer.length );
+		for ( int y = 0; y < height; y++ ) {
+			boolean hasNextY = y < heightMinus;
+			
+			int yIndex = y * width;
+			if ( y % 2 == 0 ) {
+				// Go left to right
+				int bufferIndex = 0;
+				int[] buf1 = dither_buffer[ 0 ];
+				int[] buf2 = dither_buffer[ 1 ];
+				for ( int x = 0; x < width; x++ ) {
+					boolean hasPrevX = x > 0;
+					boolean hasNextX = x < widthMinus;
+					
+					int index = yIndex + x;
+					int rgb = buffer[ index ];
+					
+					int red   = rgb >> 16 & 0xFF;
+					int green = rgb >> 8  & 0xFF;
+					int blue  = rgb       & 0xFF;
+					
+					// Get the previous error and add
+					red   = ( red   += buf1[ bufferIndex++ ] ) > 255 ? 255 : red   < 0 ? 0 : red;
+					green = ( green += buf1[ bufferIndex++ ] ) > 255 ? 255 : green < 0 ? 0 : green;
+					blue  = ( blue  += buf1[ bufferIndex++ ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
+					
+					// Get the closest color to the modified pixel
+					int closest = getBestFullColor( red, green, blue );
+					
+					// Find the error
+					int delta_r = red   - ( closest >> 16 & 0xFF );
+					int delta_g = green - ( closest >> 8  & 0xFF );
+					int delta_b = blue  - ( closest       & 0xFF );
+					
+					// Add to the next pixel
+					if ( hasNextX ) {
+						buf1[ bufferIndex     ] = ( int ) ( 0.4375 * delta_r );
+						buf1[ bufferIndex + 1 ] = ( int ) ( 0.4375 * delta_g );
+						buf1[ bufferIndex + 2 ] = ( int ) ( 0.4375 * delta_b );
+					}
+					
+					if ( hasNextY ) {
+						if ( hasPrevX ) {
+							buf2[ bufferIndex - 6 ] = ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex - 5 ] = ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex - 4 ] = ( int ) ( 0.1875 * delta_b );
+						}
+						
+						buf2[ bufferIndex - 3 ] = ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex - 2 ] = ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex - 1 ] = ( int ) ( 0.3125 * delta_b );
+						
+						if ( hasNextX ) {
+							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_r );
+							buf2[ bufferIndex + 1 ] = ( int ) ( 0.0625 * delta_g );
+							buf2[ bufferIndex + 2 ] = ( int ) ( 0.0625 * delta_b );
+						}
+					}
+					
+					data.put( index, getBestColor( closest ) );
+				}
+			} else {
+				// Go right to left
+				int bufferIndex = width + ( width << 1 ) - 1;
+				int[] buf1 = dither_buffer[ 1 ];
+				int[] buf2 = dither_buffer[ 0 ];
+				for ( int x = width - 1; x >= 0; x-- ) {
+					boolean hasPrevX = x < widthMinus;
+					boolean hasNextX = x > 0;
+					
+					int index = yIndex + x;
+					int rgb = buffer[ index ];
+					
+					int red   = rgb >> 16 & 0xFF;
+					int green = rgb >> 8  & 0xFF;
+					int blue  = rgb       & 0xFF;
+					
+					// Get the previous error and add
+					blue  = ( blue  += buf1[ bufferIndex-- ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
+					green = ( green += buf1[ bufferIndex-- ] ) > 255 ? 255 : green < 0 ? 0 : green;
+					red   = ( red   += buf1[ bufferIndex-- ] ) > 255 ? 255 : red   < 0 ? 0 : red;
+					
+					// Get the closest color to the modified pixel
+					int closest = getBestFullColor( red, green, blue );
+					
+					// Find the error
+					int delta_r = red   - ( closest >> 16 & 0xFF );
+					int delta_g = green - ( closest >> 8  & 0xFF );
+					int delta_b = blue  - ( closest       & 0xFF );
+					
+					// Add to the next pixel
+					if ( hasNextX ) {
+						buf1[ bufferIndex     ] = ( int ) ( 0.4375 * delta_b );
+						buf1[ bufferIndex - 1 ] = ( int ) ( 0.4375 * delta_g );
+						buf1[ bufferIndex - 2 ] = ( int ) ( 0.4375 * delta_r );
+					}
+					
+					if ( hasNextY ) {
+						if ( hasPrevX ) {
+							buf2[ bufferIndex + 6 ] = ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex + 5 ] = ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex + 4 ] = ( int ) ( 0.1875 * delta_r );
+						}
+						
+						buf2[ bufferIndex + 3 ] = ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex + 2 ] = ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex + 1 ] = ( int ) ( 0.3125 * delta_r );
+						
+						if ( hasNextX ) {
+							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_b );
+							buf2[ bufferIndex - 1 ] = ( int ) ( 0.0625 * delta_g );
+							buf2[ bufferIndex - 2 ] = ( int ) ( 0.0625 * delta_r );
+						}
+					}
+					
+					data.put( index, getBestColor( closest ) );
+				}
+			}
+		}
+		return data;
 	}
 	
 	/**
@@ -218,57 +486,57 @@ public final class JetpImageUtil {
 	 * @return
 	 * Dithered image in minecraft colors
 	 */
-	public static byte[] dither( int width, int[] buffer ) {
-		int height = buffer.length / width;
-
-		float[] mult = COLOR_MULTIPLIERS;
-
-		int[][] dither_buffer = new int[ 2 ][ Math.max( width, height ) * 3 ];
-
-		byte[] map = new byte[ buffer.length ];
-		int[] y_temps = { 0, 1, 1, 1 };
-		int[] x_temps = { 1, -1, 0, 1 };
-		for (int x = 0; x < width; ++x) {
-			dither_buffer[ 0 ] = dither_buffer[ 1 ];
-			dither_buffer[ 1 ] = new int[ Math.max( width, height ) * 3 ];
-			int[] buffer2 = dither_buffer[ 0 ];
-			for ( int y = 0; y < height; ++y ) {
-				int rgb = buffer[ y * width + x ];
-
-				int red   = rgb >> 16 & 0xFF;
-				int green = rgb >> 8  & 0xFF;
-				int blue  = rgb       & 0xFF;
-				
-				int index = y + ( y << 1 );
-
-				red   = ( red   += buffer2[ index++ ] ) > 255 ? 255 : red   < 0 ? 0 : red;
-				green = ( green += buffer2[ index++ ] ) > 255 ? 255 : green < 0 ? 0 : green;
-				blue  = ( blue  += buffer2[ index   ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
-				int matched_color = PALETTE[ Byte.toUnsignedInt( getBestColor( red, green, blue ) ) ];
-				int delta_r = red   - ( matched_color >> 16 & 0xFF );
-				int delta_g = green - ( matched_color >> 8  & 0xFF );
-				int delta_b = blue  - ( matched_color       & 0xFF );
-				for ( int i = 0; i < x_temps.length; i++ ) {
-					int temp_y = y_temps[ i ];
-					int temp_x;
-					if ( temp_y < height && ( temp_x = y + x_temps[i] ) < width && temp_x > 0 ) {
-						int[] buffer3 = dither_buffer[ temp_y ];
-						float scalar = mult[ i ];
-						index = temp_x + ( temp_x << 1 );
-						buffer3[ index ] = ( int ) ( buffer3[index++] + scalar * delta_r );
-						buffer3[ index ] = ( int ) ( buffer3[index++] + scalar * delta_g );
-						buffer3[ index ] = ( int ) ( buffer3[index  ] + scalar * delta_b );
-					}
-				}
-				if ( ( rgb >> 24 & 0xFF ) < 0x80 ) {
-					map[ y * width + x ] = 0;
-				} else {
-					map[ y * width + x ] = COLOR_MAP[ red >> 1 << 14 | green >> 1 << 7 | blue >> 1 ];
-				}
-			}
-		}
-		return map;
-	}
+//	public static byte[] dither( int width, int[] buffer ) {
+//		int height = buffer.length / width;
+//
+//		float[] mult = COLOR_MULTIPLIERS;
+//
+//		int[][] dither_buffer = new int[ 2 ][ Math.max( width, height ) * 3 ];
+//
+//		byte[] map = new byte[ buffer.length ];
+//		int[] y_temps = { 0, 1, 1, 1 };
+//		int[] x_temps = { 1, -1, 0, 1 };
+//		for (int x = 0; x < width; ++x) {
+//			dither_buffer[ 0 ] = dither_buffer[ 1 ];
+//			dither_buffer[ 1 ] = new int[ Math.max( width, height ) * 3 ];
+//			int[] buffer2 = dither_buffer[ 0 ];
+//			for ( int y = 0; y < height; ++y ) {
+//				int rgb = buffer[ y * width + x ];
+//
+//				int red   = rgb >> 16 & 0xFF;
+//				int green = rgb >> 8  & 0xFF;
+//				int blue  = rgb       & 0xFF;
+//				
+//				int index = y + ( y << 1 );
+//
+//				red   = ( red   += buffer2[ index++ ] ) > 255 ? 255 : red   < 0 ? 0 : red;
+//				green = ( green += buffer2[ index++ ] ) > 255 ? 255 : green < 0 ? 0 : green;
+//				blue  = ( blue  += buffer2[ index   ] ) > 255 ? 255 : blue  < 0 ? 0 : blue;
+//				int matched_color = PALETTE[ Byte.toUnsignedInt( getBestColor( red, green, blue ) ) ];
+//				int delta_r = red   - ( matched_color >> 16 & 0xFF );
+//				int delta_g = green - ( matched_color >> 8  & 0xFF );
+//				int delta_b = blue  - ( matched_color       & 0xFF );
+//				for ( int i = 0; i < x_temps.length; i++ ) {
+//					int temp_y = y_temps[ i ];
+//					int temp_x;
+//					if ( temp_y < height && ( temp_x = y + x_temps[i] ) < width && temp_x > 0 ) {
+//						int[] buffer3 = dither_buffer[ temp_y ];
+//						float scalar = mult[ i ];
+//						index = temp_x + ( temp_x << 1 );
+//						buffer3[ index ] = ( int ) ( buffer3[index++] + scalar * delta_r );
+//						buffer3[ index ] = ( int ) ( buffer3[index++] + scalar * delta_g );
+//						buffer3[ index ] = ( int ) ( buffer3[index  ] + scalar * delta_b );
+//					}
+//				}
+//				if ( ( rgb >> 24 & 0xFF ) < 0x80 ) {
+//					map[ y * width + x ] = 0;
+//				} else {
+//					map[ y * width + x ] = COLOR_MAP[ red >> 1 << 14 | green >> 1 << 7 | blue >> 1 ];
+//				}
+//			}
+//		}
+//		return map;
+//	}
 	
 	public static int[] getSubImage( int topCornerX, int topCornerY, int width, int height, int[] image, int imageWidth ) {
 		int[] subimage = new int[ width * height ];

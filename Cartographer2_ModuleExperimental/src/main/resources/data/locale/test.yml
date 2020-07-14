@@ -1,0 +1,5 @@
+name: "English (US)"
+language: "American English"
+locale-code: "en_us"
+messages:
+  test: "Hello, world!"
