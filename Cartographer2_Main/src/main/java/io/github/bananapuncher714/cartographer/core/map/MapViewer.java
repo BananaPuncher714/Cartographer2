@@ -150,18 +150,39 @@ public class MapViewer {
 		return true;
 	}
 	
+	/**
+	 * Register a custom setting.
+	 * 
+	 * @param state
+	 */
 	public static void addSetting( SettingState< ? > state ) {
 		SETTING_STATES.put( state.getId(), state );
 	}
 	
+	/**
+	 * Unregister a custom setting.
+	 * 
+	 * @param state
+	 */
 	public static void removeSetting( SettingState< ? > state ) {
 		SETTING_STATES.remove( state.getId() );
 	}
 	
+	/**
+	 * Get the state with the specified id.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static SettingState< ? > getState( String id ) {
 		return SETTING_STATES.get( id );
 	}
 	
+	/**
+	 * Get all the states available.
+	 * 
+	 * @return
+	 */
 	public static Collection< SettingState< ? > > getStates() {
 		return SETTING_STATES.values();
 	}

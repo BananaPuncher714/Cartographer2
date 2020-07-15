@@ -61,10 +61,8 @@ public class ModuleLoader {
 	}
 	
 	/**
-	 * Load a module with the given description and file.
+	 * Load a module with the given description.
 	 * 
-	 * @param file
-	 * The module jar. Cannot be null.
 	 * @param description
 	 * A {@link ModuleDescription} of the module being loaded. Cannot be null.
 	 * @return
@@ -93,7 +91,7 @@ public class ModuleLoader {
 	 * 
 	 * @param module
 	 * The module to unload. Cannot be null.
-	 * @param return
+	 * @return
 	 * Whether or not this module was unloaded.
 	 */
 	public boolean unload( Module module ) {

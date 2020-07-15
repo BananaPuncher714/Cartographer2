@@ -11,8 +11,8 @@ public final class FailSafe {
 	 * 
 	 * @param clazz
 	 * The enum class.
-	 * @param value
-	 * The name of the enum.
+	 * @param values
+	 * The name of the enums.
 	 * @return
 	 * The enum with the name provided, or the first enum available.
 	 */

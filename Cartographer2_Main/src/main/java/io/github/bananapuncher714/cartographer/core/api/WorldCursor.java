@@ -113,9 +113,6 @@ public class WorldCursor {
 	
 	/**
 	 * Set if the cursor is global.
-	 * 
-	 * @return
-	 * If this cursor should be hidden when not on the map.
 	 */
 	public void setGlobal( boolean hide ) {
 		global = hide;

@@ -127,6 +127,8 @@ public class MapDataCache {
 			ChunkLocation south = new ChunkLocation( loc ).add( 0, 1 );
 			ChunkLocation north = new ChunkLocation( loc ).subtract( 0, 1 );
 			// We want to skip any chunks that are loaded in naturally, since they will get removed by themselves
+			// Otherwise, we would be constantly rendering the loaded chunks
+			// TODO Refine the logic here, it seems to be a bit convoluted
 			if ( !forcedLoading.contains( loc ) ) {
 				// If the north, center, and south chunks have been loaded, then we know this is no longer needed
 				if ( loaded.contains( south ) && loaded.contains( loc ) && loaded.contains( north ) ) {

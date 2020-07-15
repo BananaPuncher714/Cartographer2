@@ -1,6 +1,6 @@
 name: Cartographer2
 main: io.github.bananapuncher714.cartographer.core.Cartographer
-version: 2.13.4
+version: 2.14.0
 description: Adds a serverside minimap to Minecraft
 author: BananaPuncher714
 api-version: 1.13
@@ -172,6 +172,7 @@ permissions:
       cartographer.settings.setother.rotate: true
       cartographer.settings.setother.cursor: true
       cartographer.settings.setother.showname: true
+      cartographer.settings.setother.locale: true
   cartographer.settings.user:
     description: Manage own settings
     default: true
@@ -181,6 +182,7 @@ permissions:
       cartographer.settings.set.cursor: true
       cartographer.settings.set.rotate: true
       cartographer.settings.set.showname: true
+      cartographer.settings.set.locale: true
   cartographer.settings.help:
     description: View settings commands and their usage
     default: false
@@ -203,14 +205,14 @@ permissions:
       cartographer.settings.get.rotate: true
       cartographer.settings: true
   cartographer.settings.set.rotate:
-    description: Get whether rotating minimaps are on
+    description: Set whether rotating minimaps are on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.rotate: true
       cartographer.settings: true
   cartographer.settings.get.rotate:
-    description: Set whether rotating minimaps are on
+    description: Get whether rotating minimaps are on
     default: false
     children:
       cartographer.settings.get: true
@@ -231,42 +233,70 @@ permissions:
       cartographer.settings.get.cursor: true
       cartographer.settings: true
   cartographer.settings.set.cursor:
-    description: Get whether the cursor is on
+    description: Set whether the cursor is on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.cursor: true
       cartographer.settings: true
   cartographer.settings.get.cursor:
-    description: Set whether the cursor is on
+    description: Get whether the cursor is on
     default: false
     children:
       cartographer.settings.get: true
       cartographer.settings: true
   # Show name
   cartographer.settings.setother.showname:
-    description: Set whether a player's cursor is on
+    description: Set whether a player's name is visible
     default: false
     children:
       cartographer.settings.setother: true
       cartographer.settings.getother.showname: true
       cartographer.settings: true
   cartographer.settings.getother.showname:
-    description: Get whether a player's cursor is on
+    description: Get whether a player's name is visible
     default: false
     children:
       cartographer.settings.getother: true
       cartographer.settings.get.showname: true
       cartographer.settings: true
   cartographer.settings.set.showname:
-    description: Get whether the cursor is on
+    description: Set whether the cursor is on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.showname: true
       cartographer.settings: true
   cartographer.settings.get.showname:
-    description: Set whether the cursor is on
+    description: Get whether the name is visible
+    default: false
+    children:
+      cartographer.settings.get: true
+      cartographer.settings: true
+# Locale
+  cartographer.settings.setother.locale:
+    description: Set a player's locale
+    default: false
+    children:
+      cartographer.settings.setother: true
+      cartographer.settings.getother.locale: true
+      cartographer.settings: true
+  cartographer.settings.getother.locale:
+    description: Get a player's locale
+    default: false
+    children:
+      cartographer.settings.getother: true
+      cartographer.settings.get.locale: true
+      cartographer.settings: true
+  cartographer.settings.set.locale:
+    description: Set the locale
+    default: false
+    children:
+      cartographer.settings.set: true
+      cartographer.settings.get.locale: true
+      cartographer.settings: true
+  cartographer.settings.get.locale:
+    description: Get the locale
     default: false
     children:
       cartographer.settings.get: true

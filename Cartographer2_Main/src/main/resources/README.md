@@ -82,12 +82,17 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `cartographer.settings.get.showname` - Get the value for the showname property of yourself. `true` by default
 - `cartographer.settings.setother.showname` - Set the value of the showname property for another player. Inherits `cartographer.settings.getother.showname`.
 - `cartographer.settings.getother.showname` - Get the value of the showname property for another player. Inherits `cartographer.settings.getother`.
+- `cartographer.settings.set.locale` - Set the locale for yourself. `true` by default. Inherits `cartographer.settings.get.locale`.
+- `cartographer.settings.get.locale` - Get the locale for yourself. `true` by default
+- `cartographer.settings.setother.locale` - Set the locale for another player. Inherits `cartographer.settings.getother.locale`.
+- `cartographer.settings.getother.locale` - Get the locale for another player. Inherits `cartographer.settings.getother`.
 
 ## Settings:
 - `cursor` - Whether or not the cursor is active and visible. Can be set to `true` or `false`.
 - `rotate` - Whether or not rotation is on. Can be set to `true`, `false`, or `unset`.
 - `showname` - Whether or not the player's name is visible on their cursor. Can be set to `true` or `false`.
 Additional settings may be added by modules.
+- `locale` - The current locale that the player is using. May or may not be available on the server.
 
 ## Module ideas
 - Show land claims
