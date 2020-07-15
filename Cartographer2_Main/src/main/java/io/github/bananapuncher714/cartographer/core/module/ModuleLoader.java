@@ -284,7 +284,7 @@ public class ModuleLoader {
 		
 		JsonObject object = element.getAsJsonObject();
 		
-		if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "description" ) && object.has( "version" ) ) ) {
+		if ( !( object.has( "name" ) && object.has( "main" ) && object.has( "author" ) && object.has( "version" ) ) ) {
 			throw new IllegalArgumentException( "Missing required information from module.json! (name/main/author/version)" );
 		}
 		

@@ -9,6 +9,7 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - [Github](https://github.com/BananaPuncher714/Cartographer2)
 - [Wiki](https://github.com/BananaPuncher714/Cartographer2/wiki)
 - [Spigot](https://www.spigotmc.org/resources/46922/)
+- [Javadocs](https://bananapuncher714.github.io/Cartographer2/)
 
 ## Credits
 - `BananaPuncher714` - Creator, Developer, Maintainer
