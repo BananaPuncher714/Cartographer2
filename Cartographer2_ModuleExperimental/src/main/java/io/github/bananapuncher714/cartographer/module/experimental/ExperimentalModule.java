@@ -10,19 +10,26 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandBase;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
 import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
 import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorInt;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
+import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPlayer;
 import io.github.bananapuncher714.cartographer.core.locale.Locale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.module.Module;
+import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 import io.github.bananapuncher714.cartographer.module.experimental.font.BananaFontParser;
 import io.github.bananapuncher714.cartographer.module.experimental.font.BananaTypeFont;
 import io.github.bananapuncher714.cartographer.module.experimental.font.PixelGlyph;
+import io.github.bananapuncher714.cartographer.module.experimental.menu.OverviewMenu;
 
 public class ExperimentalModule extends Module {
 	private BananaTypeFont defaultFont;
@@ -31,6 +38,8 @@ public class ExperimentalModule extends Module {
 	
 	private String testString;
 	private Color color = new Color( 0 );
+	
+	private SubCommand experimental;
 	
 	@Override
 	public void onEnable() {
@@ -51,15 +60,20 @@ public class ExperimentalModule extends Module {
 //		printGlyph( defaultFont.get( 'w' ), false );
 //		printGlyph( defaultFont.get( '死' ), true );
 		
+		experimental = new SubCommand( "experimental" )
+				.add( new SubCommand( "setstring" )
+						.defaultTo( this::setString ) )
+				.add( new SubCommand( "setcolor" )
+						.add( new SubCommand( new InputValidatorInt( 0, 0xFFFFFF ) )
+								.defaultTo( this::setColor ) )
+						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "You must provide a color!" ) ) )
+				.add( new SubCommand( "menu" )
+						.addSenderValidator( new SenderValidatorPlayer() )
+						.defaultTo( this::menu ) )
+				.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) );
+		
 		registerCommand( new CommandBase( "experimental" )
-				.setSubCommand( new SubCommand( "experimental" )
-						.add( new SubCommand( "setstring" )
-								.defaultTo( this::setString ) )
-						.add( new SubCommand( "setcolor" )
-								.add( new SubCommand( new InputValidatorInt( 0, 0xFFFFFF ) )
-										.defaultTo( this::setColor ) )
-								.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "You must provide a color!" ) ) )
-						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) ) )
+				.setSubCommand( experimental )
 				.setDescription( "Experimental command" )
 				.build() );
 		
@@ -83,6 +97,7 @@ public class ExperimentalModule extends Module {
 			builder.append( arg );
 			builder.append( " " );
 		}
+		
 		testString = builder.toString().trim();
 		sender.sendMessage( "Test string set to " + testString );
 		translateAndSend( sender, "test" );
@@ -91,6 +106,17 @@ public class ExperimentalModule extends Module {
 	private void setColor( CommandSender sender, String[] args, CommandParameters parameters ) {
 		color = new Color( parameters.getLast( Integer.class ) );
 		sender.sendMessage( String.format( "Color set to %x", color.getRGB() ) );
+	}
+	
+	private void menu( CommandSender sender, String[] args, CommandParameters parameters ) {
+		Player player = ( Player ) sender;
+		ItemStack item = Cartographer.getUtil().getMainHandItem( player );
+		if ( item == null || !getCartographer().getMapManager().isMinimapItem( item ) ) {
+			sender.sendMessage( ChatColor.RED + "You must be holding a minimap!" );
+			return;
+		}
+		CartographerRenderer renderer = getCartographer().getMapManager().getRendererFrom( Cartographer.getUtil().getMapViewFrom( item ) );
+		renderer.setMapMenu( player.getUniqueId(), new OverviewMenu( getCartographer() ) );
 	}
 	
 	public String getTestString() {

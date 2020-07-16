@@ -24,7 +24,7 @@ public class DefaultPlayerCursorProvider implements WorldCursorProvider {
 		
 		MapViewer viewer = Cartographer.getInstance().getPlayerManager().getViewerFor( player.getUniqueId() );
 		
-		cursors.add( new WorldCursor( viewer.getSetting( MapViewer.SHOWNAME ) ? player.getName() : null, player.getLocation(), Type.WHITE_POINTER, true ) );
+		cursors.add( new WorldCursor( viewer.getSetting( MapViewer.SHOWNAME ) ? player.getName() : null, setting.getLocation(), Type.WHITE_POINTER, true ) );
 		return cursors;
 	}
 

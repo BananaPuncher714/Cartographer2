@@ -20,7 +20,6 @@ import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * A build and run command framework for automatic tab completions and easy branching.
- * TODO Make a builder for this or something.
  * 
  * @author BananaPuncher714
  */

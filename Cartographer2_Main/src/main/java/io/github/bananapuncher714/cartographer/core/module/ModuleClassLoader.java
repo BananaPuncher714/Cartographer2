@@ -26,6 +26,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	private final Map< String, Class< ? > > classes = new ConcurrentHashMap< String, Class< ? > >();
+	private final Map< String, Class< ? > > internalClasses = new ConcurrentHashMap< String, Class< ? > >();
 	private final ModuleDescription description;
 	private final File file;
 	private final URL url;
@@ -123,11 +124,13 @@ public class ModuleClassLoader extends URLClassLoader {
 
 					// Define our class
 					result = defineClass( name, classBytes, 0, classBytes.length, source );
-				} 
-
+				}
+				
 				// If that didn't load or anything, then try the parent class loader. This is a child first class loader, after all.
 				if ( result == null ) {
 					result = super.findClass( name );
+				} else {
+					internalClasses.put( name, result );
 				}
 
 				if ( result != null ) {
@@ -160,6 +163,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	protected Set< String > getClassNames() {
-		return classes.keySet();
+		return internalClasses.keySet();
 	}
 }

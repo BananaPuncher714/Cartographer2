@@ -146,9 +146,11 @@ public class CartographerRenderer extends MapRenderer {
 					int x = ( int ) Math.max( -128, Math.min( 127, setting.getCursorX() ) );
 					int y = ( int ) Math.max( -128, Math.min( 127, setting.getCursorY() ) );
 					
+					List< MapCursor > cursors = new ArrayList< MapCursor >( setting.menu.getCursors() );
 					MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
+					cursors.add( cursor );
 					
-					plugin.getHandler().sendDataTo( id, data, new MapCursor[] { cursor }, entry.getKey() );
+					plugin.getHandler().sendDataTo( id, data, cursors.toArray( new MapCursor[ cursors.size() ] ), entry.getKey() );
 				}
 				continue;
 			}
@@ -362,7 +364,7 @@ public class CartographerRenderer extends MapRenderer {
 	public void interact( Player player, MapInteraction interaction ) {
 		if ( interaction == MapInteraction.LEFT ) {
 			// Disregard left clicks since they trigger when a player presses 'Q' as well.
-			return;
+//			return;
 		}
 		
 		PlayerSetting setting = settings.get( player.getUniqueId() );

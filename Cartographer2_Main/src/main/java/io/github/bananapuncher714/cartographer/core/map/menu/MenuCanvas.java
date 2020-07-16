@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
@@ -15,6 +20,7 @@ public class MenuCanvas {
 	protected byte[] displayData;
 	protected boolean dither = true;
 	protected boolean dirty = false;
+	protected Set< MapCursor > cursors = new HashSet< MapCursor >();
 	
 	public MenuCanvas( int width, int height ) {
 		this.width = width;
@@ -160,6 +166,10 @@ public class MenuCanvas {
 			update();
 		}
 		return displayData;
+	}
+	
+	public Collection< MapCursor > getCursors() {
+		return cursors;
 	}
 	
 	public void apply( Frame frame ) {

@@ -1,12 +1,14 @@
 package io.github.bananapuncher714.cartographer.core.map.menu;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
@@ -22,6 +24,7 @@ public class MapMenu {
 	
 	public boolean view( Player player, PlayerSetting setting ) {
 		viewers.add( player.getUniqueId() );
+		canvas.getCursors().clear();
 		for ( MenuComponent component : components ) {
 			if ( component.onView( canvas, player, setting.getCursorX() / 2.0 + 64, setting.getCursorY() / 2.0 + 64 ) ) {
 				return true;
@@ -53,6 +56,10 @@ public class MapMenu {
 	
 	public byte[] getDisplay() {
 		return canvas.getDisplay();
+	}
+	
+	public Collection< MapCursor > getCursors() {
+		return canvas.getCursors();
 	}
 	
 	public void removeComponent( MenuComponent component ) {
