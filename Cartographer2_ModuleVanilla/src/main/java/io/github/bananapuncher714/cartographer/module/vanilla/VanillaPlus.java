@@ -11,24 +11,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import io.github.bananapuncher714.cartographer.core.Cartographer;
-import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
 import io.github.bananapuncher714.cartographer.core.api.permission.PermissionBuilder;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.module.Module;
-import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
@@ -69,17 +62,6 @@ public class VanillaPlus extends Module {
 			minimap.registerProvider( cursorProvider );
 		}
 		
-//		registerCommand( new CommandBase( "test" )
-//				.setSubCommand( new SubCommand( "test" )
-//						.add( new SubCommand( new InputValidatorInt( 0, 0xFFFFFF ) )
-//								.addSenderValidator( new SenderValidatorPlayer() )
-//								.defaultTo( this::showMenu ) )
-//						.whenUnknown( new CommandExecutableMessage( ChatColor.RED + "You must provide a color!" ) )
-//						.defaultTo( new CommandExecutableMessage( ChatColor.RED + "You must provide an argument!" ) ) )
-//				.setDescription( "Test command" )
-//				.setPermission( new PermissionBuilder( "test" ).setDefault( PermissionDefault.OP ).register().build() )
-//				.build() );
-		
 		FileUtil.saveToFile( getResource( "README.md" ), new File( getDataFolder() + "/README.md" ), true );
 		FileUtil.saveToFile( getResource( "config.yml" ), new File( getDataFolder() + "/config.yml" ), false );
 		
@@ -104,24 +86,7 @@ public class VanillaPlus extends Module {
 		
 		admin.register();
 	}
-	
-	private void showMenu( CommandSender sender, String[] args, CommandParameters parameters ) {
-		Player player = ( Player ) sender;
-		int color = parameters.getLast( int.class );
 
-		ItemStack item = Cartographer.getUtil().getMainHandItem( player );
-		if ( item == null || !Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
-			sender.sendMessage( ChatColor.RED + "You must be holding a minimap!" );
-			return;
-		}
-		CartographerRenderer renderer = Cartographer.getInstance().getMapManager().getRendererFrom( Cartographer.getUtil().getMapViewFrom( item ) );
-		
-		MapMenu menu = new MapMenu();
-		menu.addComponent( new MenuComponentSolid( color ) );
-		
-		renderer.setMapMenu( player.getUniqueId(), menu );
-	}
-	
 	@Override
 	public void onDisable() {
 		blacklistedWorlds.clear();
@@ -215,8 +180,6 @@ public class VanillaPlus extends Module {
 			}
 		}
 	}
-	
-	
 	
 	public Location getDeathOf( UUID uuid ) {
 		return deaths.get( uuid );

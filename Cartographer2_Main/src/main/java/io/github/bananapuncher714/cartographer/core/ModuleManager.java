@@ -11,9 +11,7 @@ import org.apache.commons.lang.Validate;
 import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleDisableEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleEnableEvent;
 import io.github.bananapuncher714.cartographer.core.api.events.module.ModuleLoadEvent;
-import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
 import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
-import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 import io.github.bananapuncher714.cartographer.core.module.ModuleDescription;
 import io.github.bananapuncher714.cartographer.core.module.ModuleLoader;
@@ -158,10 +156,6 @@ public class ModuleManager {
 		}
 		if ( allDependenciesLoaded ) {
 			logger.infoTr( LocaleConstants.MANAGER_MODULE_ENABLING, description.getName(), description.getVersion(), description.getAuthor() );
-			for ( SettingState< ? > state : module.getSettingStates() ) {
-				MapViewer.addSetting( state );
-			}
-			plugin.getCommand().rebuildCommand();
 			module.setEnabled( true );
 			new ModuleEnableEvent( module ).callEvent();
 		} else {
@@ -187,11 +181,8 @@ public class ModuleManager {
 			new ModuleDisableEvent( module ).callEvent();
 			logger.infoTr( LocaleConstants.MANAGER_MODULE_DISABLING, description.getName(), description.getVersion(), description.getAuthor() );
 			module.setEnabled( false );
-			for ( SettingState< ? > state : module.getSettingStates() ) {
-				MapViewer.removeSetting( state );
-			}
-			plugin.getCommand().rebuildCommand();
 			loader.disable( module );
+			plugin.getCommand().rebuildCommand();
 			return true;
 		}
 		return false;

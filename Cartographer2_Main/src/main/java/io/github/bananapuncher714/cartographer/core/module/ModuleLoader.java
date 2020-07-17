@@ -136,9 +136,10 @@ public class ModuleLoader {
 		
 		Set< String > classes = loader.getClassNames();
 		
-		for ( SettingState< ? > state : module.getSettingStates() ) {
+		for ( SettingState< ? > state : module.getTracker().getSettings() ) {
 			MapViewer.removeSetting( state );
 		}
+		module.getTracker().getSettings().clear();
 		
 		// Remove integration from maps
 		MinimapManager manager = plugin.getMapManager();

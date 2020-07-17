@@ -176,16 +176,8 @@ public class LocaleManager {
 	}
 	
 	public Locale load( InputStream stream ) {
-		FileConfiguration config = null;
 		InputStreamReader reader = new InputStreamReader( stream, StandardCharsets.UTF_8 );
-		config = YamlConfiguration.loadConfiguration( reader );
-		try {
-			reader.close();
-			stream.close();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
-		return load( config );
+		return load( YamlConfiguration.loadConfiguration( reader ) );
 	}
 	
 	public Locale load( FileConfiguration config ) {

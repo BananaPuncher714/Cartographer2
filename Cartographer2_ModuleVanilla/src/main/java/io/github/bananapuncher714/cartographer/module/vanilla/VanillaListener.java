@@ -24,14 +24,4 @@ public class VanillaListener implements Listener {
 	private void onEvent( PlayerDeathEvent event ) {
 		plugin.setDeathOf( event.getEntity().getUniqueId(), event.getEntity().getLocation() );
 	}
-	
-	@EventHandler
-	private void onEvent( PlayerJoinEvent event ) {
-		// TODO Load player data
-	}
-	
-	@EventHandler
-	private void onEvent( PlayerQuitEvent event ) {
-		// TODO Save player data
-	}
 }

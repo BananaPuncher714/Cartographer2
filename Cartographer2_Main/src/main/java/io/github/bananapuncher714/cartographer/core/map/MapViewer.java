@@ -156,7 +156,16 @@ public class MapViewer {
 	 * @param state
 	 */
 	public static void addSetting( SettingState< ? > state ) {
-		SETTING_STATES.put( state.getId(), state );
+		String id = state.getId();
+		if ( SETTING_STATES.containsKey( id ) ) {
+			SettingState< ? > s = SETTING_STATES.get( id );
+			if ( s != state ) {
+				throw new IllegalArgumentException( String.format( "Attempted to register existing setting %s!", id ) );
+			}
+		} else {
+			SETTING_STATES.put( id, state );
+		}
+		
 	}
 	
 	/**

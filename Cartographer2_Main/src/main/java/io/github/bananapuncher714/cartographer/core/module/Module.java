@@ -82,6 +82,14 @@ public abstract class Module {
 	public void onDisable() {
 	}
 	
+	protected final void registerSettings() {
+		for ( SettingState< ? > state : getSettingStates() ) {
+			MapViewer.addSetting( state );
+			tracker.getSettings().add( state );
+		}
+		plugin.getCommand().rebuildCommand();
+	}
+	
 	public SettingState< ? >[] getSettingStates() {
 		return new SettingState< ? >[ 0 ];
 	}
@@ -142,16 +150,8 @@ public abstract class Module {
 	}
 	
 	protected final Locale loadLocale( InputStream stream ) {
-		FileConfiguration config = null;
 		InputStreamReader reader = new InputStreamReader( stream, StandardCharsets.UTF_8 );
-		config = YamlConfiguration.loadConfiguration( reader );
-		try {
-			reader.close();
-			stream.close();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
-		return plugin.getLocaleManager().load( config, "modules." + getName() );
+		return plugin.getLocaleManager().load( YamlConfiguration.loadConfiguration( reader ), "modules." + getName() );
 	}
 	
 	protected final Collection< Locale > loadLocale( File file ) {
@@ -159,7 +159,7 @@ public abstract class Module {
 		List< Locale > locales = new ArrayList< Locale >();
 		if ( file.exists() ) {
 			if ( file.isDirectory() ) {
-				for ( File localeFile : dataFolder.listFiles() ) {
+				for ( File localeFile : file.listFiles() ) {
 					if ( localeFile.getName().endsWith( ".yml" ) ) {
 						try {
 							// Load it under the module prefix, since we don't want it to get mixed with global keys
