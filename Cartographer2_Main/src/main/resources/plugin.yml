@@ -195,119 +195,106 @@ permissions:
     default: false
     children:
       cartographer.settings.setother: true
+      cartographer.settings.set.rotate: true
       cartographer.settings.getother.rotate: true
-      cartographer.settings: true
   cartographer.settings.getother.rotate:
     description: Get whether a player's rotating minimaps are on
     default: false
     children:
       cartographer.settings.getother: true
       cartographer.settings.get.rotate: true
-      cartographer.settings: true
   cartographer.settings.set.rotate:
     description: Set whether rotating minimaps are on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.rotate: true
-      cartographer.settings: true
   cartographer.settings.get.rotate:
     description: Get whether rotating minimaps are on
     default: false
     children:
       cartographer.settings.get: true
-      cartographer.settings: true
   # Cursor
   cartographer.settings.setother.cursor:
     description: Set whether a player's cursor is on
     default: false
     children:
       cartographer.settings.setother: true
+      cartographer.settings.set.cursor: true
       cartographer.settings.getother.cursor: true
-      cartographer.settings: true
   cartographer.settings.getother.cursor:
     description: Get whether a player's cursor is on
     default: false
     children:
       cartographer.settings.getother: true
       cartographer.settings.get.cursor: true
-      cartographer.settings: true
   cartographer.settings.set.cursor:
     description: Set whether the cursor is on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.cursor: true
-      cartographer.settings: true
   cartographer.settings.get.cursor:
     description: Get whether the cursor is on
     default: false
     children:
       cartographer.settings.get: true
-      cartographer.settings: true
   # Show name
   cartographer.settings.setother.showname:
     description: Set whether a player's name is visible
     default: false
     children:
       cartographer.settings.setother: true
+      cartographer.settings.set.showname: true
       cartographer.settings.getother.showname: true
-      cartographer.settings: true
   cartographer.settings.getother.showname:
     description: Get whether a player's name is visible
     default: false
     children:
       cartographer.settings.getother: true
       cartographer.settings.get.showname: true
-      cartographer.settings: true
   cartographer.settings.set.showname:
     description: Set whether the cursor is on
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.showname: true
-      cartographer.settings: true
   cartographer.settings.get.showname:
     description: Get whether the name is visible
     default: false
     children:
       cartographer.settings.get: true
-      cartographer.settings: true
 # Locale
   cartographer.settings.setother.locale:
     description: Set a player's locale
     default: false
     children:
       cartographer.settings.setother: true
+      cartographer.settings.set.locale: true
       cartographer.settings.getother.locale: true
-      cartographer.settings: true
   cartographer.settings.getother.locale:
     description: Get a player's locale
     default: false
     children:
       cartographer.settings.getother: true
       cartographer.settings.get.locale: true
-      cartographer.settings: true
   cartographer.settings.set.locale:
     description: Set the locale
     default: false
     children:
       cartographer.settings.set: true
       cartographer.settings.get.locale: true
-      cartographer.settings: true
   cartographer.settings.get.locale:
     description: Get the locale
     default: false
     children:
       cartographer.settings.get: true
-      cartographer.settings: true
   # Settings subcommands
   cartographer.settings.set:
     description: Set an option
     default: false
     children:
       cartographer.settings.get: true
-      cartographer.settings: true
   cartographer.settings.get:
     description: Get an option
     default: false
@@ -317,12 +304,13 @@ permissions:
     description: Set another player's options
     default: false
     children:
+      cartographer.settings.set: true
       cartographer.settings.getother: true
-      cartographer.settings: true
   cartographer.settings.getother:
     description: Get another player's options
     default: false
     children:
+      cartographer.settings.get: true
       cartographer.settings: true
   # Settings command
   cartographer.settings:

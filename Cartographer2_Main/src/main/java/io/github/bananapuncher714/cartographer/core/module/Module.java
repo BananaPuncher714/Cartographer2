@@ -20,10 +20,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.ModuleManager;
+import io.github.bananapuncher714.cartographer.core.api.permission.PermissionBuilder;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
 import io.github.bananapuncher714.cartographer.core.locale.Locale;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
@@ -83,10 +86,39 @@ public abstract class Module {
 	}
 	
 	protected final void registerSettings() {
+		Permission user = Bukkit.getPluginManager().getPermission( "cartographer.settings.user" );
+		Permission admin = Bukkit.getPluginManager().getPermission( "cartographer.settings.admin" );
 		for ( SettingState< ? > state : getSettingStates() ) {
 			MapViewer.addSetting( state );
 			tracker.getSettings().add( state );
+			
+			if ( !state.isPrivate() ) {
+				Permission get = new PermissionBuilder( "cartographer.settings.get." + state.getId() )
+						.addChild( Bukkit.getPluginManager().getPermission( "cartographer.settings.get" ), true )
+						.setDefault( PermissionDefault.FALSE ).register().build();
+				Permission set = new PermissionBuilder( "cartographer.settings.set." + state.getId() )
+						.addChild( Bukkit.getPluginManager().getPermission( "cartographer.settings.set" ), true )
+						.addChild( get, true )
+						.setDefault( PermissionDefault.FALSE ).register().build();
+				Permission getOther = new PermissionBuilder( "cartographer.settings.getother." + state.getId() )
+						.addChild( Bukkit.getPluginManager().getPermission( "cartographer.settings.getother" ), true )
+						.addChild( get, true )
+						.setDefault( PermissionDefault.FALSE ).register().build();
+				Permission setOther = new PermissionBuilder( "cartographer.settings.setother." + state.getId() )
+						.addChild( Bukkit.getPluginManager().getPermission( "cartographer.settings.setother" ), true )
+						.addChild( set, true )
+						.addChild( getOther, true )
+						.setDefault( PermissionDefault.FALSE ).register().build();
+
+				user.getChildren().put( get.getName(), true );
+				user.getChildren().put( set.getName(), true );
+				admin.getChildren().put( getOther.getName(), true );
+				admin.getChildren().put( setOther.getName(), true );
+			}
 		}
+		user.recalculatePermissibles();
+		admin.recalculatePermissibles();
+		
 		plugin.getCommand().rebuildCommand();
 	}
 	

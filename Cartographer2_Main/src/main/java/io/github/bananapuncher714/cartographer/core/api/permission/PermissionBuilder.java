@@ -22,7 +22,11 @@ public class PermissionBuilder {
 	}
 	
 	public PermissionBuilder addChild( Permission permission, boolean set ) {
-		permission.getChildren().put( permission.getName(), set );
+		return addChild( permission.getName(), set );
+	}
+	
+	public PermissionBuilder addChild( String permission, boolean set ) {
+		this.permission.getChildren().put( permission, set );
 		return this;
 	}
 	
