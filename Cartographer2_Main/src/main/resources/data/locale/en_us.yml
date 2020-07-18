@@ -11,6 +11,7 @@
 # - "Random message 3"
 # These locale files also support placeholders, if it's a message for a player.
 # To use custom colored messages, use the section symbol(§) directly.
+# If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
 name: "English (US)"
 language: "American English"
 location: "USA"
