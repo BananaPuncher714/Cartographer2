@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
+import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorProviderDeathLocation;
@@ -41,9 +42,10 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 
 		if ( module.isWhitelisted( setting.getLocation().getWorld() ) ) {
 			PlayerViewer viewer = module.getViewerFor( player.getUniqueId() );
-
+			MapViewer mViewer = module.getCartographer().getPlayerManager().getViewerFor( player.getUniqueId() );
+			
 			// Add their last death location
-			if ( player.hasPermission( "vanillaplus.cursor.location.death" ) && module.isDeathLocEnabled() ) {
+			if ( player.hasPermission( "vanillaplus.cursor.location.death" ) && module.isDeathLocEnabled() && mViewer.getSetting( VanillaPlus.SETTING_SHOW_DEATH ) ) {
 				Set< NamedLocation > deathLocs = deathLoc.getFor( player, setting );
 				for ( NamedLocation loc : deathLocs ) {
 					WorldCursor cursor = viewer.convert( loc, player, setting );
@@ -54,7 +56,7 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			}
 
 			// Add their spawn location
-			if ( player.hasPermission( "vanillaplus.cursor.location.spawn" ) && module.isSpawnLocEnabled() ) {
+			if ( player.hasPermission( "vanillaplus.cursor.location.spawn" ) && module.isSpawnLocEnabled() && mViewer.getSetting( VanillaPlus.SETTING_SHOW_SPAWN ) ) {
 				Set< NamedLocation > spawnLocs = spawnLoc.getFor( player, setting );
 				for ( NamedLocation loc : spawnLocs ) {
 					WorldCursor cursor = viewer.convert( loc, player, setting );
@@ -65,7 +67,7 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			}
 
 			// Add other players
-			if ( player.hasPermission( "vanillaplus.cursor.players" ) && module.isPlayerEnabled() ) {
+			if ( player.hasPermission( "vanillaplus.cursor.players" ) && module.isPlayerEnabled() && mViewer.getSetting( VanillaPlus.SETTING_SHOW_PLAYERS ) ) {
 				for ( Player tracking : playerProvider.getFor( player, setting ) ) {
 					WorldCursor cursor = viewer.convert( tracking, player, setting );
 					if ( cursor != null ) {
@@ -75,12 +77,14 @@ public class VanillaWorldCursorProvider implements WorldCursorProvider {
 			}
 
 			// Add all the entities
-			for ( CursorProviderEntity entityProvider : entityProviders.values() ) {
-				if ( player.hasPermission( "vanillaplus.cursor.entity." + entityProvider.getType().name().toLowerCase() ) ) {
-					for ( Entity entity : entityProvider.getFor( player, setting ) ) {
-						WorldCursor cursor = viewer.convert( entity, player, setting );
-						if ( cursor != null ) {
-							cursors.add( cursor );
+			if ( module.hasEntityCursors() && mViewer.getSetting( VanillaPlus.SETTING_SHOW_ENTITIES ) ) {
+				for ( CursorProviderEntity entityProvider : entityProviders.values() ) {
+					if ( player.hasPermission( "vanillaplus.cursor.entity." + entityProvider.getType().name().toLowerCase() ) ) {
+						for ( Entity entity : entityProvider.getFor( player, setting ) ) {
+							WorldCursor cursor = viewer.convert( entity, player, setting );
+							if ( cursor != null ) {
+								cursors.add( cursor );
+							}
 						}
 					}
 				}

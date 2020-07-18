@@ -23,6 +23,7 @@
 		<module>Cartographer2_ModuleVanilla</module>
 		<module>Cartographer2_v1_16_R1</module>
 		<module>Cartographer2_ModuleExperimental</module>
+		<module>Cartographer2_ModuleWorldViewer</module>
 	</modules>
 
 	<build>

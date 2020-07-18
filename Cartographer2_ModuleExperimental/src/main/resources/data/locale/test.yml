@@ -1,5 +1,6 @@
 name: "English (US)"
 language: "American English"
+location: "USA"
 locale-code: "en_us"
 messages:
   test: "Hello, world!"

@@ -20,7 +20,6 @@ import io.github.bananapuncher714.cartographer.core.api.command.CommandParameter
 import io.github.bananapuncher714.cartographer.core.api.command.SubCommand;
 import io.github.bananapuncher714.cartographer.core.api.command.executor.CommandExecutableMessage;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorInt;
-import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPermission;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidatorPlayer;
 import io.github.bananapuncher714.cartographer.core.locale.Locale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;

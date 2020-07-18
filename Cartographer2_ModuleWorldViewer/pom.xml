@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>Cartographer2_Master</artifactId>
 		<version>2</version>
 	</parent>
-	<artifactId>Cartographer2_ModuleVanilla</artifactId>
-	<version>1.0.3</version>
+	<artifactId>Cartographer2_ModuleWorldViewer</artifactId>
+	<version>1.0.0</version>
 
 	<dependencies>
 		<dependency>

@@ -1,0 +1,19 @@
+# Determines how fast the map moves
+map-movement-modifier: 2
+default-zoom: 1
+allowed-zooms:
+- 1
+- 2
+- 4
+- 8
+- 16
+
+text:
+  x: 2
+  y: 18
+  character-distance: 2
+  tab-distance: 10
+  space: 2
+  line-space: 18
+  shadow: true
+  unicode: false

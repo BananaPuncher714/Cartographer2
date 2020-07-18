@@ -23,8 +23,8 @@ public class DefaultPointerCursorProvider implements MapCursorProvider {
 		if ( viewer.getSetting( MapViewer.CURSOR ) && setting.isMainHand() ) {
 			Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
 
-			int x = ( int ) Math.max( -127, Math.min( 127, setting.getCursorX() ) );
-			int y = ( int ) Math.max( -127, Math.min( 127, setting.getCursorY() ) );
+			int x = ( int ) Math.max( -128, Math.min( 127, setting.getCursorX() ) );
+			int y = ( int ) Math.max( -128, Math.min( 127, setting.getCursorY() ) );
 
 			MapCursor cursor = Cartographer.getInstance().getHandler().constructMapCursor( x, y, 0, type, null );
 

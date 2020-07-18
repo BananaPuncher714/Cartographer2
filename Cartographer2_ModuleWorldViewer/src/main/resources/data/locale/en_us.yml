@@ -1,0 +1,11 @@
+name: "English (US)"
+language: "American English"
+location: "USA"
+locale-code: "en_us"
+messages:
+  must-hold-minimap: "§cYou must be holding a minimap!"
+  must-be-player: "§cOnly players can run this command!"
+  coord-info:
+    1: "§24;X:§6; %1$d"
+    2: "§24;Z:§6; %2$d"
+    3: ""

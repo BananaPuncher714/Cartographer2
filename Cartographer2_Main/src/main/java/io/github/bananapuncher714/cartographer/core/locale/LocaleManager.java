@@ -197,17 +197,19 @@ public class LocaleManager {
 		
 		ConfigurationSection section = config.getConfigurationSection( "messages" );
 		for ( String key : section.getKeys( true ) ) {
-			LocaleMessage message;
+			LocaleMessage message = null;
 			if ( section.isString( key ) ) {
 				message = new LocaleMessageString( section.getString( key ) );
-			} else {
+			} else if ( section.isList( key ) ){
 				message = new LocaleMessageRandom( section.getStringList( key ) );
 			}
 			
-			if ( prefix == null || prefix.isEmpty() ) {
-				locale.add( key, message );
-			} else {
-				locale.add( prefix + "." + key, message );
+			if ( message != null ) {
+				if ( prefix == null || prefix.isEmpty() ) {
+					locale.add( key, message );
+				} else {
+					locale.add( prefix + "." + key, message );
+				}
 			}
 		}
 		

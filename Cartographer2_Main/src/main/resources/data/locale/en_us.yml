@@ -10,7 +10,7 @@
 # - "Random message 2"
 # - "Random message 3"
 # These locale files also support placeholders, if it's a message for a player.
-# To use custom colored messages, use the unicode sequence § directly.
+# To use custom colored messages, use the section symbol(§) directly.
 name: "English (US)"
 language: "American English"
 location: "USA"

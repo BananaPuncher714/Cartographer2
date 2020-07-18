@@ -408,6 +408,16 @@ public class CartographerRenderer extends MapRenderer {
 		this.mapId = map == null ? null : map.getId();
 	}
 	
+	public void resetCursorFor( Player player ) {
+		if ( settings.containsKey( player.getUniqueId() ) ) {
+			Location location = player.getLocation();
+			PlayerSetting setting = settings.get( player.getUniqueId() );
+			setting.setCursorX( 0 );
+			setting.setCursorY( 0 );
+			setting.setCursorYaw( ( ( location.getYaw() % 360 ) + 360 ) % 360 );
+		}
+	}
+	
 	// Since Paper only updates 4 times a tick, we'll have to compensate and manually update 20 times a tick instead
 	private void tickRender() {
 		// This is one of the most resource intensive methods
@@ -498,9 +508,9 @@ public class CartographerRenderer extends MapRenderer {
 				double pitch = location.getPitch();
 				
 				pitch = Math.max( 50, Math.min( 90, pitch ) );
-				pitch -= 70;
-				pitch = pitch / 20.0;
-				setting.setCursorY( pitch * 127 );
+				pitch -= 50;
+				pitch = pitch / 40.0;
+				setting.setCursorY( ( pitch * 255 ) - 128 );
 			}
 			
 			setting.rotating = rotating;

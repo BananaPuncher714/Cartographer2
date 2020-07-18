@@ -241,11 +241,6 @@ public abstract class Module {
 		if ( isEnabled == enabled ) {
 			return false;
 		} else if ( enabled ) {
-			// Register all the states with the MapViewer
-			for ( SettingState< ? > state : getSettingStates() ) {
-				MapViewer.addSetting( state );
-			}
-			
 			onEnable();
 		} else {
 			onDisable();

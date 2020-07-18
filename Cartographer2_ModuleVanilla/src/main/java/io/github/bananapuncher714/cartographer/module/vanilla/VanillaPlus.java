@@ -1,8 +1,10 @@
 package io.github.bananapuncher714.cartographer.module.vanilla;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +22,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import io.github.bananapuncher714.cartographer.core.api.permission.PermissionBuilder;
+import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
+import io.github.bananapuncher714.cartographer.core.api.setting.SettingStateBoolean;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
@@ -36,6 +40,11 @@ import io.github.bananapuncher714.cartographer.module.vanilla.providers.CursorPr
 import io.github.bananapuncher714.cartographer.module.vanilla.providers.ObjectProvider;
 
 public class VanillaPlus extends Module {
+	protected static final SettingStateBoolean SETTING_SHOW_DEATH = SettingStateBoolean.of( "vp_show_death_location", false, true );
+	protected static final SettingStateBoolean SETTING_SHOW_SPAWN = SettingStateBoolean.of( "vp_show_spawn_location", false, true );
+	protected static final SettingStateBoolean SETTING_SHOW_PLAYERS = SettingStateBoolean.of( "vp_show_players", false, true );
+	protected static final SettingStateBoolean SETTING_SHOW_ENTITIES = SettingStateBoolean.of( "vp_show_mobs", false, true );
+	
 	private Map< UUID, Location > deaths = new HashMap< UUID, Location >();
 	
 	private boolean isBlacklist;
@@ -51,6 +60,7 @@ public class VanillaPlus extends Module {
 	private boolean deathLocEnabled = true;
 	private boolean spawnLocEnabled = true;
 	private boolean playerEnabled = true;
+	private boolean hasEntities = false;
 	
 	@Override
 	public void onEnable() {
@@ -66,6 +76,8 @@ public class VanillaPlus extends Module {
 		FileUtil.saveToFile( getResource( "config.yml" ), new File( getDataFolder() + "/config.yml" ), false );
 		
 		loadConfig();
+		
+		registerSettings();
 		
 		Permission death = new PermissionBuilder( "vanillaplus.cursor.location.death" ).setDefault( PermissionDefault.TRUE ).register().build();
 		Permission spawn = new PermissionBuilder( "vanillaplus.cursor.location.spawn" ).setDefault( PermissionDefault.TRUE ).register().build();
@@ -85,6 +97,29 @@ public class VanillaPlus extends Module {
 		admin.addChild( invisible, true );
 		
 		admin.register();
+	}
+	
+	@Override
+	public SettingState< ? >[] getSettingStates() {
+		List< SettingState< ? > > states = new ArrayList< SettingState< ? > >();
+		
+		if ( deathLocEnabled ) {
+			states.add( SETTING_SHOW_DEATH );
+		}
+		
+		if ( spawnLocEnabled ) {
+			states.add( SETTING_SHOW_SPAWN );
+		}
+		
+		if ( playerEnabled ) {
+			states.add( SETTING_SHOW_PLAYERS );
+		}
+		
+		if ( hasEntities ) {
+			states.add( SETTING_SHOW_ENTITIES );
+		}
+		
+		return states.toArray( new SettingState[ states.size() ] );
 	}
 
 	@Override
@@ -152,6 +187,7 @@ public class VanillaPlus extends Module {
 		if ( config.contains( "entity" ) ) {
 			ConfigurationSection section = config.getConfigurationSection( "entity" );
 			for ( String key : section.getKeys( false ) ) {
+				hasEntities = true;
 				EntityType type = EntityType.valueOf( key.toUpperCase() );
 				String iconTypes = section.getString( key + ".icon" );
 				Type icon = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
@@ -241,5 +277,9 @@ public class VanillaPlus extends Module {
 
 	public void setPlayerEnabled( boolean playerEnabled ) {
 		this.playerEnabled = playerEnabled;
+	}
+	
+	public boolean hasEntityCursors() {
+		return hasEntities;
 	}
 }
