@@ -15,7 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
@@ -44,6 +44,8 @@ import io.netty.channel.ChannelPromise;
  * @author Kristian
  */
 public abstract class TinyProtocol {
+	private static final long TIMEOUT = 10_000;
+	
 	private static final AtomicInteger ID = new AtomicInteger(0);
 
 	// Used in order to lookup a channel
@@ -189,16 +191,11 @@ public abstract class TinyProtocol {
 		listener = new Listener() {
 
 			@EventHandler(priority = EventPriority.LOWEST)
-			private final void onPlayerLogin( PlayerJoinEvent e) {
+			private final void onPlayerLogin( PlayerLoginEvent e) {
 				if (closed)
 					return;
 				
-				Channel channel = getChannel( e.getPlayer() );
-				
-				// Don't inject players that have been explicitly uninjected
-				if (!uninjectedChannels.contains(channel)) {
-					injectPlayer( e.getPlayer() );
-				}
+				Bukkit.getScheduler().runTaskAsynchronously( plugin, () -> injectPlayerTimeout( e.getPlayer(), TIMEOUT ) );
 			}
 			
 			@EventHandler( priority = EventPriority.LOWEST )
@@ -212,6 +209,33 @@ public abstract class TinyProtocol {
 			private final void onPluginDisable(PluginDisableEvent e) {
 				if (e.getPlugin().equals(plugin)) {
 					close();
+				}
+			}
+			
+			private void injectPlayerTimeout( Player player, long timeout ) {
+				long start = System.currentTimeMillis();
+				long current = System.currentTimeMillis();
+				Channel channel = null;
+				while ( channel == null && current - start < timeout ) {
+					try {
+						channel = getChannel( player );
+					} catch ( NullPointerException e ) {
+						try {
+							Thread.sleep( 20 );
+						} catch ( InterruptedException exception ) {
+							e.printStackTrace();
+						}
+					}
+					current = System.currentTimeMillis();
+				}
+				
+				// Don't inject players that have been explicitly uninjected
+				if ( channel != null ) {
+					if (!uninjectedChannels.contains(channel)) {
+						injectPlayer( player );
+					}
+				} else {
+					plugin.getLogger().severe( "Was not able to inject channel for " + player.getName() );
 				}
 			}
 		};

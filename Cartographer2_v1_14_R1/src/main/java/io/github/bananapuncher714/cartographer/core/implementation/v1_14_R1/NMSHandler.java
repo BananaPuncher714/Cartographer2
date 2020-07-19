@@ -181,20 +181,22 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
-		if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
-			// Check for the drop packet
-			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
-
-			EnumPlayerDigType type = digPacket.d();
-			if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
-				ItemStack item = viewer.getEquipment().getItemInMainHand();
-				if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
-					// Update the player's hand
-					viewer.getEquipment().setItemInMainHand( item );
-					
-					// Activate the drop
-					Cartographer.getInstance().getMapManager().activate( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS ? MapInteraction.CTRLQ : MapInteraction.Q );
-					return null;
+		if ( viewer != null ) {
+			if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
+				// Check for the drop packet
+				PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
+	
+				EnumPlayerDigType type = digPacket.d();
+				if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
+					ItemStack item = viewer.getEquipment().getItemInMainHand();
+					if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
+						// Update the player's hand
+						viewer.getEquipment().setItemInMainHand( item );
+						
+						// Activate the drop
+						Cartographer.getInstance().getMapManager().activate( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS ? MapInteraction.CTRLQ : MapInteraction.Q );
+						return null;
+					}
 				}
 			}
 		}

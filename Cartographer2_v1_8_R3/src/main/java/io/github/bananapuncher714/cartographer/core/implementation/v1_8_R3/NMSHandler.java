@@ -135,25 +135,27 @@ public class NMSHandler implements PacketHandler {
 	
 	@Override
 	public Object onPacketInterceptIn( Player viewer, Object packet ) {
-		if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
-			// Check for the drop packet
-			PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
-
-			EnumPlayerDigType type = digPacket.c();
-			if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
-				ItemStack item = viewer.getEquipment().getItemInHand();
-				if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
-					// Update the player's hand
-					viewer.getEquipment().setItemInHand( item );
-					
-					// Activate the drop
-					Cartographer.getInstance().getMapManager().activate( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS ? MapInteraction.CTRLQ : MapInteraction.Q );
-					return null;
+		if ( viewer != null ) {
+			if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
+				// Check for the drop packet
+				PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
+	
+				EnumPlayerDigType type = digPacket.c();
+				if ( type == EnumPlayerDigType.DROP_ALL_ITEMS || type == EnumPlayerDigType.DROP_ITEM ) {
+					ItemStack item = viewer.getEquipment().getItemInHand();
+					if ( Cartographer.getInstance().getMapManager().isMinimapItem( item ) ) {
+						// Update the player's hand
+						viewer.getEquipment().setItemInHand( item );
+						
+						// Activate the drop
+						Cartographer.getInstance().getMapManager().activate( viewer, type == EnumPlayerDigType.DROP_ALL_ITEMS ? MapInteraction.CTRLQ : MapInteraction.Q );
+						return null;
+					}
 				}
+			} else if ( packet instanceof PacketPlayInSettings ) {
+				PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
+				Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.a() );
 			}
-		} else if ( packet instanceof PacketPlayInSettings ) {
-			PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
-			Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.a() );
 		}
 		return packet;
 	}
