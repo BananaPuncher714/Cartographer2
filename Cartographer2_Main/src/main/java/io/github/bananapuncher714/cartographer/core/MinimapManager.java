@@ -61,6 +61,19 @@ public class MinimapManager {
 		return mapItem;
 	}
 	
+	public ItemStack getItemFor( Minimap map, int mapId ) {
+		MapView view = plugin.getHandler().getUtil().getMap( mapId );
+
+		ItemStack mapItem = plugin.getHandler().getUtil().getMapItem( mapId );
+		
+		convert( view, map );
+		
+		String id = map == null ? "MISSING MAP" : map.getId();
+		mapItem = NBTEditor.set( mapItem, id, MAP_ID );
+		
+		return mapItem;
+	}
+	
 	/**
 	 * Get the {@link CartographerRenderer} of a MapView.
 	 * 

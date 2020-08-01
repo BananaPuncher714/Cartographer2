@@ -229,10 +229,25 @@ public abstract class TinyProtocol {
 					current = System.currentTimeMillis();
 				}
 				
+				start = System.currentTimeMillis();
+				
 				// Don't inject players that have been explicitly uninjected
 				if ( channel != null ) {
 					if (!uninjectedChannels.contains(channel)) {
-						injectPlayer( player );
+						// Sometimes the channel doesn't contain packet_handler immediately
+						while ( current - start < timeout ) {
+							try {
+								injectPlayer( player );
+								break;
+							} catch ( NoSuchElementException e ) {
+								try {
+									Thread.sleep( 20 );
+								} catch ( InterruptedException exception ) {
+									e.printStackTrace();
+								}
+								current = System.currentTimeMillis();
+							}
+						}
 					}
 				} else {
 					plugin.getLogger().severe( "Was not able to inject channel for " + player.getName() );

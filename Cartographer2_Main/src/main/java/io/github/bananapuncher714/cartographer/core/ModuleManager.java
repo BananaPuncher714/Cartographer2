@@ -159,7 +159,7 @@ public class ModuleManager {
 			module.setEnabled( true );
 			new ModuleEnableEvent( module ).callEvent();
 		} else {
-			logger.warningTr( LocaleConstants.MANAGER_MODULE_MISSING_DEPENDENCIES, missingDeps.toString().trim() );
+			logger.warningTr( LocaleConstants.MANAGER_MODULE_MISSING_DEPENDENCIES, description.getName(), missingDeps.toString().trim() );
 			return false;
 		}
 		return true;

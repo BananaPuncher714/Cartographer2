@@ -24,6 +24,7 @@
 		<module>Cartographer2_v1_16_R1</module>
 		<module>Cartographer2_ModuleExperimental</module>
 		<module>Cartographer2_ModuleWorldViewer</module>
+		<module>Cartographer2_API</module>
 	</modules>
 
 	<build>

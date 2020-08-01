@@ -19,8 +19,8 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_Main</artifactId>
-			<version>2</version>
+			<artifactId>Cartographer2_API</artifactId>
+			<version>2.14.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
