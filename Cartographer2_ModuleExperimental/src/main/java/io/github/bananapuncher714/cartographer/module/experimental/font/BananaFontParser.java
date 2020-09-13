@@ -19,6 +19,8 @@ public class BananaFontParser {
 		
 		int format = reader.getInt16Little();
 		
+		stream.close();
+		
 		if ( format == 1 ) {
 			return parseFormat1( reader );
 		}

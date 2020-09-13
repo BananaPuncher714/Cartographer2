@@ -1,0 +1,22 @@
+# Faction home icon
+home-icon: MANSION
+
+# Faction colors
+town:
+  neutral: 255, 255, 0
+  member_town: 0, 255, 0
+  allied_town: 0, 0, 255
+  member_nation: 0, 128, 0
+  allied_nation: 0, 0, 128
+  enemy_nation: 255, 0, 0
+
+# Player icons
+show-name: true
+player-range: 100
+player:
+  neutral: WHITE_POINTER
+  member_town: GREEN_POINTER 
+  allied_town: GREEN_POINTER
+  member_nation: BLUE_POINTER
+  allied_nation: BLUE_POINTER
+  enemy_nation: RED_POINTER

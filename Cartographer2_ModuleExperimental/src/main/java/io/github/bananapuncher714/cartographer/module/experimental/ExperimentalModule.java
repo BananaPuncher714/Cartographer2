@@ -4,16 +4,22 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandBase;
 import io.github.bananapuncher714.cartographer.core.api.command.CommandParameters;
@@ -25,6 +31,8 @@ import io.github.bananapuncher714.cartographer.core.locale.Locale;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.module.Module;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
+import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.module.experimental.ChunkBorderShader.ChunkBorderData;
 import io.github.bananapuncher714.cartographer.module.experimental.font.BananaFontParser;
 import io.github.bananapuncher714.cartographer.module.experimental.font.BananaTypeFont;
 import io.github.bananapuncher714.cartographer.module.experimental.font.PixelGlyph;
@@ -39,6 +47,11 @@ public class ExperimentalModule extends Module {
 	private Color color = new Color( 0 );
 	
 	private SubCommand experimental;
+	
+	private Set< ChunkLocation > mapped = new HashSet< ChunkLocation >();
+	private Set< ChunkBorderData > faces = new HashSet< ChunkBorderData >();
+	
+	int tick = 0;
 	
 	@Override
 	public void onEnable() {
@@ -76,11 +89,21 @@ public class ExperimentalModule extends Module {
 				.setDescription( "Experimental command" )
 				.build() );
 		
+		registerCommand( new CommandBase( "reset" )
+				.setSubCommand( new SubCommand( "reset" )
+						.defaultTo( ( sender, args, params ) -> { mapped.clear(); } ) )
+				.setDescription( "Reset the explored area" )
+				.build() );
+		tick = 0;
+		
 		for ( Minimap minimap : getCartographer().getMapManager().getMinimaps().values() ) {
 			minimap.registerProvider( new TextPixelProvider( this ) );
+			minimap.register( new ChunkBorderShader( this::getLocations ) );
 		}
 		
 		registerListener( new MapListener( this ) );
+		
+		runTaskTimer( this::tick, 20, 20 );
 	}
 	
 	@Override
@@ -88,6 +111,21 @@ public class ExperimentalModule extends Module {
 		List< Locale > locales = new ArrayList< Locale >();
 		locales.add( convertToDefaultLocale( loadLocale( getResource( "data/locale/test.yml" ) ) ) );
 		return locales;
+	}
+	
+	protected void addExplored( ChunkLocation location ) {
+		mapped.add( location );
+	}
+	
+	private void tick() {
+		// Re-render the map
+		faces.clear();
+		Map< ChunkLocation, Set< BlockFace > > combined = ChunkBorderShader.getBorders( mapped );
+		for ( Entry< ChunkLocation, Set< BlockFace > > entry : combined.entrySet() ) {
+			ChunkBorderData data = new ChunkBorderData( entry.getKey(), Color.RED );
+			data.getFaces().addAll( entry.getValue() );
+			faces.add( data );
+		}
 	}
 	
 	private void setString( CommandSender sender, String[] args, CommandParameters params ) {
@@ -132,6 +170,10 @@ public class ExperimentalModule extends Module {
 	
 	public BananaTypeFont getUnicodeFont() {
 		return unicodeFont;
+	}
+	
+	public Set< ChunkBorderData > getLocations( Player player, PlayerSetting setting ) {
+		return faces;
 	}
 	
 	public Collection< MapPixel > getFor( String message, int x, int y, Color color ) {

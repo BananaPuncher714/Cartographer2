@@ -83,7 +83,7 @@ public class WorldPixel implements Comparable< WorldPixel > {
 	
 	private void calculateDimensions() {
 		radX = width / 2.0;
-		radY = width / 2.0;
+		radY = height / 2.0;
 		centerX = x + radX;
 		centerY = z + radY;
 	}

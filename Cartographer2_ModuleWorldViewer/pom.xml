@@ -10,6 +10,10 @@
 	<artifactId>Cartographer2_ModuleWorldViewer</artifactId>
 	<version>1.0.0</version>
 
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>

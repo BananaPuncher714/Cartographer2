@@ -34,12 +34,4 @@
 			<version>7.16</version>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub BananaPuncher714 Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/BananaPuncher714/Cartographer2</url>
-		</repository>
-	</distributionManagement>
 </project>

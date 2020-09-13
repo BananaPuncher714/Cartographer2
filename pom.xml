@@ -25,6 +25,9 @@
 		<module>Cartographer2_ModuleExperimental</module>
 		<module>Cartographer2_ModuleWorldViewer</module>
 		<module>Cartographer2_API</module>
+		<module>Cartographer2_ModuleFactionsUUID</module>
+		<module>Cartographer2_v1_16_R2</module>
+		<module>Cartographer2_ModuleTowny</module>
 	</modules>
 
 	<build>
@@ -40,4 +43,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub BananaPuncher714 Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/BananaPuncher714/Cartographer2</url>
+		</repository>
+	</distributionManagement>
 </project>

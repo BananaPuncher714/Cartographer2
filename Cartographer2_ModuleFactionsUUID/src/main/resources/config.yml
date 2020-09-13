@@ -1,0 +1,22 @@
+# Faction home icon
+home-icon: MANSION
+
+# Faction colors
+faction:
+  safezone: 0, 255, 255
+  warzone: 128, 0, 0
+  neutral: 255, 255, 0
+  self: 0, 255, 0
+  ally: 0, 128, 0
+  truce: 255, 0, 255
+  enemy: 255, 0, 0
+
+# Player icons
+show-name: true
+player-range: 100
+player:
+  neutral: WHITE_POINTER
+  member: GREEN_POINTER 
+  ally: BLUE_POINTER
+  truce: BLUE_POINTER
+  enemy: RED_POINTER

@@ -10,6 +10,10 @@
 	<artifactId>Cartographer2_ModuleExperimental</artifactId>
 	<version>0.0.1</version>
 
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
