@@ -68,6 +68,8 @@ public class FactionsUUIDModule extends Module implements Listener {
 		}
 
 		runTaskTimer( this::tick, 20, 10 );
+		
+		registerListener( this );
 	}
 
 	@Override

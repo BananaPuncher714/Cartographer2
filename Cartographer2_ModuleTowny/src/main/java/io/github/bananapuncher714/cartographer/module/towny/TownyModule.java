@@ -2,6 +2,9 @@ package io.github.bananapuncher714.cartographer.module.towny;
 
 import java.awt.Color;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +19,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor.Type;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -39,11 +43,21 @@ import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.cartographer.module.towny.ChunkBorderShader.ChunkBorderData;
 
-public class TownyModule extends Module {
+public class TownyModule extends Module implements Listener {
 	public static final SettingStateBoolean TOWNY_CLAIMS = SettingStateBoolean.of( "towny_show_claims", false, true );
 	public static final SettingStateBoolean TOWNY_PLAYERS = SettingStateBoolean.of( "towny_show_players", false, true );
 	public static final SettingStateBoolean TOWNY_SPAWN = SettingStateBoolean.of( "towny_show_spawn", false, true );
 
+	private static Method TOWN_GETTOWNBLOCKS;
+	
+	static {
+		try {
+			TOWN_GETTOWNBLOCKS = Town.class.getMethod( "getTownBlocks" );
+		} catch ( NoSuchMethodException | SecurityException e ) {
+			e.printStackTrace();
+		}
+	}
+	
 	private Map< String, Map< ChunkLocation, Set< BlockFace > > > claims = new HashMap< String, Map< ChunkLocation, Set< BlockFace > > >();
 	private Map< TownyRelation, Color > colors = new HashMap< TownyRelation, Color >();
 	private Map< TownyRelation, Type > icons = new HashMap< TownyRelation, Type >();
@@ -69,6 +83,8 @@ public class TownyModule extends Module {
 		}
 
 		runTaskTimer( this::tick, 20, 10 );
+		
+		registerListener( this );
 	}
 
 	@Override
@@ -121,13 +137,23 @@ public class TownyModule extends Module {
 		claims.clear();
 		for ( Town town : TownyAPI.getInstance().getDataSource().getTowns() ) {
 			Set< ChunkLocation > chunks = new HashSet< ChunkLocation >();
-			for ( TownBlock block : town.getTownBlocks() ) {
+			for ( TownBlock block : getBlocks( town ) ) {
 				Coord coord = block.getCoord();
 				World world = block.getWorldCoord().getBukkitWorld();
 				chunks.add( new ChunkLocation( world, coord.getX(), coord.getZ() ) );
 			}
 			claims.put( town.getName(), ChunkBorderShader.getBorders( chunks ) );
 		}
+	}
+	
+	private Collection< TownBlock > getBlocks( Town town ) {
+		Object collection = new ArrayList< TownBlock >();
+		try {
+			collection = TOWN_GETTOWNBLOCKS.invoke( town );
+		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+			e.printStackTrace();
+		}
+		return ( Collection< TownBlock > ) collection;
 	}
 
 	private Type getType( Player viewer, Player target ) {
@@ -171,7 +197,7 @@ public class TownyModule extends Module {
 		}
 		return Type.WHITE_POINTER;
 	}
-
+	
 	private Collection< ChunkBorderData > getData( Player player, PlayerSetting setting ) {
 		MapViewer viewer = getCartographer().getPlayerManager().getViewerFor( player.getUniqueId() );
 		Set< ChunkBorderData > data = new HashSet< ChunkBorderData >();

@@ -8,7 +8,7 @@
 		<version>2</version>
 	</parent>
 	<artifactId>Cartographer2_ModuleFactionsUUID</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>

@@ -10,7 +10,7 @@ import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
-public class SubRenderTask extends RecursiveTask<SubRenderInfo> {
+public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 	protected RenderInfo info;
 	protected int index;
 	protected int length;
