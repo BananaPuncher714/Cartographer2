@@ -121,12 +121,13 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	private void onPlayerJoinEvent( PlayerJoinEvent event ) {
 		plugin.getPlayerManager().getViewerFor( event.getPlayer().getUniqueId() );
+		plugin.getHandler().inject( event.getPlayer() );
 	}
 
 	@EventHandler
 	private void onPlayerQuitEvent( PlayerQuitEvent event ) {
-		plugin.getProtocol().removeChannel( event.getPlayer() );
 		plugin.getPlayerManager().unload( event.getPlayer().getUniqueId() );
+		plugin.getHandler().uninject( event.getPlayer() );
 	}
 	
 	private void addLocation( Location location ) {

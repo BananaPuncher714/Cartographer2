@@ -2,12 +2,15 @@ package io.github.bananapuncher714.cartographer.core.implementation.v1_11_R1;
 
 import java.lang.reflect.Field;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 
@@ -17,6 +20,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,20 +35,26 @@ import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
-import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_11_R1.Block;
 import net.minecraft.server.v1_11_R1.EnumRenderType;
 import net.minecraft.server.v1_11_R1.IBlockData;
 import net.minecraft.server.v1_11_R1.MapIcon;
 import net.minecraft.server.v1_11_R1.MinecraftKey;
 import net.minecraft.server.v1_11_R1.MinecraftServer;
+import net.minecraft.server.v1_11_R1.NetworkManager;
 import net.minecraft.server.v1_11_R1.PacketPlayInBlockDig;
 import net.minecraft.server.v1_11_R1.PacketPlayInBlockDig.EnumPlayerDigType;
 import net.minecraft.server.v1_11_R1.PacketPlayInSettings;
 import net.minecraft.server.v1_11_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_11_R1.PlayerConnection;
 
 public class NMSHandler implements PacketHandler {
+	private static final AtomicInteger HANDLER_INDEX = new AtomicInteger();
+	
 	private static Field[] MAP_FIELDS = new Field[ 9 ];
 	private static Map< MapCursor.Type, MapIcon.Type > CURSOR_TYPES = new EnumMap< MapCursor.Type, MapIcon.Type >( MapCursor.Type.class );
 	private static Field SIMPLECOMMANDMAP_COMMANDS;
@@ -83,8 +93,37 @@ public class NMSHandler implements PacketHandler {
 		CURSOR_TYPES.put( MapCursor.Type.TEMPLE, MapIcon.Type.MONUMENT );
 	}
 
+	private final Map< UUID, Channel > channels = new HashMap< UUID, Channel >();
 	private final Set< Integer > maps = new TreeSet< Integer >();
 	private Util_1_9 util = new Util_1_9();
+	private final String handler_name;
+	
+	public NMSHandler() {
+		handler_name = "cartographer2_handler_" + HANDLER_INDEX.getAndIncrement();
+	}
+	
+	@Override
+	public void inject( Player player ) {
+		PlayerConnection conn = ( ( CraftPlayer ) player ).getHandle().playerConnection;
+		NetworkManager manager = conn.networkManager;
+		Channel channel = manager.channel;
+		channels.put( player.getUniqueId(), channel );
+		
+		if ( channel.pipeline().get( handler_name ) == null ) {
+			channel.pipeline().addBefore( "packet_handler", handler_name, new PacketInterceptor( player ) );
+		}
+	}
+	
+	@Override
+	public void uninject( Player player ) {
+		PlayerConnection conn = ( ( CraftPlayer ) player ).getHandle().playerConnection;
+		NetworkManager manager = conn.networkManager;
+		Channel channel = manager.channel;
+		channels.remove( player.getUniqueId() );
+		
+		// Maybe remove?
+//		channel.pipeline().remove( handler_name );
+	}
 	
 	@Override
 	public void sendDataTo( int id, byte[] data, @Nullable MapCursor[] cursors, UUID... uuids ) {
@@ -119,19 +158,17 @@ public class NMSHandler implements PacketHandler {
 		
 		PacketPlayOutMinimap mapPacket = new PacketPlayOutMinimap( packet );
 		
-		TinyProtocol protocol = Cartographer.getInstance().getProtocol();
 		for ( UUID uuid : uuids ) {
 			if ( uuid != null ) {
-				Channel channel = protocol.getChannel( uuid, null );
+				Channel channel = channels.get( uuid );
 				if ( channel != null ) {
-					protocol.sendPacket( channel, mapPacket );
+					channel.pipeline().writeAndFlush( mapPacket );
 				}
 			}
 		}
 	}
 
-	@Override
-	public Object onPacketInterceptOut( Player viewer, Object packet ) {
+	private Object onPacketInterceptOut( Player viewer, Object packet ) {
 		if ( packet instanceof PacketPlayOutMinimap ) {
 			return ( ( PacketPlayOutMinimap ) packet ).packet;
 		} else if ( packet instanceof PacketPlayOutMap ) {
@@ -149,8 +186,7 @@ public class NMSHandler implements PacketHandler {
 		return packet;
 	}
 	
-	@Override
-	public Object onPacketInterceptIn( Player viewer, Object packet ) {
+	private Object onPacketInterceptIn( Player viewer, Object packet ) {
 		if ( viewer != null ) {
 			if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
 				// Check for the drop packet
@@ -261,6 +297,40 @@ public class NMSHandler implements PacketHandler {
 		
 		protected PacketPlayOutMinimap( PacketPlayOutMap packet ) {
 			this.packet = packet;
+		}
+	}
+	
+	private class PacketInterceptor extends ChannelDuplexHandler {
+		public volatile Player player;
+		
+		private PacketInterceptor( Player player ) {
+			this.player = player;
+		}
+		
+		@Override
+		public void channelRead( ChannelHandlerContext ctx, Object msg ) throws Exception {
+			try {
+				msg = onPacketInterceptIn( player, msg );
+			} catch ( Exception e ) {
+				Cartographer.getPlugin( Cartographer.class ).getLogger().log( Level.SEVERE, "Error in onPacketInAsync().", e );
+			}
+
+			if ( msg != null ) {
+				super.channelRead( ctx, msg );
+			}
+		}
+
+		@Override
+		public void write( ChannelHandlerContext ctx, Object msg, ChannelPromise promise ) throws Exception {
+			try {
+				msg = onPacketInterceptOut( player, msg );
+			} catch ( Exception e ) {
+				Cartographer.getPlugin( Cartographer.class ).getLogger().log( Level.SEVERE, "Error in onPacketOutAsync().", e );
+			}
+
+			if ( msg != null ) {
+				super.write( ctx, msg, promise );
+			}
 		}
 	}
 }

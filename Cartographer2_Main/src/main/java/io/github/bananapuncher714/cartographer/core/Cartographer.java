@@ -34,8 +34,6 @@ import io.github.bananapuncher714.cartographer.core.renderer.CartographerRendere
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
-import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
-import io.netty.channel.Channel;
 
 public class Cartographer extends JavaPlugin {
 	private static Cartographer INSTANCE;
@@ -56,7 +54,6 @@ public class Cartographer extends JavaPlugin {
 	private static File BACKGROUND_IMAGE;
 	private static File DISABLED_MAP_IMAGE;
 	
-	private TinyProtocol protocol;
 	private PacketHandler handler;
 	
 	private MinimapManager mapManager;
@@ -156,17 +153,9 @@ public class Cartographer extends JavaPlugin {
 			return;
 		}
 		
-		protocol = new TinyProtocol( this ) {
-			@Override
-			public Object onPacketOutAsync( Player player, Channel channel, Object packet ) {
-				return handler.onPacketInterceptOut( player, packet );
-			}
-
-			@Override
-			public Object onPacketInAsync( Player player, Channel channel, Object packet ) {
-				return handler.onPacketInterceptIn( player, packet );
-			}
-		};
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
+			handler.inject( player );
+		}
 		
 		// Create our base command
 		command = new CommandCartographer( this, getCommand( "cartographer" ) );
@@ -202,6 +191,10 @@ public class Cartographer extends JavaPlugin {
 		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_PLAYER_START );
 		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::unload );
 		loggerInfo( LocaleConstants.CORE_DISABLE_SAVING_PLAYER_FINISH );
+		
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
+			handler.uninject( player );
+		}
 	}
 	
 	protected void onServerLoad() {
@@ -304,11 +297,13 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadLocaleFiles() {
-		if ( !LOCALE_README_FILE.exists() ) {
+		// Disable this for now, I don't think anyone's going to complain about auto updating locale files
+//		if ( !LOCALE_README_FILE.exists() ) {
 			FileUtil.saveToFile( getResource( "data/locale/README.md" ), LOCALE_README_FILE, false );
 			FileUtil.saveToFile( getResource( "data/locale/en_us.yml" ), new File( LOCALE_DIR, "en_us.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/en_pt.yml" ), new File( LOCALE_DIR, "en_pt.yml" ), false );
-		}
+			FileUtil.saveToFile( getResource( "data/locale/zh_cn.yml" ), new File( LOCALE_DIR, "zh_cn.yml" ), false );
+//		}
 	}
 	
 	private void loadData() {
@@ -520,10 +515,6 @@ public class Cartographer extends JavaPlugin {
 	
 	protected void saveMapFiles( File dir ) {
 		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );
-	}
-	
-	public TinyProtocol getProtocol() {
-		return protocol;
 	}
 	
 	public PacketHandler getHandler() {

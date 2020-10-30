@@ -16,28 +16,18 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
  */
 public interface PacketHandler {
 	/**
-	 * Called before a packet gets sent from server to player.
+	 * Register the player for packet interception.
 	 * 
 	 * @param player
-	 * The player receiving the packet.
-	 * @param packet
-	 * The packet being sent.
-	 * @return
-	 * The packet that should be sent, null indicates nothing should be sent.
 	 */
-	Object onPacketInterceptOut( Player player, Object packet );
+	void inject( Player player );
 	
 	/**
-	 * Called before a packet gets sent from player to server.
+	 * Stop listening for the player's packets. May or may not work.
 	 * 
 	 * @param player
-	 * The player sending the packet.
-	 * @param packet
-	 * The packet being received.
-	 * @return
-	 * The packet that should be received, null indicates nothing should be received.
 	 */
-	Object onPacketInterceptIn( Player player, Object packet );
+	void uninject( Player player );
 	
 	/**
 	 * Check if the id provided is a Cartographer2 map.

@@ -15,7 +15,6 @@ import io.github.bananapuncher714.cartographer.core.dependency.DependencyManager
 import io.github.bananapuncher714.cartographer.core.locale.LocaleManager;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
-import io.github.bananapuncher714.cartographer.tinyprotocol.TinyProtocol;
 
 public class Cartographer extends JavaPlugin {
 	protected void onServerLoad() {
@@ -37,10 +36,6 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	protected void saveMapFiles( File dir ) {
-	}
-	
-	public TinyProtocol getProtocol() {
-		return null;
 	}
 	
 	public PacketHandler getHandler() {
