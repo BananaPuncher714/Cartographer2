@@ -28,6 +28,7 @@
 		<module>Cartographer2_ModuleFactionsUUID</module>
 		<module>Cartographer2_v1_16_R2</module>
 		<module>Cartographer2_ModuleTowny</module>
+		<module>Cartographer2_v1_16_R3</module>
 	</modules>
 
 	<build>
