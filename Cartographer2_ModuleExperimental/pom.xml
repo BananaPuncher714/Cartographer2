@@ -4,13 +4,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
-		<artifactId>Cartographer2_Master</artifactId>
-		<version>2</version>
+		<artifactId>cartographer2_master</artifactId>
+		<version>2.14.4</version>
 	</parent>
-	<artifactId>Cartographer2_ModuleExperimental</artifactId>
+	<artifactId>cartographer2_moduleexperimental</artifactId>
 	<version>0.0.1</version>
 
 	<properties>
+		<master.version>2.14.4</master.version>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 
@@ -23,8 +24,8 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_API</artifactId>
-			<version>2.14.0</version>
+			<artifactId>cartographer2_api</artifactId>
+			<version>${master.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

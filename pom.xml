@@ -5,30 +5,34 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.bananapuncher714</groupId>
-	<artifactId>Cartographer2_Master</artifactId>
-	<version>2</version>
+	<artifactId>cartographer2_master</artifactId>
+	<version>2.14.4</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<master.version>2.14.4</master.version>
+	</properties>
+
 	<modules>
-		<module>Cartographer2_Main</module>
-		<module>Cartographer2_v1_8_R3</module>
-		<module>Cartographer2_v1_9_R2</module>
-		<module>Cartographer2_v1_10_R1</module>
-		<module>Cartographer2_v1_11_R1</module>
-		<module>Cartographer2_v1_12_R1</module>
-		<module>Cartographer2_v1_13_R2</module>
-		<module>Cartographer2_v1_14_R1</module>
-		<module>Cartographer2_v1_15_R1</module>
-		<module>Cartographer2</module>
-		<module>Cartographer2_ModuleVanilla</module>
-		<module>Cartographer2_v1_16_R1</module>
-		<module>Cartographer2_ModuleExperimental</module>
-		<module>Cartographer2_ModuleWorldViewer</module>
-		<module>Cartographer2_API</module>
-		<module>Cartographer2_ModuleFactionsUUID</module>
-		<module>Cartographer2_v1_16_R2</module>
-		<module>Cartographer2_ModuleTowny</module>
-		<module>Cartographer2_v1_16_R3</module>
+		<module>cartographer2_main</module>
+		<module>cartographer2_v1_8_r3</module>
+		<module>cartographer2_v1_9_r2</module>
+		<module>cartographer2_v1_10_r1</module>
+		<module>cartographer2_v1_11_r1</module>
+		<module>cartographer2_v1_12_r1</module>
+		<module>cartographer2_v1_13_r2</module>
+		<module>cartographer2_v1_14_r1</module>
+		<module>cartographer2_v1_15_r1</module>
+		<module>cartographer2</module>
+		<module>cartographer2_modulevanilla</module>
+		<module>cartographer2_v1_16_r1</module>
+		<module>cartographer2_moduleexperimental</module>
+		<module>cartographer2_moduleworldviewer</module>
+		<module>cartographer2_api</module>
+		<module>cartographer2_modulefactionsuuid</module>
+		<module>cartographer2_v1_16_r2</module>
+		<module>cartographer2_moduletowny</module>
+		<module>cartographer2_v1_16_r3</module>
 	</modules>
 
 	<build>

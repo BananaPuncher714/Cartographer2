@@ -4,17 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<properties>
-		<master.version>2</master.version>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
-		<artifactId>Cartographer2_Master</artifactId>
-		<version>2</version>
+		<artifactId>cartographer2_master</artifactId>
+		<version>2.14.4</version>
 	</parent>
-	<artifactId>Cartographer2</artifactId>
-	<version>2.14.4</version>
+	<artifactId>cartographer2</artifactId>
 
 	<build>
 		<plugins>
@@ -49,62 +47,62 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_Main</artifactId>
+			<artifactId>cartographer2_main</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_8_R3</artifactId>
+			<artifactId>cartographer2_v1_8_r3</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_9_R2</artifactId>
+			<artifactId>cartographer2_v1_9_r2</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_10_R1</artifactId>
+			<artifactId>cartographer2_v1_10_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_11_R1</artifactId>
+			<artifactId>cartographer2_v1_11_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_12_R1</artifactId>
+			<artifactId>cartographer2_v1_12_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_13_R2</artifactId>
+			<artifactId>cartographer2_v1_13_r2</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_14_R1</artifactId>
+			<artifactId>cartographer2_v1_14_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_15_R1</artifactId>
+			<artifactId>cartographer2_v1_15_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_16_R1</artifactId>
+			<artifactId>cartographer2_v1_16_r1</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_16_R2</artifactId>
+			<artifactId>cartographer2_v1_16_r2</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>Cartographer2_v1_16_R3</artifactId>
+			<artifactId>cartographer2_v1_16_r3</artifactId>
 			<version>${master.version}</version>
 		</dependency>
 	</dependencies>

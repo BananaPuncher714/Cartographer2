@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
-		<artifactId>Cartographer2_Master</artifactId>
-		<version>2</version>
+		<artifactId>cartographer2_master</artifactId>
+		<version>2.14.4</version>
 	</parent>
-	<artifactId>Cartographer2_Main</artifactId>
+	<artifactId>cartographer2_main</artifactId>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
