@@ -110,6 +110,10 @@ public class Cartographer extends JavaPlugin {
 		return 0;
 	}
 	
+	public int getBlockUpdateAmount() {
+		return 0;
+	}
+	
 	public SimpleImage getBackground() {
 		return null;
 	}

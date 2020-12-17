@@ -90,8 +90,12 @@ public class Cartographer extends JavaPlugin {
 	private int chunkUpdateDelay = 10;
 	// How long in ticks to update blocks on the map
 	private int blockUpdateDelay = 10;
+	// How many blocks to update per update tick
+	private int blockUpdateAmount = 20;
 	// How long in ticks until the map can be updated again
 	private int renderDelay;
+	// How many blocks can be updated at most per tick
+
 	// Global default for rotation setting
 	private boolean rotateByDefault = true;
 	// Print out debug information regarding missing colors and materials in the console
@@ -360,7 +364,8 @@ public class Cartographer extends JavaPlugin {
 		paletteDebug = config.getBoolean( "palette-debug", false );
 		rotateByDefault = config.getBoolean( "rotate-by-default", true );
 
-		blockUpdateDelay = config.getInt( "block-update-tick-delay", 5 );
+		blockUpdateDelay = config.getInt( "block-update.tick-delay", 5 );
+		blockUpdateAmount = config.getInt( "block-update.update-amount", 20 );
 		
 		preventDrop = config.getBoolean( "prevent-drop", true );
 		packetDrop = config.getBoolean( "use-drop-packet", true );
@@ -643,6 +648,10 @@ public class Cartographer extends JavaPlugin {
 	
 	public int getBlockUpdateDelay() {
 		return blockUpdateDelay;
+	}
+	
+	public int getBlockUpdateAmount() {
+		return blockUpdateAmount;
 	}
 	
 	public SimpleImage getBackground() {

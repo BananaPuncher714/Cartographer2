@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
@@ -32,8 +34,19 @@ public class PlayerListener implements Listener {
 	}
 	
 	protected void update() {
-		updateMap( updateSet.toArray( new Location[ updateSet.size() ] ) );
-		updateSet.clear();
+		int updateAmount = plugin.getBlockUpdateAmount();
+		
+		if ( updateAmount == 0 ) {
+			updateSet.clear();
+		} else {
+			Location[] updateArr = new Location[ Math.min( updateSet.size(), updateAmount ) ];
+			Iterator< Location > updateIterator = updateSet.iterator();
+			for ( int i = 0; i < updateArr.length && updateIterator.hasNext(); i++ ) {
+				updateArr[ i ] = updateIterator.next();
+				updateIterator.remove();
+			}
+			updateMap( updateArr );
+		}
 	}
 	
 	@EventHandler
@@ -138,9 +151,13 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void updateMap( Location... locations ) {
-		for ( Minimap minimap : plugin.getMapManager().getMinimaps().values() ) {
-			for ( Location location : locations ) {
-				minimap.updateLocation( location );
+		for ( Location location : locations ) {
+			ChunkLocation cLoc = new ChunkLocation( location );
+			// Don't load locations that don't exist
+			if ( cLoc.isLoaded() ) {
+				for ( Minimap minimap : plugin.getMapManager().getMinimaps().values() ) {
+						minimap.updateLocation( location );
+				}
 			}
 		}
 	}

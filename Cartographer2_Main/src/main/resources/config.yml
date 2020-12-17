@@ -26,8 +26,10 @@ render-delay: 1
 tick-limit: 18
 
 # Delay between updating blocks that change on the map, like water flowing and blocks growing.
-# Change this to 0 if you want to disable updating for block physics events.
-block-update-tick-delay: 5
+block-update:
+  # Change this to 0 if you want to disable updating for block physics events.
+  tick-delay: 4
+  update-amount: 200
 
 # Determines whether the player should be allowed to drop the minimap
 prevent-drop: true
