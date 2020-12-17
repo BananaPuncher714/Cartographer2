@@ -384,6 +384,10 @@ public class Minimap implements ChunkNotifier {
 	}
 	
 	public void updateLocation( Location location ) {
+		if ( settings.isBlacklisted( location.getWorld().getName() ) ) {
+			return;
+		}
+		
 		MapUpdateBlockEvent event = new MapUpdateBlockEvent( this, location, palette );
 		event.callEvent();
 		

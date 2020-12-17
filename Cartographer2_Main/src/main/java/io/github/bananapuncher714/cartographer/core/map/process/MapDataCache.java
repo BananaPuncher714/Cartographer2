@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
@@ -207,11 +208,15 @@ public class MapDataCache {
 		if ( !BlockUtil.needsRender( location ) || chunks.containsKey( location ) ) {
 			return;
 		}
+		if ( setting.isBlacklisted( location.getWorld().getName() ) ) {
+			return;
+		}
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		if ( !forcedLoading.contains( location ) || !data.containsKey( location ) || !data.containsKey( south ) ) {
 			if ( setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( south ) ) {
 				if ( withinVisiblePlayerRange( location ) ) {
 					// TODO Getting the chunksnapshot here is pretty laggy. It computes lighting and unnecessary data when all we're looking for is the block types and potentially biome data.
+					// Unfortunately, I can't figure out how to make this faster
 					chunks.put( location, location.getChunk().getChunkSnapshot() );
 				}
 			}
