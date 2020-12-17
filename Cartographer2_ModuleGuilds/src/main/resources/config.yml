@@ -1,0 +1,57 @@
+## Guilds Module for Cartographer 2
+## 
+## This does not show claims. You'll need to use a WorldGuard module for that.
+
+# The icons and settings for different roles and whatnot
+icons:
+  # The guild home icon
+  guild-home:
+    enabled: true
+    # The multiple types are for fallback purposes, if your server is running an older version
+    icon: TEMPLE WHITE_CIRCLE WHITE_CROSS
+    # The visibility determines whether or not the cursor appears on the edge of the minimap
+    # The two options are FULL and PARTIAL
+    default-visibility: FULL
+    show-name: true
+    # You can change this to whatever. Also supports RGB colors in 1.16
+    display-name: "Guild Home"
+  # The different icons for the roles. It should be the same in your guilds roles config
+  roles:
+    0:
+      enabled: true
+      icon: RED_MARKER RED_POINTER GREEN_POINTER BLUE_POINTER
+      range: 90
+      default-visibility: FULL
+      show-name: true
+    1:
+      enabled: true
+      icon: GREEN_POINTER BLUE_POINTER
+      range: 50
+      default-visibility: PARTIAL
+      show-name: true
+    2:
+      enabled: true
+      icon: GREEN_POINTER BLUE_POINTER
+      range: 40
+      default-visibility: PARTIAL
+      show-name: true
+    3:
+      enabled: true
+      icon: GREEN_POINTER BLUE_POINTER
+      range: 30
+      default-visibility: PARTIAL
+      show-name: true
+  # Icons for allies
+  ally:
+    enabled: true
+    icon: BLUE_POINTER WHITE_POINTER
+    range: 20
+    default-visibility: PARTIAL
+    show-name: true
+  # Neutral players
+  neutral:
+    enabled: true
+    icon: WHITE_POINTER
+    range: 20
+    default-visibility: PARTIAL
+    show-name: true

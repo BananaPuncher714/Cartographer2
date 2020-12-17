@@ -1,0 +1,19 @@
+## World Guard Module for Cartographer 2
+
+# The various colors for each region
+colors:
+  # Custom color scheme for certain regions, like spawn
+  regions:
+    spawn:
+      nonmember: "0x408800"
+      member: "0x408800"
+      owner: "#00FF00"
+  # The default color scheme for regions that aren't specified in the region section
+  # It supports RGB, hex or an integer
+  default:
+    # The color that non members view regions as
+    nonmember: "#FFFF00"
+    # The color that members view the region as
+    member: "#00FFFF"
+    # The color that owners view the region as
+    owner: "#00FF00"

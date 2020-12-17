@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -105,30 +106,11 @@ public class PaletteManager {
 		if ( defColor.equalsIgnoreCase( "TRANSPARENT" ) ) {
 			palette.setDefaultColor( new Color( 0, true ) );
 		} else {
-			Color color;
-			if ( ColorType.HEX.matches( defColor ) ) {
-				Matcher matcher = ColorType.HEX.pattern.matcher( defColor );
-				matcher.find();
-				String hexString = matcher.group( 1 );
-				int val = Integer.parseInt( hexString, 16 );
-				color = new Color( val );
-			} else if ( ColorType.INT.matches( defColor ) ) {
-				Matcher matcher = ColorType.INT.pattern.matcher( defColor );
-				matcher.find();
-				String intString = matcher.group( 1 );
-				color = new Color( Integer.parseInt( intString ) );
-			} else if ( ColorType.RGB.matches( defColor ) ) {
-				Matcher matcher = ColorType.RGB.pattern.matcher( defColor );
-				matcher.find();
-				String r = matcher.group( 1 );
-				String g = matcher.group( 2 );
-				String b = matcher.group( 3 );
-				color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
-			} else {
+			Optional< Color > potentialColor = fromString( defColor );
+			if ( !potentialColor.isPresent() ) {
 				logger.warning( "Cannot parse default color. Invalid value: " + defColor );
-				color = new Color( 0 );
 			}
-			palette.setDefaultColor( color );
+			palette.setDefaultColor( potentialColor.orElse( new Color( 0 ) ) );
 		}
 		if ( config.contains( "colors" ) ) {
 			for ( String key : config.getConfigurationSection( "colors" ).getKeys( false ) ) {
@@ -145,30 +127,12 @@ public class PaletteManager {
 				
 				String data = config.getString( "colors." + key );
 				
-				Color color;
-				if ( ColorType.HEX.matches( data ) ) {
-					Matcher matcher = ColorType.HEX.pattern.matcher( data );
-					matcher.find();
-					String hexString = matcher.group( 1 );
-					int val = Integer.parseInt( hexString, 16 );
-					color = new Color( val );
-				} else if ( ColorType.INT.matches( data ) ) {
-					Matcher matcher = ColorType.INT.pattern.matcher( data );
-					matcher.find();
-					String intString = matcher.group( 1 );
-					color = new Color( Integer.parseInt( intString ) );
-				} else if ( ColorType.RGB.matches( data ) ) {
-					Matcher matcher = ColorType.RGB.pattern.matcher( data );
-					matcher.find();
-					String r = matcher.group( 1 );
-					String g = matcher.group( 2 );
-					String b = matcher.group( 3 );
-					color = new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) );
+				Optional< Color > potentialColor = fromString( data );
+				if ( potentialColor.isPresent() ) {
+					palette.setColor( cvMaterial, potentialColor.get() );
 				} else {
 					logger.warning( "Cannot parse material " + cvMaterial.material + ". Invalid color: " + data );
-					continue;
 				}
-				palette.setColor( cvMaterial, color );
 			}
 		}
 		
@@ -243,7 +207,7 @@ public class PaletteManager {
 	 * @return
 	 * A string that follows the {@link ColorType} pattern.
 	 */
-	public String toString( int color, ColorType type ) {
+	public static String toString( int color, ColorType type ) {
 		Validate.notNull( type );
 		if ( type == ColorType.HEX ) {
 			return "#" + Integer.toHexString( color );
@@ -266,9 +230,40 @@ public class PaletteManager {
 	 * @return
 	 * A string that follows the {@link ColorType} pattern.
 	 */
-	public String toString( Color color, ColorType type ) {
+	public static String toString( Color color, ColorType type ) {
 		Validate.notNull( color );
 		return toString( color.getRGB(), type );
+	}
+	
+	/**
+	 * Attempt to translate a color from the given string.
+	 * 
+	 * @param data
+	 * Accepts HEX, INT, or RGB.
+	 * @return
+	 * An optional containing a Color if found, or none.
+	 */
+	public static Optional< Color > fromString( String data ) {
+		if ( ColorType.HEX.matches( data ) ) {
+			Matcher matcher = ColorType.HEX.getPattern().matcher( data );
+			matcher.find();
+			String hexString = matcher.group( 1 );
+			int val = Integer.parseInt( hexString, 16 );
+			return Optional.of( new Color( val ) );
+		} else if ( ColorType.INT.matches( data ) ) {
+			Matcher matcher = ColorType.INT.getPattern().matcher( data );
+			matcher.find();
+			String intString = matcher.group( 1 );
+			return Optional.of( new Color( Integer.parseInt( intString ) ) );
+		} else if ( ColorType.RGB.matches( data ) ) {
+			Matcher matcher = ColorType.RGB.getPattern().matcher( data );
+			matcher.find();
+			String r = matcher.group( 1 );
+			String g = matcher.group( 2 );
+			String b = matcher.group( 3 );
+			return Optional.of( new Color( Integer.parseInt( r ), Integer.parseInt( g ), Integer.parseInt( b ) ) );
+		}
+		return Optional.empty();
 	}
 	
 	public CartographerLogger getLogger() {
@@ -284,7 +279,7 @@ public class PaletteManager {
 		/**
 		 * Hex form, accepts 6 digits. Ex: '#FF00FF'
 		 */
-		HEX( "^#?([A-Fa-f0-9]{1,6})$" ),
+		HEX( "^(?:#|0x)?([A-Fa-f0-9]{1,6})$" ),
 		/**
 		 * RGB form, accepts 3 bytes separated by non-digit characters. Ex: '( 255, 0, 128 )'
 		 */

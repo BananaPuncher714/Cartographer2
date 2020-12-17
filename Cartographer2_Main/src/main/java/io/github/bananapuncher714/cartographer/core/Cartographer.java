@@ -3,6 +3,9 @@ package io.github.bananapuncher714.cartographer.core;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +13,7 @@ import java.util.Set;
 
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -21,7 +25,9 @@ import org.bukkit.scheduler.BukkitTask;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
+import io.github.bananapuncher714.cartographer.core.api.configuration.YamlFileConfiguration;
 import io.github.bananapuncher714.cartographer.core.command.CommandCartographer;
+import io.github.bananapuncher714.cartographer.core.configuration.YamlMerger;
 import io.github.bananapuncher714.cartographer.core.dependency.DependencyManager;
 import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.locale.LocaleManager;
@@ -172,7 +178,11 @@ public class Cartographer extends JavaPlugin {
 		Bukkit.getOnlinePlayers().stream().map( Player::getUniqueId ).forEach( playerManager::getViewerFor );
 		
 		// Load the modules in beforehand
-		moduleManager.loadModules();
+		try {
+			moduleManager.loadModules();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -286,12 +296,14 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder(), "background.gif" ), false );
 			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder(), "missing.png" ), false );
 			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder(), "disabled.png" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR, "palette-1.13.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR, "palette-1.11.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR, "palette-1.12.2.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR, "palette-1.15.1.yml" ), false );
-			FileUtil.saveToFile( getResource( "data/palettes/palette-1.16.1.yml" ), new File( PALETTE_DIR, "palette-1.16.1.yml" ), false );
 		}
+		
+		// Save the palettes because why not
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.13.2.yml" ), new File( PALETTE_DIR, "palette-1.13.2.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.11.2.yml" ), new File( PALETTE_DIR, "palette-1.11.2.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.12.2.yml" ), new File( PALETTE_DIR, "palette-1.12.2.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.15.1.yml" ), new File( PALETTE_DIR, "palette-1.15.1.yml" ), false );
+		FileUtil.saveToFile( getResource( "data/palettes/palette-1.16.1.yml" ), new File( PALETTE_DIR, "palette-1.16.1.yml" ), false );
 		
 		FileUtil.saveToFile( getResource( "README.md" ), README_FILE, true );
 	}
@@ -303,6 +315,7 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/en_us.yml" ), new File( LOCALE_DIR, "en_us.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/en_pt.yml" ), new File( LOCALE_DIR, "en_pt.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/zh_cn.yml" ), new File( LOCALE_DIR, "zh_cn.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/cs_cz.yml" ), new File( LOCALE_DIR, "cs_cz.yml" ), false );
 //		}
 	}
 	
@@ -326,7 +339,19 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadConfig() {
-		FileConfiguration config = YamlConfiguration.loadConfiguration( new File( getDataFolder() + "/" + "config.yml" ) );
+		YamlFileConfiguration configuration = new YamlFileConfiguration( new File( getDataFolder() + "/" + "config.yml" ).toPath() );
+		try {
+			configuration.load();
+			YamlMerger merger = new YamlMerger( configuration, getResource( "config.yml" ) );
+			merger.updateHeader( false );
+			merger.updateKeys();
+			merger.trimKeys();
+			merger.updateComments( false );
+		} catch ( IOException | InvalidConfigurationException e ) {
+			e.printStackTrace();
+		}
+		
+		FileConfiguration config = configuration.getConfiguration();
 		for ( String string : config.getStringList( "skip-ids" ) ) {
 			invalidIds.add( Integer.valueOf( string ) );
 		}
@@ -360,6 +385,12 @@ public class Cartographer extends JavaPlugin {
 				loggerWarning( LocaleConstants.CORE_ENABLE_CONFIG_INVENTORY_UNKNOWN, string );
 			}
 		}
+		
+		try {
+			configuration.save();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void loadPalettes() {
@@ -392,16 +423,22 @@ public class Cartographer extends JavaPlugin {
 		
 		paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_LOADING );
 		if ( PALETTE_DIR.exists() ) {
-			for ( File file : PALETTE_DIR.listFiles() ) {
-				if ( !file.isDirectory() ) {
-					FileConfiguration configuration = YamlConfiguration.loadConfiguration( file );
-					MinimapPalette palette = paletteManager.load( configuration );
-					
-					String id = file.getName().replaceAll( "\\.yml$", "" );
-					paletteManager.register( id, palette );
-					
-					paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_LOADING_DONE, id );
+			DirectoryStream<Path> dirStream;
+			try {
+				dirStream = Files.newDirectoryStream( PALETTE_DIR.toPath() );
+				for ( Path file : dirStream ) {
+					if ( !Files.isDirectory( file ) ) {
+						FileConfiguration configuration = YamlConfiguration.loadConfiguration( file.toFile() );
+						MinimapPalette palette = paletteManager.load( configuration );
+						
+						String id = file.getFileName().toString().replaceAll( "\\.yml$", "" );
+						paletteManager.register( id, palette );
+						
+						paletteManager.getLogger().infoTr( LocaleConstants.CORE_ENABLE_PALETTE_LOADING_DONE, id );
+					}
 				}
+			} catch ( IOException e ) {
+				e.printStackTrace();
 			}
 		} else {
 			paletteManager.getLogger().warningTr( LocaleConstants.CORE_ENABLE_PALETTE_FOLDER_MISSING );
@@ -449,8 +486,14 @@ public class Cartographer extends JavaPlugin {
 	
 	private void loadMaps() {
 		if ( MAP_DIR.exists() ) {
-			for ( File file : MAP_DIR.listFiles() ) {
-				mapManager.constructNewMinimap( file.getName() );
+			try {
+				DirectoryStream< Path > dirStream = Files.newDirectoryStream( MAP_DIR.toPath() );
+				for ( Path file : dirStream ) {
+					mapManager.constructNewMinimap( file.getFileName().toString() );
+				}
+			} catch ( IOException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -514,7 +557,20 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	protected void saveMapFiles( File dir ) {
-		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), new File( dir + "/" + "config.yml" ), false );
+		File config = new File( dir + "/" + "config.yml" );
+		FileUtil.saveToFile( getResource( "data/minimap-config.yml" ), config, false );
+		YamlFileConfiguration configuration = new YamlFileConfiguration( config.toPath() );
+		try {
+			configuration.load();
+			YamlMerger merger = new YamlMerger( configuration, getResource( "data/minimap-config.yml" ) );
+			merger.updateHeader( false );
+			merger.updateKeys();
+			merger.trimKeys();
+			merger.updateComments( false );
+			configuration.save();
+		} catch ( IOException | InvalidConfigurationException e ) {
+			e.printStackTrace();
+		}
 	}
 	
 	public PacketHandler getHandler() {

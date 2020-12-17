@@ -1,0 +1,42 @@
+## Residence Module for Cartographer 2
+## 
+## You'll need to use some other module for managing player cursors
+## Residence doesn't have any relationship between players.
+## Also, the API is a pain to work with and I'd rather not.
+
+# Colors for claims
+colors:
+
+  # The color of claims that are owned by the player
+  owner: "0x00FF00"
+
+  # The colors of each claim, depending on what flags are set for the player
+  # The module attempts to find the first matching group of flags
+  # You can choose to skip the "include" or "exclude" lists, or leave them as []
+  claims:
+    -
+      color: "#0000FF" 
+      include:
+      - "use"
+      - "tp"
+      - "build"
+      - "destroy"
+      - "container"
+      - "move"
+      - "leash"
+      - "animalkilling"
+      - "mobkilling"
+      - "shear"
+      - "chat"
+      - "beacon"
+      exclude: []
+    -
+      color: "#FFFF00"
+      include:
+      - "move"
+      exclude: []
+    -
+      color: "#FF0000"
+      include: []
+      exclude:
+      - "move"

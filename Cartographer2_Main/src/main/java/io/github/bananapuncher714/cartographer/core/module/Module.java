@@ -272,12 +272,14 @@ public abstract class Module {
 	public boolean setEnabled( boolean enabled ) {
 		if ( isEnabled == enabled ) {
 			return false;
-		} else if ( enabled ) {
+		}
+		
+		isEnabled = enabled;
+		if ( enabled ) {
 			onEnable();
 		} else {
 			onDisable();
 		}
-		isEnabled = enabled;
 		return true;
 	}
 	

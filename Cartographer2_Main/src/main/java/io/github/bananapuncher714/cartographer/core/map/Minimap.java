@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.map;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,7 +79,7 @@ public class Minimap implements ChunkNotifier {
 		this.saveFile = saveDir;
 		this.palette = palette;
 		this.cache = cache;
-		this.queue = new BigChunkQueue( new File( saveDir + "/" + "cache" ), cache );
+		this.queue = new BigChunkQueue( Paths.get( saveDir + "/" + "cache" ), cache );
 		this.settings = settings;
 		
 		OVERLAY_IMAGE_FILE = FileUtil.getImageFile( saveDir, "overlay" );

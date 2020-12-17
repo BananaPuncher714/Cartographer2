@@ -1,3 +1,7 @@
+## Cartographer 2 Minimap configuration
+## This is minimap specific
+
+# No real function for now, but I may do something about it in the future
 name: "&aDefault Minimap"
 
 # Whether or not the map should constantly update to reflect changes, or it should render each chunk once and only once
@@ -32,9 +36,6 @@ world-blacklist:
 default-zoom: 1
 circular-zoom: false
 allowed-zooms:
-#- 0.015625
-#- 0.03125
-#- 0.0625
 - 0.125
 - 0.25
 - 0.5
@@ -43,5 +44,3 @@ allowed-zooms:
 - 4
 - 8
 - 16
-#- 32
-#- 64

@@ -1,0 +1,9 @@
+{
+    "name": "WorldGuard",
+	"main": "io.github.bananapuncher714.cartographer.module.residence.WorldGuardModule",
+	"description": "Adds Cartographer2 integration with WorldGuard",
+	"version": "1.0.0",
+	"author": "BananaPuncher714",
+	"website": "aaaaahhhhhhh.com",
+	"depend": [ "WorldGuard" ]
+}

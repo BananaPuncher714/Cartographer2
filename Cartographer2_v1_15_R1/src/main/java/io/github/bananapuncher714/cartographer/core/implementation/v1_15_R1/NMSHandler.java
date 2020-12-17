@@ -135,7 +135,10 @@ public class NMSHandler implements PacketHandler {
 		Channel channel = manager.channel;
 		channels.put( player.getUniqueId(), channel );
 		
-		if ( channel.pipeline().get( handler_name ) == null ) {
+		if ( channel != null ) {
+			if ( channel.pipeline().get( handler_name ) != null ) {
+				channel.pipeline().remove( handler_name );
+			}
 			channel.pipeline().addBefore( "packet_handler", handler_name, new PacketInterceptor( player ) );
 		}
 	}
@@ -147,8 +150,11 @@ public class NMSHandler implements PacketHandler {
 		Channel channel = manager.channel;
 		channels.remove( player.getUniqueId() );
 		
-		// Maybe remove?
-//		channel.pipeline().remove( handler_name );
+		if ( channel != null ) {
+			if ( channel.pipeline().get( handler_name ) != null ) {
+				channel.pipeline().remove( handler_name );
+			}
+		}
 	}
 	
 	@Override

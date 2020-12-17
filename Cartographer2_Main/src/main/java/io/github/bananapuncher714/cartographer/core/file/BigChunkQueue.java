@@ -1,6 +1,9 @@
 package io.github.bananapuncher714.cartographer.core.file;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,7 @@ public class BigChunkQueue {
 	protected Map< BigChunkLocation, Future< Boolean > > saving = new ConcurrentHashMap< BigChunkLocation, Future< Boolean > >();
 	
 	protected MapDataCache cache;
-	protected File saveLocation;
+	protected Path saveLocation;
 	
 	/**
 	 * Construct a BigChunkQueue from the arguments provided. 
@@ -43,7 +46,7 @@ public class BigChunkQueue {
 	 * @param cache
 	 * The {@link MapDataCache} containing the data. Cannot be null.
 	 */
-	public BigChunkQueue( File saveFile, MapDataCache cache ) {
+	public BigChunkQueue( Path saveFile, MapDataCache cache ) {
 		Validate.notNull( saveFile );
 		Validate.notNull( cache );
 		saveLocation = saveFile;
@@ -185,9 +188,9 @@ public class BigChunkQueue {
 	 * @return
 	 * Normally stored in 'base/world/x/z/' form.
 	 */
-	protected File getFileFor( BigChunkLocation coord ) {
+	protected Path getFileFor( BigChunkLocation coord ) {
 		Validate.notNull( coord );
-		return new File( saveLocation + "/" + coord.getWorld().getName() + "/" + coord.getX() + "/" + coord.getZ() );
+		return Paths.get( saveLocation + "/" + coord.getWorld().getName() + "/" + coord.getX() + "/" + coord.getZ() );
 	}
 	
 	/**
@@ -196,7 +199,7 @@ public class BigChunkQueue {
 	 * @author BananaPuncher714
 	 */
 	protected class TaskChunkSave implements Callable< Boolean > {
-		protected final File saveFile;
+		protected final Path saveFile;
 		protected final BigChunk chunk;
 		
 		/**
@@ -207,7 +210,7 @@ public class BigChunkQueue {
 		 * @param chunk
 		 * Cannot be null.
 		 */
-		TaskChunkSave( File saveFile, BigChunk chunk ) {
+		TaskChunkSave( Path saveFile, BigChunk chunk ) {
 			Validate.notNull( chunk );
 			Validate.notNull( saveFile );
 			this.saveFile = saveFile;
@@ -216,7 +219,20 @@ public class BigChunkQueue {
 		
 		@Override
 		public Boolean call() throws Exception {
-			FileUtil.writeObject( chunk, saveFile );
+			// First check if the file exists previously
+			if ( Files.isRegularFile( saveFile ) ) {
+				// If so, merge the chunks
+				BigChunk onDisk = FileUtil.readObject( BigChunk.class, saveFile.toFile() );
+				
+				for ( int i = 0; i < chunk.getData().length; i++ ) {
+					if ( chunk.getData()[ i ] == null ) {
+						// Only save the data if the chunk we need to save doesn't contain the chunk data
+						// Either it's something, or null
+						chunk.getData()[ i ] = onDisk.getData()[ i ];
+					}
+				}
+			}
+			FileUtil.writeObject( chunk, saveFile.toFile() );
 			return true;
 		}
 	}
@@ -227,7 +243,7 @@ public class BigChunkQueue {
 	 * @author BananaPuncher714
 	 */
 	protected class TaskChunkLoad implements Callable< BigChunk > {
-		protected final File file;
+		protected final Path file;
 		
 		/**
 		 * Load a BigChunk from the file provided.
@@ -235,21 +251,22 @@ public class BigChunkQueue {
 		 * @param file
 		 * Cannot be null.
 		 */
-		TaskChunkLoad( File file ) {
+		TaskChunkLoad( Path file ) {
 			Validate.notNull( file );
 			this.file = file;
 		}
 		
 		@Override
 		public BigChunk call() throws Exception {
-			if ( file.exists() ) {
+			if ( Files.isRegularFile( file ) ) {
 				try {
-					return FileUtil.readObject( BigChunk.class, file );
+					return FileUtil.readObject( BigChunk.class, file.toFile() );
 				} catch ( Exception exception ) {
 					// Delete the file if there was a problem reading it.
 					// Should probably catch the exception and log it, but will do that later.
-					// TODO Fix this
-					file.delete();
+					// TODO Fix this?
+//					exception.printStackTrace();
+					Files.delete( file );
 					return null;
 				}
 			}

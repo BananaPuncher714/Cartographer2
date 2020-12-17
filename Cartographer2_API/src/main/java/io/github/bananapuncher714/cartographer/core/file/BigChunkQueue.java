@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.file;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +23,7 @@ public class BigChunkQueue {
 	protected Map< BigChunkLocation, Future< Boolean > > saving;
 	
 	protected MapDataCache cache;
-	protected File saveLocation;
+	protected Path saveLocation;
 	
 	/**
 	 * Construct a BigChunkQueue from the arguments provided. 
@@ -32,7 +33,7 @@ public class BigChunkQueue {
 	 * @param cache
 	 * The {@link MapDataCache} containing the data. Cannot be null.
 	 */
-	public BigChunkQueue( File saveFile, MapDataCache cache ) {
+	public BigChunkQueue( Path saveFile, MapDataCache cache ) {
 	}
 	
 	/**
@@ -101,7 +102,7 @@ public class BigChunkQueue {
 	 * @author BananaPuncher714
 	 */
 	protected class TaskChunkSave implements Callable< Boolean > {
-		protected final File saveFile;
+		protected final Path saveFile;
 		protected final BigChunk chunk;
 		
 		/**
@@ -112,7 +113,7 @@ public class BigChunkQueue {
 		 * @param chunk
 		 * Cannot be null.
 		 */
-		TaskChunkSave( File saveFile, BigChunk chunk ) {
+		TaskChunkSave( Path saveFile, BigChunk chunk ) {
 			this.saveFile = saveFile;
 			this.chunk = chunk;
 		}
@@ -129,7 +130,7 @@ public class BigChunkQueue {
 	 * @author BananaPuncher714
 	 */
 	protected class TaskChunkLoad implements Callable< BigChunk > {
-		protected final File file;
+		protected final Path file;
 		
 		/**
 		 * Load a BigChunk from the file provided.
@@ -137,7 +138,7 @@ public class BigChunkQueue {
 		 * @param file
 		 * Cannot be null.
 		 */
-		TaskChunkLoad( File file ) {
+		TaskChunkLoad( Path file ) {
 			this.file = file;
 		}
 		

@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core.map.palette;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.Validate;
@@ -92,7 +93,7 @@ public class PaletteManager {
 	 * @return
 	 * A string that follows the {@link ColorType} pattern.
 	 */
-	public String toString( int color, ColorType type ) {
+	public static String toString( int color, ColorType type ) {
 		return null;
 	}
 	
@@ -106,8 +107,20 @@ public class PaletteManager {
 	 * @return
 	 * A string that follows the {@link ColorType} pattern.
 	 */
-	public String toString( Color color, ColorType type ) {
+	public static String toString( Color color, ColorType type ) {
 		return null;
+	}
+	
+	/**
+	 * Attempt to translate a color from the given string.
+	 * 
+	 * @param data
+	 * Accepts HEX, INT, or RGB.
+	 * @return
+	 * An optional containing a Color if found, or none.
+	 */
+	public static Optional< Color > fromString( String data ) {
+		return Optional.empty();
 	}
 	
 	public CartographerLogger getLogger() {
@@ -123,7 +136,7 @@ public class PaletteManager {
 		/**
 		 * Hex form, accepts 6 digits. Ex: '#FF00FF'
 		 */
-		HEX( "^#?([A-Fa-f0-9]{1,6})$" ),
+		HEX( "^(?:#|0x)?([A-Fa-f0-9]{1,6})$" ),
 		/**
 		 * RGB form, accepts 3 bytes separated by non-digit characters. Ex: '( 255, 0, 128 )'
 		 */

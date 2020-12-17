@@ -1,3 +1,5 @@
+## Cartographer 2 Main Configuration
+
 # A list of IDs that are not allowed to become minimaps
 skip-ids:
 - 107

@@ -1,0 +1,234 @@
+# Default provided locale file
+# All local files require a locale-code. It should not have any whitespaces
+# The name, language, and location are optional, but recommended
+# Information taken from https://minecraft.gamepedia.com/Language#Available_languages
+# The messages themselves follow regular Java string formatting
+# If you want to have random messages, make a string list instead of a single string
+# For example:
+# random-message-list:
+# - "Random message 1"
+# - "Random message 2"
+# - "Random message 3"
+# These locale files also support placeholders, if it's a message for a player.
+# To use custom colored messages, use the section symbol(§) directly.
+# If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
+# Translated by: TrinityMC - MasterEve
+name: "Čeština (CS)"
+language: "Čeština"
+location: "Česko"
+locale-code: "cs_cz"
+messages:
+  locale:
+    loaded-internal-locale: "Interní místní prostředí bylo úspěšně načteno(%s)"
+    loaded-locale: "Načten jazyk %s(%s) jako %s"
+    default-locale-changed: "Výchozí místní prostředí změněno na %s"
+    error-loading-file: "Nelze načíst soubor místního prostředí '§f%s§e'"
+    invalid-locale: "§eLokace '§f%s§e' není platná!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Inventář '§f%s§e' byl přidán na černou listinu."
+        unknown-inventory-type: "Žádný takový typ inventáře '§f%s§e'"
+      palette:
+        creating-vanilla-palette: "Vytváření palety pro Vanillu..."
+        vanilla-palette-missing: "Paleta pro Vanillu nebyla nalezena, ukládání..."
+        found-materials: "§f%d §emateriály mapované pro Vanillu"
+        loading-palettes: "Načítání souborů místní palety..."
+        successfully-loaded-palette: "Paleta '§f%s§e' načtena úspěšně!"
+        palette-folder-missing: "Složka palety nebyla objevena!"
+      image:
+        overlay-found: "Bylo zjištěno překrytí!"
+        overlay-missing: "Překryvný obrázek neexistuje!"
+        background-found: "Bylo zjištěno pozadí!"
+        background-missing: "Obrázek na pozadí neexistuje!"
+        missing-map-found: "Byl zjištěn chybějící obraz mapy!"
+        missing-map-missing: "Chybějící obrázek mapy neexistuje!"
+        disabled-map-found: "Byl zjištěn deaktivovaný obraz mapy!"
+        disabled-map-missing: "Zakázaný obraz mapy neexistuje!"
+      enabling-modules: "Zapínání modulů..."
+      loading-config: "načítání konfigurace..."
+      loading-images: "Načítání obrázků..."
+      loading-palettes: "Načítání palety..."
+      loading-data: "Načítání minimap a dat..."
+    disable:
+      disabling-modules: "Vypínání modulů..."
+      saving-map-data-start: "Ukládání dat mapy. Tohle může chvíli zabrat..."
+      saving-map-data-finish: "Ukládání dat mapy je kompletní!"
+      saving-player-data-start: "Ukládání hráčských dat..."
+      saving-player-data-finish: "Ukládání hráčstkých dat je kompletní!"
+    command:
+      cartographer:
+        reload:
+          usage: "§ePoužití: &c /cartographer reload <mapa>"
+          reloaded-plugin: "§eZnovu načteno nastavení Cartographer2"
+          reloaded-minimap: "§eZnovu načtena minimapa '§f%s§e'"
+        list:
+          usage: "§ePoužití: &c /cartographer list"
+          no-minimaps: "§eMomentálně nejsou načteny žádné minimapy!"
+          list: "§eMinimapy (%d): §f%s"
+        get:
+          usage: "§ePoužití: &c /cartographer get <mapa> <hráč> [slot]"
+          success-self: "Dal sis minimapu(§f%s§e)"
+          success-other: "Dal jsi minimapu(§f%s§e) hráči §f%s"
+        create:
+          usage: "§ePoužití: &c /cartographer create <id>"
+          success: "§eVytvořena a registrována nová minimapa s id '§f%s§e'"
+        delete:
+          usage: "§ePoužití: &c /cartographer delete <id>"
+          success: "§cSmazána minimapa '§f%s§c'"
+        load:
+          usage: "§ePoužití: &c /cartographer load <id>"
+          success: "§eNačtena minimapa '§f%s§e'"
+        unload:
+          usage: "§ePoužití: &c /cartographer unload <id>"
+          success: "§eUvolněna minimapa '§f%s§e'"
+        help:
+          usage: "§ePoužití: &c /cartographer help"
+          help-0: "§c=== Příkazy minimap ==="
+          help-9: ""
+          help-1: "§c/cartographer reload [mapa]§f - §eZnovu načte plugin minimap nebo minimapu."
+          help-2: "§c/cartographer list§f - §eUkáže všechny načtené/vytvořené minimapy."
+          help-3: "§c/cartographer get <mapa> [hráč] [slot]§f - §eDá hráči minimapu."
+          help-4: "§c/cartographer create <mapa>§f - §eVytvoří novou minimapu."
+          help-5: "§c/cartographer delete <mapa>§f - §eSmaže minimapu."
+          help-6: "§c/cartographer load <mapa>§f - §eNačte minimapu."
+          help-7: "§c/cartographer unload <mapa>§f - §eUvolní minimapu."
+          help-8: "§c/cartographer help§f - §eZobrazí příkazy."
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§eMomentálně nejsou načteny žádné moduly!"
+          list: "§eModuly (%d): §f%s" 
+        reload:
+          success: "§eModuly byly znovu načteny!"
+        enable:
+          usage: "§ePoužití: &c /cartographer module enable <modul>"
+          success: "§ePovolení modulu '§f%s§e'!"
+          already-enabled: "§cModul '§f%s§c' je již povolen!"
+          error-loading: "§cNelze načíst modul '§f%s§c'. Zkontrolujte serverový log pro detaily. (Chybějící závislosti?)"
+        disable:
+          usage: "§ePoužití: &c /cartographer module disable <modul>"
+          already-disabled: "§cModul '§f%s§e' už je deaktivován!"
+          success: "§cDeaktivován modul '§f%s§c'!"
+        load:
+          usage: "§ePoužití: &c /cartographer module load <soubor>"
+          success: "§cNačtení a povolení modulu '§f%s§c'!"
+          error-loading: "§cSoubor nelze načíst'§f%s§c', Zkontrolujte serverový log pro detaily."
+          error-enabling: "§cModul nelze načíst'§f%s§c', Zkontrolujte serverový log pro detaily. (Chybějící závislosti?)"
+        unload:
+          usage: "§ePoužití: &c /cartographer module unload <modul>"
+          success: "§cUvolnění modulu '§f%s§c'!"
+          error-unloading: "§cNepodařilo se načíst modul '§f%s§c'! Cartographer2 plugin nebyl načten!"
+        help:
+          usage: "§ePoužití: &c /cartographer module help"
+          help-0: "§c===  Příkazy k nastavení minimap ==="
+          help-8: ""
+          help-1: "§c/cartographer module list§f -§e Ukáže všechny načtené moduly."
+          help-2: "§c/cartographer module reload§f - §eZnovu načte všechny moduly."
+          help-3: "§c/cartographer module enable <modul>§f -§e Povolí modul."
+          help-4: "§c/cartographer module disable <modul>§f -§e Deaktivuje modul."
+          help-5: "§c/cartographer module load <modul>§f -§e Načte modul."
+          help-6: "§c/cartographer module unload <modul>§f -§e Uvolní modul."
+          help-7: "§c/cartographer module help§f -§e Zobrazí příkazy."
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cTenhle soubor už byl načten nebo neexistuje!"
+        module-already-enabled-or-not-real: "§cTenhle modul už byl povolen nebo neexistuje!"
+        module-already-disabled-or-not-real: "§cTenhle modul už byl deaktivován nebo neexistuje!"
+        module-not-real: "§cTenhle modul neexistuje!"
+      settings:
+        set:
+          console-usage: "§ePoužití: &c /cartographer settings set <hráč> <nastavení> <hodnota>"
+          success: "§aNastavení '§f%s§a' na §f%s§a."
+        get:
+          console-usage: "§ePoužití: &c /cartographer settings get <hráč> <nastavení>"
+          success: "§eNastavení '§f%s§e' je nastaveno na §f%s§e."
+        setother:
+          usage: "§ePoužití: &c /cartographer settings setother <hráč> <nastavení> <hodnota>"
+          success: "§aNastavení '§f%s§a' na §f%s§a §ahráči §f%s§a."
+        getother:
+          usage: "§ePoužití: &c /cartographer settings getother <hráč> <nastavení>"
+          success: "§eHráč §f%s§e má nastaveno '§f%s§e' na §f%s§e."
+        help:
+          usage: "§ePoužití: &c /cartographer settings help"
+          help-0: "§c=== Příkazy k nastavení minimap ==="
+          help-0: ""
+          help-1: "§c/cartographer settings set <vlastnictví> <hodnota>§f - §e Nastaví vlastnost."
+          help-2: "§c/cartographer settings get <vlastnictví>§f -§e Nastaví hodnotu vlastnosti."
+          help-3: "§c/cartographer settings setother <hráč> <vlastnictví> <hodnota>§f -§e Nastaví vlastnosti hráče."
+          help-4: "§c/cartographer settings getother <hráč> <vlastnictví>§f -§e Nastaví hodnotu vlastnosti hráče."
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cNeplatná hodnota! (§f%s§e)"
+        must-provide-values: "§cMusíš zadat hodnotu! (§f%s§e)"
+        not-implemented: "§c'§f%s§c' dosud nebyl implementován! Prosím kontaktujte developery pro pomoc!"
+      player-not-found: "§cTento hráč není právě online!"
+      minimap-already-exists: "§cMinimapa s tímhle id už existuje!"
+      invalid-minimap: "§cNeplatná minimapa!"
+      invalid-slot: "§cNeplatný slot! (0-40)"
+      invalid-argument: "§cNeplatný argument!"
+      invalid-setting: "§cNeplatné nastavení!"
+      must-provide-minimap: "§cMusíš poskytnout minimapu!"
+      must-provide-player: "§cMusíš poskytnout hráče!"
+      must-provide-argument: "§cMusíš poskytnout argument!"
+      must-provide-setting: "§cMusíš poskytnout nastavení!"
+    manager:
+      minimap:
+        loading-minimap: "Načítání minimapy '§f%s§e'"
+        unloading-minimap: "Uvolnění minimapy '§f%s§e'"
+        deleting-minimap: "Mazání minimapy '§f%s§e'"
+      module:
+        reloading-modules-start: "Znovunačítaní modulů..."
+        reloading-modules-finish: "Znovunačítání modulů dokončeno."
+        loading-module: "Načítání §f%s§e v §f%s§e hráčem §f%s"
+        unloading-module: "Uvolňování §f%s"
+        enabling-module: "Povolování §f%s v §f%s§e hráčem §f%s"
+        disabling-module: "Deaktivování %s v §f%s§e hráčem §f%s"
+        missing-dependencies: "Nelze povolit §f%s§e kvůli chybějícím závislostem: §f%s"
+    minimap:
+      default-rotation: "Výchozí rotace nastavena na §f%b"
+      auto-update: "Auto aktualizace nastavena na §f%b"
+      circular-zoom: "Kruhové přiblížení nastaven na §f%b"
+      render-out-of-border: "Vykreslení mimo hranici nastaveno na §f%b"
+      default-zoom: "Výchozí přiblížení je nastaveno na §f%f"
+      allowed-zooms: "Povolená přiblížení: §f%s"
+      whitelisted-worlds: "Povolené světy: §f%s"
+      blacklisted-worlds: "Zakázané světy: §f%s"
+      loaded-overlay: "Načtený překryvný obrázek '§f%s'"
+      loaded-background: "Načtený obrázek na pozadí '§f%s'"
+      loaded-disabled: "Načtený deaktivovaný obrázek '§f%s'"
+    unsupported-version: "Tahle verze(§f%s§e) již není podporována!"
+    disabling-plugin: "Vypínání pluginu..."

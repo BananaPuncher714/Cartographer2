@@ -1,6 +1,10 @@
 package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,7 +53,11 @@ public class ModuleManager {
 	public void reload() {
 		logger.infoTr( LocaleConstants.MANAGER_MODULE_RELOAD_START );
 		unloadModules( true );
-		loadModules();
+		try {
+			loadModules();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 		enableModules();
 		logger.infoTr( LocaleConstants.MANAGER_MODULE_RELOAD_FINISH );
 	}
@@ -72,16 +80,17 @@ public class ModuleManager {
 		return module;
 	}
 	
-	protected void loadModules() {
-		for ( File file : moduleFolder.listFiles() ) {
-			if ( file.isDirectory() ) {
+	protected void loadModules() throws IOException {
+		DirectoryStream< Path > dirStream = Files.newDirectoryStream( moduleFolder.toPath() );
+		for ( Path file : dirStream ) {
+			if ( Files.isDirectory( file ) ) {
 				continue;
 			}
-			if ( !file.getName().matches( ".*?\\.jar$" ) ) {
+			if ( !file.getFileName().toString().matches( ".*?\\.jar$" ) ) {
 				continue;
 			}
 			
-			Module module = loadModule( file );
+			Module module = loadModule( file.toFile() );
 			if ( module != null ) {
 				registerModule( module );
 			}
@@ -157,7 +166,9 @@ public class ModuleManager {
 		if ( allDependenciesLoaded ) {
 			logger.infoTr( LocaleConstants.MANAGER_MODULE_ENABLING, description.getName(), description.getVersion(), description.getAuthor() );
 			module.setEnabled( true );
-			new ModuleEnableEvent( module ).callEvent();
+			if ( module.isEnabled() ) {
+				new ModuleEnableEvent( module ).callEvent();
+			}
 		} else {
 			logger.warningTr( LocaleConstants.MANAGER_MODULE_MISSING_DEPENDENCIES, description.getName(), missingDeps.toString().trim() );
 			return false;

@@ -108,8 +108,7 @@ Additional settings may be added by modules.
 ## TODO
 - Add vanilla module integration
 - Fix the wiki
-- Add factionsuuid and Residence integration
-- Lands integration - Put on hold unfortunately
+- Lands integration - Put on hold, not open source nor free
 
 ## More information
 - [Github](https://github.com/BananaPuncher714/Cartographer2)
@@ -119,4 +118,6 @@ Additional settings may be added by modules.
 ## Credits
 - `BananaPuncher714` - Creator, Developer, Maintainer
 - `Jetp250` - Developer
+- `Renzotom` - Translator(cs_cz)
+- `ahdg6` - Translator(zh_cn)
 - `REjoin` - Supporter

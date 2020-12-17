@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -147,17 +150,23 @@ public class LocaleManager {
 		Locale internal = load( plugin.getResource( INTERNAL_DEFAULT_LOCALE_LOCATION ) );
 		locales.put( defaultLocale, internal );
 		logger.infoTr( LocaleConstants.LOCALE_INTERNAL_LOCALE_LOADED, defaultLocale );
-		for ( File file : dataFolder.listFiles() ) {
-			if ( file.getName().endsWith( ".yml" ) ) {
-				try {
-					Locale loaded = load( file );
-					register( loaded );
-					logger.infoTr( LocaleConstants.LOCALE_LOCALE_LOADED, loaded.getName(), loaded.getLocation(), loaded.getCode() );
-				} catch ( IllegalArgumentException e ) {
-					logger.severeTr( LocaleConstants.LOCALE_FILE_LOAD_ERROR, file.getName() );
-					e.printStackTrace();
+		try {
+			DirectoryStream< Path > dirStream = Files.newDirectoryStream( dataFolder.toPath() );
+			for ( Path file : dirStream ) {
+				if ( file.getFileName().toString().endsWith( ".yml" ) ) {
+					try {
+						Locale loaded = load( file.toFile() );
+						register( loaded );
+						logger.infoTr( LocaleConstants.LOCALE_LOCALE_LOADED, loaded.getName(), loaded.getLocation(), loaded.getCode() );
+					} catch ( IllegalArgumentException e ) {
+						logger.severeTr( LocaleConstants.LOCALE_FILE_LOAD_ERROR, file.getFileName() );
+						e.printStackTrace();
+					}
 				}
 			}
+		} catch ( IOException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		// Now that we've loaded all the global locales, re-load the module locales since we cleared those out

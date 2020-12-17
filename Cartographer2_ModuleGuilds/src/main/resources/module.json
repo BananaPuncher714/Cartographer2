@@ -1,0 +1,9 @@
+{
+    "name": "Guilds",
+	"main": "io.github.bananapuncher714.cartographer.module.guilds.GuildsModule",
+	"description": "Adds Cartographer2 integration with Guilds",
+	"version": "1.0.0",
+	"author": "BananaPuncher714",
+	"website": "aaaaahhhhhhh.com",
+	"depend": [ "Guilds" ]
+}

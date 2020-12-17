@@ -11,6 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -119,7 +121,7 @@ public final class FileUtil {
 		fis.close();
 		return head;
 	}
-
+	
 	public static void writeObject( Serializable object, File file ) {
 		file.getParentFile().mkdirs();
 		try {
