@@ -37,9 +37,9 @@ use-drop-packet: true
 chunk:
   # Regular chunk processing
   # Delay in ticks between each update
-  update-delay: 10
+  update-delay: 7
   # Amount of chunks that get cached per update, if they're loaded
-  cache-per-update: 100
+  cache-per-update: 5
   
   # Whether or not forced loading of chunks should happen
   # If set to true, then the server will attempt to load ALL chunks that are missing on a minimap
@@ -51,7 +51,7 @@ chunk:
   
   # These two only apply if force-load is enabled
   # Amount of chunks that get loaded per update, if they exist but aren't loaded
-  load-per-update: 20
+  load-per-update: 5
   # Amount of chunks that get generated per update, if they don't exist
   generate-per-update: 1
  
