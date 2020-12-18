@@ -1,0 +1,230 @@
+# Default provided locale file
+# 所有語言都應該有語言代碼(locale-code)。 它不應該流空
+# name、language和location為選填，但建議填寫
+# 相關資訊請參閱 https://minecraft.gamepedia.com/Language#Available_languages
+# 翻譯訊息應該遵循Java字串符格式
+# 如果你想使用隨機訊息，請輸入多行訊息
+# 範例:
+# random-message-list:
+# - "隨機訊息 1"
+# - "隨機訊息 2"
+# - "隨機訊息 3"
+# 如果這些訊息將由玩家接收，那該語言檔案應該支持 placeholders 佔位符變數。
+# 彩色訊息請善用(§)
+# 如果因此產生亂碼導致無法使用，請嘗試使用 \u00a7 代替。
+name: "繁體中文 (台灣)"
+language: "Chinese Traditional (Taiwan)"
+location: "Taiwan, Hong Kong, Macau"
+locale-code: "zh_tw"
+messages:
+  locale:
+    loaded-internal-locale: "已成功載入語言 (%s)"
+    loaded-locale: "將語言 %s(%s) 載入為 %s"
+    default-locale-changed: "預設語言變更為 %s"
+    error-loading-file: "無法載入語言文件 '%s'"
+    invalid-locale: "找不到 '%s' 語言文件!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "已將 '%s' 加入庫存黑名單中"
+        unknown-inventory-type: "沒有此 '%s' 類型的庫存"
+      palette:
+        creating-vanilla-palette: "正在建立調色盤..."
+        vanilla-palette-missing: "找不到此調色盤，儲存中..."
+        found-materials: "%d materials mapped for vanilla"
+        loading-palettes: "正在載入調色盤文件..."
+        successfully-loaded-palette: "調色盤 '%s' 載入成功!"
+        palette-folder-missing: "找不到調色盤(Palette)文件夾!"
+      image:
+        overlay-found: "找到邊框圖片!"
+        overlay-missing: "邊框圖片不存在!"
+        background-found: "找到背景圖層!"
+        background-missing: "背景圖層不存在!"
+        missing-map-found: "找到丟失地圖圖片!"
+        missing-map-missing: "丟失地圖圖片不存在!"
+        disabled-map-found: "找到停用地圖圖片!"
+        disabled-map-missing: "停用地圖圖片不存在!"
+      enabling-modules: "載入模塊..."
+      loading-config: "載入設定檔"..."
+      loading-images: "載入圖片..."
+      loading-palettes: "載入調色盤..."
+      loading-data: "載入小地圖和資料..."
+    disable:
+      disabling-modules: "停用模塊..."
+      saving-map-data-start: "儲存地圖資料中，需要一點時間..."
+      saving-map-data-finish: "完成地圖資料儲存!"
+      saving-player-data-start: "儲存玩家資料..."
+      saving-player-data-finish: "完成玩家資料儲存!"
+    command:
+      cartographer:
+        reload:
+          usage: "§c使用: /cartographer reload <map>"
+          reloaded-plugin: "§b重新載入 Cartographer2 插件設定檔"
+          reloaded-minimap: "§b重新載入小地圖 '§e%s§b'"
+        list:
+          usage: "§c使用: /cartographer list"
+          no-minimaps: "§b沒有載入任何小地圖!"
+          list: "§bCartographer2 小地圖 (%d): %s"
+        get:
+          usage: "§c使用: /cartographer get <map> <玩家ID> [背包欄位]"
+          success-self: "給自己一個小地圖 (%s)"
+          success-other: "將地圖 (%s) 給 %s"
+        create:
+          usage: "§c使用: /cartographer create <id>"
+          success: "§b使用id建立並註冊一個小地圖 '§e%s§b'"
+        delete:
+          usage: "§c使用: /cartographer delete <id>"
+          success: "§b刪除小地圖 '§e%s§b'"
+        load:
+          usage: "§c使用: /cartographer load <id>"
+          success: "§b載入小地圖 '§e%s§b'"
+        unload:
+          usage: "§c使用: /cartographer unload <id>"
+          success: "§b卸載小地圖 '§e%s§b'"
+        help:
+          usage: "§c使用: /cartographer help"
+          help-0: "§b=== Cartographer 命令列表 ==="
+          help-1: "§e/cartographer reload [map]§6 - 重新載入 Cartographer2 和小地圖"
+          help-2: "§e/cartographer list§6 - 顯示所有已載入的小地圖"
+          help-3: "§e/cartographer get <map> [玩家ID] [背包欄位]§6 - 給予自己或玩家小地圖"
+          help-4: "§e/cartographer create <map>§6 - 建立小地圖"
+          help-5: "§e/cartographer delete <map>§6 - 刪除小地圖"
+          help-6: "§e/cartographer load <map>§6 - 載入小地圖"
+          help-7: "§e/cartographer unload <map>§6 - 卸載小地圖"
+          help-8: "§e/cartographer help§6 - 查看命令列表"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6沒有載入任何模塊!"
+          list: "§6Cartographer2 模塊 (%d): %s"
+        reload:
+          success: "§6重新載入模塊!"
+        enable:
+          usage: "§c使用: /cartographer module enable <module>"
+          success: "§6成功啟用模塊 '§e%s§6'!"
+          already-enabled: "§c模塊 '%s' 已經啟用了!"
+          error-loading: "§c無法啟用模塊 '%s', 詳細資訊請查看伺服器log檔(缺少相關插件?)"
+        disable:
+          usage: "§c使用: /cartographer module disable <module>"
+          already-disabled: "§c模塊 '%s' 已經停用了!"
+          success: "§6成功停用模塊 '§e%s§6'!"
+        load:
+          usage: "§c使用: /cartographer module load <file>"
+          success: "§6Loaded and enabled module '§e%s§6'!"
+          error-loading: "§c無法載入模塊文件 '%s', 詳細資訊請查看伺服器log檔"
+          error-enabling: "§c無法啟用模塊 '%s', 詳細資訊請查看伺服器log檔(缺少相關插件?)"
+        unload:
+          usage: "§c使用: /cartographer module unload <module>"
+          success: "§6成功卸載模塊 '§e%s§6'!"
+          error-unloading: "§6無法卸載模塊 '§e%s§6'! 可能非由 Cartographer2 載入!"
+        help:
+          usage: "§c使用: /cartographer module help"
+          help-0: "§b=== Cartographer 模塊命令列表 ==="
+          help-1: "§e/cartographer module list§6 - 顯示所有已載入的模塊"
+          help-2: "§e/cartographer module reload§6 - 重新載入所有的模塊"
+          help-3: "§e/cartographer module enable <module>§6 - 啟用模塊"
+          help-4: "§e/cartographer module disable <module>§6 - 停用模塊"
+          help-5: "§e/cartographer module load <module>§6 - 載入模塊"
+          help-6: "§e/cartographer module unload <module>§6 - 卸載模塊"
+          help-7: "§e/cartographer module help§6 - 查看模塊命令列表"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§c此文件已經被載入或不存在!"
+        module-already-enabled-or-not-real: "§c此模塊已經被啟用或不存在!"
+        module-already-disabled-or-not-real: "§c此模塊已經被停用或不存在!"
+        module-not-real: "§c此模塊不存在!"
+      settings:
+        set:
+          console-usage: "§c使用: /cartographer settings set <玩家ID> <setting> <value>"
+          success: "§a將 '%s' 設定為 §d%s§a."
+        get:
+          console-usage: "§c使用: /cartographer settings get <玩家ID> <setting>"
+          success: "§a'%s' 的設定為 §d%s§a."
+        setother:
+          usage: "§c使用: /cartographer settings setother <玩家ID> <setting> <value>"
+          success: "§a將 '%s' 設定為 §d%s§a 為玩家 §d%s§a."
+        getother:
+          usage: "§c使用: /cartographer settings getother <玩家ID> <setting>"
+          success: "玩家 §d%s§a 的 '%s' 設定為 §d%s§a."
+        help:
+          usage: "§c使用: /cartographer settings help"
+          help-0: "§b=== Cartographer 設定命令列表 ==="
+          help-1: "§e/cartographer settings set <property> <value>§6 - 設定屬性"
+          help-2: "§e/cartographer settings get <property>§6 - 查看設定"
+          help-3: "§e/cartographer settings setother <玩家ID> <property> <value>§6 - 為其他玩家設定屬性"
+          help-4: "§e/cartographer settings getother <玩家ID> <property>§6 - 查看其他玩家的設定"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§c無效的設定值! (%s)"
+        must-provide-values: "§c你必須提供設定值! (%s)"
+        not-implemented: "§c'%s' 尚未開放使用!請聯繫作者尋求幫助!"
+      player-not-found: "§c此玩家不再線上!"
+      minimap-already-exists: "§c此ID的小地圖已經存在了!"
+      invalid-minimap: "§c無效的小地圖!"
+      invalid-slot: "§c無效的欄位! (0-40)"
+      invalid-argument: "§c無效的參數!"
+      invalid-setting: "§c無效的設定值!"
+      must-provide-minimap: "§c你必須輸入小地圖!"
+      must-provide-player: "§c你必須輸入小玩家ID!"
+      must-provide-argument: "§c你必須輸入參數!"
+      must-provide-setting: "§c你必須輸入設定值!"
+    manager:
+      minimap:
+        loading-minimap: "載入小地圖 '%s'"
+        unloading-minimap: "卸載小地圖 '%s'"
+        deleting-minimap: "刪除小地圖 '%s'"
+      module:
+        reloading-modules-start: "正在重新載入模塊..."
+        reloading-modules-finish: "重新載入模塊完成"
+        loading-module: "載入 %s v%s 由 %s 製作"
+        unloading-module: "卸載 %s 中"
+        enabling-module: "啟用 %s v%s 由 %s 製作"
+        disabling-module: "停用 %s v%s 由 %s 製作"
+        missing-dependencies: "無法啟用 %s 模塊，缺少相關依賴: %s"
+    minimap:
+      default-rotation: "預設朝向設定為 %b"
+      auto-update: "自動更新設定為 %b"
+      circular-zoom: "圓形縮放大小設定為 %b"
+      render-out-of-border: "超出世界邊界的渲染設定為 %b"
+      default-zoom: "預設縮放大小設定為 %f"
+      allowed-zooms: "允許的縮放: %s"
+      whitelisted-worlds: "世界白名單: %s"
+      blacklisted-worlds: "世界黑名單: %s"
+      loaded-overlay: "已載入邊框圖層 '%s'"
+      loaded-background: "已載入背景圖層 '%s'"
+      loaded-disabled: "已載入停用替代的圖片 '%s'"
+    unsupported-version: "此版本(%s) 該插件不支援!"
+    disabling-plugin: "停用插件中..."
