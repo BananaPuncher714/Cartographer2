@@ -77,7 +77,7 @@ public class FrameRenderTask extends RecursiveAction {
 			int x = pixel.getX();
 			int y = pixel.getZ();
 			if ( x < 128 && x >= 0 && y < 128 && y >= 0 ) {
-				int index = x + y * 128;
+				int index = x + ( y << 7 );
 				int color = pixel.getColor().getRGB();
 				if ( color >>> 24 == 0 ) {
 					continue;
@@ -97,7 +97,7 @@ public class FrameRenderTask extends RecursiveAction {
 		
 		// Construct the fork join pools required for the interval below and run
 		List< SubRenderTask > tasks = new ArrayList< SubRenderTask >();
-		for ( int subTaskIndex = 0; subTaskIndex < 128 * 128; subTaskIndex += SUBTASK_INTERVAL ) {
+		for ( int subTaskIndex = 0; subTaskIndex < 16_384; subTaskIndex += SUBTASK_INTERVAL ) {
 			SubRenderTask task = new SubRenderTask( info, subTaskIndex, SUBTASK_INTERVAL );
 			tasks.add( task );
 			task.fork();

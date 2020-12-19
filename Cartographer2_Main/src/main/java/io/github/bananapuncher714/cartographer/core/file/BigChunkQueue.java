@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.file;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
@@ -105,10 +103,10 @@ public class BigChunkQueue {
 	public void load( BigChunkLocation coord ) {
 		Validate.notNull( coord );
 		// If the chunk is not being loaded or saved
-		if ( saving.containsKey( coord ) || loading.containsKey( coord ) ) {
-			return;
+		boolean inUse = saving.containsKey( coord ) || loading.containsKey( coord );
+		if ( !inUse ) {
+			loading.put( coord, loadingService.submit( new TaskChunkLoad( getFileFor( coord ) ) ) );
 		}
-		loading.put( coord, loadingService.submit( new TaskChunkLoad( getFileFor( coord ) ) ) );
 	}
 	
 	/**
@@ -127,6 +125,7 @@ public class BigChunkQueue {
 		for ( Iterator< Entry< BigChunkLocation, Future< BigChunk > > > iterator = loading.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< BigChunkLocation, Future< BigChunk > > entry = iterator.next();
 			
+			// Check if it is done loading from file or something
 			if ( entry.getValue().isDone() ) {
 				BigChunkLocation coord = entry.getKey();
 				BigChunk value = null;
@@ -138,32 +137,16 @@ public class BigChunkQueue {
 				
 				int relX = coord.getX() << 4;
 				int relZ = coord.getZ() << 4;
+				// Check if the file was loaded successfully
 				if ( value != null ) {
 					// There *was* something on file after all
-					ChunkData[] data = value.getData();
-					
-					for ( int index = 0; index < data.length; index++ ) {
-						ChunkData chunkData = data[ index ];
-						ChunkLocation location = new ChunkLocation( coord.getWorld(), relX + index % 16, relZ + index / 16 );
-						if ( chunkData == null ) {
-							// If it doesn't have the chunk data we're looking for, then don't bother
-							cache.addToProcessQueue( location );
-						} else if ( cache.absent( location ) ){
-							// If the cache contains a more up to date version
-							// then might as well skip this
-							// Otherwise, add it in
-							cache.loadData( location, chunkData );
-						}
-					}
+					cache.updateDataAt( coord, value, false );
 				} else {
-					// Nothing was loaded from file
 					for ( int x = 0; x < 16; x++ ) {
 						for ( int z = 0; z < 16; z++ ) {
 							ChunkLocation location = new ChunkLocation( coord.getWorld(), relX + x, relZ + z );
-							if ( cache.absent( location ) ) {
-								// Only add it to the process queue if it's not already stored in the cache somewhere
-								cache.addToProcessQueue( location );
-							}
+							// Request the cache to load our location
+							cache.requestLoadFor( location, false );
 						}
 					}
 				}

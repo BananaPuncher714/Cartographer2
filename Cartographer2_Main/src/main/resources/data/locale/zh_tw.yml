@@ -12,6 +12,7 @@
 # 如果這些訊息將由玩家接收，那該語言檔案應該支持 placeholders 佔位符變數。
 # 彩色訊息請善用(§)
 # 如果因此產生亂碼導致無法使用，請嘗試使用 \u00a7 代替。
+# Translated by: hou19960228
 name: "繁體中文 (台灣)"
 language: "Chinese Traditional (Taiwan)"
 location: "Taiwan, Hong Kong, Macau"
@@ -45,7 +46,7 @@ messages:
         disabled-map-found: "找到停用地圖圖片!"
         disabled-map-missing: "停用地圖圖片不存在!"
       enabling-modules: "載入模塊..."
-      loading-config: "載入設定檔"..."
+      loading-config: "載入設定檔..."
       loading-images: "載入圖片..."
       loading-palettes: "載入調色盤..."
       loading-data: "載入小地圖和資料..."

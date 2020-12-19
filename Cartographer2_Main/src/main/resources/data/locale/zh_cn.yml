@@ -12,7 +12,8 @@
 # 如果这些信息将被发送给玩家，那么语言文件应该支持 placeholders 占位符变量。
 # 彩色文本请使用标识符 (§) 。
 # 如果标识符无用, 并显示乱码, 那么请使用 \u00a7 替代。
-name: "简体中文"
+# Translated by: ahdg6
+name: "简体中文 (中国)"
 language: "简体中文"
 location: "中国大陆"
 locale-code: "zh_cn"

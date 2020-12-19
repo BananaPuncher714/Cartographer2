@@ -86,6 +86,7 @@ public class Minimap implements ChunkNotifier {
 		BACKGROUND_IMAGE_FILE = FileUtil.getImageFile( saveDir, "background" );
 		DISABLED_IMAGE_FILE = FileUtil.getImageFile( saveDir, "disabled" );
 		
+		cache.setFileQueue( queue );
 		cache.setNotifier( this );
 		
 		logger = new MinimapLogger( this );
@@ -185,9 +186,10 @@ public class Minimap implements ChunkNotifier {
 						for ( int z = 0; z < 16; z++ ) {
 							ChunkLocation location = new ChunkLocation( loc.getWorld(), ( loc.getX() << 4 ) + x, ( loc.getZ() << 4 ) + z );
 							// Remove the corresponding chunk from our cache
-							cache.getData().remove( location );
+							cache.removeChunkDataAt( location );
 						}
 					}
+					cache.removeScannedLocation( loc );
 				}
 			}
 		}
