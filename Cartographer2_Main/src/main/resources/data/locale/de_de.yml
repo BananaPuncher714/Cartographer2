@@ -11,8 +11,8 @@
 # Falls dies nicht funktioniert und ein zufälliges Zeichen gezeigt wird verwende den Code \u00a7 anstelle des Symbols.
 # Translated by: Tyeodor
 name: "Deutsch (DE)"
-language: "German"
-location: "Germany, Austria, Switzerland, Liechtenstein, Luxembourg, Belgium"
+language: "Deutsch"
+location: "Deutschland"
 locale-code: "de_de"
 messages:
   locale:
