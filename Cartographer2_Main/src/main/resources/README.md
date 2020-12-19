@@ -125,4 +125,5 @@ Additional settings may be added by modules.
 - `ahdg6` - Translator(zh_cn)
 - `Tyeodor` - Translator(de_de)
 - `NotAShelf` - Translator(tr_tr)
+- `Pymad` - Translator(fr_fr)
 - `REjoin` - Supporter

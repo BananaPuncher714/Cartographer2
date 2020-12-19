@@ -20,4 +20,5 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `ahdg6` - Translator(zh_cn)
 - `Tyeodor` - Translator(de_de)
 - `NotAShelf` - Translator(tr_tr)
+- `Pymad` - Translator(fr_fr)
 - `REjoin` - Supporter

@@ -1,0 +1,231 @@
+# Default provided locale file
+# Tous les fichiers de localisation ont besoin d'un encodage. Il ne doit pas comporter d'espace.
+# Le nom, le langage et la localisation sont optionnels mais recommendés.
+# Informations disponibles sur https://minecraft.gamepedia.com/Language#Available_languages
+# Les messages suivent le formatage normal des chaines de caractères sous Java.
+# Si vous souhaitez avoir des messages aléatoires, vous pouvez créer une liste de chaînes de caractères plutôt qu'une seule chaîne caractère.
+# Par exemple:
+# liste-message-aleatoire:
+# - "Message aleatoire 1"
+# - "Message aleatoire 2"
+# - "Message aleatoire 3"
+# Ces fichiers supportent égalements les placeholders, si c'est un message pour un joueur.
+# Pour utiliser des messages colorés, utilisez le symbole (§).
+# Si cela ne marche pas, après avoir essayer plusieurs format, utilisez le format de code \u00a7 à la place.
+# Translated by: Pymad
+name: "Français (FR)"
+language: "Français"
+location: "France"
+locale-code: "fr_fr"
+messages:
+  locale:
+    loaded-internal-locale: "Chargement avec succés de la localisation (%s)"
+    loaded-locale: "Chargement du langage %s(%s) encodé %s"
+    default-locale-changed: "Localisation par défaut changé en %s"
+    error-loading-file: "Impossible de charger le fichier de langue '%s'"
+    invalid-locale: "'%s' n'est pas une localisation valide!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Ajout de '%s' comme inventaire interdit"
+        unknown-inventory-type: "Il n'existe pas de type d'inventaire '%s'"
+      palette:
+        creating-vanilla-palette: "Création d'une palette vanilla..."
+        vanilla-palette-missing: "Palette vanilla non trouvée, sauvegarde..."
+        found-materials: "%d matériaux mappés"
+        loading-palettes: "Chargement des fichiers locaux de palette..."
+        successfully-loaded-palette: "Chargement de la palette '%s' successfully!"
+        palette-folder-missing: "Dossier de palette inconnu!"
+      image:
+        overlay-found: "Superposition d'image détectée!"
+        overlay-missing: "La superposition d'image n'est pas détéctée!"
+        background-found: "Fond/Background détecté!"
+        background-missing: "Le fond/background n'est pas détecté!"
+        missing-map-found: "Image de carte manquante détectée!"
+        missing-map-missing: "L'image de carte manquante n'est pas détectée!"
+        disabled-map-found: "Image de carte désactivée détectée!"
+        disabled-map-missing: "L'image de carte désactivée n'est pas détectée!"
+      enabling-modules: "Activation des modules..."
+      loading-config: "Chargement de la configuration..."
+      loading-images: "Chargement des images..."
+      loading-palettes: "Chargement des palettes..."
+      loading-data: "Chargement des cartes et des données..."
+    disable:
+      disabling-modules: "Désactivation des modules..."
+      saving-map-data-start: "Sauvegarde des données de la carte. Cela peut prendre un moment..."
+      saving-map-data-finish: "Sauvegarde des données de carte complétée!"
+      saving-player-data-start: "Sauvegarde des données de joueurs..."
+      saving-player-data-finish: "Sauvegarde des données de joueurs complétée!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cUsage: /cartographer reload <map>"
+          reloaded-plugin: "§bRafraichissement des paramètres de Cartographer2"
+          reloaded-minimap: "§bRafraichissement de la carte '§e%s§b'"
+        list:
+          usage: "§cUsage: /cartographer list"
+          no-minimaps: "§bIl n'y a actuellement aucune carte chargée!"
+          list: "§bCartes Cartographer2 (%d): %s"
+        get:
+          usage: "§cUsage: /cartographer get <map> <player> [slot]"
+          success-self: "Vous vous êtes donné la carte(%s)"
+          success-other: "Don de la carte(%s) à %s"
+        create:
+          usage: "§cUsage: /cartographer create <id>"
+          success: "§bCréation et enregistrement d'une nouvelle carte avec l'ID '§e%s§b'"
+        delete:
+          usage: "§cUsage: /cartographer delete <id>"
+          success: "§bSuppression de la carte '§e%s§b'"
+        load:
+          usage: "§cUsage: /cartographer load <id>"
+          success: "§bChargement de la carte '§e%s§b'"
+        unload:
+          usage: "§cUsage: /cartographer unload <id>"
+          success: "§bRafraîchissement de la carte '§e%s§b'"
+        help:
+          usage: "§cUsage: /cartographer help"
+          help-0: "§b=== Cartographer Commands ==="
+          help-1: "§e/cartographer reload [map]§6 - Recharge Cartographer2 ou une carte"
+          help-2: "§e/cartographer list§6 - Voir toute les cartes chargées"
+          help-3: "§e/cartographer get <map> [player] [slot]§6 - Récupérer ou donner une carte"
+          help-4: "§e/cartographer create <map>§6 - Créer une nouvelle carte"
+          help-5: "§e/cartographer delete <map>§6 - Supprimer une carte"
+          help-6: "§e/cartographer load <map>§6 - Charger une carte"
+          help-7: "§e/cartographer unload <map>§6 - Décharger/Unload une carte"
+          help-8: "§e/cartographer help§6 - Afficher les commandes"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Il n'y a actuellement aucun module chargé!"
+          list: "§6Modules de Cartographer2 (%d): %s" 
+        reload:
+          success: "§6Tous les modules ont été rechargés!"
+        enable:
+          usage: "§cUsage: /cartographer module enable <module>"
+          success: "§6Module '§e%s§6' activé !"
+          already-enabled: "§cLe module '%s' est déjà activé!"
+          error-loading: "§cImpossible de charger le module '%s', regardez les logs du serveur pour plus de détails. (Dépendance manquante ?)"
+        disable:
+          usage: "§cUsage: /cartographer module disable <module>"
+          already-disabled: "§cLe module '%s' est déjà désactivé!"
+          success: "§6Module '§e%s§6' activé!"
+        load:
+          usage: "§cUsage: /cartographer module load <file>"
+          success: "§6Module '§e%s§6' chargé et activé!"
+          error-loading: "§cImpossible de charger le fichier '%s', regardez les logs du serveur pour plus de détails."
+          error-enabling: "§cImpossible d'activer le module '%s', regardez les logs du serveur pour plus de détails. (Dépendance manquante ?)"
+        unload:
+          usage: "§cUsage: /cartographer module unload <module>"
+          success: "§6Module '§e%s§6' §6déchargé/unload!"
+          error-unloading: "§6Impossible de décharger/unload le module '§e%s§6'! Il n'a pas été chargé par Cartographer2!"
+        help:
+          usage: "§cUsage: /cartographer module help"
+          help-0: "§b=== Cartographer Module Commands ==="
+          help-1: "§e/cartographer module list§6 - Afficher tous les modules chargés"
+          help-2: "§e/cartographer module reload§6 - Raffraichir tous les modules"
+          help-3: "§e/cartographer module enable <module>§6 - Activer un module"
+          help-4: "§e/cartographer module disable <module>§6 - Désactiver un module"
+          help-5: "§e/cartographer module load <module>§6 - Charger un module"
+          help-6: "§e/cartographer module unload <module>§6 - Décharger/Unload un module"
+          help-7: "§e/cartographer module help§6 - Afficher les commandes"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cCe fichier est déjà chargé ou il n'existe pas!"
+        module-already-enabled-or-not-real: "§cCe module est déjà activé ou n'existe pas!"
+        module-already-disabled-or-not-real: "§cCe module est déjà désactivé ou n'existe pas!"
+        module-not-real: "§cCe module n'existe pas!"
+      settings:
+        set:
+          console-usage: "§cUsage: /cartographer settings set <player> <setting> <value>"
+          success: "§aVous avez défini '%s' sur §d%s§a."
+        get:
+          console-usage: "§cUsage: /cartographer settings get <player> <setting>"
+          success: "§a'%s' est défini sur §d%s§a."
+        setother:
+          usage: "§cUsage: /cartographer settings setother <player> <setting> <value>"
+          success: "§aDéfinir '%s' à §d%s§a pour §d%s§a."
+        getother:
+          usage: "§cUsage: /cartographer settings getother <player> <setting>"
+          success: "§d%s§a a '%s' défini sur §d%s§a."
+        help:
+          usage: "§cUsage: /cartographer settings help"
+          help-0: "§b=== Cartographer Settings Commands ==="
+          help-1: "§e/cartographer settings set <property> <value>§6 - Définir un paramètre"
+          help-2: "§e/cartographer settings get <property>§6 - Obtenir la valeur d'un paramètre"
+          help-3: "§e/cartographer settings setother <player> <property> <value>§6 - Définir un paramètre pour un joueur"
+          help-4: "§e/cartographer settings getother <player> <property>§6 - Obtenir la valeur d'un paramètre pour un joueur"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cValeur invalide! (%s)"
+        must-provide-values: "§cVous devez fournir une valeur! (%s)"
+        not-implemented: "§c'%s' n'est pas encore implémenté! Merci de contactez le développeur pour obtenir de l'assistance!"
+      player-not-found: "§cCe joueur n'est pas connecté!"
+      minimap-already-exists: "§cUne carte avec cet ID existe déjà!"
+      invalid-minimap: "§cCarte invalide!"
+      invalid-slot: "§cEmplacement invalide! (0-40)"
+      invalid-argument: "§cArgument invalide!"
+      invalid-setting: "§cParamètre invalide!"
+      must-provide-minimap: "§cVous devez fournir une carte!"
+      must-provide-player: "§cVous devez fournir un joueur!"
+      must-provide-argument: "§cVous devez fournir un argument!"
+      must-provide-setting: "§cVous devez fournir un paramètre!"
+    manager:
+      minimap:
+        loading-minimap: "Chargement de la carte '%s'"
+        unloading-minimap: "Déchargement/Unloading de la carte '%s'"
+        deleting-minimap: "Suppression de la carte '%s'"
+      module:
+        reloading-modules-start: "Rechargement des modules..."
+        reloading-modules-finish: "Modules rechargés"
+        loading-module: "Chargement %s v%s sur %s"
+        unloading-module: "Déchargement/Unloading %s"
+        enabling-module: "Activation %s v%s by %s"
+        disabling-module: "Désactivation %s v%s by %s"
+        missing-dependencies: "Impossible d'activer %s à cause de la dépendance: %s"
+    minimap:
+      default-rotation: "Rotation par défaut définie sur %b"
+      auto-update: "Mise à jour automatique définie sur %b"
+      circular-zoom: "Zoom circulaire défini sur %b"
+      render-out-of-border: "Rendu des bordures défini sur %b"
+      default-zoom: "Zoom par défaut défini sur %f"
+      allowed-zooms: "Zooms autorisés: %s"
+      whitelisted-worlds: "Mondes autorisés: %s"
+      blacklisted-worlds: "Mondes interdits: %s"
+      loaded-overlay: "Chargement de l'image de superposition '%s'"
+      loaded-background: "Chargement de l'image de fond/background '%s'"
+      loaded-disabled: "Chargement de l'image d'indisponibilité '%s'"
+    unsupported-version: "Cette version (%s) n'est actuellement pas supportée!"
+    disabling-plugin: "Désactivation du plugin..."
