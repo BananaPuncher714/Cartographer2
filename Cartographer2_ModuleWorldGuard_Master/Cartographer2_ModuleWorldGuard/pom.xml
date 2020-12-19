@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>cartographer2_moduleworldguard_master</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<artifactId>cartographer2_moduleworldguard</artifactId>
 
