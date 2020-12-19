@@ -114,7 +114,7 @@ public class RegionBorderShader implements WorldPixelProvider {
 							// It's vertical
 							WorldPixel pixel = new WorldPixel( playerLoc.getWorld(), startX, startY, color );
 							pixel.setWidth( totalWidth );
-							pixel.setHeight( endY - startY );
+							pixel.setHeight( ( endY - startY ) + Math.min( 1, setting.getScale() ) );
 							pixels.add( pixel );
 						} else {
 							// It's not a vertical or horizontal line and we need to rasterize it
