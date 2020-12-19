@@ -124,4 +124,5 @@ Additional settings may be added by modules.
 - `hou19960228` - Translator(zh_tw)
 - `ahdg6` - Translator(zh_cn)
 - `Tyeodor` - Translator(de_de)
+- `NotAShelf` - Translator(tr_tr)
 - `REjoin` - Supporter
