@@ -8,7 +8,7 @@
 		<version>2.14.6</version>
 	</parent>
 	<artifactId>cartographer2_moduleresidence</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
