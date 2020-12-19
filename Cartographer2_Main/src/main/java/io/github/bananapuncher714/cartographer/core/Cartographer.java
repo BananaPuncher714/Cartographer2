@@ -111,6 +111,9 @@ public class Cartographer extends JavaPlugin {
 	private SimpleImage missingMapImage;
 	private SimpleImage disabledMap;
 	
+	private String user = "%%__USER__%%";
+	private String nonce = "%%__NONCE__%%";
+	
 	// If the server has been completely loaded. Something to do with modules and plugins and dependencies
 	private boolean loaded = false;
 	
@@ -320,6 +323,8 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/en_pt.yml" ), new File( LOCALE_DIR, "en_pt.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/zh_cn.yml" ), new File( LOCALE_DIR, "zh_cn.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/cs_cz.yml" ), new File( LOCALE_DIR, "cs_cz.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/zh_tw.yml" ), new File( LOCALE_DIR, "zh_tw.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/de_de.yml" ), new File( LOCALE_DIR, "de_de.yml" ), false );
 //		}
 	}
 	

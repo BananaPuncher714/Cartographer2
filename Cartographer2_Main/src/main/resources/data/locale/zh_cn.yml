@@ -1,9 +1,9 @@
-# 默认提供的语言文件
-# 所有语言都需要一个语言代号(locale-code)。 这里不应该留空
-# 字段 语言名称(name), 语言(language), 以及 语言常用地(location) 是选填的, 但建议填写
-# 翻译信息来源于 https://minecraft.gamepedia.com/Language#Available_languages
-# 翻译消息本身应该遵循常规的Java字符串格式
-# 如果您想使用 随机信息 ，请键入多行
+# 插件默认提供的本地化语言文件
+# 所有语言文件都需要一个语言代号(locale-code)。这个值不应该留空
+# 选填字段 语言名称(name), 语言(language), 以及 语言常用地(location) 并非必填项，但为了区分与补充建议填写
+# 译文代码等信息参考自 https://minecraft.gamepedia.com/Language#Available_languages
+# 译文信息本身应该遵循常规的Java字符串格式
+# 如果您想使用 随机信息，请键入多行字符串内容
 # 示例:
 # random-message-list:
 # - "随机信息 1"
@@ -11,8 +11,9 @@
 # - "随机信息 3"
 # 如果这些信息将被发送给玩家，那么语言文件应该支持 placeholders 占位符变量。
 # 彩色文本请使用标识符 (§) 。
-# 如果标识符无用, 并显示乱码, 那么请使用 \u00a7 替代。
-name: "简体中文"
+# 如果标识符无用，并显示为乱码，那么请使用 \u00a7 替代。
+# Translated by: ahdg6
+name: "简体中文 (中国)"
 language: "简体中文"
 location: "中国大陆"
 locale-code: "zh_cn"
@@ -40,10 +41,10 @@ messages:
         overlay-missing: "覆盖图层图片不存在!"
         background-found: "检测到背景图层!"
         background-missing: "背景图层不存在!"
-        missing-map-found: "检测丢失地图替代图片!"
-        missing-map-missing: "丢失地图替代图片不存在!"
-        disabled-map-found: "检测到禁用地图替代图片!"
-        disabled-map-missing: "禁用地图替代图片不存在!"
+        missing-map-found: "检测到地图丢失的替代图片!"
+        missing-map-missing: "地图丢失的替代图片不存在!"
+        disabled-map-found: "检测到地图禁用的替代图片!"
+        disabled-map-missing: "地图禁用的替代图片不存在!"
       enabling-modules: "启用附加模块中..."
       loading-config: "加载配置文件中..."
       loading-images: "加载图片中..."
@@ -66,7 +67,7 @@ messages:
           no-minimaps: "§b目前没有处于加载状态中的小地图!"
           list: "§bCartographer2 小地图 (%d): %s"
         get:
-          usage: "§c用法: /cartographer get <map> <player> [slot]"
+          usage: "§c用法: /cartographer get <map> <玩家> [栏位]"
           success-self: "成功给您自己一张小地图(%s)"
           success-other: "已将小地图(%s) 给予 %s"
         create:
@@ -86,12 +87,12 @@ messages:
           help-0: "§b=== Cartographer 命令帮助 ==="
           help-1: "§e/cartographer reload [map]§6 - 重载 Cartographer2 或单张小地图"
           help-2: "§e/cartographer list§6 - 查看所有加载中的小地图"
-          help-3: "§e/cartographer get <map> [玩家] [背包槽位]§6 - 获得或给别的玩家一张小地图"
+          help-3: "§e/cartographer get <map> [玩家] [背包栏位]§6 - 获得或给别的玩家一张小地图"
           help-4: "§e/cartographer create <map>§6 - 创建一张新的小地图"
           help-5: "§e/cartographer delete <map>§6 - 删除一张小地图"
           help-6: "§e/cartographer load <map>§6 - 加载一张小地图"
           help-7: "§e/cartographer unload <map>§6 - 卸载一张小地图"
-          help-8: "§e/cartographer help§6 - 展现可用命令"
+          help-8: "§e/cartographer help§6 - 显示目前可用命令"
           help-9: ""
           help-10: ""
           help-11: ""
@@ -110,21 +111,21 @@ messages:
         reload:
           success: "§6成功重载所有附加模块!"
         enable:
-          usage: "§c用法: /cartographer module enable <module>"
+          usage: "§c用法: /cartographer module enable <附加模块>"
           success: "§6成功启用附加模块 '§e%s§6'!"
           already-enabled: "§c附加模块 '%s' 已经启用过了!"
           error-loading: "§c无法加载附加模块 '%s', 检查服务器日志以获取更多信息。 (是否丢失了模块依赖?)"
         disable:
-          usage: "§c用法: /cartographer module disable <module>"
+          usage: "§c用法: /cartographer module disable <附加模块>"
           already-disabled: "§c附加模块 '%s' 已经处于关闭状态!"
           success: "§6成功禁用附加模块 '§e%s§6'!"
         load:
-          usage: "§c用法: /cartographer module load <file>"
+          usage: "§c用法: /cartographer module load <文件名称>"
           success: "§6成功加载并启用附加模块 '§e%s§6'!"
           error-loading: "§c无法加载附加模块 '%s', 检查服务器日志以获取更多信息。"
           error-enabling: "§c无法加载附加模块 '%s', 检查服务器日志以获取更多信息。 (是否丢失了模块依赖?)"
         unload:
-          usage: "§c用法: /cartographer module unload <module>"
+          usage: "§c用法: /cartographer module unload <附加模块>"
           success: "§6成功卸载附加模块 '§e%s§6'!"
           error-unloading: "§6无法卸载附加模块 '§e%s§6'! 它可能并不由 Cartographer2 所加载!"
         help:
@@ -169,10 +170,10 @@ messages:
         help:
           usage: "§c用法: /cartographer settings help"
           help-0: "§b=== Cartographer 设置命令 ==="
-          help-1: "§e/cartographer settings set <property> <值>§6 - 设定一个所有物"
-          help-2: "§e/cartographer settings get <property>§6 - 获取所有权的值"
-          help-3: "§e/cartographer settings setother <玩家> <property> <value>§6 - 为一名玩家设置所有权"
-          help-4: "§e/cartographer settings getother <玩家> <property>§6 - 获取指定玩家所有权的值"
+          help-1: "§e/cartographer settings set <设置项> <值>§6 - 设定一个设置项的数据值"
+          help-2: "§e/cartographer settings get <设置项>§6 - 获取设置项的数据值"
+          help-3: "§e/cartographer settings setother <玩家> <设置项> <值>§6 - 为一名玩家设定设置项的数据值"
+          help-4: "§e/cartographer settings getother <玩家> <property>§6 - 获取指定玩家设置项的数据值"
           help-5: ""
           help-6: ""
           help-7: ""
@@ -194,12 +195,12 @@ messages:
       player-not-found: "§c该玩家并不在线!"
       minimap-already-exists: "§c与该小地图相同id的小地图已经存在!"
       invalid-minimap: "§c无效的小地图!"
-      invalid-slot: "§c无效的槽位! (0-40)"
-      invalid-argument: "§c无效的理由!"
-      invalid-setting: "§c无效的设置!"
-      must-provide-minimap: "§c您必须在命令中提供小地图值!"
-      must-provide-player: "§c您必须在命令中提供玩家值!"
-      must-provide-argument: "§c您必须在命令中提供理由!"
+      invalid-slot: "§c无效的栏位! (0-40)"
+      invalid-argument: "§c无效的参数!"
+      invalid-setting: "§c无效的设置项!"
+      must-provide-minimap: "§c您必须在命令中提供小地图参数!"
+      must-provide-player: "§c您必须在命令中提供玩家参数!"
+      must-provide-argument: "§c您必须在命令中提供参数!"
       must-provide-setting: "§c您必须在提供设置项!"
     manager:
       minimap:
@@ -225,6 +226,6 @@ messages:
       blacklisted-worlds: "世界黑名单: %s"
       loaded-overlay: "已加载覆盖图层图片 '%s'"
       loaded-background: "已加载背景图层图片 '%s'"
-      loaded-disabled: "已加载禁用地图替代图片 '%s'"
+      loaded-disabled: "已加载地图禁用的替代图片 '%s'"
     unsupported-version: "您使用中的版本(%s) 未被插件所支持!"
     disabling-plugin: "关闭插件中..."

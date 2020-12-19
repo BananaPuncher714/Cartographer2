@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.core.file;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -92,7 +91,7 @@ public class BigChunkQueue {
 	 * @return
 	 * Normally stored in 'base/world/x/z/' form.
 	 */
-	protected File getFileFor( BigChunkLocation coord ) {
+	protected Path getFileFor( BigChunkLocation coord ) {
 		return null;
 	}
 	

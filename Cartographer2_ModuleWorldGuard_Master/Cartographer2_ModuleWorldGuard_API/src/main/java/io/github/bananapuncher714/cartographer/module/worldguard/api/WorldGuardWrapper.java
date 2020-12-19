@@ -5,5 +5,5 @@ import java.util.Collection;
 import org.bukkit.World;
 
 public interface WorldGuardWrapper {
-	Collection< CuboidRegion > getRegionsFor( World world );
+	Collection< WorldGuardRegion > getRegionsFor( World world );
 }
