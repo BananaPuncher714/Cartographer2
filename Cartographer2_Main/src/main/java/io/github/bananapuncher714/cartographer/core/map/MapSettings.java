@@ -41,6 +41,8 @@ public class MapSettings {
 	protected boolean ditherBackground = false;
 	protected boolean ditherDisabled = false;
 	
+	protected boolean reloadChunks = true;
+	
 	// Default palette
 	protected MinimapPalette palette;
 	
@@ -68,9 +70,11 @@ public class MapSettings {
 		isWhitelist = config.getBoolean( "world-whitelist", false );
 		blacklistedWorlds.addAll( config.getStringList( "world-blacklist" ) );
 		
-		ditherOverlay = config.getBoolean( "dither-overlay", false );
-		ditherBackground = config.getBoolean( "dither-background", false );
-		ditherDisabled = config.getBoolean( "dither-blacklisted", false );
+		ditherOverlay = config.getBoolean( "images.dither-overlay", false );
+		ditherBackground = config.getBoolean( "images.dither-background", false );
+		ditherDisabled = config.getBoolean( "images.dither-blacklisted", false );
+		
+		reloadChunks = config.getBoolean( "chunks.reload-chunks", true );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
@@ -141,6 +145,14 @@ public class MapSettings {
 
 	public void setDitherBlacklisted( boolean ditherBlacklisted ) {
 		this.ditherDisabled = ditherBlacklisted;
+	}
+	
+	public boolean isReloadChunks() {
+		return reloadChunks;
+	}
+	
+	public void setReloadChunks( boolean reload ) {
+		this.reloadChunks = reload;
 	}
 
 	public MinimapPalette getPalette() {

@@ -141,8 +141,8 @@ public class Minimap implements ChunkNotifier {
 	public void update() {
 		cache.update();
 		queue.update();
-		// Every 5 ticks, attempt to save and unload regions that are not in use
-		if ( tick++ % 100 == 0 ) {
+		// Every 5 seconds, attempt to save and unload regions that are not in use
+		if ( tick++ % 5 == 0 ) {
 			// Set for locations that are still needed
 			Set< BigChunkLocation > noSave = new HashSet< BigChunkLocation >();
 			// Chunks to save

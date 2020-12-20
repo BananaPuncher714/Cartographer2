@@ -100,13 +100,15 @@ public class BigChunkQueue {
 	 * @param coord
 	 * The {@link BigChunkLocation} to load, cannot be null.
 	 */
-	public void load( BigChunkLocation coord ) {
+	public boolean load( BigChunkLocation coord ) {
 		Validate.notNull( coord );
 		// If the chunk is not being loaded or saved
 		boolean inUse = saving.containsKey( coord ) || loading.containsKey( coord );
 		if ( !inUse ) {
 			loading.put( coord, loadingService.submit( new TaskChunkLoad( getFileFor( coord ) ) ) );
+			return true;
 		}
+		return false;
 	}
 	
 	/**

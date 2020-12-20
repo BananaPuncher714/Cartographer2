@@ -1,14 +1,16 @@
 package io.github.bananapuncher714.cartographer.core.implementation.v1_12_R1;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -49,7 +51,6 @@ import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.NetworkManager;
 import net.minecraft.server.v1_12_R1.PacketPlayInBlockDig;
 import net.minecraft.server.v1_12_R1.PacketPlayInBlockDig.EnumPlayerDigType;
-import net.minecraft.server.v1_12_R1.PacketPlayInSettings;
 import net.minecraft.server.v1_12_R1.PacketPlayOutMap;
 import net.minecraft.server.v1_12_R1.PlayerConnection;
 
@@ -94,11 +95,13 @@ public class NMSHandler implements PacketHandler {
 		CURSOR_TYPES.put( MapCursor.Type.TEMPLE, MapIcon.Type.MONUMENT );
 	}
 
-	private final Map< UUID, Channel > channels = new HashMap< UUID, Channel >();
+	private final Map< UUID, Channel > channels = new ConcurrentHashMap< UUID, Channel >();
 	private final Set< Integer > maps = new TreeSet< Integer >();
 	private Util_1_9 util = new Util_1_9();
 	private final String handler_name;
 	
+	private final Set< PacketPlayOutMap > whitelisted = Collections.synchronizedSet( Collections.newSetFromMap( new WeakHashMap< PacketPlayOutMap, Boolean >() ) );
+
 	public NMSHandler() {
 		handler_name = "cartographer2_handler_" + HANDLER_INDEX.getAndIncrement();
 	}
@@ -163,35 +166,28 @@ public class NMSHandler implements PacketHandler {
 			exception.printStackTrace();
 		}
 		
-		PacketPlayOutMinimap mapPacket = new PacketPlayOutMinimap( packet );
+		whitelisted.add( packet );
 		
 		for ( UUID uuid : uuids ) {
 			if ( uuid != null ) {
 				Channel channel = channels.get( uuid );
 				if ( channel != null ) {
-					channel.pipeline().writeAndFlush( mapPacket );
+					channel.pipeline().writeAndFlush( packet );
 				}
 			}
 		}
 	}
 
 	private Object onPacketInterceptOut( Player viewer, Object packet ) {
-		if ( packet instanceof PacketPlayOutMinimap ) {
-			return ( ( PacketPlayOutMinimap ) packet ).packet;
-		} else if ( packet instanceof PacketPlayOutMap ) {
-			if ( packet.getClass().equals( PacketPlayOutMap.class ) ) {
-				try {
-					int id = MAP_FIELDS[ 0 ].getInt( packet );
-					if ( maps.contains( id ) ) {
-						return null;
-					}
-				} catch ( IllegalArgumentException | IllegalAccessException e ) {
-					e.printStackTrace();
+		if ( packet instanceof PacketPlayOutMap && !whitelisted.contains( packet ) ) {
+			try {
+				int id = MAP_FIELDS[ 0 ].getInt( packet );
+				if ( maps.contains( id ) ) {
+					return null;
 				}
+			} catch ( IllegalArgumentException | IllegalAccessException e ) {
+				e.printStackTrace();
 			}
-		} else if ( packet instanceof PacketPlayInSettings ) {
-			PacketPlayInSettings settings = ( PacketPlayInSettings ) packet;
-			Cartographer.getInstance().getPlayerManager().setLocale( viewer.getUniqueId(), settings.a() );
 		}
 		return packet;
 	}
@@ -301,14 +297,6 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public GeneralUtil getUtil() {
 		return util;
-	}
-	
-	private class PacketPlayOutMinimap extends PacketPlayOutMap {
-		protected final PacketPlayOutMap packet;
-		
-		protected PacketPlayOutMinimap( PacketPlayOutMap packet ) {
-			this.packet = packet;
-		}
 	}
 	
 	private class PacketInterceptor extends ChannelDuplexHandler {

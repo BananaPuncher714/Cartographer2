@@ -32,6 +32,7 @@ public class LocaleManager {
 	private Cartographer plugin;
 	private File dataFolder;
 	private String defaultLocale = "default";
+	private Locale internal;
 	private Map< String, Locale > locales = new HashMap< String, Locale >();
 	
 	protected CartographerLogger logger = new CartographerLogger( "LocaleManager" );
@@ -40,6 +41,8 @@ public class LocaleManager {
 		this.plugin = plugin;
 		this.dataFolder = dataFolder;
 		dataFolder.mkdirs();
+		
+		internal = load( plugin.getResource( INTERNAL_DEFAULT_LOCALE_LOCATION ) );
 	}
 
 	public String getDefaultLocale() {
@@ -62,10 +65,17 @@ public class LocaleManager {
 	public String translateDefault( CommandSender sender, String key, Object... params ) {
 		Locale locale = getLocale( defaultLocale );
 		if ( locale == null ) {
-			throw new IllegalArgumentException( translateDefault( Bukkit.getConsoleSender(), LocaleConstants.LOCALE_LOCALE_INVALID, defaultLocale ) );
+			logger.severe( internal.get( Bukkit.getConsoleSender(), LocaleConstants.LOCALE_LOCALE_INVALID, defaultLocale ) );
+			locale = internal;
 		}
 		
-		return plugin.getDependencyManager().translateString( sender, locale.get( sender, key, params ) );
+		String message = plugin.getDependencyManager().translateString( sender, locale.get( sender, key, params ) );
+		
+		if ( message == null ) {
+			message = plugin.getDependencyManager().translateString( sender, internal.get( sender, key, params ) );
+		}
+		
+		return message;
 	}
 	
 	public String translate( String code, CommandSender sender, String key, Object... params ) {

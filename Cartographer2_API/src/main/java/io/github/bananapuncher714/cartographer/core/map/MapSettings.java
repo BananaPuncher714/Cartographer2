@@ -38,6 +38,8 @@ public class MapSettings {
 	protected boolean ditherBackground = false;
 	protected boolean ditherDisabled = false;
 	
+	protected boolean reloadChunks = true;
+	
 	// Default palette
 	protected MinimapPalette palette;
 	
@@ -110,6 +112,14 @@ public class MapSettings {
 
 	public void setDitherBlacklisted( boolean ditherBlacklisted ) {
 		this.ditherDisabled = ditherBlacklisted;
+	}
+	
+	public boolean isReloadChunks() {
+		return reloadChunks;
+	}
+	
+	public void setReloadChunks( boolean reload ) {
+		this.reloadChunks = reload;
 	}
 
 	public MinimapPalette getPalette() {

@@ -135,13 +135,23 @@ public class MapDataCache {
 			return;
 		}
 
+		// Now, check if we can render the location or the one south of it
+		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
+		
+		// Check if we want to reload chunks that are already present
+		// If not, then it means we want to rely only on map updates
+		if ( !setting.isReloadChunks() ) {
+			// Is this chunk snapshot really necessary?
+			if ( data.containsKey( location ) && data.containsKey( south ) ) {
+				return;
+			}
+		}
+		
 		// Ignore the visible player range for now
 		lock.lock();
 		chunks.put( location, location.getChunk().getChunkSnapshot() );
 		lock.unlock();
 
-		// Now, check if we can render the location or the one south of it
-		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		process( location, true );
 		process( south, true );
 	}
@@ -351,14 +361,16 @@ public class MapDataCache {
 						if ( queue != null ) {
 							// We have a file queue that we can try to load from
 							attemptToLoad = true;
-							queue.load( location );
+							if ( queue.load( location ) ) {
+								// Only include this if we've successfully queued a load
+								scanned.add( location );
+							}
 						} else {
 							requestLoadFor( chunkLocation, false );
 						}
 					}
 				}
 			}
-			scanned.add( location );
 		} else {
 			for ( int x = 0; x < 16; x++ ) {
 				for ( int z = 0; z < 16; z++ ) {

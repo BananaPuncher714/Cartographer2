@@ -65,7 +65,8 @@ public class BigChunkQueue {
 	 * @param coord
 	 * The {@link BigChunkLocation} to load, cannot be null.
 	 */
-	public void load( BigChunkLocation coord ) {
+	public boolean load( BigChunkLocation coord ) {
+		return false;
 	}
 	
 	/**

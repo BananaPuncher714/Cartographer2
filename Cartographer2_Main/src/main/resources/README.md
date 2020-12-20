@@ -126,4 +126,5 @@ Additional settings may be added by modules.
 - `Tyeodor` - Translator(de_de)
 - `NotAShelf` - Translator(tr_tr)
 - `Pymad` - Translator(fr_fr)
+- `Bownser` - Translator(es_es)
 - `REjoin` - Supporter
