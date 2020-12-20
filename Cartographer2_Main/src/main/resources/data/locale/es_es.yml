@@ -14,7 +14,7 @@
 # If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
 # Translated by: Bownser
 name: "Español (España)"
-language: "Spanish"
+language: "Spain Spanish"
 location: "Spain"
 locale-code: "es_es"
 messages:
@@ -41,8 +41,8 @@ messages:
         overlay-missing: "¡La imagen a superponer no existe!"
         background-found: "¡Fondo detectado!"
         background-missing: "¡La imagen de fondo no existe!"
-        missing-map-found: "¡La imagen del mapa 'perdido' ha sido encontrada!"
-        missing-map-missing: "¡No existe una imagen para el mapa 'perdido'!"
+        missing-map-found: "¡La imagen del mapa sin descubrir ha sido encontrada!"
+        missing-map-missing: "¡No existe una imagen para el mapa sin descubrir!"
         disabled-map-found: "¡La imagen para el mapa desactivado ha sido encontrada!"
         disabled-map-missing: "¡La imagen para el mapa desactivado no se puedo hallar!"
       enabling-modules: "Activando módulos..."
@@ -112,21 +112,21 @@ messages:
           success: "§6Todos los módulos han sido recargados exitosamente!"
         enable:
           usage: "§cUso: /cartographer module enable <module>"
-          success: "§6Módulo '§e%s§6' activado!"
+          success: "§6¡Módulo '§e%s§6' activado!"
           already-enabled: "§c¡El módulo Module '%s' ya esta activado!"
           error-loading: "§cNo ha sido posible activar el módulo '%s', Comprueba el log del servidor para mas detalles. (¿Faltan dependencias?)"
         disable:
           usage: "§cUso: /cartographer module disable <module>"
           already-disabled: "§c¡El módulo '%s' ya esta desactivado!"
-          success: "§6Módulo desactivado '§e%s§6'!"
+          success: "§6¡Módulo desactivado '§e%s§6'!"
         load:
           usage: "§cUso: /cartographer module load <file>"
-          success: "§6Módulo cargado y activado '§e%s§6'!"
+          success: "§6¡Módulo cargado y activado '§e%s§6'!"
           error-loading: "§cNo es posible cargar el archivo '%s', Comprueba el log del servidor para mas detalles."
           error-enabling: "§cNo es posible activar el módulo '%s', Comprueba el log del servidor para mas detalles. (¿Faltan dependencias?)"
         unload:
           usage: "§cUso: /cartographer module unload <module>"
-          success: "§6Módulo descargado '§e%s§6'!"
+          success: "§6¡Módulo descargado '§e%s§6'!"
           error-unloading: "§6¡No se ha podido descargar el módulo '§e%s§6'! ¡No estaba cargado por Cartographer2!"
         help:
           usage: "§cUso: /cartographer module help"
@@ -157,16 +157,16 @@ messages:
       settings:
         set:
           console-usage: "§cUso: /cartographer settings set <player> <setting> <value>"
-          success: "§aDetermina el valor de '%s' para §d%s§a."
+          success: "§aHas determinado que el valor de '%s' sea §d%s§a."
         get:
           console-usage: "§cUso: /cartographer settings get <player> <setting>"
           success: "§a'%s' esta determinado como §d%s§a."
         setother:
           usage: "§cUso: /cartographer settings setother <player> <setting> <value>"
-          success: "§aDetermina '%s' a §d%s§a para §d%s§a."
+          success: "§aHas determinado el '%s' de §d%s§a en §d%s§a."
         getother:
           usage: "§cUso: /cartographer settings getother <player> <setting>"
-          success: "§d%s§a tiene '%s' determinado como §d%s§a."
+          success: "§d%s§a tiene el parámetro '%s' determinado como §d%s§a."
         help:
           usage: "§cUso: /cartographer settings help"
           help-0: "§b=== Comandos de configuración Cartographer ==="
