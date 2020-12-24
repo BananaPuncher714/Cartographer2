@@ -130,4 +130,5 @@ Additional settings may be added by modules.
 - `Domakingo` - Translator(it_it)
 - `Gokuzzo` - Translator(pl_pl)
 - `EnigmaKickz` - Translator(nl_nl)
+- `Tarazil` - Translator(hu_hu)
 - `REjoin` - Supporter

@@ -25,4 +25,5 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `Domakingo` - Translator(it_it)
 - `Gokuzzo` - Translator(pl_pl)
 - `EnigmaKickz` - Translator(nl_nl)
+- `Tarazil` - Translator(hu_hu)
 - `REjoin` - Supporter

@@ -1,6 +1,5 @@
 ## Lands Module for Cartographer 2
 ## 
-## It's quite obfuscated, and the API doesn't provide too much to work with
 ## Hopefully this is good enough
 
 # Determine the icons for each player
@@ -43,6 +42,7 @@ icons:
     range: 100
     default-visibility: PARTIAL
     showname: true
+    # The name supports placeholder API, and %%__name__%% will get replaced with the land's name
     name: "%%__name__%%'s Spawn"
 
 # The color of various locations on the map

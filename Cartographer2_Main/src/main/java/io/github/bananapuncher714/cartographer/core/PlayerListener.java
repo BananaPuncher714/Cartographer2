@@ -68,10 +68,19 @@ public class PlayerListener implements Listener {
 		
 		ItemStack item = event.getItem();
 		
-		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() && plugin.getMapManager().isMinimapItem( item ) ) {
+		if ( item != null && item.getType() == plugin.getHandler().getUtil().getMapMaterial() ) {
 			MapView view = plugin.getHandler().getUtil().getMapViewFrom( item );
-			plugin.getMapManager().update( item );
 			CartographerRenderer renderer = plugin.getMapManager().getRendererFrom( view );
+			if ( plugin.getMapManager().isMinimapItem( item ) ) {
+				plugin.getMapManager().update( item );
+			} else if ( renderer != null ) {
+				// Contains a renderer, but is not a minimap item
+				item = plugin.getMapManager().update( item, renderer.getMinimap() );
+				player.getEquipment().setItemInHand( item );
+			} else {
+				// Is not already a minimap item, nor does it have any 
+				return;
+			}
 			
 			MapMenu menu = renderer.getMenu( player.getUniqueId() );
 			

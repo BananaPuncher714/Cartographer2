@@ -1,0 +1,231 @@
+# Alap locale fájl
+# Minden nyelvi fájlnak szüksége van egy kódra pl.: hu_hu.
+# A név, nyelv és hely opcionálisak, de ajánlottak.
+# További információért: https://minecraft.gamepedia.com/Language#Available_languages
+# A többi, az általános Java formázást használja.
+# Ha üzenetet szeretnél hagyni, használd a megjegyzést inkább, ne az egysoros üzenetet.
+# Példa:
+# random-message-list:
+# - "Üzenet 1"
+# - "Üzenet 2"
+# - "Üzenet 3"
+# A fájlok támogatják a placeholdereket is. ha a játékosnak szeretnél küldeni üzenetet.
+# Színes üzenethez használd a (§) szimbólumot.
+# Ha ez nem működik, használd a \u00a7 kódot helyette.
+# Translated by: Tarazil
+name: "Magyar"
+language: "Hungarian"
+location: "Hungary"
+locale-code: "hu_hu"
+messages:
+  locale:
+    loaded-internal-locale: "Nyelv betöltése sikeres (%s)"
+    loaded-locale: "Betöltött nyelv %s(%s) , mint %s"
+    default-locale-changed: "Alapértelmezett nyelv beállítva %s"
+    error-loading-file: "Fájl betöltése sikertelen '%s'"
+    invalid-locale: "'%s' nem valós fájl!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "'%s' sikeresen felvéve a tiltólistára"
+        unknown-inventory-type: "Nincs ilyen leltár '%s'"
+      palette:
+        creating-vanilla-palette: "Gyári paletta generálása..."
+        vanilla-palette-missing: "Gyári paletta nem létezik, mentés..."
+        found-materials: "%d materials mapped for vanilla"
+        loading-palettes: "Helyi fájlok betöltése..."
+        successfully-loaded-palette: "Paletta sikeresen betöltve '%s'!"
+        palette-folder-missing: "A paletta könyvtár nem található!"
+      image:
+        overlay-found: "Borító betöltése!"
+        overlay-missing: "A borítókép nem létezik!"
+        background-found: "A háttér érzékelve!"
+        background-missing: "A háttér nem létezik!"
+        missing-map-found: "A hiányzó térkép észlelve!"
+        missing-map-missing: "A hirányzó térkép nem létezik!"
+        disabled-map-found: "Kikapcsolt térkép észlelve!"
+        disabled-map-missing: "A kikapcsolt térkép nem létezik!"
+      enabling-modules: "Modulok engedélyezése..."
+      loading-config: "Konfiguráció betöltése..."
+      loading-images: "Képek betöltése..."
+      loading-palettes: "Paletták betöltése..."
+      loading-data: "Adatok és térkép betöltése..."
+    disable:
+      disabling-modules: "Modulok kikapcsolása..."
+      saving-map-data-start: "Térkép mentése. Ez eltarthat egy ideig..."
+      saving-map-data-finish: "Térkép mentése sikeres!"
+      saving-player-data-start: "Játékos adatok mentése..."
+      saving-player-data-finish: "Játékos adatok mentve!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cHasználat: /cartographer reload <térkép>"
+          reloaded-plugin: "§bCartographer2 beállítások újratöltve"
+          reloaded-minimap: "§bTérkép újratöltve '§e%s§b'"
+        list:
+          usage: "§cHasználat: /cartographer list"
+          no-minimaps: "§bJelenleg nincs betöltött térkép!"
+          list: "§bCartographer2 térképek (%d): %s"
+        get:
+          usage: "§cHasználat: /cartographer get <térkép> <játékos> [hely]"
+          success-self: "Magadnak adtál egy térképet(%s)"
+          success-other: "%s játékosnak adtál egy térképet (%s)"
+        create:
+          usage: "§Használat: /cartographer create <azonosító>"
+          success: "§bSikeresen generáltál egy térképet az azonosítóval '§e%s§b'"
+        delete:
+          usage: "§cHasználat: /cartographer delete <azonosító>"
+          success: "§bTérkép törölve '§e%s§b'"
+        load:
+          usage: "§cHasználat: /cartographer load <azonosító>"
+          success: "§bTérkép betöltése '§e%s§b'"
+        unload:
+          usage: "§cHasználat: /cartographer unload <azonosító>"
+          success: "§bTérkép kikapcsolása '§e%s§b'"
+        help:
+          usage: "§cHasználat: /cartographer help"
+          help-0: "§b=== Cartographer Parancsok ==="
+          help-1: "§e/cartographer reload [térkép]§6 - Cartographer2, vagy egy térkép újratöltése"
+          help-2: "§e/cartographer list§6 - Itt láthatod térképeid"
+          help-3: "§e/cartographer get <térkép> [játékos] [hely]§6 - Szerezz, vagy adj más játékosnak térképet"
+          help-4: "§e/cartographer create <térkép>§6 - Új térkép készítése"
+          help-5: "§e/cartographer delete <térkép>§6 - Térkép törlése"
+          help-6: "§e/cartographer load <térkép>§6 - Térkép betöltése"
+          help-7: "§e/cartographer unload <térkép>§6 - Térkép kikapcsolása"
+          help-8: "§e/cartographer help§6 - Parancsok mutatása"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Jelenleg nincsenek modulok betöltve!"
+          list: "§6Cartographer2 modulok (%d): %s" 
+        reload:
+          success: "§6Minden modul újratöltve!"
+        enable:
+          usage: "§cHasználat: /cartographer module enable <modul>"
+          success: "§6Modul bekapcsolva '§e%s§6'!"
+          already-enabled: "§c'%s' modul már be van kapcsolva!"
+          error-loading: "§cHiba '%s' betöltése közben, nézd meg a naplót a hibákért. (Hiányzó elemek?)"
+        disable:
+          usage: "§cHasználat: /cartographer module disable <module>"
+          already-disabled: "§c'%s' már ki van kapcsolva!"
+          success: "§6Kikapcsolt modul '§e%s§6'!"
+        load:
+          usage: "§cHasználat: /cartographer module load <fájl>"
+          success: "§6Sikeresen betöltve és aktiválva '§e%s§6'!"
+          error-loading: "§cNem sikerült a '%s' fájlt betölteni, nézd meg a naplót a hibákért."
+          error-enabling: "§cNem sikerült a '%s' modult betölteni, nézd meg a naplót a hibákért. (Hiányzó elemek?)"
+        unload:
+          usage: "§cHasználat: /cartographer module unload <modul>"
+          success: "§6Modul kikapcsolva '§e%s§6'!"
+          error-unloading: "§6Nem sikerült a '§e%s§6' modult kikapcsolni! Cartographer2 nem találta betöltve!"
+        help:
+          usage: "§cUsage: /cartographer module help"
+          help-0: "§b=== Cartographer Modul Parancsok ==="
+          help-1: "§e/cartographer module list§6 - Megmutatja az össze betöltött modult"
+          help-2: "§e/cartographer module reload§6 - Minden modul újratöltése"
+          help-3: "§e/cartographer module enable <modul>§6 - Modul bekapcsolása"
+          help-4: "§e/cartographer module disable <modul>§6 - Modul kikapcsolása"
+          help-5: "§e/cartographer module load <modul>§6 - Modul betöltése"
+          help-6: "§e/cartographer module unload <modul>§6 - modul deaktiválása"
+          help-7: "§e/cartographer module help§6 - Parancsok mutatása"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cEz a fájl már be van töltve, vagy nem létezik!"
+        module-already-enabled-or-not-real: "§cEz a modul már be vna töltve, vagy nem létezik!"
+        module-already-disabled-or-not-real: "§cEz a modul már ki van kapcsolva, vagy nem létezik!"
+        module-not-real: "§cEz a modul nem létezik!"
+      settings:
+        set:
+          console-usage: "§cHasználat: /cartographer settings set <játékos> <beállítás> <érték>"
+          success: "§a'%s' sikeresen beállítva §d%s§a."
+        get:
+          console-usage: "§cHasználat: /cartographer settings get <játékos> <beállítás>"
+          success: "§a'%s' sikeresen beállítva §d%s§a."
+        setother:
+          usage: "§cHasználat: /cartographer settings setother <játékos> <beállítás> <érték>"
+          success: "§a'%s' sikeresen beállítva §d%s§a a játékosnak §d%s§a."
+        getother:
+          usage: "§cHasználat: /cartographer settings getother <játékos> <beállítás>"
+          success: "§d%s§a sikersen beállította '%s' az értékre: §d%s§a."
+        help:
+          usage: "§cHasználat: /cartographer settings help"
+          help-0: "§b=== Cartographer Beállítási Parancsok ==="
+          help-1: "§e/cartographer settings set <telek> <érték>§6 - Beállít egy telket"
+          help-2: "§e/cartographer settings get <telek>§6 - Értéket állít be a teleknek"
+          help-3: "§e/cartographer settings setother <játékos> <telek> <érték>§6 - Beállítja egy játékos telkét"
+          help-4: "§e/cartographer settings getother <játékos> <telek>§6 - Megmutatja egy játékos telkének értékét"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cRossz érték! (%s)"
+        must-provide-values: "§cMeg kell adnod egy értéket! (%s)"
+        not-implemented: "§c'%s' még nem került be! Kérlek értekezz a fejlesztővel!"
+      player-not-found: "§cA játékos offline!"
+      minimap-already-exists: "§cLétezik térkép ezzel az azonosítóval!"
+      invalid-minimap: "§cHibás térkép!"
+      invalid-slot: "§cHibás hely! (0-40)"
+      invalid-argument: "§cHibás változó!"
+      invalid-setting: "§cHibás beállítás!"
+      must-provide-minimap: "§cAdj meg egy térképet!"
+      must-provide-player: "§cAdj meg egy játékost!"
+      must-provide-argument: "§cAdj meg egy változót!"
+      must-provide-setting: "§cAdj meg egy beállítást!"
+    manager:
+      minimap:
+        loading-minimap: "Térkép betöltése '%s'"
+        unloading-minimap: "Térkép deaktiválása '%s'"
+        deleting-minimap: "Térkép törlése '%s'"
+      module:
+        reloading-modules-start: "Modulok újratöltése..."
+        reloading-modules-finish: "Modulok újratöltve"
+        loading-module: "%s v%s betöltése %s"
+        unloading-module: "Deaktiválás %s"
+        enabling-module: "%s v%s bekapcsolás %s"
+        disabling-module: "%s v%s kikapcsolás %s"
+        missing-dependencies: "Sikertelen betöltés %s egy hiányzó szükséglet miatt: %s"
+    minimap:
+      default-rotation: "Általános forgás beállítva %b"
+      auto-update: "Automatikus frissítés beállítva %b"
+      circular-zoom: "Nagyítás beállítva %b"
+      render-out-of-border: "Render out of border set to %b"
+      default-zoom: "Általános nagyítás beállítva %f"
+      allowed-zooms: "Engedélyezett nagyítás: %s"
+      whitelisted-worlds: "Engedélyezett világok: %s"
+      blacklisted-worlds: "Letiltott világok: %s"
+      loaded-overlay: "Borítókép betöltve '%s'"
+      loaded-background: "Háttér betöltve '%s'"
+      loaded-disabled: "Kikapcsolt kép betöltve '%s'"
+    unsupported-version: "Ez a verzió(%s) jelenleg nem támogatott!"
+    disabling-plugin: "Plugin kikapcsolása..."
