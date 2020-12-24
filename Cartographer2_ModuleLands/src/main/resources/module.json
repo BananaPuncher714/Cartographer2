@@ -1,0 +1,9 @@
+{
+    "name": "Lands",
+	"main": "io.github.bananapuncher714.cartographer.module.lands.LandsModule",
+	"description": "Adds Cartographer2 integration with Lands",
+	"version": "1.0.0",
+	"author": "BananaPuncher714",
+	"website": "aaaaahhhhhhh.com",
+	"depend": [ "Lands" ]
+}

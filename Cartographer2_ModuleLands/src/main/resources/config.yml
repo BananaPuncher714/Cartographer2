@@ -1,0 +1,57 @@
+## Lands Module for Cartographer 2
+## 
+## It's quite obfuscated, and the API doesn't provide too much to work with
+## Hopefully this is good enough
+
+# Determine the icons for each player
+# The default visibility can be either FULL or PARTIAL
+# FULL means the minimap will not hide the icon even if the location isn't visible on the minimap
+icons:
+  # The icon for the owner of the land the player is standing in
+  owner:
+    enabled: true
+    icon: RED_MARKER BLUE_POINTER GREEN_POINTER
+    range: 100
+    default-visibility: PARTIAL
+    show-name: true
+  # The icon for the trusted players of the land that the player is standing in
+  # Only appears if the player is a trusted player of that land
+  member:
+    enabled: true
+    icon: BLUE_POINTER
+    range: 30
+    default-visibility: PARTIAL
+    show-name: true
+  # The icon for members that are trusted on any lands the player owns
+  trusted:
+    enabled: true
+    icon: GREEN_POINTER
+    range: 50
+    default-visibility: PARTIAL
+    show-name: true
+  # The icon for players by default
+  default:
+    enabled: true
+    icon: WHITE_POINTER
+    range: 20
+    default-visibility: PARTIAL
+    show-name: true
+  # The spawn icon for any lands that the player is part of
+  spawn:
+    enabled: true
+    icon: TEMPLE
+    range: 100
+    default-visibility: PARTIAL
+    showname: true
+    name: "%%__name__%%'s Spawn"
+
+# The color of various locations on the map
+color:
+  # The color of the outline for lands
+  land:
+    # The color that the owner sees
+    owner: "#00FFFF"
+    # The color that trusted members see
+    trusted: "#00FF00"
+    # The color that untrusted members see
+    untrusted: "#FFFF00"

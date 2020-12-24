@@ -1,0 +1,231 @@
+# Standaard lokaal bestand.
+# Alle lokale bestanden hebben een lokale-code nodig. Het zou geen open ruimtes moeten hebben.
+# De naam, Taal, en lokatie zijn optionee;, maar aangeraden.
+# Informatie is verkregen van https://minecraft.gamepedia.com/Language#Available_languages.
+# De berichten zelf volgen de normale Java-tekenreeksopmaak.
+# Als u willekeurige berichten wilt, maar een opsommingslijst in plaats van een enkele opsomming.
+# Bijvoorbeeld:
+# Willekeurige-berichten-lijst:
+# - "willekeurig bericht 1"
+# - "willekeurig bericht 2"
+# - "willekeurig bericht 3"
+# Deze lokale bestanden ondersteunen ook tijdelijke aanduidingen, als het een bericht is vor een speler.
+# Om deze aangepaste gekleurde berichten te gebruiken, gebruik het sectiesybool (§) direct.
+# Als dat niet werkt, en er onbekende willekeurige karakters verschijnen, gebruik dan de code \u00a7.
+# Translated by: EnigmaKickz
+name: "Nederlands (NL)"
+language: "Dutch"
+location: "Nederlands"
+locale-code: "nl_nl"
+messages: 
+  locale: 
+    loaded-internal-locale: "Interne bestanden succesvol geladen(%s)"
+    loaded-locale: "Taal geladen %s(%s) als %s"
+    default-locale-changed: "Standaard lokaal gewijzigd naar %s"
+    error-loading-file: "Kan file '%s' niet laden"
+    invalid-locale: "'%s' is geen geldig lokaal bestand"
+  core:
+   enable:
+    config:
+      added-blacklisted-inventory: "Added '%s' als een blacklisted inventaris"
+      unknown-inventory-type: "Geen dergelijk inventaris type '%s'"
+    palette:
+      creating-vanilla-palette: "Maken vanilla palet..."
+      vanilla-palette-missing: "Vanilla pallet niet gevonden, opslaan..."
+      found-materials: "%d materialen in kaart gebracht voor vanilla"
+      loading-palettes: "Lokale pallet bestanden laden..."
+      successfully-loaded-palette: "Pallet '%s' succesvol geladen!"
+      palette-folder-missing: "Palette folder niet gevonden!"
+    image:
+      overlay-found: "Overlay gedetecteerd!"
+      overlay-missing: "Overlay afbeelding bestaat niet!"
+      background-found: "Achtergrond gedetecteerd!"
+      background-missing: "Achtergrond afbeelding bestaat niet!"
+      missing-map-found: "Ontbrekende map foto gedetecteerd!"
+      missing-map-missing: "Ontbrekende map foto bestaat niet!"
+      disabled-map-found: "Uitgeschakelde map foto gedetecteerd!"
+      disabled-map-missing: "Uitgeschakelde map foto bestaat niet!"
+    enabling-modules: "Modules inschakelen..."
+    loading-config: "Configuratie laden..."
+    loading-images: "Afbeeldingen laden..."
+    loading-palettes: "Palettes laden..."
+    loading-data: "Minimap en gegevens laden..."
+  disable:
+    disabling-modules: "Modules uitschakelen..."
+    saving-map-data-start: "Map gegevens opslaan. Dit kan even duren..."
+    saving-map-data-finish: "Map gegevens opslaan compleet!"
+    saving-player-data-start: "Speler gegevens opslaan..."
+    saving-player-data-finish: "Opslaan speler gegevens compleet!"
+  command: 
+    cartographer:
+      reload:
+        usage: "§cGebruik: /cartographer reload <map>"
+        reloaded-plugin: "§bHerladen Cartographer2 instelling"
+        reloaded-minimap: "§bHerladen minimap '§e%s§b'"
+      list:
+        usage: "§cGebruik: /cartographer list"
+        no-minimap: "§bEr zijn momenteel geen minimaps geladen!"
+        list: "§bCartographer2 Minimaps ($d): %s"
+      get:
+        usage: "§cGebruik: /cartographer get <map> <speler> [plek]"
+        success-self: "Gaf jezelf een minimap (%s)"
+        success-other: "Gaf jezelf een minimap ($s) voor %s"
+      create: 
+        usage: "§bGebruik: /cartographer create <id>"
+        success: "§bGemaakt en geregistreerd een nieuwe minimapmet id '§e%s§b'"
+      delete:
+        usage: "§cGebruik: /cartographer delete <id>"
+        success: "§bVerwijderd minimap '§e%s§b'"
+      load:
+        usage: "§cGebruik: /cartographer load <id>"
+        success: "§bGeladen minimap '§e%s§b'"
+      unload: 
+        usage: "§cGebruik: /cartographer unload <id>"
+        success: "§bUitgeladen minimap '§e%s§b'"
+      help:
+        usage: "§cGebruik: /cartographer help"
+        help-0: "§b=== Cartographer Opdrachten ==="
+        help-1: "§e/cartographer reload [map]§6 - Herlaad Cartographer2 of een minimap"
+        help-2: "§e/cartographer list§6 - bekijk alle geladen minimaps"
+        help-3: "§e/cartographer get <map> [speler] [plek]§6 - Krijg of geef een minimap"
+        help-4: "§e/cartographer create <map>§6 - Maak een nieuwe minimap"
+        help-5: "§e/cartographer delete <map>§6 - Verwijder een minimap"
+        help-6: "§e/cartographer load <map>§6 - Laad een minimap"
+        help-7: "§e/cartographer unload <map>§6 - Laad een minimap uit"
+        help-8: "§e/cartographer help§6 - Geef commando's weer"
+        help-9: ""
+        help-10: ""
+        help-11: ""
+        help-12: ""
+        help-13: ""
+        help-14: ""
+        help-15: ""
+        help-16: ""
+        help-17: ""
+        help-18: ""
+        help-19: ""
+      module:
+        list: 
+          no-modules: "§6Er zijn momenteel geen modules geladen!"
+          list: "§6Cartographer2 Modules (%d): %s"
+        reload:
+          success: "§6Herladen alle modules!"
+        enable: 
+          usage: "§cGebruik: /cartographer module enable <module>"
+          success: "§6Ingeschakeld module '§e%s§6'!"
+          already-enabled: "§cModule '%s' is reed al ingeschakeld!"
+          error-loading: "§6Onmogelijk om module '%s' te laden, bekijk de server logbestanden voor details. (ontbrekende afhankelijkheden?)"
+        disable:
+          usage: "§cGebruik: /cartographer module disable <bestand>"
+          already-disabled: "§cModule '%s'is reeds al uitgeschakeld!"
+          success: "§6Uitgeschakeld module '§e%s§6'!"
+        load:
+          usage: "§cGebruik: /cartographer module load <bestand>"
+          success: §"6Geladen en ingeschakeldmodule '§e%s§6'!"
+          error-loading: "§cOnmogelijk om bestand '%s' te laden, bekijk de server logbestanden voor details."
+          error-enabling: "§cOnmogelijk om module '%s'te laden, bekijk de server logbestanden voor details. (ontbrekende afhankelijkheden?)"
+        unload: 
+          usage: "§cGebruik: /cartographer module unload <module>"
+          success: "§6Uitgeladen module '§e%s§6'!"
+          error-unloading: "§6Kon module '§e%s§6' niet uitladen! Was niet ingeladen door Cartographer2!"
+        help: 
+          usage: "§cGebruik: /cartographer module help"
+          help-0: "§b=== Cartographer Module Commando's ==="
+          help-1: "§e/cartographer module list§6 - bekijk alle geladen modules"
+          help-2: "§e/cartographer module reload§6 - Herlaad alle modules"
+          help-3: "§e/cartographer module enable <module>§6 - Schakel een module in"
+          help-4: "§e/cartographer module disable <module>§6 - Schakel een module uit"
+          help-5: "§e/cartographer module load <module>§6 - Laad een module"
+          help-6: "§e/cartographer module unload <module>§6 - Een module uitladen"
+          help-7: "§e/cartographer module help§6 - Toon de commando's " 
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cDit bestand is al ingeladen of bestaat niet!"
+        module-already-enabled-or-not-real: "§cDeze module is al ingeladen of bestaat niet!"
+        module-already-disabled-or-not-real: "§cDeze module is al uitgeladen of bestaat niet!"
+        module-not-real: "§cDeze module bestaat niet!"
+      settings:
+        set: 
+          console-usage: "§cGebruik: /cartographer settings set <speler> <instelling> <hoeveelheid>"
+          success: "§aZet '%s' naar §d%s§a."
+        get:
+          console-usage: "§cGebruik: /cartographer settings geef <speler> <instelling>"
+          success: "§a'%s' is gezet naar §d%s§a."
+        setother:
+          usage: "§cGebruik: /cartographer settings setother <speler> <instelling> <hoeveelheid>"
+          success: "§aZet '%s' naar §d%s§a voor §d%s§a."
+        getother: 
+          usage: "§cGebruik: /cartographer settings getother <speler> <instelling>"
+          success: "§d%s§a heeft '%s' gezet naar §d%s§a."
+        help: 
+          usage: "§cGebruik: /cartographer settings help"
+          help-0: "§b=== Cartographer Instellingen Commando's ==="
+          help-1: "§e/cartographer settings set <eigendom> <hoeveelheid>§6 - Stel een eigendom in"
+          help-2: "§e/cartographer settings get <eigendom>§6 - Krijg de hoeveelheid van een eigendom"
+          help-3: "§e/cartographer settings setother <speler> <eigendom> <hoeveelheid>§6 - zet het eigendom van een speler"
+          help-4: "§e/cartographer settings getother <speler> <eigendom>§6 - Krijg de hoeveelheid van een eigendom van een speler"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cOngeldige hoeveelheid! (%s)"
+        must-provide-values: "§cJe moet een hoeveelheid opgeven! (%s)"
+        not-implemented: "§c'%s' is nog niet geïmplementeerd! Neem contact op met de developers voor assistentie!"
+      player-not-found: "§cDie speler is niet online!"
+      minimap-already-exists: "§cA minimap met die id bestaat al!"
+      invalid-minimap: "§cOngeldige minimap!"
+      invalid-slot: "§cOngeldigplek! (0-40)"
+      invalid-argument: "§cOngeldige uitspraak!"
+      invalid-setting: "§cOngeldige instelling!"
+      must-provide-minimap: "§cJe moet een geldige minimap invoeren!"
+      must-provide-player: "§cJe moet een geldige speler invoeren!"
+      must-provide-argument: "§cJe moet een geldige uitspraak invoeren!"
+      must-provide-setting: "§cJe moet een instelling invoeren!"
+    manager: 
+      minimap: 
+        loading-minimap: "Minimap '%s' laden"
+        unloading-minimap: "Minimap '%s' uitladen"
+        deleting-minimap: "Minimap '%s' verwijderen"
+      module: 
+        reloading-modules-start: "Module herladen..."
+        reloading-modules-finish: "Module herladen compleet"
+        loading-module: "Laden %s v%s door %s "
+        unloading-module: "Uitladen %s "
+        enabling-module: "Inschakelen %s v%s door %s "
+        disabling-module: "Uitschakelen %s v%s door %s "
+        missing-dependencies: "Onmogelijk om %s in the schakelen door ontbrekende verantwoordelijkheden: %s "
+    minimap: 
+      default-rotation: "Standaart rotatie gezet door %b"
+      auto-update: "Automatische update gezet door %b"
+      circular-zoom: "Circulaire inzoom gezet door %b"
+      render-out-of-border: "Laad buiten de grens gezet door %b"
+      default-zoom: "Standaart inzoom gezet door %b"
+      allowed-zooms: "Toegestane zoom in's gezet door %f"
+      whitelisted-worlds: "gewhiteliste werelden: %s"
+      blacklisted-worlds: "Geblackliste werelden: %s"
+      loaded-overlay: "Geladen overlay afbeelding '%s'"
+      loaded-background: "Geladen Achtergrond afbeelding '%s'"
+      loaded-disabled: "Geladen gedeactiveerde afbeelding '%s'"
+    unsupported-version: "Deze versie (%s) word momenteel niet ondersteund!"
+    disabling-plugin: "Plugin deactiveren..."

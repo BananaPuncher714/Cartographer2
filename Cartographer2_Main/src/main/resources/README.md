@@ -127,4 +127,7 @@ Additional settings may be added by modules.
 - `NotAShelf` - Translator(tr_tr)
 - `Pymad` - Translator(fr_fr)
 - `Bownser` - Translator(es_es)
+- `Domakingo` - Translator(it_it)
+- `Gokuzzo` - Translator(pl_pl)
+- `EnigmaKickz` - Translator(nl_nl)
 - `REjoin` - Supporter

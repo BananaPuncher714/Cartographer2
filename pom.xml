@@ -36,6 +36,7 @@
 		<module>cartographer2_moduleresidence</module>
 		<module>cartographer2_moduleguilds</module>
 		<module>cartographer2_moduleworldguard_master</module>
+		<module>cartographer2_modulelands</module>
 	</modules>
 
 	<build>

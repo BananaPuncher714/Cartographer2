@@ -111,9 +111,9 @@ public class NMSHandler implements PacketHandler {
 		PlayerConnection conn = ( ( CraftPlayer ) player ).getHandle().playerConnection;
 		NetworkManager manager = conn.networkManager;
 		Channel channel = manager.channel;
-		channels.put( player.getUniqueId(), channel );
 		
 		if ( channel != null ) {
+			channels.put( player.getUniqueId(), channel );
 			if ( channel.pipeline().get( handler_name ) != null ) {
 				channel.pipeline().remove( handler_name );
 			}
