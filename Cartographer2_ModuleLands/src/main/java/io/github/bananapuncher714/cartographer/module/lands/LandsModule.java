@@ -161,9 +161,12 @@ public class LandsModule extends Module implements Listener {
 						}
 						
 						for ( Entry< ChunkLocation, Set< BlockFace > > entry : locations.entrySet() ) {
-							ChunkBorderData chunkData = new ChunkBorderData( entry.getKey(), color );
-							chunkData.getFaces().addAll( entry.getValue() );
-							chunks.add( chunkData );
+							ChunkLocation chunkLoc = entry.getKey();
+							if ( chunkLoc.getWorld() == setting.getLocation().getWorld() ) {
+								ChunkBorderData chunkData = new ChunkBorderData( chunkLoc, color );
+								chunkData.getFaces().addAll( entry.getValue() );
+								chunks.add( chunkData );
+							}
 						}
 					}
 				}
