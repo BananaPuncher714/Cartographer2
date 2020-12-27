@@ -12,6 +12,7 @@
 # Itong mga local files ay supportado ang placeholders, kung merong mensahe para sa isang player.
 # Para gumamit ng pasadyang mensahe na may kulay, rektang gumamit ng section symbol(§)
 # Kung hindi gumana, at lumabas ang random character, saka lang gumamit ng code na pang kulay (\u00a7).
+# Translated by: Waren Gonzaga 
 name: "Filipino (PH)"
 language: "Tagalog Filipino"
 location: "Philippines"

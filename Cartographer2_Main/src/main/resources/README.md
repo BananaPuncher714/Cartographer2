@@ -131,4 +131,5 @@ Additional settings may be added by modules.
 - `Gokuzzo` - Translator(pl_pl)
 - `EnigmaKickz` - Translator(nl_nl)
 - `Tarazil` - Translator(hu_hu)
+- `Waren Gonzaga` - Translator(fil_ph)
 - `REjoin` - Supporter
