@@ -1,0 +1,230 @@
+# Default provided locale file
+# Lahat ng local files ay nangangailangan ng locale-code. Dapat wala itong anumang whitespaces.
+# Ang pangalan, lenggwahe, at lokasyon ay opsyonal, pero nirerekomenda.
+# Ang impormasyon ay kinuha mula https://minecraft.gamepedia.com/Language#Available_languages
+# Ang mga mensahe ay hango sa regular na Java string formatting.
+# Kung gusto mong gumawa ng sarili mong random na mensahe, gumawa ka ng string list sa halip na single string.
+# Halimbawa:
+# random-message-list:
+# - "Random na mensahe 1"
+# - "Random na mensahe 2"
+# - "Random na mensahe 3"
+# Itong mga local files ay supportado ang placeholders, kung merong mensahe para sa isang player.
+# Para gumamit ng pasadyang mensahe na may kulay, rektang gumamit ng section symbol(§)
+# Kung hindi gumana, at lumabas ang random character, saka lang gumamit ng code na pang kulay (\u00a7).
+name: "Filipino (PH)"
+language: "Tagalog Filipino"
+location: "Philippines"
+locale-code: "fil_ph"
+messages:
+  locale:
+    loaded-internal-locale: "Tagumpay na naikarga ang internal locale(%s)"
+    loaded-locale: "Naikargang language %s(%s) bilang %s"
+    default-locale-changed: "Default locale ay naging %s"
+    error-loading-file: "Hindi maikarga ang locale file '%s'"
+    invalid-locale: "'%s' hindi siya tamang locale!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Nailagay ang '%s' bilang pinagbabawal na imbentaryo"
+        unknown-inventory-type: "Walang ganyang uri ng imbentaryo '%s'"
+      palette:
+        creating-vanilla-palette: "Binubuo ang vanilla palette..."
+        vanilla-palette-missing: "Vanilla palette hindi natagpuan, nagse-save..."
+        found-materials: "%d materyales mapped para sa vanilla"
+        loading-palettes: "Naglo-load ang local palette files..."
+        successfully-loaded-palette: "Tagumpay na naikarga ang palette '%s'"
+        palette-folder-missing: "Palette folder ay hindi pa nadidiskubre!"
+      image:
+        overlay-found: "Overlay natukoy!"
+        overlay-missing: "Overlay image ay hindi nag-eexist!"
+        background-found: "Background natukoy!"
+        background-missing: "Background image ay hindi nag-eexist!"
+        missing-map-found: "Nawawalang map image natukoy!"
+        missing-map-missing: "Nawawalang map image ay hindi nag-eexist!"
+        disabled-map-found: "Naka tigil ang map image!"
+        disabled-map-missing: "Nakatigil na map image ay hindi nag-exist!"
+      enabling-modules: "Pinapagana na ang modules..."
+      loading-config: "Naglo-load ang config..."
+      loading-images: "Naglo-load ang imahe..."
+      loading-palettes: "Naglo-load ang palettes..."
+      loading-data: "Nagloload ang minimaps at data..."
+    disable:
+      disabling-modules: "Pinatitigil ang modules..."
+      saving-map-data-start: "Nagse-save ng map data. Maari itong tumagal..."
+      saving-map-data-finish: "Tapos na i-save ang data!"
+      saving-player-data-start: "Nagse-save ng player data..."
+      saving-player-data-finish: "Tapos na-save ang player data!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cUsage: /cartographer reload <map>"
+          reloaded-plugin: "§bNareload na ang mga setting ng Cartographer2"
+          reloaded-minimap: "§bNareload na ang minimap '§e%s§b'"
+        list:
+          usage: "§cUsage: /cartographer list"
+          no-minimaps: "§bWalang mga minimaps ang naload sa ngayon!"
+          list: "§bCartographer2 Minimaps (%d): %s"
+        get:
+          usage: "§cUsage: /cartographer get <map> <player> [slot]"
+          success-self: "Bigyan ang sarili ng minimap(%s)"
+          success-other: "Magbigay ng minimap(%s) kay %s"
+        create:
+          usage: "§cUsage: /cartographer create <id>"
+          success: "§bNakagawa at naparehistro ang bagong minimap na may id'§e%s§b'"
+        delete:
+          usage: "§cUsage: /cartographer delete <id>"
+          success: "§bNabura ang minimap '§e%s§b'"
+        load:
+          usage: "§cUsage: /cartographer load <id>"
+          success: "§bNai-load na ang minimap '§e%s§b'"
+        unload:
+          usage: "§cUsage: /cartographer unload <id>"
+          success: "§bNadiskarga ang minimap '§e%s§b'"
+        help:
+          usage: "§cUsage: /cartographer help"
+          help-0: "§b=== Cartographer Commands ==="
+          help-1: "§e/cartographer reload [map]§6 - Reload Cartographer2 or a minimap"
+          help-2: "§e/cartographer list§6 - View all loaded minimaps"
+          help-3: "§e/cartographer get <map> [player] [slot]§6 - Get or give a minimap"
+          help-4: "§e/cartographer create <map>§6 - Create a new minimap"
+          help-5: "§e/cartographer delete <map>§6 - Delete a minimap"
+          help-6: "§e/cartographer load <map>§6 - Load a minimap"
+          help-7: "§e/cartographer unload <map>§6 - Unload a minimap"
+          help-8: "§e/cartographer help§6 - Display the commands"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Walang modules na nakakarga sa ngayon!"
+          list: "§6Cartographer2 Modules (%d): %s"
+        reload:
+          success: "§6Naikarga na ulit lahat ng modules!"
+        enable:
+          usage: "§cUsage: /cartographer module enable <module>"
+          success: "§6Napaganang module '§e%s§6'!"
+          already-enabled: "§cModule '%s' ay napagana na!"
+          error-loading: "§cHindi pwedeng ma karga ang module '%s', Tignan ang server log para sa mga detalye. (Nawawalang dependencies?)"
+        disable:
+          usage: "§cUsage: /cartographer module disable <module>"
+          already-disabled: "§cModule '%s' ay nakatigil na!"
+          success: "§6Tumigil na ang module '§e%s§6'!"
+        load:
+          usage: "§cUsage: /cartographer module load <file>"
+          success: "§6Kargado at napagana na ang module '§e%s§6'!"
+          error-loading: "§cHindi pwedeng maikarga ang file '%s', Tignan ang server log para sa mga detalye."
+          error-enabling: "§cHindi pwedeng maikarga ang module '%s', Tignan ang server log para sa mga detalye. (Nawawalang dependencies?)"
+        unload:
+          usage: "§cUsage: /cartographer module unload <module>"
+          success: "§6Diskargang module '§e%s§6'!"
+          error-unloading: "§6Hindi pwedeng ma-diskarga ang module '§e%s§6'! Hindi siya kinarga ng Cartographer2!"
+        help:
+          usage: "§cUsage: /cartographer module help"
+          help-0: "§b=== Cartographer Module Commands ==="
+          help-1: "§e/cartographer module list§6 - View all loaded modules"
+          help-2: "§e/cartographer module reload§6 - Reload all modules"
+          help-3: "§e/cartographer module enable <module>§6 - Enable a module"
+          help-4: "§e/cartographer module disable <module>§6 - Disable a module"
+          help-5: "§e/cartographer module load <module>§6 - Load a module"
+          help-6: "§e/cartographer module unload <module>§6 - Unload a module"
+          help-7: "§e/cartographer module help§6 - Display the commands"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cAng file na ito ay nakakarga na o wala talagang ganito!"
+        module-already-enabled-or-not-real: "§cAng module na ito ay baka gumagana na o wala talagang ganito!"
+        module-already-disabled-or-not-real: "§cAng module na ito ay baka nakatigil o wala talagang ganito!"
+        module-not-real: "§cWalang ganitong module!"
+      settings:
+        set:
+          console-usage: "§cUsage: /cartographer settings set <player> <setting> <value>"
+          success: "§aSet '%s' to §d%s§a."
+        get:
+          console-usage: "§cUsage: /cartographer settings get <player> <setting>"
+          success: "§a'%s' is set to §d%s§a."
+        setother:
+          usage: "§cUsage: /cartographer settings setother <player> <setting> <value>"
+          success: "§aSet '%s' to §d%s§a for §d%s§a."
+        getother:
+          usage: "§cUsage: /cartographer settings getother <player> <setting>"
+          success: "§d%s§a has '%s' set to §d%s§a."
+        help:
+          usage: "§cUsage: /cartographer settings help"
+          help-0: "§b=== Cartographer Settings Commands ==="
+          help-1: "§e/cartographer settings set <property> <value>§6 - Set a property"
+          help-2: "§e/cartographer settings get <property>§6 - Get the value of a property"
+          help-3: "§e/cartographer settings setother <player> <property> <value>§6 - Set a property of a player"
+          help-4: "§e/cartographer settings getother <player> <property>§6 - Get the value of a property of a player"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cMaling halaga! (%s)"
+        must-provide-values: "§cDapat mag provide ka ng halaga! (%s)"
+        not-implemented: "§c'%s' hindi pa naiimplement! Pakisuyong kontakin ang mga developers para sa tulong!"
+      player-not-found: "§cAng player na yan ay hindi online!"
+      minimap-already-exists: "§cAng minimap na may ganyang id ay meron na!"
+      invalid-minimap: "§cMali ang minimap!"
+      invalid-slot: "§cHindi tama ang slot! (0-40)"
+      invalid-argument: "§cMali ang argumento!"
+      invalid-setting: "§cMali ang setting!"
+      must-provide-minimap: "§cDapat mag-provide ka ng minimap!"
+      must-provide-player: "§cDapat mag-provide ka ng player!"
+      must-provide-argument: "§cDapat mag-provide ka ng argunamento!"
+      must-provide-setting: "§cDapat mag-provide ka ng setting!"
+    manager:
+      minimap:
+        loading-minimap: "Kinakarga na ang minimap '%s'"
+        unloading-minimap: "Dinidiskarga na ang minimap '%s'"
+        deleting-minimap: "Binubura na ang minimap '%s'"
+      module:
+        reloading-modules-start: "Kinakarga ulit ang modules..."
+        reloading-modules-finish: "Naikarga na ang modules"
+        loading-module: "Kumakarga %s v%s ni %s"
+        unloading-module: "Nagdidiskarga %s"
+        enabling-module: "Pinagpagana %s v%s ni %s"
+        disabling-module: "Pinatitigil %s v%s ni %s"
+        missing-dependencies: "Hindi mapagana %s dahil may nawawalang dependencies: %s"
+    minimap:
+      default-rotation: "Default na pag-ikot ay naka-set sa %b"
+      auto-update: "Auto update ay naka-set sa %b"
+      circular-zoom: "Circular zoom ay naka-set sa %b"
+      render-out-of-border: "Render out of border ay naka-set sa %b"
+      default-zoom: "Default zoom ay naka-set sa %f"
+      allowed-zooms: "Pinapayangang zooms: %s"
+      whitelisted-worlds: "Whitelisted na mga mundo: %s"
+      blacklisted-worlds: "Blacklisted na mga mundo: %s"
+      loaded-overlay: "Naka-karga na overlay na imahe '%s'"
+      loaded-background: "Naka-karga na background imahe '%s'"
+      loaded-disabled: "Naka-karga na nakatigil na imahe '%s'"
+    unsupported-version: "Itong bersyon(%s) ang kasalukuyang hindi supportado!"
+    disabling-plugin: "Pinatitigil na ang plugin..."
