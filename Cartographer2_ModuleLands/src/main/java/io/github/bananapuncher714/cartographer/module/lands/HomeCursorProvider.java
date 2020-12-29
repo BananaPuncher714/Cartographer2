@@ -16,6 +16,8 @@ import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.module.lands.visibility.CursorVisibility;
 import io.github.bananapuncher714.cartographer.module.lands.visibility.LandVisibility;
 import me.angeschossen.lands.api.land.Land;
+import me.angeschossen.lands.api.player.TrustedPlayer;
+import me.angeschossen.lands.api.role.enums.RoleSetting;
 
 public class HomeCursorProvider implements WorldCursorProvider {
 	protected LandsModule module;
@@ -42,8 +44,9 @@ public class HomeCursorProvider implements WorldCursorProvider {
 				UUID owner = land.getOwnerUID();
 				// Check if the player owns the land or can see lands that they're trusted in
 				if ( uuid.equals( owner ) || ( landVis != LandVisibility.OWN && spawnVis == LandVisibility.TRUSTED ) ) {
-					// Check if the player is the owner or a trusted player
-					if ( uuid.equals( owner ) || land.getTrustedPlayer( uuid ).isTrustedWholeLand() ) {
+					// Check if the player is the owner or a trusted player or if they have the spawn teleport role
+					TrustedPlayer trusted = land.getTrustedPlayer( uuid );
+					if ( uuid.equals( owner ) || trusted.isTrustedWholeLand() || land.getDefaultArea().canSetting( uuid, RoleSetting.SPAWN_TELEPORT ) ) {
 						Location loc = land.getSpawn();
 						if ( loc != null ) {
 							loc = loc.clone();

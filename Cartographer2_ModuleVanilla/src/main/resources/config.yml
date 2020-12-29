@@ -1,3 +1,6 @@
+## VanillaPlus config
+
+# Blacklisted worlds. Used as a whitelist if blacklist is false
 blacklist: true
 blacklisted-worlds: []
 
@@ -5,7 +8,7 @@ blacklisted-worlds: []
 # Not every icon may be available in your version
 #
 # Visibility options are FULL, PARTIAL, and NONE
-
+#
 # Cursors for basic icons
 cursors:
   spawn:
@@ -20,6 +23,9 @@ cursors:
     default-visibility: FULL
     show-name: true
     display-name: "§cDeath"
+    # The minimum range that is required for the death point to be visible
+    # For example, a min range of 100 means that the player can only see if on the map if they're 100 or more blocks away
+    min-range: 0
 
 # Options for displaying other players
 players:
@@ -34,57 +40,414 @@ players:
 # Required permissions are vanillaplus.cursor.entity.<entitytype>
 # Use "MATERIAL:DURABILITY" format for the items, if durability is required.
 entity:
-  SKELETON:
+  BLAZE:
     icon: RED_MARKER RED_POINTER BLUE_POINTER
-    range: 20
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: BONE
-  ZOMBIE:
-    icon: RED_MARKER RED_POINTER BLUE_POINTER
-    range: 20
-    default-visibility: PARTIAL
-    show-name: true
-    item: ROTTEN_FLESH
+    item: AIR
   CREEPER:
     icon: RED_MARKER RED_POINTER BLUE_POINTER
-    range: 20
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: GUNPOWDER
+    item: AIR
+  DROWNED:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ELDER_GUARDIAN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ENDERMITE:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  EVOKER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  GHAST:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  GUARDIAN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  HOGLIN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  HUSK:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  MAGMA_CUBE:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PHANTOM:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PIGLIN_BRUTE:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PILLAGER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  RAVAGER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SHULKER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SILVERFISH:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SKELETON:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SLIME:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  STRAY:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  VEX:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  VINDICATOR:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  WITCH:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  WITHER_SKELETON:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ZOGLIN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ZOMBIE:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ZOMBIE_VILLAGER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  CAVE_SPIDER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ENDERMAN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PIGLIN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
   SPIDER:
     icon: RED_MARKER RED_POINTER BLUE_POINTER
-    range: 20
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: SPIDER_EYE
+    item: AIR
+  ZOMBIFIED_PIGLIN:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  GIANT:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  ILLUSIONER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+
+  ENDER_DRAGON:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  WITHER:
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+
   VILLAGER:
     icon: BLUE_POINTER
-    range: 20
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: EMERALD
-  PIG:
+    item: AIR
+  WANDERING_TRADER:
+    icon: BLUE_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+
+  BAT:
     icon: GREEN_POINTER
-    range: 30
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: PORKCHOP
-  SHEEP:
+    item: AIR
+  CAT:
     icon: GREEN_POINTER
-    range: 30
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: WOOL
-  COW:
-    icon: GREEN_POINTER
-    range: 30
-    default-visibility: PARTIAL
-    show-name: true
-    item: BEEF
+    item: AIR
   CHICKEN:
     icon: GREEN_POINTER
-    range: 30
+    range: 64
     default-visibility: PARTIAL
     show-name: true
-    item: FEATHER
+    item: AIR
+  COD:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  COW:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  DONKEY:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  FOX:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  HORSE:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  MUSHROOM_COW:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  MULE:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  OCELOT:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PARROT:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PIG:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  POLAR_BEAR:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  RABBIT:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SALMON:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SHEEP:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SKELETON_HORSE:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SNOWMAN:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  SQUID:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  STRIDER:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  TROPICAL_FISH:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  TURTLE:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  BEE:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  DOLPHIN:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  IRON_GOLEM:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  LLAMA:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PANDA:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  PUFFERFISH:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR
+  WOLF:
+    icon: GREEN_POINTER
+    range: 64
+    default-visibility: PARTIAL
+    show-name: true
+    item: AIR

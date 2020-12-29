@@ -23,7 +23,13 @@ public class CursorProviderDeathLocation implements ObjectProvider< NamedLocatio
 		
 		Location death = main.getDeathOf( player.getUniqueId() );
 		if ( death != null ) {
-			locations.add( new NamedLocation( "death", death.clone() ) );
+			int range = main.getDeathMinRange();
+			range *= range;
+
+			Location playerLoc = settings.getLocation();
+			if ( range == 0 || death.distanceSquared( playerLoc ) > range ) {
+				locations.add( new NamedLocation( "death", death.clone() ) );
+			}
 		}
 		
 		return locations;

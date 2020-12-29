@@ -1,14 +1,17 @@
 package io.github.bananapuncher714.cartographer.module.vanilla;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -62,6 +65,8 @@ public class VanillaPlus extends Module {
 	private boolean playerEnabled = true;
 	private boolean hasEntities = false;
 	
+	private int deathMinRange = 0;
+	
 	@Override
 	public void onEnable() {
 		registerListener( new VanillaListener( this ) );
@@ -76,6 +81,7 @@ public class VanillaPlus extends Module {
 		FileUtil.saveToFile( getResource( "config.yml" ), new File( getDataFolder() + "/config.yml" ), false );
 		
 		loadConfig();
+		loadData();
 		
 		registerSettings();
 		
@@ -128,10 +134,13 @@ public class VanillaPlus extends Module {
 		viewers.clear();
 		entityMaterials.clear();
 		defaultConverters.clear();
+		
+		saveData();
 	}
 	
 	private void loadConfig() {
 		FileConfiguration config = YamlConfiguration.loadConfiguration( new File( getDataFolder() + "/" + "config.yml" ) );
+
 		isBlacklist = config.getBoolean( "blacklist", true );
 		blacklistedWorlds.addAll( config.getStringList( "blacklisted-worlds" ) );
 		
@@ -146,6 +155,7 @@ public class VanillaPlus extends Module {
 				} else if ( key.equalsIgnoreCase( "death" ) ) {
 					provider = new CursorProviderDeathLocation( this );
 					deathLocEnabled = cursorSection.getBoolean( key + ".enabled" );
+					deathMinRange = cursorSection.getInt( key + ".min-range" );
 				}
 				
 				if ( provider != null ) {
@@ -188,7 +198,13 @@ public class VanillaPlus extends Module {
 			ConfigurationSection section = config.getConfigurationSection( "entity" );
 			for ( String key : section.getKeys( false ) ) {
 				hasEntities = true;
-				EntityType type = EntityType.valueOf( key.toUpperCase() );
+				EntityType type;
+				try {
+					type = EntityType.valueOf( key.toUpperCase() );
+				} catch ( IllegalArgumentException exception ) {
+					getLogger().warning( "Missing entity type '" + key + "'" );
+					continue;
+				}
 				String iconTypes = section.getString( key + ".icon" );
 				Type icon = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
 				double range = section.getDouble( key + ".range" );
@@ -214,6 +230,65 @@ public class VanillaPlus extends Module {
 				CursorProviderEntity provider = new CursorProviderEntity( type, range );
 				cursorProvider.addEntityProvider( provider );
 			}
+		}
+	}
+	
+	private void loadData() {
+		File dataFile = new File( getDataFolder() + "/" + "data.yml" );
+		
+		if ( dataFile.exists() ) {
+			FileConfiguration config = YamlConfiguration.loadConfiguration( dataFile );
+			
+			if ( config.contains( "deaths" ) ) {
+				ConfigurationSection deaths = config.getConfigurationSection( "deaths" );
+				for ( String key : deaths.getKeys( false ) ) {
+					UUID uuid = UUID.fromString( key );
+					String worldName = deaths.getString( key + ".world" );
+					World world = Bukkit.getWorld( worldName );
+					double x = deaths.getDouble( key + ".x" );
+					double y = deaths.getDouble( key + ".y" );
+					double z = deaths.getDouble( key + ".z" );
+					
+					if ( world != null ) {
+						this.deaths.put( uuid, new Location( world, x, y, z ) );
+					}
+				}
+			}
+		}
+	}
+	
+	private void saveData() {
+		File dataFile = new File( getDataFolder() + "/" + "data.yml" );
+		
+		if ( !dataFile.exists() ) {
+			try {
+				dataFile.createNewFile();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+		}
+		
+		FileConfiguration config = YamlConfiguration.loadConfiguration( dataFile );
+		config.set( "deaths", null );
+		for ( Entry< UUID, Location > entry : deaths.entrySet() ) {
+			UUID uuid = entry.getKey();
+			String key = uuid.toString();
+			Location location = entry.getValue();
+			World world = location.getWorld();
+			double x = location.getX();
+			double y = location.getY();
+			double z = location.getZ();
+			
+			config.set( "deaths." + key + ".world", world.getName() );
+			config.set( "deaths." + key + ".x", x );
+			config.set( "deaths." + key + ".y", y );
+			config.set( "deaths." + key + ".z", z );
+		}
+		
+		try {
+			config.save( dataFile );
+		} catch ( IOException e ) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -261,6 +336,14 @@ public class VanillaPlus extends Module {
 
 	public void setDeathLocEnabled( boolean deathLocEnabled ) {
 		this.deathLocEnabled = deathLocEnabled;
+	}
+
+	public int getDeathMinRange() {
+		return deathMinRange;
+	}
+
+	public void setDeathMinRange( int deathMinRange ) {
+		this.deathMinRange = deathMinRange;
 	}
 
 	public boolean isSpawnLocEnabled() {
