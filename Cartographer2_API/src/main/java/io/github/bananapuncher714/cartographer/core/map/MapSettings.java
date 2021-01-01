@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,10 @@ public class MapSettings {
 	protected MinimapPalette palette;
 	
 	public MapSettings( FileConfiguration config ) {
+	}
+	
+	public List< Double > getAllowedZooms() {
+		return allowedZooms;
 	}
 	
 	public double getDefaultZoom() {
@@ -132,6 +137,14 @@ public class MapSettings {
 
 	public boolean isBlacklisted( String world ) {
 		return isWhitelist ^ blacklistedWorlds.contains( world );
+	}
+	
+	public Collection< String > getBlacklistedWorlds( String world ) {
+		return blacklistedWorlds;
+	}
+	
+	public boolean isWhitelist() {
+		return isWhitelist;
 	}
 	
 	public double getPreviousZoom( double currentZoom ) {

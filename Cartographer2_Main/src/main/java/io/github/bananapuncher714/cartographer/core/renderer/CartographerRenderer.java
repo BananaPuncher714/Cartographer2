@@ -156,9 +156,9 @@ public class CartographerRenderer extends MapRenderer {
 			// Check if the minimap which they're trying to view actually exists
 			Minimap map = setting.map == null ? null : plugin.getMapManager().getMinimaps().get( setting.map );
 			if ( map == null ) {
-				SimpleImage missingImage = plugin.getMissingMapImage();
+				SimpleImage missingImage = plugin.getSettings().getMissingMapImage();
 				byte[] missingMapData;
-				if ( plugin.isDitherMissingMapImage() ) {
+				if ( plugin.getSettings().isDitherMissingMapImage() ) {
 					missingMapData = JetpImageUtil.dither2Minecraft( missingImage.getImage(), missingImage.getWidth() ).array();
 				} else {
 					missingMapData = JetpImageUtil.simplify( missingImage.getImage() );
@@ -170,7 +170,7 @@ public class CartographerRenderer extends MapRenderer {
 			if ( map.getSettings().isBlacklisted( setting.getLocation().getWorld().getName() ) ) {
 				SimpleImage image = map.getDisabledImage();
 				if ( image == null ) {
-					image = plugin.getDisabledMapImage();
+					image = plugin.getSettings().getDisabledMapImage();
 				}
 				byte[] data = new byte[ 128 * 128 ];
 				if ( image != null ) {
@@ -205,14 +205,14 @@ public class CartographerRenderer extends MapRenderer {
 
 			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 			
-			SimpleImage overlayImage = plugin.getOverlay();
+			SimpleImage overlayImage = plugin.getSettings().getOverlay();
 			if ( map.getOverlayImage() != null ) {
 				overlayImage = map.getOverlayImage();
 			} else if ( viewer.getOverlay() != null ) {
 				overlayImage = viewer.getOverlay();
 			}
 			
-			SimpleImage backgroundImage = plugin.getBackground();
+			SimpleImage backgroundImage = plugin.getSettings().getBackground();
 			if ( map.getBackgroundImage() != null ) {
 				backgroundImage = map.getBackgroundImage();
 			} else if ( viewer.getBackground() != null ) {
@@ -394,7 +394,7 @@ public class CartographerRenderer extends MapRenderer {
 			return;
 		}
 		// Render once ever X ticks
-		if ( tick++ % plugin.getRenderDelay() != 0 ) {
+		if ( tick++ % plugin.getSettings().getRenderDelay() != 0 ) {
 			return;
 		}
 		
@@ -444,7 +444,7 @@ public class CartographerRenderer extends MapRenderer {
 			
 			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 			Minimap map = getMinimap();
-			boolean rotating = Cartographer.getInstance().isRotateByDefault();
+			boolean rotating = plugin.getSettings().isRotateByDefault();
 			if ( map != null ) {
 				if ( map.getSettings().getRotation() != BooleanOption.UNSET ) {
 					rotating = map.getSettings().getRotation().isTrue();
@@ -537,7 +537,7 @@ public class CartographerRenderer extends MapRenderer {
 		
 		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 		Minimap map = getMinimap();
-		boolean rotating = Cartographer.getInstance().isRotateByDefault();
+		boolean rotating = plugin.getSettings().isRotateByDefault();
 		double defaultZoom = 1;
 		if ( map != null ) {
 			defaultZoom = map.getSettings().getDefaultZoom();

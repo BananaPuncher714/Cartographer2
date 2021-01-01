@@ -70,69 +70,29 @@ public class Cartographer extends JavaPlugin {
 		return null;
 	}
 	
+	public CartographerSettings getSettings() {
+		return null;
+	}
+	
+	public void setSettings( CartographerSettings settings ) {
+	}
+	
 	public Map< Integer, CartographerRenderer > getRenderers() {
 		return null;
 	}
-	
-	protected Set< Integer > getInvalidIds() {
-		return null;
-	}
-	
-	public int getRenderDelay() {
-		return 0;
-	}
-	
+
 	public boolean isServerOverloaded() {
 		return false;
 	}
 	
-	public boolean isRotateByDefault() {
-		return false;
-	}
 	
-	public boolean isPaletteDebug() {
-		return false;
-	}
-	
-	public boolean isPreventDrop() {
-		return false;
-	}
-	
-	public boolean isUseDropPacket() {
-		return false;
-	}
-	
-	public boolean isDitherMissingMapImage() {
-		return false;
-	}
-	
-	public int getBlockUpdateDelay() {
+	public int getTickLimit() {
 		return 0;
 	}
 	
-	public int getBlockUpdateAmount() {
-		return 0;
+	public void setTickLimit( int limit ) {
 	}
 	
-	public SimpleImage getBackground() {
-		return null;
-	}
-	
-	public SimpleImage getOverlay() {
-		return null;
-	}
-
-	public SimpleImage getMissingMapImage() {
-		return null;
-	}
-	
-	public SimpleImage getDisabledMapImage() {
-		return null;
-	}
-	
-	public boolean isValidInventory( InventoryType type ) {
-		return false;
-	}
 	
 	public static Cartographer getInstance() {
 		return null;

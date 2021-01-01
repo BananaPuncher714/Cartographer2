@@ -36,7 +36,8 @@ public class MapListener implements Listener {
 			return;
 		}
 		
-		if ( !plugin.isValidInventory( event.getView().getBottomInventory().getType() ) || !plugin.isValidInventory( event.getView().getTopInventory().getType() ) ) {
+		if ( !plugin.getSettings().isValidInventory( event.getView().getBottomInventory().getType() ) ||
+				!plugin.getSettings().isValidInventory( event.getView().getTopInventory().getType() ) ) {
 			event.setCancelled( true );
 		}
 		
@@ -55,7 +56,7 @@ public class MapListener implements Listener {
 		if ( !plugin.getMapManager().isMinimapItem( item ) ) {
 			return;
 		}
-		if ( plugin.isValidInventory( event.getView().getTopInventory().getType() ) ) {
+		if ( plugin.getSettings().isValidInventory( event.getView().getTopInventory().getType() ) ) {
 			return;
 		}
 		for ( int slot : event.getRawSlots() ) {
@@ -77,7 +78,7 @@ public class MapListener implements Listener {
 	
 	@EventHandler
 	private void onEvent( PlayerDropItemEvent event ) {
-		if ( plugin.isPreventDrop() && !plugin.isUseDropPacket() ) {
+		if ( plugin.getSettings().isPreventDrop() && !plugin.getSettings().isUseDropPacket() ) {
 			ItemStack item = event.getItemDrop().getItemStack();
 			if ( plugin.getMapManager().isMinimapItem( item ) ) {
 				event.setCancelled( true );

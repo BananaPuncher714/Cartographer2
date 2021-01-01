@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.core;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -69,10 +68,7 @@ public class Cartographer extends JavaPlugin {
 	private PlayerManager playerManager;
 	private LocaleManager localeManager;
 	
-	// Blacklist of map ids to NOT use
-	private Set< Integer > invalidIds = new HashSet< Integer >();
-	// Inventories that minimaps cannot be put into
-	private Set< InventoryType > invalidInventoryTypes = new HashSet< InventoryType >();
+	private CartographerSettings settings;
 	
 	// List of all running timers
 	private Set< BukkitTask > tasks = new HashSet< BukkitTask >();
@@ -86,30 +82,6 @@ public class Cartographer extends JavaPlugin {
 	// Minimum tick limit allowed before pausing expensive operations
 	// such as drawing the map, or loading chunks
 	private int tickLimit = 18;
-	// How long in ticks to update the chunk listener
-	private int chunkUpdateDelay = 10;
-	// How long in ticks to update blocks on the map
-	private int blockUpdateDelay = 10;
-	// How many blocks to update per update tick
-	private int blockUpdateAmount = 20;
-	// How long in ticks until the map can be updated again
-	private int renderDelay;
-	// How many blocks can be updated at most per tick
-
-	// Global default for rotation setting
-	private boolean rotateByDefault = true;
-	// Print out debug information regarding missing colors and materials in the console
-	private boolean paletteDebug;
-	// Catch the drop item packet
-	private boolean preventDrop = true;
-	private boolean packetDrop = true;
-	// Dither the missing map image
-	private boolean ditherMissing = false;
-	
-	private SimpleImage loadingBackground;
-	private SimpleImage overlay;
-	private SimpleImage missingMapImage;
-	private SimpleImage disabledMap;
 	
 	private String user = "%%__USER__%%";
 	private String nonce = "%%__NONCE__%%";
@@ -369,26 +341,32 @@ public class Cartographer extends JavaPlugin {
 		}
 		
 		FileConfiguration config = configuration.getConfiguration();
+		settings = new CartographerSettings();
 		for ( String string : config.getStringList( "skip-ids" ) ) {
-			invalidIds.add( Integer.valueOf( string ) );
+			settings.getInvalidIds().add( Integer.valueOf( string ) );
 		}
 		tickLimit = config.getInt( "tick-limit", 16 );
-		renderDelay = config.getInt( "render-delay", 1 );
-		paletteDebug = config.getBoolean( "palette-debug", false );
-		rotateByDefault = config.getBoolean( "rotate-by-default", true );
+		settings.setRenderDelay( config.getInt( "render-delay", 1 ) );
+		settings.setPaletteDebug( config.getBoolean( "palette-debug", false ) );
+		settings.setRotateByDefault( config.getBoolean( "rotate-by-default", true ) );
 
-		blockUpdateDelay = config.getInt( "block-update.tick-delay", 5 );
-		blockUpdateAmount = config.getInt( "block-update.update-amount", 20 );
+		settings.setBlockUpdateDelay( config.getInt( "block-update.tick-delay", 5 ) );
+		settings.setBlockUpdateAmount( config.getInt( "block-update.update-amount", 20 ) );
+
+		settings.setPreventDrop( config.getBoolean( "prevent-drop", true ) );
+		settings.setUseDropPacket( config.getBoolean( "use-drop-packet", true ) );
 		
-		preventDrop = config.getBoolean( "prevent-drop", true );
-		packetDrop = config.getBoolean( "use-drop-packet", true );
+		OVERLAY_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.overlay", "overlay.gif" ) );
+		BACKGROUND_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.background", "background.gif" ) );
+		MISSING_MAP_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.missing", "missing.png" ) );
+		DISABLED_MAP_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.disabled", "disabled.png" ) );
 		
-		ditherMissing = config.getBoolean( "dither-missing", false );
+		settings.setDitherMissingMapImage( config.getBoolean( "dither-missing", false ) );
 		
 		localeManager.setDefaultLocale( config.getString( "default-locale", "default" ) );
 		
 		// Chunk load settings
-		chunkUpdateDelay = config.getInt( "chunk.update-delay", 10 );
+		settings.setChunkUpdateDelay( config.getInt( "chunk.update-delay", 10 ) );
 		ChunkLoadListener.INSTANCE.setForceLoad( config.getBoolean( "chunk.force-load", false ) );
 		ChunkLoadListener.INSTANCE.setCacheAmount( config.getInt( "chunk.cache-per-update", 50 ) );
 		ChunkLoadListener.INSTANCE.setLoadAmount( config.getInt( "chunk.load-per-update", 20 ) );
@@ -397,7 +375,7 @@ public class Cartographer extends JavaPlugin {
 		for ( String string : config.getStringList( "blacklisted-inventories" ) ) {
 			try {
 				InventoryType invalid = InventoryType.valueOf( string );
-				invalidInventoryTypes.add( invalid );
+				settings.getInvalidInventoryTypes().add( invalid );
 				loggerInfo( LocaleConstants.CORE_ENABLE_CONFIG_INVENTORY_ADDED, string );
 			} catch ( IllegalArgumentException exception ) {
 				loggerWarning( LocaleConstants.CORE_ENABLE_CONFIG_INVENTORY_UNKNOWN, string );
@@ -464,36 +442,36 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadImages() {
-		OVERLAY_IMAGE = FileUtil.getImageFile( getDataFolder(), "overlay" );
-		BACKGROUND_IMAGE = FileUtil.getImageFile( getDataFolder(), "background" );
-		MISSING_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "missing" );
-		DISABLED_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "disabled" );
+//		OVERLAY_IMAGE = FileUtil.getImageFile( getDataFolder(), "overlay" );
+//		BACKGROUND_IMAGE = FileUtil.getImageFile( getDataFolder(), "background" );
+//		MISSING_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "missing" );
+//		DISABLED_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "disabled" );
 		
 		try {
 			if ( OVERLAY_IMAGE.exists() ) {
 				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_OVERLAY_FOUND );
-				this.overlay = new SimpleImage( OVERLAY_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+				settings.setOverlay( new SimpleImage( OVERLAY_IMAGE ) );
 			} else {
 				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_OVERLAY_MISSING );
 			}
 
 			if ( BACKGROUND_IMAGE.exists() ) {
 				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_BACKGROUND_FOUND );
-				this.loadingBackground = new SimpleImage( BACKGROUND_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+				settings.setBackground( new SimpleImage( BACKGROUND_IMAGE ) );
 			} else {
 				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_BACKGROUND_MISSING );
 			}
 			
 			if ( MISSING_MAP_IMAGE.exists() ) {
 				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_MISSING_FOUND );
-				missingMapImage = new SimpleImage( MISSING_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+				settings.setMissingMapImage( new SimpleImage( MISSING_MAP_IMAGE ) );
 			} else {
 				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_MISSING_MISSING );
 			}
 			
 			if ( DISABLED_MAP_IMAGE.exists() ) {
 				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_DISABLED_FOUND );
-				disabledMap = new SimpleImage( DISABLED_MAP_IMAGE, 128, 128, Image.SCALE_REPLICATE );
+				settings.setDisabledMapImage( new SimpleImage( DISABLED_MAP_IMAGE ) );
 			} else {
 				loggerWarning( LocaleConstants.CORE_ENABLE_IMAGE_DISABLED_MISSING );
 			}
@@ -521,10 +499,10 @@ public class Cartographer extends JavaPlugin {
 		tasks.clear();
 		
 		// Update the chunk listener sometime
-		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, chunkUpdateDelay );
+		Bukkit.getScheduler().runTaskTimer( this, ChunkLoadListener.INSTANCE::update, 5, settings.getChunkUpdateDelay() );
 		// Only run the block updater if it's more than 0 ticks of delay
-		if ( chunkUpdateDelay > 0 ) {
-			Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, blockUpdateDelay );
+		if ( settings.getBlockUpdateDelay() > 0 ) {
+			Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, settings.getBlockUpdateDelay() );
 		}
 	}
 	
@@ -551,7 +529,7 @@ public class Cartographer extends JavaPlugin {
 	
 	/**
 	 * Purely for configs, palettes and images
-	 * Does not load modules
+	 * Does not load modules or minimaps
 	 */
 	public void reload() {
 		// Re-save all locale files
@@ -627,66 +605,24 @@ public class Cartographer extends JavaPlugin {
 		return renderers;
 	}
 	
-	protected Set< Integer > getInvalidIds() {
-		return invalidIds;
+	public CartographerSettings getSettings() {
+		return settings;
 	}
 	
-	public int getRenderDelay() {
-		return renderDelay;
+	public void setSettings( CartographerSettings settings ) {
+		this.settings = settings;
 	}
 	
 	public boolean isServerOverloaded() {
 		return tickLimit > handler.getTPS();
 	}
 	
-	public boolean isRotateByDefault() {
-		return rotateByDefault;
+	public int getTickLimit() {
+		return tickLimit;
 	}
 	
-	public boolean isPaletteDebug() {
-		return paletteDebug;
-	}
-	
-	public boolean isPreventDrop() {
-		return preventDrop;
-	}
-	
-	public boolean isUseDropPacket() {
-		return packetDrop;
-	}
-	
-	public boolean isDitherMissingMapImage() {
-		return ditherMissing;
-	}
-	
-	public int getBlockUpdateDelay() {
-		return blockUpdateDelay;
-	}
-	
-	public int getBlockUpdateAmount() {
-		return blockUpdateAmount;
-	}
-	
-	public SimpleImage getBackground() {
-		// TODO Specify that this is 128x128
-		return loadingBackground;
-	}
-	
-	public SimpleImage getOverlay() {
-		// TODO Specify that this is 128x128
-		return overlay;
-	}
-
-	public SimpleImage getMissingMapImage() {
-		return missingMapImage;
-	}
-	
-	public SimpleImage getDisabledMapImage() {
-		return disabledMap;
-	}
-	
-	public boolean isValidInventory( InventoryType type ) {
-		return !invalidInventoryTypes.contains( type );
+	public void setTickLimit( int limit ) {
+		tickLimit = limit;
 	}
 	
 	public static Cartographer getInstance() {

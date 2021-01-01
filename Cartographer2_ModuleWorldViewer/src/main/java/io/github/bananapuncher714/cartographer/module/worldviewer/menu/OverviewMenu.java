@@ -75,7 +75,7 @@ public class OverviewMenu extends MapMenu {
 
 		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 		
-		SimpleImage backgroundImage = plugin.getBackground();
+		SimpleImage backgroundImage = plugin.getSettings().getBackground();
 		if ( map.getBackgroundImage() != null ) {
 			backgroundImage = map.getBackgroundImage();
 		} else if ( viewer.getBackground() != null ) {

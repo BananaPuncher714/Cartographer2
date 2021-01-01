@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	protected void update() {
-		int updateAmount = plugin.getBlockUpdateAmount();
+		int updateAmount = plugin.getSettings().getBlockUpdateAmount();
 		
 		if ( updateAmount == 0 ) {
 			updateSet.clear();
@@ -154,7 +154,7 @@ public class PlayerListener implements Listener {
 	
 	private void addLocation( Location location ) {
 		// Only update if the map requests it
-		if ( plugin.getBlockUpdateDelay() > 0 ) {
+		if ( plugin.getSettings().getBlockUpdateDelay() > 0 ) {
 			updateSet.add( new Location( location.getWorld(), location.getBlockX(), 0, location.getBlockZ() ) );
 		}
 	}

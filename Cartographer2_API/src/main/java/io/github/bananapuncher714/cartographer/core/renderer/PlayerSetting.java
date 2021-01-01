@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 
-import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.util.MapUtil;
@@ -16,7 +15,7 @@ public class PlayerSetting {
 	protected Location location;
 	protected double zoomscale = 1;
 	protected String map;
-	protected boolean rotating = Cartographer.getInstance().isRotateByDefault();
+	protected boolean rotating = false;
 	protected boolean mainhand;
 	
 	protected double cursorX;

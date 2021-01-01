@@ -216,7 +216,7 @@ public class Minimap implements ChunkNotifier {
 	}
 	
 	public SimpleImage getOverlayImage() {
-		return overlay == null ? Cartographer.getInstance().getOverlay() : overlay;
+		return overlay == null ? Cartographer.getInstance().getSettings().getOverlay() : overlay;
 	}
 	
 	public void setOverlayImage( SimpleImage image ) {
@@ -226,7 +226,7 @@ public class Minimap implements ChunkNotifier {
 	}
 	
 	public SimpleImage getBackgroundImage() {
-		return background == null ? Cartographer.getInstance().getBackground() : background;
+		return background == null ? Cartographer.getInstance().getSettings().getBackground() : background;
 	}
 	
 	public void setBackgroundImage( SimpleImage image ) {

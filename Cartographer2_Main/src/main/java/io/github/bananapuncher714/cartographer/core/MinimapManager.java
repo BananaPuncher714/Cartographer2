@@ -47,7 +47,7 @@ public class MinimapManager {
 	
 	public ItemStack getItemFor( Minimap map ) {
 		MapView view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
-		while ( Cartographer.getInstance().getInvalidIds().contains( getId( view ) ) ) {
+		while ( Cartographer.getInstance().getSettings().getInvalidIds().contains( getId( view ) ) ) {
 			view = Bukkit.createMap( Bukkit.getWorlds().get( 0 ) );
 		}
 		
@@ -207,6 +207,13 @@ public class MinimapManager {
 		if ( map != null ) {
 			map.terminate();
 		}
+	}
+	
+	public void reloadMinimap( Minimap map ) {
+		File saveDir = map.getDataFolder();
+
+		plugin.getMapManager().unload( map );
+		plugin.getMapManager().load( saveDir );
 	}
 	
 	public void remove( Minimap map ) {

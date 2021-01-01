@@ -56,7 +56,20 @@ chunk:
   load-per-update: 5
   # Amount of chunks that get generated per update, if they don't exist
   generate-per-update: 1
- 
+
+# The images for Cartographer
+# Their location is relative to the plugin folder
+# It's recommended to keep them in a folder, like "images/" or something
+images:
+  # The overlay image that goes on top of t
+  overlay: "overlay.gif"
+  # The background image, very last thing that players will normally see
+  background: "background.gif"
+  # The missing map image, when a minimap does not exist for a particular map
+  missing: "missing.png"
+  # The disabled image, when the minimap is blacklisted in a world
+  disabled: "disabled.png"
+
 # Whether or not to dither the missing map image. Works best with images of real things
 dither-missing: false
 

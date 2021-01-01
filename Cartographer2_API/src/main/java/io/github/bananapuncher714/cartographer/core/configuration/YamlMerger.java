@@ -25,7 +25,8 @@ public class YamlMerger {
 
 	public YamlMerger updateKeys() {
 		for ( String key : internal.getConfiguration().getKeys( true ) ) {
-			if ( !config.getConfiguration().contains( key ) ) {
+			if ( !config.getConfiguration().contains( key ) ||
+					config.getConfiguration().get( key ).getClass() != internal.getConfiguration().get( key ).getClass() ) {
 				config.getConfiguration().set( key, internal.getConfiguration().get( key ) );
 			}
 		}

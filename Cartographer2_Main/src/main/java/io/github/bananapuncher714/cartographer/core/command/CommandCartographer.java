@@ -193,10 +193,8 @@ public class CommandCartographer {
 		// Reload the minimap
 		// Essentially unloading it then loading it again
 		Minimap map = parameters.getLast( Minimap.class );
-		File saveDir = map.getDataFolder();
-
-		plugin.getMapManager().unload( map );
-		plugin.getMapManager().load( saveDir );
+		
+		plugin.getMapManager().reloadMinimap( map );
 		
 		plugin.getLocaleManager().translateAndSend( sender, LocaleConstants.COMMAND_CARTOGRAPHER_RELOAD_MINIMAP, map.getId() );
 	}

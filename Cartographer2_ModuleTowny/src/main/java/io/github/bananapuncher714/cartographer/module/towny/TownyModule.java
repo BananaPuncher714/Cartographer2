@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.module.towny;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,11 +11,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -31,9 +37,11 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.api.configuration.YamlFileConfiguration;
 import io.github.bananapuncher714.cartographer.core.api.events.minimap.MinimapLoadEvent;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingStateBoolean;
+import io.github.bananapuncher714.cartographer.core.configuration.YamlMerger;
 import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.palette.PaletteManager.ColorType;
@@ -60,9 +68,8 @@ public class TownyModule extends Module implements Listener {
 	
 	private Map< String, Map< ChunkLocation, Set< BlockFace > > > claims = new HashMap< String, Map< ChunkLocation, Set< BlockFace > > >();
 	private Map< TownyRelation, Color > colors = new HashMap< TownyRelation, Color >();
-	private Map< TownyRelation, Type > icons = new HashMap< TownyRelation, Type >();
+	private Map< TownyRelation, CursorProperties > icons = new HashMap< TownyRelation, CursorProperties >();
 
-	private int playerRange = 100;
 	private boolean showName = true;
 
 	private Type homeType;
@@ -79,7 +86,7 @@ public class TownyModule extends Module implements Listener {
 		for ( Minimap minimap : getCartographer().getMapManager().getMinimaps().values() ) {
 			minimap.register( new ChunkBorderShader( this::getData, Coord.getCellSize() ) );
 			minimap.register( new HomeWaypointProvider( homeType ) );
-			minimap.register( new PlayerMarkerProvider( playerRange, showName, this::getType ) );
+			minimap.register( new PlayerMarkerProvider( showName, this::getType ) );
 		}
 
 		runTaskTimer( this::tick, 20, 10 );
@@ -101,7 +108,19 @@ public class TownyModule extends Module implements Listener {
 		colors.clear();
 		icons.clear();
 
-		FileConfiguration config = YamlConfiguration.loadConfiguration( new File( getDataFolder(), "config.yml" ) );
+		YamlFileConfiguration configuration = new YamlFileConfiguration( new File( getDataFolder(), "config.yml" ).toPath() );
+		try {
+			configuration.load();
+			YamlMerger merger = new YamlMerger( configuration, getResource( "config.yml" ) );
+			merger.updateHeader( false );
+			merger.updateKeys();
+			merger.trimKeys();
+			merger.updateComments( false );
+		} catch ( IOException | InvalidConfigurationException e ) {
+			e.printStackTrace();
+		}		
+		FileConfiguration config = configuration.getConfiguration();
+		
 		for ( String key : config.getConfigurationSection( "town" ).getKeys( false ) ) {
 			Matcher matcher = ColorType.RGB.getPattern().matcher( config.getString( "town." + key ) );
 			matcher.find();
@@ -112,17 +131,34 @@ public class TownyModule extends Module implements Listener {
 		}
 
 
-		for ( String key : config.getConfigurationSection( "player" ).getKeys( false ) ) {
+		ConfigurationSection playerSection = config.getConfigurationSection( "player" );
+		for ( String key : playerSection.getKeys( false ) ) {
 			TownyRelation status = FailSafe.getEnum( TownyRelation.class, key.toUpperCase() );
-			Type type = FailSafe.getEnum( Type.class, config.getString( "player." + key ) );
+			CursorProperties properties = loadFrom( playerSection.getConfigurationSection( key ) );
 
-			icons.put( status, type );
+			icons.put( status, properties );
 		}
 
-		playerRange = config.getInt( "player-range" );
 		showName = config.getBoolean( "show-name" );
 
-		homeType = FailSafe.getEnum( Type.class, config.getString( "home-icon" ) );
+		homeType = FailSafe.getEnum( Type.class, config.getString( "home-icon" ).split( "\\s+") );
+		
+		try {
+			configuration.save();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	private CursorProperties loadFrom( ConfigurationSection section ) {
+		CursorProperties properties = new CursorProperties();
+		
+		properties.setEnabled( section.getBoolean( "enabled" ) );
+		properties.setType( FailSafe.getEnum( Type.class, section.getString( "icon" ).split( "\\s+" ) ) );
+		properties.setGlobalRange( section.getDouble( "global-range" ) );
+		properties.setTownRange( section.getDouble( "town-range" ) );
+		
+		return properties;
 	}
 
 	@EventHandler
@@ -130,7 +166,7 @@ public class TownyModule extends Module implements Listener {
 		Minimap minimap = event.getMinimap();
 		minimap.register( new ChunkBorderShader( this::getData, Coord.getCellSize() ) );
 		minimap.register( new HomeWaypointProvider( homeType ) );
-		minimap.register( new PlayerMarkerProvider( playerRange, showName, this::getType ) );
+		minimap.register( new PlayerMarkerProvider( showName, this::getType ) );
 	}
 
 	private void tick() {
@@ -156,7 +192,7 @@ public class TownyModule extends Module implements Listener {
 		return ( Collection< TownBlock > ) collection;
 	}
 
-	private Type getType( Player viewer, Player target ) {
+	private Optional< Type > getType( Player viewer, Player target ) {
 		try {
 			Resident resident = TownyAPI.getInstance().getDataSource().getResident( viewer.getName() );
 			Town resTown = null;
@@ -191,11 +227,27 @@ public class TownyModule extends Module implements Listener {
 				relation = TownyRelation.ENEMY_NATION;
 			}
 
-			return icons.get( relation );
+			CursorProperties properties = icons.get( relation );
+			if ( properties != null && properties.isEnabled() ) {
+				Location targetLoc = target.getLocation();
+				UUID townUUID= TownyAPI.getInstance().getTownUUID( targetLoc );
+				Town occupying = townUUID == null ? null : TownyAPI.getInstance().getDataSource().getTown( townUUID );
+				double range = properties.getGlobalRange();
+				if ( occupying != null && occupying.getMayor().getUUID().equals( viewer.getUniqueId() ) ) {
+					range = properties.getTownRange();
+				}
+				range *= range;
+
+				Location loc = viewer.getLocation();
+				if ( loc.distanceSquared( targetLoc ) <= range ) {
+					return Optional.of( properties.getType() );
+				}
+			}
+			return Optional.empty();
 		} catch ( NotRegisteredException e ) {
 			e.printStackTrace();
 		}
-		return Type.WHITE_POINTER;
+		return Optional.of( Type.WHITE_POINTER );
 	}
 	
 	private Collection< ChunkBorderData > getData( Player player, PlayerSetting setting ) {

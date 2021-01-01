@@ -2,7 +2,7 @@
     "name": "WorldViewer",
 	"main": "io.github.bananapuncher714.cartographer.module.worldviewer.WorldViewer",
 	"description": "View the world through a moveable menu",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "BananaPuncher714",
 	"website": "aaaaahhhhhhh.com"
 }

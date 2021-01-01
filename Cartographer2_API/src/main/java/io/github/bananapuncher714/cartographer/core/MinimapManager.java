@@ -88,6 +88,9 @@ public class MinimapManager {
 	public void unload( Minimap map ) {
 	}
 	
+	public void reloadMinimap( Minimap map ) {
+	}
+	
 	public void remove( Minimap map ) {
 	}
 	

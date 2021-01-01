@@ -11,12 +11,37 @@ town:
   enemy_nation: 255, 0, 0
 
 # Player icons
+# The global range is how close they must be to show up on your map
+# The town range is how close they must be if they are in one of your towns that you own
 show-name: true
-player-range: 100
 player:
-  neutral: WHITE_POINTER
-  member_town: GREEN_POINTER 
-  allied_town: GREEN_POINTER
-  member_nation: BLUE_POINTER
-  allied_nation: BLUE_POINTER
-  enemy_nation: RED_POINTER
+  neutral:
+    enabled: true
+    icon: WHITE_POINTER
+    global-range: 50
+    town-range: 1000
+  member_town: 
+    enabled: true
+    icon: GREEN_POINTER
+    global-range: 150
+    town-range: 1000
+  allied_town:
+    enabled: true
+    icon: GREEN_POINTER
+    global-range: 100
+    town-range: 1000
+  member_nation:
+    enabled: true
+    icon: BLUE_POINTER
+    global-range: 150
+    town-range: 1000
+  allied_nation:
+    enabled: true
+    icon: BLUE_POINTER
+    global-range: 100
+    town-range: 1000
+  enemy_nation:
+    enabled: true
+    icon: RED_MARKER RED_POINTER BLUE_POINTER
+    global-range: 50
+    town-range: 1000

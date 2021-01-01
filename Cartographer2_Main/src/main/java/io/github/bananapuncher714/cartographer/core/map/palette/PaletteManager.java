@@ -118,7 +118,7 @@ public class PaletteManager {
 				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
-					if ( plugin.isPaletteDebug() ) {
+					if ( plugin.getSettings().isPaletteDebug() ) {
 						logger.warning( key + " is an invalid material!" );
 					}
 					continue;
@@ -142,7 +142,7 @@ public class PaletteManager {
 				Material material = Material.getMaterial( matVals[ 0 ].toUpperCase() );
 				int durability = matVals.length > 1 ? Integer.parseInt( matVals[ 1 ] ): 0;
 				if ( material == null ) {
-					if ( plugin.isPaletteDebug() ) {
+					if ( plugin.getSettings().isPaletteDebug() ) {
 						logger.warning( val + " is an invalid material!" );
 					}
 					continue;

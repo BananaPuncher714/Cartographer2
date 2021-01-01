@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.map;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,6 +78,10 @@ public class MapSettings {
 		reloadChunks = config.getBoolean( "chunks.reload-chunks", true );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
+	}
+	
+	public List< Double > getAllowedZooms() {
+		return allowedZooms;
 	}
 	
 	public double getDefaultZoom() {
@@ -167,6 +172,14 @@ public class MapSettings {
 		return isWhitelist ^ blacklistedWorlds.contains( world );
 	}
 	
+	public Collection< String > getBlacklistedWorlds( String world ) {
+		return blacklistedWorlds;
+	}
+	
+	public boolean isWhitelist() {
+		return isWhitelist;
+	}
+	
 	public double getPreviousZoom( double currentZoom ) {
 		int index = 0;
 		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {
@@ -195,6 +208,14 @@ public class MapSettings {
 		} else {
 			return allowedZooms.get( Math.min( allowedZooms.size() - 1, index + 1 ) );
 		}
+	}
+	
+	public double getClosestZoom() {
+		double shortest = Double.MAX_VALUE;
+		for ( double z : allowedZooms ) {
+			shortest = Math.min( z, shortest );
+		}
+		return shortest;
 	}
 	
 	public double getFarthestZoom() {

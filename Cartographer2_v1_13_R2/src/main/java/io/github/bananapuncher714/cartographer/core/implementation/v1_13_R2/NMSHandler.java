@@ -218,7 +218,7 @@ public class NMSHandler implements PacketHandler {
 	}
 	private Object onPacketInterceptIn( Player viewer, Object packet ) {
 		if ( viewer != null ) {
-			if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().isPreventDrop() && Cartographer.getInstance().isUseDropPacket() ) {
+			if ( packet instanceof PacketPlayInBlockDig && Cartographer.getInstance().getSettings().isPreventDrop() && Cartographer.getInstance().getSettings().isUseDropPacket() ) {
 				// Check for the drop packet
 				PacketPlayInBlockDig digPacket = ( PacketPlayInBlockDig ) packet;
 	

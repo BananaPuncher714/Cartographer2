@@ -16,7 +16,7 @@ public class PlayerSetting {
 	protected Location location;
 	protected double zoomscale = 1;
 	protected String map;
-	protected boolean rotating = Cartographer.getInstance().isRotateByDefault();
+	protected boolean rotating = Cartographer.getInstance().getSettings().isRotateByDefault();
 	protected boolean mainhand;
 	
 	protected double cursorX;
