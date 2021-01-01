@@ -1,7 +1,7 @@
-# Faction home icon
+# Town home icon
 home-icon: MANSION
 
-# Faction colors
+# Town colors
 town:
   neutral: 255, 255, 0
   member_town: 0, 255, 0
