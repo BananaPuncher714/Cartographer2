@@ -22,11 +22,11 @@ public class CursorProviderDeathLocation implements ObjectProvider< NamedLocatio
 		Set< NamedLocation > locations = new HashSet< NamedLocation >();
 		
 		Location death = main.getDeathOf( player.getUniqueId() );
-		if ( death != null ) {
+		Location playerLoc = settings.getLocation();
+		if ( death != null && death.getWorld() == playerLoc.getWorld() ) {
 			int range = main.getDeathMinRange();
 			range *= range;
 
-			Location playerLoc = settings.getLocation();
 			if ( range == 0 || death.distanceSquared( playerLoc ) > range ) {
 				locations.add( new NamedLocation( "death", death.clone() ) );
 			}
