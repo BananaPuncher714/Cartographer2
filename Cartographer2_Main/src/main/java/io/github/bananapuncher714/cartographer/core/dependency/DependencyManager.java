@@ -57,9 +57,13 @@ public class DependencyManager {
 					dependencyWorldBorder.shouldLocationBeLoaded( nw ) ||
 					dependencyWorldBorder.shouldLocationBeLoaded( se ) ||
 					dependencyWorldBorder.shouldLocationBeLoaded( sw );
-		}
-		
-		if ( !loaded ) {
+			if ( loaded ) {
+				loaded = dependencyVanilla.shouldLocationBeLoaded( ne ) ||
+						dependencyVanilla.shouldLocationBeLoaded( nw ) ||
+						dependencyVanilla.shouldLocationBeLoaded( se ) ||
+						dependencyVanilla.shouldLocationBeLoaded( sw ); 
+			}
+		} else {
 			loaded = dependencyVanilla.shouldLocationBeLoaded( ne ) ||
 					dependencyVanilla.shouldLocationBeLoaded( nw ) ||
 					dependencyVanilla.shouldLocationBeLoaded( se ) ||

@@ -168,7 +168,7 @@ public class CartographerRenderer extends MapRenderer {
 					// Copy over transparent pixels
 					for ( int i = 0; i < imageData.length; i++ ) {
 						if ( ( ( imageData[ i ] >>> 24 ) & 0xFF ) < 128 ) {
-							missingMapData[ i ] = 0;
+							missingMapData[ i ] = 1;
 						}
 					}
 				} else {
@@ -190,7 +190,7 @@ public class CartographerRenderer extends MapRenderer {
 						int[] imageData = image.getImage();
 						for ( int i = 0; i < imageData.length; i++ ) {
 							if ( ( ( imageData[ i ] >>> 24 ) & 0xFF ) < 128 ) {
-								data[ i ] = 0;
+								data[ i ] = 1;
 							}
 						}
 					} else {

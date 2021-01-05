@@ -145,7 +145,7 @@ public final class JetpImageUtil {
 	}
 
 	public static byte getBestColorIncludingTransparent( int rgb ) {
-		return ( rgb >>> 24 & 0xFF ) == 0 ? 0 : getBestColor( rgb );
+		return ( rgb >>> 24 & 0xFF ) == 0 ? 1 : getBestColor( rgb );
 	}
 	
 	public static byte getBestColor( int rgb ) {
@@ -201,12 +201,7 @@ public final class JetpImageUtil {
 	public static byte[] simplifyTransparent( int[] buffer ) {
 		byte[] map = new byte[ buffer.length ];
 		for (int index = 0; index < buffer.length; index++) {
-			int rgb = buffer[ index ];
-			int red = rgb >> 16 & 0xFF;
-			int green = rgb >> 8 & 0xFF;
-			int blue = rgb & 0xFF;
-			byte ptr = getBestColor( red, green, blue );
-			map[ index ] = ptr;
+			map[ index ] = getBestColorIncludingTransparent( buffer[ index ] );
 		}
 		return map;
 	}
