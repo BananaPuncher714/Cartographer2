@@ -215,7 +215,8 @@ messages:
         disabling-module: "Disabling %s v%s by %s"
         missing-dependencies: "Unable to enable %s due to the missing dependencies: %s"
     minimap:
-      default-rotation: "Default rotation set to %b"
+      default-rotation: "Default rotation set to %s"
+      default-showname: "Showname set to %s"
       auto-update: "Auto update set to %b"
       circular-zoom: "Circular zoom set to %b"
       render-out-of-border: "Render out of border set to %b"

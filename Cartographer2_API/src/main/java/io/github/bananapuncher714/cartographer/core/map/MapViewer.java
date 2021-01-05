@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingState;
 import io.github.bananapuncher714.cartographer.core.api.setting.SettingStateBoolean;
@@ -19,7 +20,7 @@ import io.github.bananapuncher714.cartographer.core.api.setting.SettingStateLoca
  * @author BananaPuncher714
  */
 public class MapViewer {
-	public static final SettingStateBoolean SHOWNAME = null;
+	public static final SettingStateBooleanOption SHOWNAME = null;
 	public static final SettingStateBoolean CURSOR = null;
 	public static final SettingStateBooleanOption ROTATE = null;
 	public static final SettingStateLocale LOCALE = null;

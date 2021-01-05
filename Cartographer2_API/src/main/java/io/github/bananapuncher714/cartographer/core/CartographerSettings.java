@@ -25,6 +25,8 @@ public class CartographerSettings {
 
 	// Global default for rotation setting
 	private boolean rotateByDefault = true;
+	// Global default for showing the player's name
+	private boolean shownameByDefault = true;
 	// Print out debug information regarding missing colors and materials in the console
 	private boolean paletteDebug;
 	// Catch the drop item packet
@@ -56,6 +58,14 @@ public class CartographerSettings {
 	
 	public void setRotateByDefault( boolean rotate ) {
 		rotateByDefault = rotate;
+	}
+	
+	public boolean isShownameByDefault() {
+		return shownameByDefault;
+	}
+
+	public void setShownameByDefault( boolean shownameByDefault ) {
+		this.shownameByDefault = shownameByDefault;
 	}
 	
 	public boolean isPaletteDebug() {

@@ -2,7 +2,7 @@
     "name": "Towny",
 	"main": "io.github.bananapuncher714.cartographer.module.towny.TownyModule",
 	"description": "Adds Cartographer2 integration with Towny",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"author": "BananaPuncher714",
 	"website": "aaaaahhhhhhh.com",
 	"depend": [ "Towny" ]

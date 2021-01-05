@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 
 import io.github.bananapuncher714.cartographer.core.Cartographer;
+import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
@@ -24,7 +25,14 @@ public class DefaultPlayerCursorProvider implements WorldCursorProvider {
 		
 		MapViewer viewer = Cartographer.getInstance().getPlayerManager().getViewerFor( player.getUniqueId() );
 		
-		cursors.add( new WorldCursor( viewer.getSetting( MapViewer.SHOWNAME ) ? player.getName() : null, setting.getLocation(), Type.WHITE_POINTER, true ) );
+		boolean nameVisible = Cartographer.getInstance().getSettings().isShownameByDefault();
+		if ( map.getSettings().getShowName() != BooleanOption.UNSET ) {
+			nameVisible = map.getSettings().getRotation().isTrue();
+		} else if ( viewer.getSetting( MapViewer.ROTATE ) != BooleanOption.UNSET ) {
+			nameVisible = viewer.getSetting( MapViewer.ROTATE ).isTrue();
+		}
+		
+		cursors.add( new WorldCursor( nameVisible ? player.getName() : null, setting.getLocation(), Type.WHITE_POINTER, true ) );
 		return cursors;
 	}
 

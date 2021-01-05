@@ -33,11 +33,16 @@ public class MapSettings {
 
 	// Default rotation option
 	protected BooleanOption rotation = BooleanOption.UNSET;
+	protected BooleanOption showName = BooleanOption.UNSET;
 	
 	// If the images should be dithered
 	protected boolean ditherOverlay = false;
 	protected boolean ditherBackground = false;
 	protected boolean ditherDisabled = false;
+	
+	protected String overlayPath;
+	protected String backgroundPath;
+	protected String disabledPath;
 	
 	protected boolean reloadChunks = true;
 	
@@ -95,6 +100,22 @@ public class MapSettings {
 		this.rotation = rotation;
 	}
 	
+	public BooleanOption getShowName() {
+		return showName;
+	}
+
+	public void setShowName(BooleanOption showName) {
+		this.showName = showName;
+	}
+	
+	public String getOverlayPath() {
+		return overlayPath;
+	}
+
+	public void setOverlayPath( String overlayPath ) {
+		this.overlayPath = overlayPath;
+	}
+
 	public boolean isDitherOverlay() {
 		return ditherOverlay;
 	}
@@ -103,12 +124,28 @@ public class MapSettings {
 		this.ditherOverlay = ditherOverlay;
 	}
 
+	public String getBackgroundPath() {
+		return backgroundPath;
+	}
+
+	public void setBackgroundPath( String backgroundPath ) {
+		this.backgroundPath = backgroundPath;
+	}
+
 	public boolean isDitherBackground() {
 		return ditherBackground;
 	}
 
 	public void setDitherBackground( boolean ditherBackground ) {
 		this.ditherBackground = ditherBackground;
+	}
+
+	public String getBlacklistedPath() {
+		return disabledPath;
+	}
+
+	public void getBlacklistedPath( String disabledPath ) {
+		this.disabledPath = disabledPath;
 	}
 
 	public boolean isDitherBlacklisted() {

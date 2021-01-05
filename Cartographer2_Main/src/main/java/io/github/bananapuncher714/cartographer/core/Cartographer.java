@@ -349,7 +349,8 @@ public class Cartographer extends JavaPlugin {
 		settings.setRenderDelay( config.getInt( "render-delay", 1 ) );
 		settings.setPaletteDebug( config.getBoolean( "palette-debug", false ) );
 		settings.setRotateByDefault( config.getBoolean( "rotate-by-default", true ) );
-
+		settings.setShownameByDefault( config.getBoolean( "showname-by-default", true ) );
+		
 		settings.setBlockUpdateDelay( config.getInt( "block-update.tick-delay", 5 ) );
 		settings.setBlockUpdateAmount( config.getInt( "block-update.update-amount", 20 ) );
 

@@ -157,6 +157,7 @@ public class TownyModule extends Module implements Listener {
 		properties.setType( FailSafe.getEnum( Type.class, section.getString( "icon" ).split( "\\s+" ) ) );
 		properties.setGlobalRange( section.getDouble( "global-range" ) );
 		properties.setTownRange( section.getDouble( "town-range" ) );
+		properties.setMaxZoom( section.getDouble( "max-zoom", 16 ) );
 		
 		return properties;
 	}
@@ -192,7 +193,7 @@ public class TownyModule extends Module implements Listener {
 		return ( Collection< TownBlock > ) collection;
 	}
 
-	private Optional< Type > getType( Player viewer, Player target ) {
+	private Optional< Type > getType( Player viewer, Player target, double scale ) {
 		try {
 			Resident resident = TownyAPI.getInstance().getDataSource().getResident( viewer.getName() );
 			Town resTown = null;
@@ -228,7 +229,7 @@ public class TownyModule extends Module implements Listener {
 			}
 
 			CursorProperties properties = icons.get( relation );
-			if ( properties != null && properties.isEnabled() ) {
+			if ( properties != null && properties.isEnabled() && properties.getMaxZoom() <= scale ) {
 				Location targetLoc = target.getLocation();
 				UUID townUUID= TownyAPI.getInstance().getTownUUID( targetLoc );
 				Town occupying = townUUID == null ? null : TownyAPI.getInstance().getDataSource().getTown( townUUID );

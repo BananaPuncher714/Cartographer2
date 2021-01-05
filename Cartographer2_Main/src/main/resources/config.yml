@@ -6,6 +6,8 @@ skip-ids:
 
 # Whether or not the map rotates by default
 rotate-by-default: true
+# Whether or not the map shows the player's name by default
+showname-by-default: true
 
 # A list of blacklisted inventories that maps are not allowed to be put into,
 # such as the crafting table, anvil, and cartographer table
@@ -61,7 +63,7 @@ chunk:
 # Their location is relative to the plugin folder
 # It's recommended to keep them in a folder, like "images/" or something
 images:
-  # The overlay image that goes on top of t
+  # The overlay image that goes on top of the map
   overlay: "overlay.gif"
   # The background image, very last thing that players will normally see
   background: "background.gif"

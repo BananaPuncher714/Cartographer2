@@ -7,6 +7,7 @@ public class CursorProperties {
 	private Type type;
 	private double globalRange;
 	private double townRange;
+	private double maxZoom;
 	
 	public boolean isEnabled() {
 		return enabled;
@@ -38,5 +39,13 @@ public class CursorProperties {
 	
 	public void setTownRange( double townRange ) {
 		this.townRange = townRange;
+	}
+
+	public double getMaxZoom() {
+		return maxZoom;
+	}
+
+	public void setMaxZoom( double maxZoom ) {
+		this.maxZoom = maxZoom;
 	}
 }

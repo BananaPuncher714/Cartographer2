@@ -36,7 +36,7 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
  */
 public class MapDataCache {
 	protected final ExecutorService service = Executors.newFixedThreadPool( 2 );
-	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new HashMap< ChunkLocation, Future< ChunkData > >();
+	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new ConcurrentHashMap< ChunkLocation, Future< ChunkData > >();
 	protected final Map< ChunkLocation, ChunkData > data;
 	protected final Map< ChunkLocation, ChunkSnapshot > chunks;
 
@@ -265,6 +265,7 @@ public class MapDataCache {
 				int index = ( south.getBlockX() - ( chunkLoc.getX() << 4 ) ) + ( south.getBlockZ() - ( chunkLoc.getZ() << 4 ) ) * 16;
 				cData.getData()[ index ] = JetpImageUtil.getBestColorIncludingTransparent( provider.process( south, palette ) );
 			} else {
+				// TODO Check if the chunk is unloaded?
 				addToChunkLoader( chunkLoc );
 			}
 			south.subtract( 0, 0, 1 );
@@ -274,10 +275,14 @@ public class MapDataCache {
 	public void updateDataAt( ChunkLocation location, ChunkData data, boolean force ) {
 		// Provide the data at the given location
 		if ( data != null ) {
-			// Force replace?
-			if ( force || !this.data.containsKey( location ) ) {
-				ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
-				this.data.put( location, newData == null ? data : newData );
+			// Check if it's within the worldborder
+			boolean withinBorders = setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location );
+			if ( withinBorders ) {
+				// Force replace?
+				if ( force || !this.data.containsKey( location ) ) {
+					ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
+					this.data.put( location, newData == null ? data : newData );
+				}
 			}
 		} else {
 			throw new IllegalArgumentException( "ChunkData cannot be null!" );

@@ -201,8 +201,8 @@ messages:
         disabling-module: "Disarming %s v%s by %s"
         missing-dependencies: "Couldn' arm %s for th' missing gunpowder: %s"
     minimap:
-      default-rotation: "Weigh anchor set to %b"
-      auto-update: "Crows nest on duty set to %b"
+      default-rotation: "Weigh anchor set to %s"
+      auto-update: "Crows nest on duty set to %s"
       circular-zoom: "Haul wind set to %b"
       render-out-of-border: "Land ahoy set to %b"
       default-zoom: "Standard spyglass set to %f"

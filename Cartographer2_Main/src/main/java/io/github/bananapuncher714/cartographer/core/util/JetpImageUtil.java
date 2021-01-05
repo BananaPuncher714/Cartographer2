@@ -198,6 +198,19 @@ public final class JetpImageUtil {
 		return map;
 	}
 
+	public static byte[] simplifyTransparent( int[] buffer ) {
+		byte[] map = new byte[ buffer.length ];
+		for (int index = 0; index < buffer.length; index++) {
+			int rgb = buffer[ index ];
+			int red = rgb >> 16 & 0xFF;
+			int green = rgb >> 8 & 0xFF;
+			int blue = rgb & 0xFF;
+			byte ptr = getBestColor( red, green, blue );
+			map[ index ] = ptr;
+		}
+		return map;
+	}
+	
 	public static BufferedImage ditherImage( Image image ) {
 		BufferedImage bImage = toBufferedImage( image );
 		byte[] dithered = dither( image );

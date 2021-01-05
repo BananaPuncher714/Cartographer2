@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,7 +46,6 @@ import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
-import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
 public class Minimap implements ChunkNotifier {
 	protected final String id;
@@ -82,9 +82,9 @@ public class Minimap implements ChunkNotifier {
 		this.queue = new BigChunkQueue( Paths.get( saveDir + "/" + "cache" ), cache );
 		this.settings = settings;
 		
-		OVERLAY_IMAGE_FILE = FileUtil.getImageFile( saveDir, "overlay" );
-		BACKGROUND_IMAGE_FILE = FileUtil.getImageFile( saveDir, "background" );
-		DISABLED_IMAGE_FILE = FileUtil.getImageFile( saveDir, "disabled" );
+		OVERLAY_IMAGE_FILE = new File( saveDir, settings.getOverlayPath() );
+		BACKGROUND_IMAGE_FILE = new File( saveDir, settings.getBackgroundPath() );
+		DISABLED_IMAGE_FILE = new File( saveDir, settings.getBlacklistedPath() );
 		
 		cache.setFileQueue( queue );
 		cache.setNotifier( this );
@@ -93,7 +93,8 @@ public class Minimap implements ChunkNotifier {
 		
 		load();
 		
-		logger.infoTr( LocaleConstants.MINIMAP_DEFAULT_ROTATION, settings.getRotation() );
+		logger.infoTr( LocaleConstants.MINIMAP_DEFAULT_ROTATION, settings.getRotation().name().toLowerCase() );
+		logger.infoTr( LocaleConstants.MINIMAP_DEFAULT_SHOWNAME, settings.getShowName().name().toLowerCase() );
 		logger.infoTr( LocaleConstants.MINIMAP_AUTO_UPDATE, settings.isAutoUpdate() );
 		logger.infoTr( LocaleConstants.MINIMAP_ZOOM_CIRCULAR, settings.isCircularZoom() );
 		logger.infoTr( LocaleConstants.MINIMAP_RENDER, settings.isRenderOutOfBorder() );
@@ -147,34 +148,40 @@ public class Minimap implements ChunkNotifier {
 			Set< BigChunkLocation > noSave = new HashSet< BigChunkLocation >();
 			// Chunks to save
 			Map< BigChunkLocation, BigChunk > chunks = new HashMap< BigChunkLocation, BigChunk >();
-			for ( Entry< ChunkLocation, ChunkData > entry : cache.getData().entrySet() ) {
+			for ( Iterator< Entry< ChunkLocation, ChunkData > > it = cache.getData().entrySet().iterator(); it.hasNext(); ) {
+				Entry< ChunkLocation, ChunkData > entry = it.next();
 				ChunkLocation location = entry.getKey();
 				BigChunkLocation bigLoc = new BigChunkLocation( location );
 				
-				// Make sure this chunk is no longer necessary
-				if ( noSave.contains( bigLoc ) ) {
-					continue;
-				}
-				
-				// If not already marked as "in use", then check if it is loaded, or is waiting to be rendered
-				if ( cache.withinVisiblePlayerRange( location )
-						|| location.isLoaded()
-						|| cache.isProcessing( location ) ) {
-					// Add the location
-					noSave.add( bigLoc );
-					// Remove it from chunks to save if it is already queued to be saved
-					if ( chunks.containsKey( bigLoc ) ) {
-						chunks.remove( bigLoc );
+				// Trim the unnecessary chunks
+				if ( !( settings.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location ) ) ) {
+					it.remove();
+				} else {
+					// Make sure this chunk is no longer necessary
+					if ( noSave.contains( bigLoc ) ) {
+						continue;
 					}
-					continue;
+
+					// If not already marked as "in use", then check if it is loaded, or is waiting to be rendered
+					if ( cache.withinVisiblePlayerRange( location )
+							|| location.isLoaded()
+							|| cache.isProcessing( location ) ) {
+						// Add the location
+						noSave.add( bigLoc );
+						// Remove it from chunks to save if it is already queued to be saved
+						if ( chunks.containsKey( bigLoc ) ) {
+							chunks.remove( bigLoc );
+						}
+						continue;
+					}
+
+					// Get the big chunk that needs to be saved
+					BigChunk chunk = chunks.getOrDefault( bigLoc, new BigChunk( location ) );
+
+					// Add the current location and add to queue
+					chunk.set( location, entry.getValue() );
+					chunks.put( bigLoc, chunk );
 				}
-				
-				// Get the big chunk that needs to be saved
-				BigChunk chunk = chunks.getOrDefault( bigLoc, new BigChunk( location ) );
-				
-				// Add the current location and add to queue
-				chunk.set( location, entry.getValue() );
-				chunks.put( bigLoc, chunk );
 			}
 			
 			for ( BigChunkLocation loc : chunks.keySet() ) {

@@ -35,7 +35,7 @@ public class PlayerMarkerProvider implements WorldCursorProvider {
 			for ( Player target : location.getWorld().getPlayers() ) {
 				if ( player != target && !( target.isSneaking() || target.hasPotionEffect( PotionEffectType.INVISIBILITY ) ) ) {
 					Location targetLoc = target.getLocation();
-					Optional< Type > type = supplier.getIconFor( player, target );
+					Optional< Type > type = supplier.getIconFor( player, target, setting.getScale() );
 					if ( type.isPresent() ) {
 						WorldCursor cursor = new WorldCursor( name ? target.getName() : null, targetLoc, type.get(), false );
 						cursors.add( cursor );
@@ -48,7 +48,7 @@ public class PlayerMarkerProvider implements WorldCursorProvider {
 	}
 	
 	public interface IconSupplier {
-		Optional< Type > getIconFor( Player viewer, Player target );
+		Optional< Type > getIconFor( Player viewer, Player target, double zoom );
 	}
 
 }

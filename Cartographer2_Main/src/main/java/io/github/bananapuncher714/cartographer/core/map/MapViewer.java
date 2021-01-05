@@ -26,7 +26,7 @@ import io.github.bananapuncher714.cartographer.core.api.setting.SettingStateLoca
  * @author BananaPuncher714
  */
 public class MapViewer {
-	public static final SettingStateBoolean SHOWNAME = SettingStateBoolean.of( "showname", false, true );
+	public static final SettingStateBooleanOption SHOWNAME = SettingStateBooleanOption.of( "showname", false, BooleanOption.UNSET );
 	public static final SettingStateBoolean CURSOR = SettingStateBoolean.of( "cursor", false, false );
 	public static final SettingStateBooleanOption ROTATE = SettingStateBooleanOption.of( "rotate", false, BooleanOption.TRUE );
 	public static final SettingStateLocale LOCALE = new SettingStateLocale( "locale", false );

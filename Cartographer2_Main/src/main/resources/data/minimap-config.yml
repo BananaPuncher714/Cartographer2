@@ -10,16 +10,25 @@ auto-update: true
 # Whether or not Cartographer2 should load and update locations outside of the worldborder range. Supports WorldBorder and vanilla world borders
 render-out-of-border: false
 
-# Can take on TRUE, FALSE, or UNSET
+# Can take on TRUE, FALSE, or UNSET. Must be surrounded by quotes.
 # If UNSET, it will default to the player's preference
-rotate: UNSET
+rotate: "UNSET"
+# Default showname setting, takes on TRUE, FALSE, or UNSET. Must be surrounded by quotes.
+showname: "UNSET"
 
-# Image specific settings
+# The minimap specific images
+# Their location is relative to the minimap folder
 images:
+  # The overlay image that goes on top of the map
+  overlay: "overlay.png"
   # Whether or not to dither the overlay image
   dither-overlay: false
+  # The background image, very last thing that players will normally see
+  background: "background.png"
   # Whether or not to dither the background image
   dither-background: false
+  # The disabled image, when the minimap is blacklisted in a world
+  blacklisted: "disabled.png"
   # Whether or not to dither the blacklisted image
   dither-blacklisted: false
 

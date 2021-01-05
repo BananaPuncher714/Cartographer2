@@ -133,6 +133,7 @@ public final class LocaleConstants {
 	
 	// Minimap
 	public static final String MINIMAP_DEFAULT_ROTATION = "core.minimap.default-rotation";
+	public static final String MINIMAP_DEFAULT_SHOWNAME = "core.minimap.default-showname";
 	public static final String MINIMAP_AUTO_UPDATE = "core.minimap.auto-update";
 	public static final String MINIMAP_ZOOM_CIRCULAR = "core.minimap.circular-zoom";
 	public static final String MINIMAP_RENDER = "core.minimap.render-out-of-border";

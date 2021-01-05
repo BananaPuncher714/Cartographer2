@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,6 +57,7 @@ public class CartographerRenderer extends MapRenderer {
 	// Async is not recommended, particularly because of the pixel and cursor providers
 	private static final boolean ASYNC_RENDER = false;
 	private static final boolean TICK_RENDER = true;
+	private static final boolean FORK_ASYNC = true;
 	
 	private volatile boolean RUNNING = true;
 
@@ -104,7 +108,7 @@ public class CartographerRenderer extends MapRenderer {
 	
 	private void update() {
 		// Each person gets their own FrameRenderTask
-		List< FrameRenderTask > tasks = new ArrayList< FrameRenderTask >();
+		List< RecursiveTask< RenderInfo > > tasks = new ArrayList< RecursiveTask< RenderInfo > >();
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			PlayerSetting setting = entry.getValue();
@@ -160,8 +164,15 @@ public class CartographerRenderer extends MapRenderer {
 				byte[] missingMapData;
 				if ( plugin.getSettings().isDitherMissingMapImage() ) {
 					missingMapData = JetpImageUtil.dither2Minecraft( missingImage.getImage(), missingImage.getWidth() ).array();
+					int[] imageData = missingImage.getImage();
+					// Copy over transparent pixels
+					for ( int i = 0; i < imageData.length; i++ ) {
+						if ( ( ( imageData[ i ] >>> 24 ) & 0xFF ) < 128 ) {
+							missingMapData[ i ] = 0;
+						}
+					}
 				} else {
-					missingMapData = JetpImageUtil.simplify( missingImage.getImage() );
+					missingMapData = JetpImageUtil.simplifyTransparent( missingImage.getImage() );
 				}
 				plugin.getHandler().sendDataTo( id, missingMapData, null, entry.getKey() );
 				continue;
@@ -176,8 +187,14 @@ public class CartographerRenderer extends MapRenderer {
 				if ( image != null ) {
 					if ( map.getSettings().isDitherBlacklisted() ) {
 						data = JetpImageUtil.dither2Minecraft( image.getImage(), image.getWidth() ).array();
+						int[] imageData = image.getImage();
+						for ( int i = 0; i < imageData.length; i++ ) {
+							if ( ( ( imageData[ i ] >>> 24 ) & 0xFF ) < 128 ) {
+								data[ i ] = 0;
+							}
+						}
 					} else {
-						data = JetpImageUtil.simplify( image.getImage() );
+						data = JetpImageUtil.simplifyTransparent( image.getImage() );
 					}
 				}
 				CartographerRendererDisabledEvent event = new CartographerRendererDisabledEvent( this, data );
@@ -236,28 +253,48 @@ public class CartographerRenderer extends MapRenderer {
 			renderInfo.backgroundImage = backgroundImage;
 			
 			// Create a new task per player and run
+			// This splits the task among other threads
 			FrameRenderTask task = new FrameRenderTask( renderInfo );
+			// This calculates the frame all at once
+//			FullRenderTask task = new FullRenderTask( renderInfo );
 			tasks.add( task );
 			
-			task.fork();
+			if ( !FORK_ASYNC ) {
+				task.fork();
+			}
+		}
+		
+		// Don't forget to invoke the forks
+		// Next time, read the documentation idiot
+		// Calling RenderTask#fork() does NOT start executing it
+		// Everything was being done on one thread before
+		if ( FORK_ASYNC ) {
+			ForkJoinTask.invokeAll( tasks );
 		}
 		
 		// Once all the frames are done, then send
-		for ( FrameRenderTask task : tasks ) {
-			task.join();
-			
-			RenderInfo info = task.info;
+		for ( RecursiveTask< RenderInfo > task : tasks ) {
+			try {
+				RenderInfo info;
+				if ( FORK_ASYNC ) {
+					info = task.get();
+				} else {
+					info = task.join();
+				}
 
-			// Queue the locations that need loading
-			for ( BigChunkLocation location : info.needsRender ) {
-				info.map.getDataCache().requestLoadFor( location );
+				// Queue the locations that need loading
+				for ( BigChunkLocation location : info.needsRender ) {
+					info.map.getDataCache().requestLoadFor( location );
+				}
+
+				// Send the packet
+				byte[] data = info.data;
+				MapCursor[] cursors = info.cursors;
+				UUID uuid = info.uuid;
+				plugin.getHandler().sendDataTo( id, data, cursors, uuid );
+			} catch ( InterruptedException | ExecutionException e ) {
+				e.printStackTrace();
 			}
-			
-			// Send the packet
-			byte[] data = info.data;
-			MapCursor[] cursors = info.cursors;
-			UUID uuid = info.uuid;
-			plugin.getHandler().sendDataTo( id, data, cursors, uuid );
 		}
 		
 		// Remove the player interacted flag

@@ -36,11 +36,16 @@ public class MapSettings {
 
 	// Default rotation option
 	protected BooleanOption rotation = BooleanOption.UNSET;
+	protected BooleanOption showName = BooleanOption.UNSET;
 	
 	// If the images should be dithered
 	protected boolean ditherOverlay = false;
 	protected boolean ditherBackground = false;
 	protected boolean ditherDisabled = false;
+	
+	protected String overlayPath;
+	protected String backgroundPath;
+	protected String disabledPath;
 	
 	protected boolean reloadChunks = true;
 	
@@ -57,6 +62,7 @@ public class MapSettings {
 		circularZoom = config.getBoolean( "circular-zoom", false );
 		autoUpdate = config.getBoolean( "auto-update", true );
 		rotation = FailSafe.getEnum( BooleanOption.class, config.getString( "rotate", "UNSET" ).toUpperCase() );
+		showName = FailSafe.getEnum( BooleanOption.class, config.getString( "showname", "UNSET" ).toUpperCase() );
 		renderOutOfBorder = config.getBoolean( "render-out-of-border", false );
 		for ( String string : config.getStringList( "allowed-zooms" ) ) {
 			double zoomVal = 1;
@@ -74,6 +80,10 @@ public class MapSettings {
 		ditherOverlay = config.getBoolean( "images.dither-overlay", false );
 		ditherBackground = config.getBoolean( "images.dither-background", false );
 		ditherDisabled = config.getBoolean( "images.dither-blacklisted", false );
+		
+		overlayPath = config.getString( "images.overlay" );
+		backgroundPath = config.getString( "images.overlay" );
+		disabledPath = config.getString( "images.overlay" );
 		
 		reloadChunks = config.getBoolean( "chunks.reload-chunks", true );
 		
@@ -128,6 +138,22 @@ public class MapSettings {
 		this.rotation = rotation;
 	}
 	
+	public BooleanOption getShowName() {
+		return showName;
+	}
+
+	public void setShowName(BooleanOption showName) {
+		this.showName = showName;
+	}
+	
+	public String getOverlayPath() {
+		return overlayPath;
+	}
+
+	public void setOverlayPath( String overlayPath ) {
+		this.overlayPath = overlayPath;
+	}
+
 	public boolean isDitherOverlay() {
 		return ditherOverlay;
 	}
@@ -136,12 +162,28 @@ public class MapSettings {
 		this.ditherOverlay = ditherOverlay;
 	}
 
+	public String getBackgroundPath() {
+		return backgroundPath;
+	}
+
+	public void setBackgroundPath( String backgroundPath ) {
+		this.backgroundPath = backgroundPath;
+	}
+
 	public boolean isDitherBackground() {
 		return ditherBackground;
 	}
 
 	public void setDitherBackground( boolean ditherBackground ) {
 		this.ditherBackground = ditherBackground;
+	}
+
+	public String getBlacklistedPath() {
+		return disabledPath;
+	}
+
+	public void getBlacklistedPath( String disabledPath ) {
+		this.disabledPath = disabledPath;
 	}
 
 	public boolean isDitherBlacklisted() {
