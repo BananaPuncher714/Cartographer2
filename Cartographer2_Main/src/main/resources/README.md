@@ -132,4 +132,5 @@ Additional settings may be added by modules.
 - `EnigmaKickz` - Translator(nl_nl)
 - `Tarazil` - Translator(hu_hu)
 - `Waren Gonzaga` - Translator(fil_ph)
+- `GEEKY__` - Translator(ru_ru)
 - `REjoin` - Supporter
