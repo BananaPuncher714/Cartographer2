@@ -78,3 +78,13 @@ dither-missing: false
 # The default locale
 # 'default' is always present
 default-locale: "default"
+
+# Options pertaining to the renderer
+renderer:
+  # Async options
+  multithread:
+    # Whether to use async or not
+    enabled: true
+    # How many threads
+    threads: 4
+  use-subtasks: false

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -69,6 +71,8 @@ public class Cartographer extends JavaPlugin {
 	private LocaleManager localeManager;
 	
 	private CartographerSettings settings;
+	
+	private ForkJoinPool threadpool;
 	
 	// List of all running timers
 	private Set< BukkitTask > tasks = new HashSet< BukkitTask >();
@@ -183,6 +187,10 @@ public class Cartographer extends JavaPlugin {
 		
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			handler.uninject( player );
+		}
+		
+		if ( threadpool != null ) {
+			threadpool.shutdownNow();
 		}
 	}
 	
@@ -357,6 +365,10 @@ public class Cartographer extends JavaPlugin {
 		settings.setPreventDrop( config.getBoolean( "prevent-drop", true ) );
 		settings.setUseDropPacket( config.getBoolean( "use-drop-packet", true ) );
 		
+		settings.setRendererMultithread( config.getBoolean( "renderer.multithread.enabled", true ) );
+		settings.setRendererThreadcount( config.getInt( "renderer.multithread.threadcount", 4 ) );
+		settings.setUseSubtasks( config.getBoolean( "renderer.use-subtasks", false ) );
+		
 		OVERLAY_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.overlay", "overlay.gif" ) );
 		BACKGROUND_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.background", "background.gif" ) );
 		MISSING_MAP_IMAGE = new File( getDataFolder() + "/" + config.getString( "images.missing", "missing.png" ) );
@@ -505,6 +517,11 @@ public class Cartographer extends JavaPlugin {
 		if ( settings.getBlockUpdateDelay() > 0 ) {
 			Bukkit.getScheduler().runTaskTimer( this, playerListener::update, 1, settings.getBlockUpdateDelay() );
 		}
+
+		if ( threadpool != null ) {
+			threadpool.shutdownNow();
+		}
+		threadpool = new ForkJoinPool( settings.getRendererThreadcount() );
 	}
 	
 	private void loggerInfo( String key, Object... params ) {
@@ -624,6 +641,10 @@ public class Cartographer extends JavaPlugin {
 	
 	public void setTickLimit( int limit ) {
 		tickLimit = limit;
+	}
+	
+	public ForkJoinPool getExecutorService() {
+		return threadpool;
 	}
 	
 	public static Cartographer getInstance() {

@@ -40,6 +40,10 @@ public class CartographerSettings {
 	private SimpleImage missingMapImage;
 	private SimpleImage disabledMap;
 	
+	private boolean rendererMultithread = true;
+	private int rendererThreadcount = 4;
+	private boolean useSubtasks = false;
+	
 	protected Set< Integer > getInvalidIds() {
 		return invalidIds;
 	}
@@ -164,5 +168,29 @@ public class CartographerSettings {
 	
 	public Set< InventoryType > getInvalidInventoryTypes() {
 		return invalidInventoryTypes;
+	}
+
+	public boolean isRendererMultithread() {
+		return rendererMultithread;
+	}
+
+	public void setRendererMultithread( boolean rendererMultithread ) {
+		this.rendererMultithread = rendererMultithread;
+	}
+
+	public int getRendererThreadcount() {
+		return rendererThreadcount;
+	}
+
+	public void setRendererThreadcount( int rendererThreadcount ) {
+		this.rendererThreadcount = rendererThreadcount;
+	}
+
+	public boolean isUseSubtasks() {
+		return useSubtasks;
+	}
+
+	public void setUseSubtasks( boolean useSubtasks ) {
+		this.useSubtasks = useSubtasks;
 	}
 }

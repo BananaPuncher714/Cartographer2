@@ -3,6 +3,7 @@ package io.github.bananapuncher714.cartographer.core;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,6 +94,9 @@ public class Cartographer extends JavaPlugin {
 	public void setTickLimit( int limit ) {
 	}
 	
+	public ForkJoinPool getExecutorService() {
+		return null;
+	}
 	
 	public static Cartographer getInstance() {
 		return null;

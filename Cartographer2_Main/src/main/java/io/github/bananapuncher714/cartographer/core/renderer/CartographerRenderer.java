@@ -57,7 +57,6 @@ public class CartographerRenderer extends MapRenderer {
 	// Async is not recommended, particularly because of the pixel and cursor providers
 	private static final boolean ASYNC_RENDER = false;
 	private static final boolean TICK_RENDER = true;
-	private static final boolean FORK_ASYNC = true;
 	
 	private volatile boolean RUNNING = true;
 
@@ -253,13 +252,17 @@ public class CartographerRenderer extends MapRenderer {
 			renderInfo.backgroundImage = backgroundImage;
 			
 			// Create a new task per player and run
-			// This splits the task among other threads
-			FrameRenderTask task = new FrameRenderTask( renderInfo );
-			// This calculates the frame all at once
-//			FullRenderTask task = new FullRenderTask( renderInfo );
+			RecursiveTask< RenderInfo > task;
+			if ( plugin.getSettings().isUseSubtasks() ) {
+				// This splits the task among other threads
+				task = new FrameRenderTask( renderInfo );
+			} else {
+				// This calculates the frame all at once
+				task = new FullRenderTask( renderInfo );
+			}
 			tasks.add( task );
 			
-			if ( !FORK_ASYNC ) {
+			if ( !plugin.getSettings().isRendererMultithread() ) {
 				task.fork();
 			}
 		}
@@ -268,15 +271,17 @@ public class CartographerRenderer extends MapRenderer {
 		// Next time, read the documentation idiot
 		// Calling RenderTask#fork() does NOT start executing it
 		// Everything was being done on one thread before
-		if ( FORK_ASYNC ) {
-			ForkJoinTask.invokeAll( tasks );
+		if ( plugin.getSettings().isRendererMultithread() ) {
+			for ( RecursiveTask< RenderInfo > task : tasks ) {
+				plugin.getExecutorService().execute( task );
+			}
 		}
 		
 		// Once all the frames are done, then send
 		for ( RecursiveTask< RenderInfo > task : tasks ) {
 			try {
 				RenderInfo info;
-				if ( FORK_ASYNC ) {
+				if ( plugin.getSettings().isRendererMultithread() ) {
 					info = task.get();
 				} else {
 					info = task.join();

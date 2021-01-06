@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Location;
@@ -98,13 +99,11 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		
 		// Construct the fork join pools required for the interval below and run
-		List< SubRenderTask > tasks = new ArrayList< SubRenderTask >();
+		List< Future< SubRenderInfo > > tasks = new ArrayList< Future< SubRenderInfo > >();
 		for ( int subTaskIndex = 0; subTaskIndex < 16_384; subTaskIndex += SUBTASK_INTERVAL ) {
 			SubRenderTask task = new SubRenderTask( info, subTaskIndex, SUBTASK_INTERVAL );
-			tasks.add( task );
+			tasks.add( Cartographer.getInstance().getExecutorService().submit( task ) );
 		}
-		
-		ForkJoinTask.invokeAll( tasks );
 		
 		// Calculate the cursor info while the sub render tasks are running
 		double yawOffset = info.setting.rotating ? loc.getYaw() + 180 : 0;
@@ -137,7 +136,7 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		info.cursors = cursorList.toArray( new MapCursor[ cursorList.size() ] );
 		
 		// Once they have been run, join them together
-		for ( SubRenderTask task : tasks ) {
+		for ( Future< SubRenderInfo > task : tasks ) {
 			try {
 				SubRenderInfo subInfo = task.get();
 				info.needsRender.addAll( subInfo.requiresRender );
