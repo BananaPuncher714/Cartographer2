@@ -133,4 +133,5 @@ Additional settings may be added by modules.
 - `Tarazil` - Translator(hu_hu)
 - `Waren Gonzaga` - Translator(fil_ph)
 - `GEEKY__` - Translator(ru_ru)
+- `RedTrust` - Translator(ko_kr)
 - `REjoin` - Supporter
