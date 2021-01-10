@@ -36,6 +36,7 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 public class MapDataCache {
 	protected final ExecutorService service = Executors.newFixedThreadPool( 2 );
 	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new ConcurrentHashMap< ChunkLocation, Future< ChunkData > >();
+	protected final Map< EnormousChunkLocation, EnormousChunkMap > bigData;
 	protected final Map< ChunkLocation, ChunkData > data;
 	protected final Map< ChunkLocation, ChunkSnapshot > chunks;
 
@@ -58,6 +59,7 @@ public class MapDataCache {
 	public MapDataCache( MapSettings setting ) {
 		this.setting = setting;
 		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
+		bigData = new ConcurrentHashMap< EnormousChunkLocation, EnormousChunkMap >();
 		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
 	}
 
@@ -174,7 +176,8 @@ public class MapDataCache {
 	}
 
 	public ChunkData getDataAt( ChunkLocation location ) {
-		return data.get( location );
+		EnormousChunkMap map = bigData.get( new EnormousChunkLocation( location ) );
+		return map == null ? null : map.get( location );
 	}
 
 	public boolean containsDataAt( ChunkLocation location ) {
@@ -245,6 +248,10 @@ public class MapDataCache {
 
 	public void removeChunkDataAt( ChunkLocation location ) {
 		data.remove( location );
+		EnormousChunkMap map = bigData.get( new EnormousChunkLocation( location ) );
+		if ( map != null ) {
+			map.set( location, null );
+		}
 	}
 
 	public void updateLocation( Location location, MinimapPalette palette ) {
@@ -281,6 +288,11 @@ public class MapDataCache {
 				if ( force || !this.data.containsKey( location ) ) {
 					ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
 					this.data.put( location, newData == null ? data : newData );
+					
+					EnormousChunkLocation bigLocation = new EnormousChunkLocation( location );
+					EnormousChunkMap map = bigData.getOrDefault( bigLocation, new EnormousChunkMap( bigLocation ) );
+					map.set( location, newData == null ? data : newData );
+					bigData.put( bigLocation, map );
 				}
 			}
 		} else {
