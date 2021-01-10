@@ -67,13 +67,6 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		info.globalOverlay = globalOverlay;
 		info.background = loadingBackground;
 		
-		// Get the locations around that need rendering
-		Location loc = info.setting.location;
-		Location[] locations = MapUtil.getLocationsAround( loc, info.setting.zoomscale, info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
-		
-		// Set the locations
-		info.locations = locations;
-		
 		// Construct lowerMapPixels and higherMapPixels
 		for ( Iterator< MapPixel > pixelIterator = info.mapPixels.iterator(); pixelIterator.hasNext(); ) {
 			MapPixel pixel = pixelIterator.next();
@@ -106,6 +99,7 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		
 		// Calculate the cursor info while the sub render tasks are running
+		Location loc = info.setting.location;
 		double yawOffset = info.setting.rotating ? loc.getYaw() + 180 : 0;
 		
 		List< MapCursor > cursorList = new ArrayList< MapCursor >( info.mapCursors );

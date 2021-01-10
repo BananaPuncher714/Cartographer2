@@ -141,7 +141,7 @@ public final class JetpImageUtil {
 	}
 	
 	public static int getColorFromMinecraftPalette( byte val ) {
-		return PALETTE[ ( val + 256 ) % 256 ];
+		return PALETTE[ ( ( int ) val + 256 ) & 0xFF ];
 	}
 
 	public static byte getBestColorIncludingTransparent( int rgb ) {

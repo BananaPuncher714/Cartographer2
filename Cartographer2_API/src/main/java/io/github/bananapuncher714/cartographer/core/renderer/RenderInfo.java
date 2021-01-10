@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Location;
 import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
@@ -23,7 +22,6 @@ public class RenderInfo {
 	protected int[] lowerPixelInfo;
 	protected int[] globalOverlay;
 	protected int[] background;
-	protected Location[] locations;
 	protected MapCursor[] cursors;
 	
 	// This is just there

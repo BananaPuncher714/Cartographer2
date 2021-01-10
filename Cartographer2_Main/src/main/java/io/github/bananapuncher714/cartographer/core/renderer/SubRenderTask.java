@@ -9,6 +9,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
+import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
 public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 	protected RenderInfo info;
@@ -27,6 +28,15 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 		byte[] data = new byte[ length ];
 		subRenderInfo.data = data;
 		subRenderInfo.index = index;
+		
+		// Calculate the information for the rotations and whatever we can right now
+		Location loc = info.setting.location;
+		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
+		double cos = RivenMath.cos( ( float ) radians );
+		double sin = RivenMath.sin( ( float ) radians );
+		double oriX = info.setting.location.getX();
+		double oriZ = info.setting.location.getZ();
+		
 		for ( int i = 0; i < length; i++ ) {
 			int subIndex = i + index;
 			
@@ -66,20 +76,21 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 			int loading = info.background[ subIndex ];
 
 			// The render location comes next
-			// TODO Perhaps calculate this location here rather than creating an array of 128 * 128 locations?
-			// Not sure how much faster this would be though
-			Location renderLoc = info.locations[ subIndex ];
-			// If renderLoc is null, we know it doesn't exist
-			// Therefore, overwrite it with whatever color mapColor is
-			if ( renderLoc == null ) {
-				data[ i ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
-				continue;
-			}
-
-			// If not, then we try and get the render location
-			ChunkLocation cLocation = new ChunkLocation( renderLoc );
-			int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
-			int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
+			// Calculate the x and y manually
+			double a = ( subIndex & 127 ) - 64;
+			double b = ( subIndex >> 7 ) - 64;
+			double xx = a * cos - b * sin;
+			double yy = a * sin + b * cos;
+			double xVal = oriX + ( info.setting.zoomscale * xx );
+			double zVal = oriZ + ( info.setting.zoomscale * yy );
+			int blockX = ( int ) xVal;
+			int blockZ = ( int ) zVal;
+			int chunkX = blockX >> 4;
+			int chunkZ = blockZ >> 4;
+			
+			ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
+			int xOffset = blockX & 0xF;
+			int zOffset = blockZ & 0xF;
 
 			ChunkData chunkData = info.cache.getDataAt( cLocation );
 
@@ -103,7 +114,7 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 
 			// First, insert any WorldPixels that may be present
 			for ( WorldPixel pixel : info.worldPixels ) {
-				if ( renderLoc.getWorld() == info.setting.location.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
+				if ( pixel.getWorld() == loc.getWorld() && pixel.intersects( xVal, zVal ) ) {
 					localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 				}
 			}

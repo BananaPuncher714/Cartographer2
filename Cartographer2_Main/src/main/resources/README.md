@@ -134,4 +134,5 @@ Additional settings may be added by modules.
 - `Waren Gonzaga` - Translator(fil_ph)
 - `GEEKY__` - Translator(ru_ru)
 - `RedTrust` - Translator(ko_kr)
+- `Vydumka` - Translator(ru_ru)
 - `REjoin` - Supporter

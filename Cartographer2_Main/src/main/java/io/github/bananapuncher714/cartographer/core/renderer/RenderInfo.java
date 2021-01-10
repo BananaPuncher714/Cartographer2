@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Location;
 import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
@@ -14,6 +13,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 
 public class RenderInfo {
@@ -23,7 +23,6 @@ public class RenderInfo {
 	protected int[] lowerPixelInfo;
 	protected int[] globalOverlay;
 	protected int[] background;
-	protected Location[] locations;
 	protected MapCursor[] cursors;
 	
 	// This is just there

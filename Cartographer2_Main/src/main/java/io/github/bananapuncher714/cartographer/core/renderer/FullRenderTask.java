@@ -17,7 +17,6 @@ import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
-import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
 // Test rendering the full thing with one thread
@@ -66,13 +65,6 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 		info.globalOverlay = globalOverlay;
 		info.background = loadingBackground;
 		
-		// Get the locations around that need rendering
-		Location loc = info.setting.location;
-		Location[] locations = MapUtil.getLocationsAround( loc, info.setting.zoomscale, info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0 );
-		
-		// Set the locations
-		info.locations = locations;
-		
 		// Construct lowerMapPixels and higherMapPixels
 		for ( Iterator< MapPixel > pixelIterator = info.mapPixels.iterator(); pixelIterator.hasNext(); ) {
 			MapPixel pixel = pixelIterator.next();
@@ -98,6 +90,7 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		
 		// Calculate the cursor info while the sub render tasks are running
+		Location loc = info.setting.location;
 		double yawOffset = info.setting.rotating ? loc.getYaw() + 180 : 0;
 		
 		List< MapCursor > cursorList = new ArrayList< MapCursor >( info.mapCursors );
@@ -127,90 +120,98 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		info.cursors = cursorList.toArray( new MapCursor[ cursorList.size() ] );
 		
-		for ( int i = 0; i < CANVAS_SIZE; i++ ) {
-			int mapColor = 0;
+		// Calculate the information for the rotations and whatever we can right now
+		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
+		double cos = RivenMath.cos( ( float ) radians );
+		double sin = RivenMath.sin( ( float ) radians );
+		double oriX = info.setting.location.getX();
+		double oriZ = info.setting.location.getZ();
+		
+		int index = -1;
+		for ( int y = 0; y < 128; y++ ) {
+			double b = y - 64;
+			for ( int x = 0; x < 128; x++ ) {
+				double a = x - 64;
+				
+				index++;
+				int mapColor = 0;
 
-			// Get the custom map pixel
-			int color = info.upperPixelInfo[ i ];
-			// Continue if the pixel is opaque, since we know that nothing else be above this
-			if ( mapColor >>> 24 == 0xFF ) {
-				data[ i ] = JetpImageUtil.getBestColor( mapColor );
-				continue;
-			} else {
-				// Otherwise, we want to set it as the bottom layer
-				mapColor = color;
-			}
-
-			// Then the global overlay
-			// The global overlay is still the background to the foreground
-			mapColor = JetpImageUtil.overwriteColor( info.globalOverlay[ i ], mapColor );
-
-			// See if the global overlay is opaque
-			if ( mapColor >>> 24 == 0xFF ) {
-				data[ i ] = JetpImageUtil.getBestColor( mapColor );
-				continue;
-			}
-
-			int lowerColor = info.lowerPixelInfo[ i ];
-			mapColor = JetpImageUtil.overwriteColor( lowerColor, mapColor );
-
-			// See if the pixels are opaque
-			if ( mapColor >>> 24 == 0xFF ) {
-				data[ i ] = JetpImageUtil.getBestColor( mapColor );
-				continue;
-			}
-
-			// Then get the loading background
-			int loading = info.background[ i ];
-
-			// The render location comes next
-			// TODO Perhaps calculate this location here rather than creating an array of 128 * 128 locations?
-			// Not sure how much faster this would be though
-			Location renderLoc = info.locations[ i ];
-			// If renderLoc is null, we know it doesn't exist
-			// Therefore, overwrite it with whatever color mapColor is
-			if ( renderLoc == null ) {
-				data[ i ] = JetpImageUtil.getBestColorIncludingTransparent( JetpImageUtil.overwriteColor( loading, mapColor ) );
-				continue;
-			}
-
-			// If not, then we try and get the render location
-			ChunkLocation cLocation = new ChunkLocation( renderLoc );
-			int xOffset = renderLoc.getBlockX() - ( cLocation.getX() << 4 );
-			int zOffset = renderLoc.getBlockZ() - ( cLocation.getZ() << 4 );
-
-			ChunkData chunkData = info.cache.getDataAt( cLocation );
-
-			int localColor = 0;
-			if ( chunkData != null ) {
-				// TODO make this configurable per player or something. Make a player preference thing or whatnot.
-				// This is for static colors
-//  			localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
-				// This is for dynamic colors
-				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
-			} else {
-				// Don't check if it requires generation, or if the chunk is being loaded here
-				// It should be done somewhere else
-				// Just add it to the collection and check it later
-//				if ( info.cache.requiresGeneration( cLocation ) && !ChunkLoadListener.isLoading( cLocation ) ) {
-					info.needsRender.add( new BigChunkLocation( cLocation ) );
-//				}
-
-				localColor = loading;
-			}
-
-			// First, insert any WorldPixels that may be present
-			for ( WorldPixel pixel : info.worldPixels ) {
-				if ( renderLoc.getWorld() == info.setting.location.getWorld() && pixel.intersects( renderLoc.getX(), renderLoc.getZ() ) ) {
-					localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
+				// Get the custom map pixel
+				int color = info.upperPixelInfo[ index ];
+				// Continue if the pixel is opaque, since we know that nothing else be above this
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				} else {
+					// Otherwise, we want to set it as the bottom layer
+					mapColor = color;
 				}
+
+				// Then the global overlay
+				// The global overlay is still the background to the foreground
+				mapColor = JetpImageUtil.overwriteColor( info.globalOverlay[ index ], mapColor );
+
+				// See if the global overlay is opaque
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+
+				int lowerColor = info.lowerPixelInfo[ index ];
+				mapColor = JetpImageUtil.overwriteColor( lowerColor, mapColor );
+
+				// See if the pixels are opaque
+				if ( mapColor >>> 24 == 0xFF ) {
+					data[ index ] = JetpImageUtil.getBestColor( mapColor );
+					continue;
+				}
+
+				// Then get the loading background
+				int loading = info.background[ index ];
+
+				// The render location comes next
+				// Calculate the x and y manually
+				double xx = a * cos - b * sin;
+				double yy = a * sin + b * cos;
+				double xVal = oriX + ( info.setting.zoomscale * xx );
+				double zVal = oriZ + ( info.setting.zoomscale * yy );
+				int blockX = ( int ) xVal;
+				int blockZ = ( int ) zVal;
+				int chunkX = blockX >> 4;
+				int chunkZ = blockZ >> 4;
+				
+				ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
+				int xOffset = blockX & 0xF;
+				int zOffset = blockZ & 0xF;
+				int localColor = 0;
+
+				ChunkData chunkData = info.cache.getDataAt( cLocation );
+
+				if ( chunkData != null ) {
+					// TODO make this configurable per player or something. Make a player preference thing or whatnot.
+					// This is for static colors
+//	  				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
+					// This is for dynamic colors
+					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
+				} else {
+					info.needsRender.add( new BigChunkLocation( cLocation ) );
+
+					localColor = loading;
+				}
+
+				// First, insert any WorldPixels that may be present
+				for ( WorldPixel pixel : info.worldPixels ) {
+					if ( pixel.getWorld() == loc.getWorld() && pixel.intersects( xVal, zVal ) ) {
+						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
+					}
+				}
+
+				// Then, get the color and mix it under the current overlay color
+				mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
+				mapColor = JetpImageUtil.overwriteColor( loading, mapColor );
+
+				data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 			}
-
-			// Then, get the color and mix it under the current overlay color
-			mapColor = JetpImageUtil.overwriteColor( localColor, mapColor );
-			mapColor = JetpImageUtil.overwriteColor( loading, mapColor );
-
-			data[ i ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 		}
 		
 		return info;

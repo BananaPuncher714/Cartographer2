@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Location;
 import org.bukkit.map.MapCursor;
 
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
@@ -48,14 +47,6 @@ public class CustomRenderInfo extends RenderInfo {
 
 	public void setLowerPixelInfo( int[] lowerPixelInfo ) {
 		this.lowerPixelInfo = lowerPixelInfo;
-	}
-
-	public Location[] getLocations() {
-		return locations;
-	}
-
-	public void setLocations( Location[] locations ) {
-		this.locations = locations;
 	}
 
 	public MapCursor[] getCursors() {

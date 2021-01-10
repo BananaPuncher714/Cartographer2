@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
 import org.bukkit.Bukkit;
@@ -107,7 +107,7 @@ public class CartographerRenderer extends MapRenderer {
 	
 	private void update() {
 		// Each person gets their own FrameRenderTask
-		List< RecursiveTask< RenderInfo > > tasks = new ArrayList< RecursiveTask< RenderInfo > >();
+		List< RecursiveTask< RenderInfo > > tasks = new LinkedList< RecursiveTask< RenderInfo > >();
 		for ( Iterator< Entry< UUID, PlayerSetting > > iterator = settings.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< UUID, PlayerSetting > entry = iterator.next();
 			PlayerSetting setting = entry.getValue();
@@ -286,7 +286,7 @@ public class CartographerRenderer extends MapRenderer {
 				} else {
 					info = task.join();
 				}
-
+				
 				// Queue the locations that need loading
 				for ( BigChunkLocation location : info.needsRender ) {
 					info.map.getDataCache().requestLoadFor( location );

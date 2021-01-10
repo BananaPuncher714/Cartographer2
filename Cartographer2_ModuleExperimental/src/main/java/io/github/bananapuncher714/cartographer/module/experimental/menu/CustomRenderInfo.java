@@ -50,14 +50,6 @@ public class CustomRenderInfo extends RenderInfo {
 		this.lowerPixelInfo = lowerPixelInfo;
 	}
 
-	public Location[] getLocations() {
-		return locations;
-	}
-
-	public void setLocations( Location[] locations ) {
-		this.locations = locations;
-	}
-
 	public MapCursor[] getCursors() {
 		return cursors;
 	}
