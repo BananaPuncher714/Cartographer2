@@ -391,7 +391,9 @@ public class MapDataCache {
 			for ( int x = 0; x < 16; x++ ) {
 				for ( int z = 0; z < 16; z++ ) {
 					ChunkLocation chunkLocation = new ChunkLocation( location.getWorld(), cx + x, cz + z );
-					requestLoadFor( chunkLocation, false );
+					if ( !( queue.isLoading( chunkLocation ) || queue.isSaving( chunkLocation ) ) ) {
+						requestLoadFor( chunkLocation, false );
+					}
 				}
 			}
 		}

@@ -48,6 +48,7 @@ public class MapSettings {
 	protected String disabledPath;
 	
 	protected boolean reloadChunks = true;
+	protected int chunkScanLimit = 20_000;
 	
 	// Default palette
 	protected MinimapPalette palette;
@@ -86,6 +87,7 @@ public class MapSettings {
 		disabledPath = config.getString( "images.overlay" );
 		
 		reloadChunks = config.getBoolean( "chunks.reload-chunks", true );
+		chunkScanLimit = config.getInt( "chunks.chunk-scan-limit", 20_000 );
 		
 		palette = Cartographer.getInstance().getPaletteManager().construct( config.getStringList( "palettes" ) );
 	}
@@ -200,6 +202,14 @@ public class MapSettings {
 	
 	public void setReloadChunks( boolean reload ) {
 		this.reloadChunks = reload;
+	}
+
+	public int getChunkScanLimit() {
+		return chunkScanLimit;
+	}
+
+	public void setChunkScanLimit( int chunkScanLimit ) {
+		this.chunkScanLimit = chunkScanLimit;
 	}
 
 	public MinimapPalette getPalette() {

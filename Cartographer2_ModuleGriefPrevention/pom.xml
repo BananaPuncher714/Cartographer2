@@ -7,12 +7,19 @@
 		<artifactId>cartographer2_master</artifactId>
 		<version>2.14.12</version>
 	</parent>
-	<artifactId>cartographer2_moduleworldviewer</artifactId>
-	<version>1.0.2</version>
+	<artifactId>cartographer2_modulegriefprevention</artifactId>
+	<version>1.0.0</version>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -26,6 +33,11 @@
 			<artifactId>cartographer2_api</artifactId>
 			<version>${master.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.TechFortress</groupId>
+			<artifactId>GriefPrevention</artifactId>
+			<version>16.7.1</version>
 		</dependency>
 	</dependencies>
 </project>

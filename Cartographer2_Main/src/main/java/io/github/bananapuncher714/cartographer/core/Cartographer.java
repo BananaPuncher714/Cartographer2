@@ -211,7 +211,9 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void update() {
-		mapManager.update();
+		if ( !isServerOverloaded() ) {
+			mapManager.update();
+		}
 	}
 	
 	private void saveData() {

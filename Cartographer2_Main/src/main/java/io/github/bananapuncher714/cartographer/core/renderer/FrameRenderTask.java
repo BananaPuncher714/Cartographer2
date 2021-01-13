@@ -1,10 +1,10 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
@@ -14,9 +14,9 @@ import org.bukkit.map.MapCursor;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.MapPixel;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
+import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.util.IcecoreMath;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
-import io.github.bananapuncher714.cartographer.core.util.MapUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
 public class FrameRenderTask extends RecursiveTask< RenderInfo > {
@@ -91,6 +91,20 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 			}
 		}
 		
+		Location loc = info.setting.location;
+		
+		// Trim any redundant world pixels
+		double rad = info.setting.zoomscale * 91;
+		WorldPixel global = new WorldPixel( loc.getWorld(), loc.getX() - rad, loc.getZ() - rad, Color.BLACK );
+		global.setHeight( rad * 2 );
+		global.setWidth( rad * 2 );
+		for ( Iterator< WorldPixel > it = info.worldPixels.iterator(); it.hasNext(); ) {
+			WorldPixel pixel = it.next();
+			if ( pixel.getWorld() != loc.getWorld() || !global.intersects( pixel ) ) {
+				it.remove();
+			}
+		}
+		
 		// Construct the fork join pools required for the interval below and run
 		List< Future< SubRenderInfo > > tasks = new ArrayList< Future< SubRenderInfo > >();
 		for ( int subTaskIndex = 0; subTaskIndex < 16_384; subTaskIndex += SUBTASK_INTERVAL ) {
@@ -99,7 +113,6 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		
 		// Calculate the cursor info while the sub render tasks are running
-		Location loc = info.setting.location;
 		double yawOffset = info.setting.rotating ? loc.getYaw() + 180 : 0;
 		
 		List< MapCursor > cursorList = new ArrayList< MapCursor >( info.mapCursors );

@@ -43,7 +43,7 @@ chunk:
   # Delay in ticks between each update
   update-delay: 1
   # Amount of chunks that get cached per update, if they're loaded
-  cache-per-update: 10
+  cache-per-update: 5
   
   # Whether or not forced loading of chunks should happen
   # If set to true, then the server will attempt to load ALL chunks that are missing on a minimap

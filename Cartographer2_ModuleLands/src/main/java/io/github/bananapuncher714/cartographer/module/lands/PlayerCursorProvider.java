@@ -42,7 +42,7 @@ public class PlayerCursorProvider implements WorldCursorProvider {
 			boolean isVisible = occupying != null &&
 					( ( landVis == LandVisibility.TRUSTED && occupying.getTrustedPlayer( uuid ).isTrustedWholeLand() ) ||
 							landVis == LandVisibility.ALL );
-			for ( Player online : Bukkit.getOnlinePlayers() ) {
+			for ( Player online : location.getWorld().getPlayers() ) {
 				if ( player != online ) {
 					CursorProperties properties = module.getLandUntrustedProperties();
 					boolean found = false;

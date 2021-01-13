@@ -22,12 +22,31 @@ public class YamlMerger {
 		internal = new YamlFileConfiguration( config.getFile() );
 		internal.load( stream );
 	}
-
+	
+	public YamlMerger updateKeys( String section ) {
+		for ( String key : internal.getConfiguration().getConfigurationSection( section ).getKeys( true ) ) {
+			if ( !config.getConfiguration().contains( key ) ||
+					config.getConfiguration().get( key ).getClass() != internal.getConfiguration().get( key ).getClass() ) {
+				config.getConfiguration().set( key, internal.getConfiguration().get( key ) );
+			}
+		}
+		return this;
+	}
+	
 	public YamlMerger updateKeys() {
 		for ( String key : internal.getConfiguration().getKeys( true ) ) {
 			if ( !config.getConfiguration().contains( key ) ||
 					config.getConfiguration().get( key ).getClass() != internal.getConfiguration().get( key ).getClass() ) {
 				config.getConfiguration().set( key, internal.getConfiguration().get( key ) );
+			}
+		}
+		return this;
+	}
+	
+	public YamlMerger trimKeys( String section ) {
+		for ( String key : config.getConfiguration().getConfigurationSection( section ).getKeys( true ) ) {
+			if ( !internal.getConfiguration().contains( key ) ) {
+				config.getConfiguration().set( key, null );
 			}
 		}
 		return this;

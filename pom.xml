@@ -37,6 +37,7 @@
 		<module>cartographer2_moduleguilds</module>
 		<module>cartographer2_moduleworldguard_master</module>
 		<module>cartographer2_modulelands</module>
+		<module>cartographer2_modulegriefprevention</module>
 	</modules>
 
 	<build>

@@ -45,6 +45,7 @@ public class MapSettings {
 	protected String disabledPath;
 	
 	protected boolean reloadChunks = true;
+	protected int chunkScanLimit = 20_000;
 	
 	// Default palette
 	protected MinimapPalette palette;
@@ -164,6 +165,14 @@ public class MapSettings {
 		this.reloadChunks = reload;
 	}
 
+	public int getChunkScanLimit() {
+		return chunkScanLimit;
+	}
+
+	public void setChunkScanLimit( int chunkScanLimit ) {
+		this.chunkScanLimit = chunkScanLimit;
+	}
+	
 	public MinimapPalette getPalette() {
 		return palette;
 	}

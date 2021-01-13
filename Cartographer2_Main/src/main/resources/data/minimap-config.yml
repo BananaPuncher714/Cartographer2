@@ -38,8 +38,8 @@ images:
 # You *can* edit the vanilla preset though. That should help somewhat.
 palettes:
 #- "default"
-- "vanilla"
-- "palette-1.16.1"
+  - "vanilla"
+  - "palette-1.16.1"
 
 world-whitelist: false
 world-blacklist:
@@ -49,14 +49,14 @@ world-blacklist:
 default-zoom: 1
 circular-zoom: false
 allowed-zooms:
-- 0.125
-- 0.25
-- 0.5
-- 1
-- 2
-- 4
-- 8
-- 16
+  - 0.125
+  - 0.25
+  - 0.5
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
 
 # Settings related to minimap chunk rendering
 chunks:
@@ -66,3 +66,7 @@ chunks:
   # - Does not really change, like a survival server
   # - Is laggy when loading new chunks
   reload-chunks: true
+  
+  # Limit how many chunk locations should be checked per second for saving
+  # Not an extremely resource intensive task, but just in case
+  chunk-scan-limit: 20000

@@ -102,6 +102,10 @@ public class WorldPixel implements Comparable< WorldPixel > {
 		return Math.abs( x - centerX ) <= radX && Math.abs( z - centerY ) <= radY;
 	}
 	
+	public boolean intersects( WorldPixel pixel ) {
+		return Math.abs( pixel.centerX - centerX ) <= pixel.radX + radX && Math.abs( pixel.centerY - centerY ) <= pixel.radY + radY;
+	}
+	
 	/**
 	 * Get the world.
 	 * 

@@ -40,17 +40,12 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 		for ( int i = 0; i < length; i++ ) {
 			int subIndex = i + index;
 			
-			int mapColor = 0;
-
 			// Get the custom map pixel
-			int color = info.upperPixelInfo[ subIndex ];
+			int mapColor = info.upperPixelInfo[ subIndex ];
 			// Continue if the pixel is opaque, since we know that nothing else be above this
 			if ( mapColor >>> 24 == 0xFF ) {
 				data[ i ] = JetpImageUtil.getBestColor( mapColor );
 				continue;
-			} else {
-				// Otherwise, we want to set it as the bottom layer
-				mapColor = color;
 			}
 
 			// Then the global overlay
@@ -114,7 +109,7 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 
 			// First, insert any WorldPixels that may be present
 			for ( WorldPixel pixel : info.worldPixels ) {
-				if ( pixel.getWorld() == loc.getWorld() && pixel.intersects( xVal, zVal ) ) {
+				if ( pixel.intersects( xVal, zVal ) ) {
 					localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 				}
 			}

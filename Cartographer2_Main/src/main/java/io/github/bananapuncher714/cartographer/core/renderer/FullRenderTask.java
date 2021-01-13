@@ -1,5 +1,6 @@
 package io.github.bananapuncher714.cartographer.core.renderer;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -120,6 +121,18 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		info.cursors = cursorList.toArray( new MapCursor[ cursorList.size() ] );
 		
+		// Trim any redundant world pixels
+		double rad = info.setting.zoomscale * 91;
+		WorldPixel global = new WorldPixel( loc.getWorld(), loc.getX() - rad, loc.getZ() - rad, Color.BLACK );
+		global.setHeight( rad * 2 );
+		global.setWidth( rad * 2 );
+		for ( Iterator< WorldPixel > it = info.worldPixels.iterator(); it.hasNext(); ) {
+			WorldPixel pixel = it.next();
+			if ( pixel.getWorld() != loc.getWorld() || !global.intersects( pixel ) ) {
+				it.remove();
+			}
+		}
+		
 		// Calculate the information for the rotations and whatever we can right now
 		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
 		double cos = RivenMath.cos( ( float ) radians );
@@ -134,17 +147,13 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 				double a = x - 64;
 				
 				index++;
-				int mapColor = 0;
 
 				// Get the custom map pixel
-				int color = info.upperPixelInfo[ index ];
+				int mapColor = info.upperPixelInfo[ index ];
 				// Continue if the pixel is opaque, since we know that nothing else be above this
 				if ( mapColor >>> 24 == 0xFF ) {
 					data[ index ] = JetpImageUtil.getBestColor( mapColor );
 					continue;
-				} else {
-					// Otherwise, we want to set it as the bottom layer
-					mapColor = color;
 				}
 
 				// Then the global overlay
@@ -201,7 +210,7 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 
 				// First, insert any WorldPixels that may be present
 				for ( WorldPixel pixel : info.worldPixels ) {
-					if ( pixel.getWorld() == loc.getWorld() && pixel.intersects( xVal, zVal ) ) {
+					if ( pixel.intersects( xVal, zVal ) ) {
 						localColor = JetpImageUtil.overwriteColor( localColor, pixel.getColor().getRGB() );
 					}
 				}
