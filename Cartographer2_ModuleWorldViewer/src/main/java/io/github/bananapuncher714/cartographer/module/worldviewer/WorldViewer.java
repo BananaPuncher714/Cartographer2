@@ -43,6 +43,7 @@ public class WorldViewer extends Module {
 	private double defaultScale;
 	private double[] scales;
 	
+	private boolean enabled = true;
 	private int x;
 	private int y;
 	private boolean unicode;
@@ -96,6 +97,7 @@ public class WorldViewer extends Module {
 			scales[ i ] = zooms.get( i );
 		}
 		
+		enabled = config.getBoolean( "text.enabled", true );
 		x = config.getInt( "text.x" );
 		y = config.getInt( "text.y" );
 		unicode = config.getBoolean( "text.unicode" );
@@ -153,19 +155,21 @@ public class WorldViewer extends Module {
 			renderer.resetCursorFor( player );
 			
 			OverviewMenu menu = new OverviewMenu( getCartographer(), this );
-			TextOverlayComponent overlay = new TextOverlayComponent( this, menu );
-
-			overlay.setX( x );
-			overlay.setY( y );
-			overlay.setUnicode( unicode );
-			overlay.setShadow( shadow );
-			overlay.setSpaceDistance( spaceDistance );
-			overlay.setTabDistance( tabDistance );
-			overlay.setCharDistance( charDistance );
-			overlay.setLineSpacing( lineSpacing );
-			overlay.setKey( MAP_TEXT );
-			
-			menu.addComponent( overlay );
+			if ( enabled ) {
+				TextOverlayComponent overlay = new TextOverlayComponent( this, menu );
+	
+				overlay.setX( x );
+				overlay.setY( y );
+				overlay.setUnicode( unicode );
+				overlay.setShadow( shadow );
+				overlay.setSpaceDistance( spaceDistance );
+				overlay.setTabDistance( tabDistance );
+				overlay.setCharDistance( charDistance );
+				overlay.setLineSpacing( lineSpacing );
+				overlay.setKey( MAP_TEXT );
+				
+				menu.addComponent( overlay );
+			}
 			renderer.setMapMenu( player.getUniqueId(), menu );
 		} else {
 			translateAndSend( sender, MESSAGE_MUST_BE_PLAYER );

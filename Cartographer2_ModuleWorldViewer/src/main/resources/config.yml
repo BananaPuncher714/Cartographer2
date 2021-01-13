@@ -9,6 +9,7 @@ allowed-zooms:
 - 16
 
 text:
+  enabled: true
   x: 2
   y: 18
   character-distance: 2
