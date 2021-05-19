@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
-import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
@@ -80,23 +79,18 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 			double zVal = oriZ + ( info.setting.zoomscale * yy );
 			int blockX = ( int ) xVal;
 			int blockZ = ( int ) zVal;
-			int chunkX = blockX >> 4;
-			int chunkZ = blockZ >> 4;
+
+			byte chunkColor = info.cache.getStorage().getColorAt( new Location( loc.getWorld(), xVal, 0, zVal ), info.setting.getScale() );
+			// Check if chunkColor is -1 or something
 			
-			ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
-			int xOffset = blockX & 0xF;
-			int zOffset = blockZ & 0xF;
-
-			ChunkData chunkData = info.cache.getDataAt( cLocation );
-
 			int localColor = 0;
-			if ( chunkData != null ) {
-				// TODO make this configurable per player or something. Make a player preference thing or whatnot.
-				// This is for static colors
-//  			localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
-				// This is for dynamic colors
-				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
+			if ( chunkColor != -1 ) {
+				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkColor );
 			} else {
+				int chunkX = blockX >> 4;
+				int chunkZ = blockZ >> 4;
+				
+				ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
 				// Don't check if it requires generation, or if the chunk is being loaded here
 				// It should be done somewhere else
 				// Just add it to the collection and check it later

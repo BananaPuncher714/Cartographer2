@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.file.NoSuchFileException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,11 +105,13 @@ public class ModuleLoader {
 			return false;
 		}
 		
-		Set< String > classes = loader.getClassNames();
+		Map< String, Class< ? > > classes = loader.getClasses();
 		
 		// Remove from pool of common classes
-		for ( String clazz : classes ) {
-			BukkitUtil.removeClassFromJavaPluginLoader( clazz );
+		for ( Entry< String, Class< ? > > entry : classes.entrySet() ) {
+			if ( !BukkitUtil.removeClassFromJavaPluginLoader( entry.getKey() ) ) {
+				BukkitUtil.removeClassFromJavaPluginLoader( entry.getClass() );
+			}
 		}
 		
 		try {
@@ -134,7 +137,7 @@ public class ModuleLoader {
 			return;
 		}
 		
-		Set< String > classes = loader.getClassNames();
+		Set< String > classes = loader.getClasses().keySet();
 		
 		for ( SettingState< ? > state : module.getTracker().getSettings() ) {
 			MapViewer.removeSetting( state );

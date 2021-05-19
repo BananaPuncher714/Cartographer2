@@ -232,13 +232,15 @@ public final class JetpImageUtil {
 		int widthMinus = width - 1;
 		int heightMinus = height - 1;
 		
+		// TODO Create the buffer with a width + 2 * 3
+		// The extra at both ends provide padding
 		int[][] dither_buffer = new int[ 2 ][ width + width << 1 ];
 		
+		int yIndex = 0;
 		for ( int y = 0; y < height; y++ ) {
 			boolean hasNextY = y < heightMinus;
 			
-			int yIndex = y * width;
-			if ( y % 2 == 0 ) {
+			if ( ( y & 0x1 ) == 0 ) {
 				// Go left to right
 				int bufferIndex = 0;
 				int[] buf1 = dither_buffer[ 0 ];
@@ -351,6 +353,8 @@ public final class JetpImageUtil {
 					buffer[ index ] = closest;
 				}
 			}
+			
+			yIndex += width;
 		}
 	}
 	

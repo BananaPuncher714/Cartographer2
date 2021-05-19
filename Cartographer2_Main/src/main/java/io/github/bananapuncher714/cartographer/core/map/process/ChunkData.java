@@ -19,14 +19,11 @@ public final class ChunkData implements Serializable {
 	 * Width of the chunk, not very relevant currently.
 	 */
 	public static final int CHUNK_WIDTH = 16;
+	public static final int CHUNK_POWER = 4;
 	
 	protected final byte[] data;
 	
 	protected boolean colored = false;
-	protected transient byte[] two;
-	protected transient byte[] four;
-	protected transient byte[] eight;
-	protected transient byte mainColor;
 	
 	/**
 	 * Construct a ChunkData with the color data provided.
@@ -60,7 +57,7 @@ public final class ChunkData implements Serializable {
 	 * A byte representing the color.
 	 */
 	public byte getDataAt( int x, int z ) {
-		return data[ x + z * 16 ];
+		return data[ x + ( z << CHUNK_POWER ) ];
 	}
 	
 	/**
@@ -76,53 +73,14 @@ public final class ChunkData implements Serializable {
 	 * A byte representing the color.
 	 */
 	public byte getDataAt( int x, int z, double scale ) {
-		if ( !colored ) {
-			refreshColors();
-		}
-		if ( scale == 2 ) {
-			return two[ x / 2 + ( z / 2 * 8 ) ];
-		} else if ( scale == 4 ) {
-			return four[ x / 4 + ( z / 4 * 4 ) ];
-		} else if ( scale == 8 ) {
-			return eight[ x / 8 + ( z / 8 * 2 ) ];
-		} else if ( scale == 16 ) {
-			return mainColor;
-		} else {
-			return data[ x + z * 16 ];
-		}
+		return data[ x + ( z << CHUNK_POWER ) ];
 	}
 
-	/**
-	 * Refresh the mipmap for this chunk data.
-	 */
-	public void refreshColors() {
-		mainColor = getBestColor( data );
-		two = new byte[ 64 ];
-		for ( int i = 0; i < 8; i++ ) {
-	    	for ( int j = 0; j < 8; j++ ) {
-	    		two[ i + ( j << 3 ) ] = getBestColor( getSubarray( i << 1, j << 1, 2, 2 ) );
-	    	}
-	    }
-		four = new byte[ 16 ];
-	    for ( int i = 0; i < 4; i++ ) {
-	    	for ( int j = 0; j < 4; j++ ) {
-	    		four[ i + ( j << 2 ) ] = getBestColor( getSubarray( i << 2, j << 2, 4, 4 ) );
-	    	}
-	    }
-	    eight = new byte[ 4 ];
-	    for ( int i = 0; i < 2; i++ ) {
-	    	for ( int j = 0; j < 2; j++ ) {
-	    		eight[ i + ( j << 1 ) ] = getBestColor( getSubarray( i << 3, j << 3, 8, 8 ) );
-	    	}
-	    }
-	    colored = true;
-	}
-	
 	private byte[] getSubarray( int x, int z, int w, int h ) {
 		byte[] temp = new byte[ w * h ];
 		for ( int i = 0; i < w; i++ ) {
 			for ( int j = 0; j < h; j++ ) {
-				temp[ i + j * w ] = data[ x + i + ( ( j + z ) << 4) ];
+				temp[ i + j * w ] = data[ x + i + ( ( j + z ) << CHUNK_POWER) ];
 			}
 		}
 		return temp;

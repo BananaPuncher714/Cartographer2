@@ -79,7 +79,7 @@ public class PlayerCursorProvider implements WorldCursorProvider {
 					
 					Location otherLoc = online.getLocation();
 					double radSquared = properties.getRadius() * properties.getRadius();
-					if ( radSquared == 0 || otherLoc.distanceSquared( location ) <= radSquared ) {
+					if ( otherLoc.getWorld() == location.getWorld() && ( radSquared == 0 || otherLoc.distanceSquared( location ) <= radSquared ) ) {
 						cursors.add( new WorldCursor( properties.isShowName() ? online.getDisplayName() : null, otherLoc, properties.getType(), properties.getVisibility() == CursorVisibility.FULL ) );
 					}
 				}

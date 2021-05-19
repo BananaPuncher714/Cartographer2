@@ -36,8 +36,7 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 public class MapDataCache {
 	protected final ExecutorService service = Executors.newFixedThreadPool( 2 );
 	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new ConcurrentHashMap< ChunkLocation, Future< ChunkData > >();
-	protected final Map< EnormousChunkLocation, EnormousChunkMap > bigData;
-	protected final Map< ChunkLocation, ChunkData > data;
+	protected ChunkDataStorage storage;
 	protected final Map< ChunkLocation, ChunkSnapshot > chunks;
 
 	protected final Set< BigChunkLocation > scanned = new HashSet< BigChunkLocation >();
@@ -58,9 +57,9 @@ public class MapDataCache {
 
 	public MapDataCache( MapSettings setting ) {
 		this.setting = setting;
-		data = new ConcurrentHashMap< ChunkLocation, ChunkData >();
-		bigData = new ConcurrentHashMap< EnormousChunkLocation, EnormousChunkMap >();
 		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
+		
+		storage = new SimpleChunkDataStorage();
 	}
 
 	public void setFileQueue( BigChunkQueue queue ) {
@@ -107,7 +106,7 @@ public class MapDataCache {
 			Entry< ChunkLocation, ChunkSnapshot > entry = iterator.next();
 			ChunkLocation location = entry.getKey();
 			ChunkLocation south = new ChunkLocation( location.getWorld(), location.getX(), location.getZ() + 1 );
-			boolean updating = data.containsKey( location ) || renderers.containsKey( location ) || renderers.containsKey( south );
+			boolean updating = storage.contains( location ) || renderers.containsKey( location ) || renderers.containsKey( south );
 			if ( !updating ) {
 				iterator.remove();
 			}
@@ -123,10 +122,14 @@ public class MapDataCache {
 		return provider;
 	}
 
-	public Map< ChunkLocation, ChunkData > getData() {
-		return data;
+	public void setChunkDataStorage( ChunkDataStorage storage ) {
+		this.storage = storage;
 	}
-
+	
+	public ChunkDataStorage getStorage() {
+		return storage;
+	}
+	
 	public void registerSnapshot( ChunkLocation location ) {
 		// We've just received a chunk location of a loaded chunk
 		// Register the snapshot, but only if it's required
@@ -143,7 +146,7 @@ public class MapDataCache {
 		// If not, then it means we want to rely only on map updates
 		if ( !setting.isReloadChunks() ) {
 			// Is this chunk snapshot really necessary?
-			if ( data.containsKey( location ) && data.containsKey( south ) ) {
+			if ( storage.contains( location ) && storage.contains( south ) ) {
 				return;
 			}
 		}
@@ -176,12 +179,11 @@ public class MapDataCache {
 	}
 
 	public ChunkData getDataAt( ChunkLocation location ) {
-		EnormousChunkMap map = bigData.get( new EnormousChunkLocation( location ) );
-		return map == null ? null : map.get( location );
+		return storage.get( location );
 	}
 
 	public boolean containsDataAt( ChunkLocation location ) {
-		return data.containsKey( location );
+		return storage.contains( location );
 	}
 
 	public ChunkSnapshot getChunkSnapshotAt( ChunkLocation location ) {
@@ -247,11 +249,7 @@ public class MapDataCache {
 	}
 
 	public void removeChunkDataAt( ChunkLocation location ) {
-		data.remove( location );
-		EnormousChunkMap map = bigData.get( new EnormousChunkLocation( location ) );
-		if ( map != null ) {
-			map.set( location, null );
-		}
+		storage.remove( location );
 	}
 
 	public void updateLocation( Location location, MinimapPalette palette ) {
@@ -266,7 +264,7 @@ public class MapDataCache {
 		Location south = location.clone().add( 0, 0, 1 );
 		for ( int i = -1; i < 2; i++ ) {
 			ChunkLocation chunkLoc = new ChunkLocation( south );
-			ChunkData cData = data.get( chunkLoc );
+			ChunkData cData = storage.get( chunkLoc );
 			if ( cData != null ) {
 				int index = ( south.getBlockX() - ( chunkLoc.getX() << 4 ) ) + ( south.getBlockZ() - ( chunkLoc.getZ() << 4 ) ) * 16;
 				cData.getData()[ index ] = JetpImageUtil.getBestColorIncludingTransparent( provider.process( south, palette ) );
@@ -285,14 +283,11 @@ public class MapDataCache {
 			boolean withinBorders = setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location );
 			if ( withinBorders ) {
 				// Force replace?
-				if ( force || !this.data.containsKey( location ) ) {
+				if ( force || !this.storage.contains( location ) ) {
 					ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
-					this.data.put( location, newData == null ? data : newData );
+					newData = newData == null ? data : newData;
 					
-					EnormousChunkLocation bigLocation = new EnormousChunkLocation( location );
-					EnormousChunkMap map = bigData.getOrDefault( bigLocation, new EnormousChunkMap( bigLocation ) );
-					map.set( location, newData == null ? data : newData );
-					bigData.put( bigLocation, map );
+					storage.store( location, newData );
 				}
 			}
 		} else {
@@ -326,7 +321,7 @@ public class MapDataCache {
 		boolean withinBorders = setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location );
 		if ( withinBorders ) {
 			// Next, check if the location is already processed, or being processed
-			boolean required = !( data.containsKey( location ) || renderers.containsKey( location ) );
+			boolean required = !( storage.contains( location ) || renderers.containsKey( location ) );
 			if ( required || force ) {
 				// We need to render the chunk
 				// For that, we need the northern chunk snapshot too
@@ -355,6 +350,7 @@ public class MapDataCache {
 		// This request tries to load it from file
 		// Something is requesting that the location gets loaded
 		// Don't bother fetching the same file if we've already done it
+		
 		int cx = location.getX() << 4;
 		int cz = location.getZ() << 4;
 		if ( !scanned.contains( location ) ) {
@@ -371,7 +367,7 @@ public class MapDataCache {
 					// especially if all of the locations are loading or something.
 					// But, they should load in relatively quickly, and not stay as blank spots
 					boolean isQueued = ChunkLoadListener.isLoading( chunkLocation ) || ChunkLoadListener.isQueued( chunkLocation ) || hasSnapshot( chunkLocation );
-					boolean required = !( data.containsKey( chunkLocation ) || renderers.containsKey( chunkLocation ) || isQueued );
+					boolean required = !( storage.contains( chunkLocation ) || renderers.containsKey( chunkLocation ) || isQueued );
 					if ( required ) {
 						// We don't have it anywhere, so send a request to the queue to try and load it from file
 						if ( queue != null ) {

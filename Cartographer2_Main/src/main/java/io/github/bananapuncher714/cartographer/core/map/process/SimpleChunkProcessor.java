@@ -54,8 +54,8 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 		
 		byte[] data = new byte[ 256 ];
 		
-		for ( int x = 0; x < 16; x++ ) {
-			for ( int z = 0; z < 16; z++ ) {
+		for ( int z = 0; z < 16; z++ ) {
+			for ( int x = 0; x < 16; x++ ) {
 				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
 				int prevVal = buffer[ x ];
 				buffer[ x ] = height;
@@ -63,7 +63,7 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 				if ( Cartographer.getUtil().isWater( snapshot, x, height, z ) ) {
 					// WATER RENDERING TIME
 					int depth = BlockUtil.getWaterDepth( snapshot, x, height, z );
-					boolean even = ( ( x + z ) % 2 ) == 0;
+					boolean even = ( ( x + z ) & 1 ) == 0;
 					// 1-2
 					// 3-4
 					// 5-6
@@ -102,7 +102,7 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 					}
 					
 				}
-				data[ x + z * 16 ] = JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
+				data[ x + ( z << 4 ) ] = JetpImageUtil.getBestColorIncludingTransparent( color.getRGB() );
 			}
 		}
 		

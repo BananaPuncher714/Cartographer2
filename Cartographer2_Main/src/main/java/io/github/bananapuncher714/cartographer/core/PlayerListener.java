@@ -98,28 +98,31 @@ public class PlayerListener implements Listener {
 				}
 
 				double scale = cr.getScale( player.getUniqueId() );
-
+				double oldScale = scale;
+				
 				boolean zoom = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
 				scale = zoom ? map.getSettings().getPreviousZoom( scale ) : map.getSettings().getNextZoom( scale );
 				
-				cr.setScale( player.getUniqueId(), scale );
-
-				if ( plugin.getHandler().mapBug() ) {
-					ItemStack newMap = plugin.getMapManager().getItemFor( map );
-					MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
-					final double finScale = scale;
-					Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
-						@Override
-						public void run() {
-							for ( MapRenderer renderer : newView.getRenderers() ) {
-								if ( renderer instanceof CartographerRenderer ) {
-									CartographerRenderer cr = ( CartographerRenderer ) renderer;
-									cr.setScale( player.getUniqueId(), finScale );
+				if ( scale != oldScale ) {
+					cr.setScale( player.getUniqueId(), scale );
+	
+					if ( plugin.getHandler().mapBug() ) {
+						ItemStack newMap = plugin.getMapManager().getItemFor( map );
+						MapView newView = plugin.getHandler().getUtil().getMapViewFrom( newMap );
+						final double finScale = scale;
+						Bukkit.getScheduler().scheduleSyncDelayedTask( plugin, new Runnable() {
+							@Override
+							public void run() {
+								for ( MapRenderer renderer : newView.getRenderers() ) {
+									if ( renderer instanceof CartographerRenderer ) {
+										CartographerRenderer cr = ( CartographerRenderer ) renderer;
+										cr.setScale( player.getUniqueId(), finScale );
+									}
 								}
 							}
-						}
-					} );
-					player.getEquipment().setItemInHand( newMap );
+						} );
+						player.getEquipment().setItemInHand( newMap );
+					}
 				}
 			}
 			event.setCancelled( true );

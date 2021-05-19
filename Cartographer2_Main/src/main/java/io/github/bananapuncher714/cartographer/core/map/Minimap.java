@@ -45,6 +45,7 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.MipMapChunkDataStorage;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 public class Minimap implements ChunkNotifier {
@@ -109,6 +110,8 @@ public class Minimap implements ChunkNotifier {
 			logger.infoTr( LocaleConstants.MINIMAP_WORLD_BLACKLIST, String.join( ", ", settings.blacklistedWorlds ) );
 		}
 		
+//		cache.setChunkDataStorage( new MipMapChunkDataStorage( 4 ) );
+		
 		// Show at least the player, if nothing else
 		registerProvider( new DefaultPlayerCursorProvider() );
 		registerProvider( new DefaultPointerCursorProvider() );
@@ -144,7 +147,7 @@ public class Minimap implements ChunkNotifier {
 		queue.update();
 
 		if ( cachedLocations.isEmpty() ) {
-			cachedLocations = new HashSet< ChunkLocation >( cache.getData().keySet() );
+			cachedLocations = new HashSet< ChunkLocation >( cache.getStorage().getLocations() );
 		}
 		
 		// Set for locations that are still needed
@@ -180,13 +183,16 @@ public class Minimap implements ChunkNotifier {
 				}
 
 				// Get the big chunk that needs to be saved
-				BigChunk chunk = chunks.getOrDefault( bigLoc, new BigChunk( location ) );
-
+				BigChunk chunk = chunks.get( bigLoc );
+				if ( chunk == null ) {
+					chunk = new BigChunk( location );
+					chunks.put( bigLoc, chunk );
+				}
+				
 				// Add the current location and add to queue
 				ChunkData data = cache.getDataAt( location );
 				if ( data != null ) {
 					chunk.set( location, data );
-					chunks.put( bigLoc, chunk );
 				}
 			}
 		}
@@ -413,12 +419,14 @@ public class Minimap implements ChunkNotifier {
 		cache.terminate();
 		
 		Map< BigChunkLocation, BigChunk > chunks = new HashMap< BigChunkLocation, BigChunk >();
-		for ( Entry< ChunkLocation, ChunkData > entry : cache.getData().entrySet() ) {
-			ChunkLocation location = entry.getKey();
-			BigChunkLocation bigLoc = new BigChunkLocation( location );
-			BigChunk chunk = chunks.containsKey( bigLoc ) ? chunks.get( bigLoc ) : new BigChunk( location );
-			chunk.set( location, entry.getValue() );
-			chunks.put( bigLoc, chunk );
+		for ( ChunkLocation location : cache.getStorage().getLocations() ) {
+			ChunkData data = cache.getStorage().get( location );
+				if ( data != null ) {
+				BigChunkLocation bigLoc = new BigChunkLocation( location );
+				BigChunk chunk = chunks.containsKey( bigLoc ) ? chunks.get( bigLoc ) : new BigChunk( location );
+				chunk.set( location, data );
+				chunks.put( bigLoc, chunk );
+			}
 		}
 		
 		for ( BigChunkLocation loc : chunks.keySet() ) {

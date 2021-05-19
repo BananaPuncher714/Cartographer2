@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
@@ -21,9 +22,11 @@ import io.github.bananapuncher714.cartographer.core.Cartographer;
 public class BukkitUtil {
 	private static Constructor< PluginCommand > PLUGINCOMMAND_CONSTRUCTOR;
 	private static Field SIMPLEPLUGINMANAGER_FILEASSOCIATIONS;
-	private static Method JAVAPLUGINLOADER_GETCLASS;
+	private static Method JAVAPLUGINLOADER_GETCLASS_1;
+	private static Method JAVAPLUGINLOADER_GETCLASS_2;
 	private static Method JAVAPLUGINLOADER_SETCLASS;
-	private static Method JAVAPLUGINLOADER_REMOVECLASS;
+	private static Method JAVAPLUGINLOADER_REMOVECLASS_1;
+	private static Method JAVAPLUGINLOADER_REMOVECLASS_2;
 	
 	static {
 		try {
@@ -31,14 +34,34 @@ public class BukkitUtil {
 			PLUGINCOMMAND_CONSTRUCTOR.setAccessible( true );
 			SIMPLEPLUGINMANAGER_FILEASSOCIATIONS = SimplePluginManager.class.getDeclaredField( "fileAssociations" );
 			SIMPLEPLUGINMANAGER_FILEASSOCIATIONS.setAccessible( true );
-			JAVAPLUGINLOADER_GETCLASS = JavaPluginLoader.class.getDeclaredMethod( "getClassByName", String.class );
-			JAVAPLUGINLOADER_GETCLASS.setAccessible( true );
 			JAVAPLUGINLOADER_SETCLASS = JavaPluginLoader.class.getDeclaredMethod( "setClass", String.class, Class.class );
 			JAVAPLUGINLOADER_SETCLASS.setAccessible( true );
-			JAVAPLUGINLOADER_REMOVECLASS = JavaPluginLoader.class.getDeclaredMethod( "removeClass", String.class );
-			JAVAPLUGINLOADER_REMOVECLASS.setAccessible( true );
 		} catch ( NoSuchMethodException | SecurityException | NoSuchFieldException e ) {
 			e.printStackTrace();
+		}
+		
+		try {
+			JAVAPLUGINLOADER_GETCLASS_1 = JavaPluginLoader.class.getDeclaredMethod( "getClassByName", String.class );
+			JAVAPLUGINLOADER_GETCLASS_1.setAccessible( true );
+		} catch ( NoSuchMethodException | SecurityException e ) {
+			try {
+				JAVAPLUGINLOADER_GETCLASS_2 = JavaPluginLoader.class.getDeclaredMethod( "getClassByName", String.class, boolean.class, PluginDescriptionFile.class );
+				JAVAPLUGINLOADER_GETCLASS_2.setAccessible( true );
+			} catch ( NoSuchMethodException | SecurityException e1 ) {
+				e1.printStackTrace();
+			}
+		}
+		
+		try {
+			JAVAPLUGINLOADER_REMOVECLASS_1 = JavaPluginLoader.class.getDeclaredMethod( "removeClass", String.class );
+			JAVAPLUGINLOADER_REMOVECLASS_1.setAccessible( true );
+		} catch ( NoSuchMethodException | SecurityException e ) {
+			try {
+				JAVAPLUGINLOADER_REMOVECLASS_2 = JavaPluginLoader.class.getDeclaredMethod( "removeClass", Class.class );
+				JAVAPLUGINLOADER_REMOVECLASS_2.setAccessible( true );
+			} catch ( NoSuchMethodException | SecurityException e1 ) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -84,7 +107,11 @@ public class BukkitUtil {
 				Map< Pattern, PluginLoader > associations = ( Map< Pattern, PluginLoader > ) SIMPLEPLUGINMANAGER_FILEASSOCIATIONS.get( sManager );
 				for ( PluginLoader loader : associations.values() ) {
 					if ( loader instanceof JavaPluginLoader ) {
-						return ( Class< ? > ) JAVAPLUGINLOADER_GETCLASS.invoke( loader, name );
+						if ( JAVAPLUGINLOADER_GETCLASS_1 != null ) {
+							return ( Class< ? > ) JAVAPLUGINLOADER_GETCLASS_1.invoke( loader, name );
+						} else {
+							return ( Class< ? > ) JAVAPLUGINLOADER_GETCLASS_2.invoke( loader, name, true, Cartographer.getInstance().getDescription() );
+						}
 					}
 				}
 			} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
@@ -111,20 +138,45 @@ public class BukkitUtil {
 		}
 	}
 	
-	public static void removeClassFromJavaPluginLoader( String name ) {
-		PluginManager manager = Bukkit.getPluginManager();
-		if ( manager instanceof SimplePluginManager ) {
-			SimplePluginManager sManager = ( SimplePluginManager ) manager;
-			try {
-				Map< Pattern, PluginLoader > associations = ( Map< Pattern, PluginLoader > ) SIMPLEPLUGINMANAGER_FILEASSOCIATIONS.get( sManager );
-				for ( PluginLoader loader : associations.values() ) {
-					if ( loader instanceof JavaPluginLoader ) {
-						JAVAPLUGINLOADER_REMOVECLASS.invoke( loader, name );
+	public static boolean removeClassFromJavaPluginLoader( Class clazz ) {
+		if ( JAVAPLUGINLOADER_REMOVECLASS_2 != null ) {
+			PluginManager manager = Bukkit.getPluginManager();
+			if ( manager instanceof SimplePluginManager ) {
+				SimplePluginManager sManager = ( SimplePluginManager ) manager;
+				try {
+					Map< Pattern, PluginLoader > associations = ( Map< Pattern, PluginLoader > ) SIMPLEPLUGINMANAGER_FILEASSOCIATIONS.get( sManager );
+					for ( PluginLoader loader : associations.values() ) {
+						if ( loader instanceof JavaPluginLoader ) {
+							JAVAPLUGINLOADER_REMOVECLASS_2.invoke( loader, clazz );
+						}
 					}
+				} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
+					e.printStackTrace();
 				}
-			} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
-				e.printStackTrace();
 			}
+			return true;
 		}
+		return false;
+	}
+	
+	public static boolean removeClassFromJavaPluginLoader( String name ) {
+		if ( JAVAPLUGINLOADER_REMOVECLASS_1 != null ) {
+			PluginManager manager = Bukkit.getPluginManager();
+			if ( manager instanceof SimplePluginManager ) {
+				SimplePluginManager sManager = ( SimplePluginManager ) manager;
+				try {
+					Map< Pattern, PluginLoader > associations = ( Map< Pattern, PluginLoader > ) SIMPLEPLUGINMANAGER_FILEASSOCIATIONS.get( sManager );
+					for ( PluginLoader loader : associations.values() ) {
+						if ( loader instanceof JavaPluginLoader ) {
+							JAVAPLUGINLOADER_REMOVECLASS_1.invoke( loader, name );
+						}
+					}
+				} catch ( IllegalArgumentException | IllegalAccessException | InvocationTargetException e ) {
+					e.printStackTrace();
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }

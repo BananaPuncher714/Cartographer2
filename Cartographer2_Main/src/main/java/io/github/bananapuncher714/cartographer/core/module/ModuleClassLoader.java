@@ -162,7 +162,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		return description;
 	}
 	
-	protected Set< String > getClassNames() {
-		return internalClasses.keySet();
+	protected Map< String, Class< ? > >getClasses() {
+		return internalClasses;
 	}
 }

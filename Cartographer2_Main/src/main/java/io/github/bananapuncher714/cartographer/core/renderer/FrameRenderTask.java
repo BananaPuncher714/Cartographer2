@@ -22,7 +22,7 @@ import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 	// There are 128 * 128 pixels that need to be processed
 	// Keep in mind cache lines? Don't want to waste time
-	private static final int SUBTASK_INTERVAL = 128;
+	private static final int SUBTASK_INTERVAL = 1024;
 	private static final int CANVAS_SIZE = 128 * 128;
 	
 	protected RenderInfo info;
@@ -108,7 +108,7 @@ public class FrameRenderTask extends RecursiveTask< RenderInfo > {
 		// Construct the fork join pools required for the interval below and run
 		List< Future< SubRenderInfo > > tasks = new ArrayList< Future< SubRenderInfo > >();
 		for ( int subTaskIndex = 0; subTaskIndex < 16_384; subTaskIndex += SUBTASK_INTERVAL ) {
-			SubRenderTask task = new SubRenderTask( info, subTaskIndex, SUBTASK_INTERVAL );
+			DataSubRenderTask task = new DataSubRenderTask( info, subTaskIndex, SUBTASK_INTERVAL );
 			tasks.add( Cartographer.getInstance().getExecutorService().submit( task ) );
 		}
 		

@@ -9,6 +9,8 @@ town:
   member_nation: 0, 128, 0
   allied_nation: 0, 0, 128
   enemy_nation: 255, 0, 0
+border-range: 1000
+border-max-zoom: 16
 
 # Player icons
 # The global range is how close they must be to show up on your map

@@ -135,4 +135,6 @@ Additional settings may be added by modules.
 - `GEEKY__` - Translator(ru_ru)
 - `RedTrust` - Translator(ko_kr)
 - `Vydumka` - Translator(ru_ru)
+- `jeanlorencini` - Translator(pt_br)
+- `RebelD` - Translator(ro_ro)
 - `REjoin` - Supporter
