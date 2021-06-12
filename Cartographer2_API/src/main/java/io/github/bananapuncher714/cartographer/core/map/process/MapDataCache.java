@@ -24,7 +24,7 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 public class MapDataCache {
 	protected final ExecutorService service = null;
 	protected final Map< ChunkLocation, Future< ChunkData > > renderers = null;
-	protected final Map< ChunkLocation, ChunkData > data = null;
+	protected ChunkDataStorage storage;
 	protected final Map< ChunkLocation, ChunkSnapshot > chunks = null;
 
 	protected final Set< BigChunkLocation > scanned = null;
@@ -32,6 +32,7 @@ public class MapDataCache {
 	protected ChunkDataProvider provider;
 	protected ChunkNotifier notifier;
 
+	// Minimap specific objects
 	protected MapSettings setting;
 	protected BigChunkQueue queue;
 
@@ -64,10 +65,13 @@ public class MapDataCache {
 		return null;
 	}
 
-	public Map< ChunkLocation, ChunkData > getData() {
+	public void setChunkDataStorage( ChunkDataStorage storage ) {
+	}
+	
+	public ChunkDataStorage getStorage() {
 		return null;
 	}
-
+	
 	public void registerSnapshot( ChunkLocation location ) {
 	}
 

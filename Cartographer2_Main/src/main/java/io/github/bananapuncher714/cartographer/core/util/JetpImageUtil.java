@@ -52,7 +52,6 @@ public final class JetpImageUtil {
 	private static final int[] PALETTE;
 	private static final byte[] COLOR_MAP = new byte[ 128 * 128 * 128 ];
 	private static final int[] FULL_COLOR_MAP = new int[ 128 * 128 * 128 ];
-	private static final float[] COLOR_MULTIPLIERS = { 0.4375f, 0.1875f, 0.3125f, 0.0625f };
 
 	public final static void init() {
 	}
@@ -278,14 +277,14 @@ public final class JetpImageUtil {
 					
 					if ( hasNextY ) {
 						if ( hasPrevX ) {
-							buf2[ bufferIndex - 6 ] = ( int ) ( 0.1875 * delta_r );
-							buf2[ bufferIndex - 5 ] = ( int ) ( 0.1875 * delta_g );
-							buf2[ bufferIndex - 4 ] = ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex - 6 ] += ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex - 5 ] += ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex - 4 ] += ( int ) ( 0.1875 * delta_b );
 						}
 						
-						buf2[ bufferIndex - 3 ] = ( int ) ( 0.3125 * delta_r );
-						buf2[ bufferIndex - 2 ] = ( int ) ( 0.3125 * delta_g );
-						buf2[ bufferIndex - 1 ] = ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex - 3 ] += ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex - 2 ] += ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex - 1 ] += ( int ) ( 0.3125 * delta_b );
 						
 						if ( hasNextX ) {
 							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_r );
@@ -334,14 +333,14 @@ public final class JetpImageUtil {
 					
 					if ( hasNextY ) {
 						if ( hasPrevX ) {
-							buf2[ bufferIndex + 6 ] = ( int ) ( 0.1875 * delta_b );
-							buf2[ bufferIndex + 5 ] = ( int ) ( 0.1875 * delta_g );
-							buf2[ bufferIndex + 4 ] = ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex + 6 ] += ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex + 5 ] += ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex + 4 ] += ( int ) ( 0.1875 * delta_r );
 						}
 						
-						buf2[ bufferIndex + 3 ] = ( int ) ( 0.3125 * delta_b );
-						buf2[ bufferIndex + 2 ] = ( int ) ( 0.3125 * delta_g );
-						buf2[ bufferIndex + 1 ] = ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex + 3 ] += ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex + 2 ] += ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex + 1 ] += ( int ) ( 0.3125 * delta_r );
 						
 						if ( hasNextX ) {
 							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_b );
@@ -409,14 +408,14 @@ public final class JetpImageUtil {
 					
 					if ( hasNextY ) {
 						if ( hasPrevX ) {
-							buf2[ bufferIndex - 6 ] = ( int ) ( 0.1875 * delta_r );
-							buf2[ bufferIndex - 5 ] = ( int ) ( 0.1875 * delta_g );
-							buf2[ bufferIndex - 4 ] = ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex - 6 ] += ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex - 5 ] += ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex - 4 ] += ( int ) ( 0.1875 * delta_b );
 						}
 						
-						buf2[ bufferIndex - 3 ] = ( int ) ( 0.3125 * delta_r );
-						buf2[ bufferIndex - 2 ] = ( int ) ( 0.3125 * delta_g );
-						buf2[ bufferIndex - 1 ] = ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex - 3 ] += ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex - 2 ] += ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex - 1 ] += ( int ) ( 0.3125 * delta_b );
 						
 						if ( hasNextX ) {
 							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_r );
@@ -465,14 +464,14 @@ public final class JetpImageUtil {
 					
 					if ( hasNextY ) {
 						if ( hasPrevX ) {
-							buf2[ bufferIndex + 6 ] = ( int ) ( 0.1875 * delta_b );
-							buf2[ bufferIndex + 5 ] = ( int ) ( 0.1875 * delta_g );
-							buf2[ bufferIndex + 4 ] = ( int ) ( 0.1875 * delta_r );
+							buf2[ bufferIndex + 6 ] += ( int ) ( 0.1875 * delta_b );
+							buf2[ bufferIndex + 5 ] += ( int ) ( 0.1875 * delta_g );
+							buf2[ bufferIndex + 4 ] += ( int ) ( 0.1875 * delta_r );
 						}
 						
-						buf2[ bufferIndex + 3 ] = ( int ) ( 0.3125 * delta_b );
-						buf2[ bufferIndex + 2 ] = ( int ) ( 0.3125 * delta_g );
-						buf2[ bufferIndex + 1 ] = ( int ) ( 0.3125 * delta_r );
+						buf2[ bufferIndex + 3 ] += ( int ) ( 0.3125 * delta_b );
+						buf2[ bufferIndex + 2 ] += ( int ) ( 0.3125 * delta_g );
+						buf2[ bufferIndex + 1 ] += ( int ) ( 0.3125 * delta_r );
 						
 						if ( hasNextX ) {
 							buf2[ bufferIndex     ] = ( int ) ( 0.0625 * delta_b );

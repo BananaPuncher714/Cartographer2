@@ -106,9 +106,7 @@ Additional settings may be added by modules.
 - RPG style waypoints
 
 ## TODO
-- Add vanilla module integration
 - Fix the wiki
-- Lands integration - Put on hold, not open source nor free
 
 ## More information
 - [Github](https://github.com/BananaPuncher714/Cartographer2)

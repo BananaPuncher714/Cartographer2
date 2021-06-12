@@ -21,10 +21,6 @@ public final class ChunkData implements Serializable {
 	protected final byte[] data;
 	
 	protected boolean colored = false;
-	protected transient byte[] two;
-	protected transient byte[] four;
-	protected transient byte[] eight;
-	protected transient byte mainColor;
 	
 	/**
 	 * Construct a ChunkData with the color data provided.
@@ -73,11 +69,5 @@ public final class ChunkData implements Serializable {
 	 */
 	public byte getDataAt( int x, int z, double scale ) {
 		return 0;
-	}
-
-	/**
-	 * Refresh the mipmap for this chunk data.
-	 */
-	public void refreshColors() {
 	}
 }

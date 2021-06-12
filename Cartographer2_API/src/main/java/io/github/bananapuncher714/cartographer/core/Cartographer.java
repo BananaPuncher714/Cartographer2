@@ -2,15 +2,12 @@ package io.github.bananapuncher714.cartographer.core;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
-import io.github.bananapuncher714.cartographer.core.api.SimpleImage;
 import io.github.bananapuncher714.cartographer.core.command.CommandCartographer;
 import io.github.bananapuncher714.cartographer.core.dependency.DependencyManager;
 import io.github.bananapuncher714.cartographer.core.locale.LocaleManager;
