@@ -135,4 +135,6 @@ Additional settings may be added by modules.
 - `Vydumka` - Translator(ru_ru)
 - `jeanlorencini` - Translator(pt_br)
 - `RebelD` - Translator(ro_ro)
+- `badger_god` - Translator(vn_vn)
+- `Pettersins` - Translator(id_id)
 - `REjoin` - Supporter

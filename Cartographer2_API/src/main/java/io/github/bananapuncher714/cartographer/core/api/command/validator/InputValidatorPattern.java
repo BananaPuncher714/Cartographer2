@@ -2,6 +2,8 @@ package io.github.bananapuncher714.cartographer.core.api.command.validator;
 
 import java.util.Collection;
 
+import org.bukkit.command.CommandSender;
+
 public class InputValidatorPattern implements InputValidator< String > {
 	protected String pattern;
 	
@@ -10,17 +12,17 @@ public class InputValidatorPattern implements InputValidator< String > {
 	}
 	
 	@Override
-	public Collection< String > getTabCompletes() {
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
 		return null;
 	}
 
 	@Override
-	public boolean isValid( String input, String[] args ) {
-		return input.matches( pattern );
+	public boolean isValid( CommandSender sender, String input[], String[] args ) {
+		return input[ 0 ].matches( pattern );
 	}
 
 	@Override
-	public String get( String input ) {
-		return input;
+	public String get( CommandSender sender, String input[] ) {
+		return input[ 0 ];
 	}
 }

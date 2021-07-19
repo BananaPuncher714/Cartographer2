@@ -18,6 +18,7 @@ showname: "UNSET"
 
 # The minimap specific images
 # Their location is relative to the minimap folder
+# It's recommended to keep them in a folder, like "images/" or something
 images:
   # The overlay image that goes on top of the map
   overlay: "overlay.png"

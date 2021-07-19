@@ -1,0 +1,232 @@
+# File lokal yang disediakan default
+# Semua file lokal memerlukan kode lokal. Seharusnya tidak ada spasi putih.
+# Nama, bahasa, dan lokasi bersifat opsional, tetapi disarankan.
+# Informasi diambil dari https://minecraft.gamepedia.com/Language#Available_languages
+# The messages themselves follow regular Java string formatting.
+# Pesan itu sendiri mengikuti pemformatan string Java biasa.
+# contoh:
+# random-message-list:
+# - "Random message 1"
+# - "Random message 2"
+# - "Random message 3"
+# File lokal ini juga mendukung placeholder, jika itu adalah pesan untuk pemain.
+# Untuk menggunakan pesan berwarna khusus, gunakan simbol(§) sebelum pesan.
+# Jika itu tidak berhasil, dan muncul dengan beberapa karakter acak, gunakan kode \u00a7 sebagai gantinya.
+# Translated by Pettersins
+name: "Bahasa Indonesia (Indonesia)"
+language: "Indonesian"
+location: "Indonesia"
+locale-code: "id_id"
+messages:
+  locale:
+    loaded-internal-locale: "Berhasil memuat lokal internal(%s)"
+    loaded-locale: "Bahasa yang dimuat %s(%s) sebagai %s"
+    default-locale-changed: "Lokal default diubah menjadi %s"
+    error-loading-file: "Tidak dapat memuat file lokal '%s'"
+    invalid-locale: "'%s' bukan lokal yang valid!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Menambahkan '%s' sebagai inventaris daftar hitam"
+        unknown-inventory-type: "Tidak ada jenis inventaris seperti itu '%s'"
+      palette:
+        creating-vanilla-palette: "Membuat palet vanilla..."
+        vanilla-palette-missing: "Palet vanilla tidak ditemukan, menyimpan..."
+        found-materials: "%d bahan yang dipetakan untuk vanilla"
+        loading-palettes: "Memuat file palet lokal..."
+        successfully-loaded-palette: "Palet '%s' berhasil dimuat!"
+        palette-folder-missing: "Folder palet tidak ditemukan!"
+      image:
+        overlay-found: "Hamparan terdeteksi!"
+        overlay-missing: "Gambar overlay tidak ada!"
+        background-found: "Latar belakang terdeteksi!"
+        background-missing: "Gambar latar tidak ada!"
+        missing-map-found: "Gambar peta yang hilang terdeteksi!"
+        missing-map-missing: "Gambar peta yang hilang tidak ada!"
+        disabled-map-found: "Gambar peta yang dinonaktifkan terdeteksi!"
+        disabled-map-missing: "Gambar peta yang dinonaktifkan tidak ada!"
+      enabling-modules: "Mengaktifkan modul..."
+      loading-config: "Memuat konfigurasi..."
+      loading-images: "Memuat gambar..."
+      loading-palettes: "Memuat palet..."
+      loading-data: "Memuat peta mini dan data..."
+    disable:
+      disabling-modules: "Menonaktifkan modul..."
+      saving-map-data-start: "Menyimpan data peta. Ini mungkin memakan waktu cukup lama..."
+      saving-map-data-finish: "Menyimpan data peta selesai!"
+      saving-player-data-start: "Menyimpan data pemain..."
+      saving-player-data-finish: "Menyimpan data pemain selesai!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cGunakan: /cartographer reload <peta>"
+          reloaded-plugin: "§bMemuat ulang pengaturan Cartographer2"
+          reloaded-minimap: "§bMemuat ulang peta mini '§e%s§b'"
+        list:
+          usage: "§cGunakan: /cartographer list"
+          no-minimaps: "§bSaat ini tidak ada peta mini yang dimuat!"
+          list: "§bPeta Mini Cartographer2 (%d): %s"
+        get:
+          usage: "§cGunakan: /cartographer get <peta> <pemain> [slot]"
+          success-self: "Memberikan peta mini ke dirimu(%s)"
+          success-other: "Memberikan peta mini(%s) kepada %s"
+        create:
+          usage: "§cGunakan: /cartographer create <id>"
+          success: "§bMembuat dan mendaftarkan peta mini baru dengan id '§e%s§b'"
+        delete:
+          usage: "§cGunakan: /cartographer delete <id>"
+          success: "§bMenghapus peta mini '§e%s§b'"
+        load:
+          usage: "§cUsage: /cartographer load <id>"
+          success: "§bMemuat peta mini '§e%s§b'"
+        unload:
+          usage: "§cUsage: /cartographer unload <id>"
+          success: "§bMembuang peta mini'§e%s§b'"
+        help:
+          usage: "§cPenggunaan: /cartographer help"
+          help-0: "§b=== Pengunaan Cartographer ==="
+          help-1: "§e/cartographer reload [map]§6 - memuat ulang Cartographer2 atau sebuah peta kecil"
+          help-2: "§e/cartographer list§6 - memperlihatkan peta kecil yang termuat"
+          help-3: "§e/cartographer get <map> [player] [slot]§6 - mendapatkan atau memberikan minimaps"
+          help-4: "§e/cartographer create <map>§6 - membuat peta kecil baru"
+          help-5: "§e/cartographer delete <map>§6 - Menghapus peta kecil"
+          help-6: "§e/cartographer load <map>§6 - memuat sebuah peta kecil"
+          help-7: "§e/cartographer unload <map>§6 - Membuang peta kecil"
+          help-8: "§e/cartographer help§6 - menampilkan perintah"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Tidak ada modul yang dimuat sekarang!"
+          list: "§6Cartographer2 Modules (%d): %s" 
+        reload:
+          success: "§6memuat ulang semua modul!"
+        enable:
+          usage: "§cPengunaan: /cartographer module enable <module>"
+          success: "§6Mengaktifkan '§e%s§6'!"
+          already-enabled: "§cModule '%s' telah aktif!"
+          error-loading: "§ctidak dapat memuat modul '%s', periksa server log untuk lengkapnya. (Salah / tidak ada dependensi?)"
+        disable:
+          usage: "§cUsage: /cartographer module disable <module>"
+          already-disabled: "§cModule '%s'telah dibuang!"
+          success: "§6membuang modul '§e%s§6'!"
+        load:
+          usage: "§cpengunaan: /cartographer module load <file>"
+          success: "§6memuat dan mengaktifkan modul '§e%s§6'!"
+          error-loading: "§ctidak dapat memuat file '%s', Periksa server log untuk lengkapnya"
+          error-enabling: "§ctidak dapat memuat modul '%s', periksa server log untuk lengkapnya. (Salah / tidak ada dependensi?)"
+        unload:
+          usage: "§cPenggunaan: /cartographer module unload <module>"
+          success: "§6Membuang modul '§e%s§6'!"
+          error-unloading: "§6Tidak dapat membuang modul '§e%s§6'! Tidak dimuat oleh Cartographer2"
+        help:
+          usage: "§cPenggunaan: /cartographer module help"
+          help-0: "§b=== Perintah modul cartographer ==="
+          help-1: "§e/cartographer module list§6 - memperlihatkan semua modul yang dimuat"
+          help-2: "§e/cartographer module reload§6 - memuat ulang semua modul"
+          help-3: "§e/cartographer module enable <module>§6 - mengaktifkan sebuah modul"
+          help-4: "§e/cartographer module disable <module>§6 - memberhentikan sebuah modul"
+          help-5: "§e/cartographer module load <module>§6 - memuat sebuah modul"
+          help-6: "§e/cartographer module unload <module>§6 - membuang sebuah modul"
+          help-7: "§e/cartographer module help§6 - menampilkan perintah"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cfile ini sudah dimuat atau tidak ada modul"
+        module-already-enabled-or-not-real: "§cmodul ini sudah dimuat atau tidak ada modul"
+        module-already-disabled-or-not-real: "§cmodul ini sudah dibuang atau tidak ada modul"
+        module-not-real: "§cmodul ini tidak ada!"
+      settings:
+        set:
+          console-usage: "§cUsage: /cartographer settings set <player> <setting> <value>"
+          success: "§a menetapkan '%s' menjadi §d%s§a."
+        get:
+          console-usage: "§cUsage: /cartographer settings get <player> <setting>"
+          success: "§a'%s' diubah menjadi §d%s§a."
+        setother:
+          usage: "§cUsage: /cartographer settings setother <player> <setting> <value>"
+          success: "§aMenetapkan '%s' menjadi §d%s§a untuk §d%s§a."
+        getother:
+          usage: "§cUsage: /cartographer settings getother <player> <setting>"
+          success: "§d%s§a telah '%s' ditetapkan untuk §d%s§a."
+        help:
+          usage: "§cUsage: /cartographer settings help"
+          help-0: "§b=== Perintah pengaturan Cartographer  ==="
+          help-1: "§e/cartographer settings set <property> <value>§6 - Menetapkan properti"
+          help-2: "§e/cartographer settings get <property>§6 - Mendapatkan nilai dari properti"
+          help-3: "§e/cartographer settings setother <player> <property> <value>§6 - menetapkan properti dari player"
+          help-4: "§e/cartographer settings getother <player> <property>§6 - mendapatkan nilai player dari properti"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cNilai tidak benar! (%s)"
+        must-provide-values: "§cKamu harus memberikan sebuah nilai! (%s)"
+        not-implemented: "§c'%s' tidak dapat dijalankan! hubungi developer untuk meminta bantuan!"
+      player-not-found: "§cPlayer itu tidak online!"
+      minimap-already-exists: "§cpeta mini dengan id tersebut telah ada!"
+      invalid-minimap: "§cPeta mini tidak valid!"
+      invalid-slot: "§cslot tidak valid! (0-40)"
+      invalid-argument: "§cArgumen tidak Valid!"
+      invalid-setting: "§cPengaturan tidak Valid!"
+      must-provide-minimap: "§cKamu harus menyediakan minimaps!"
+      must-provide-player: "§ckamu harus menyediakan seorang pemain!"
+      must-provide-argument: "§cKamu harus menyediakan sebuah argument!"
+      must-provide-setting: "§cKamu harus menyediakan sebuah pengaturan!"
+    manager:
+      minimap:
+        loading-minimap: "Memuat peta kecil.. '%s'"
+        unloading-minimap: "Membuang peta kecil... '%s'"
+        deleting-minimap: "Menghapus peta kecil '%s'"
+      module:
+        reloading-modules-start: "memuat modul..."
+        reloading-modules-finish: "selesai memuat modul"
+        loading-module: "memuat %s v%s oleh %s"
+        unloading-module: "membuang %s"
+        enabling-module: "mengaktifkan %s v%s oleh %s"
+        disabling-module: "menonaktifkan %s v%s oleh %s"
+        missing-dependencies: "tidak bisa mengaktifkan %s disebabkan oleh tidak ditemukan dependency: %s"
+    minimap:
+      default-rotation: "rotasi awalan diatur ke %s"
+      default-showname: "menampilkan nama di atur ke %s"
+      auto-update: "Update otomatis diatur ke %b"
+      circular-zoom: "pembesar diatur ke %b"
+      render-out-of-border: "render diluar batas diatur ke  %b"
+      default-zoom: "pembesar awal diatur ke %f"
+      allowed-zooms: "Diijinkan memperbesar: %s"
+      whitelisted-worlds: "Dunia yang diijinkan: %s"
+      blacklisted-worlds: "Dunia yang tidak diijinkan: %s"
+      loaded-overlay: "memuat gambar overlay '%s'"
+      loaded-background: "memuat gambar background '%s'"
+      loaded-disabled: "memuat gambar yang di nonaktifkan '%s'"
+    unsupported-version: "Versi ini(%s) tidak mendukung untuk saat ini!"
+    disabling-plugin: "Menonaktifkan plugin..."

@@ -83,7 +83,7 @@ public class VanillaPlus extends Module {
 		loadConfig();
 		loadData();
 		
-		registerSettings();
+		registerSettings(); 
 		
 		Permission death = new PermissionBuilder( "vanillaplus.cursor.location.death" ).setDefault( PermissionDefault.TRUE ).register().build();
 		Permission spawn = new PermissionBuilder( "vanillaplus.cursor.location.spawn" ).setDefault( PermissionDefault.TRUE ).register().build();

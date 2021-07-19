@@ -4,14 +4,12 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -102,7 +100,7 @@ public class ExperimentalModule extends Module {
 		}
 		
 		registerListener( new MapListener( this ) );
-		
+
 		runTaskTimer( this::tick, 20, 20 );
 	}
 	

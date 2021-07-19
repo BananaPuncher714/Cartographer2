@@ -25,6 +25,7 @@ public class ModuleManager {
 	protected Cartographer plugin;
 	protected ModuleLoader loader;
 	protected Map< String, Module > modules = new HashMap< String, Module >();
+	protected Set< Module > enabled = new HashSet< Module >();
 	protected File moduleFolder;
 	
 	protected CartographerLogger logger = new CartographerLogger( "ModuleManager" );
@@ -149,7 +150,7 @@ public class ModuleManager {
 	
 	public boolean enableModule( Module module ) {
 		Validate.notNull( module );
-		if ( module.isEnabled() ) {
+		if ( enabled.contains( module ) ) {
 			return false;
 		}
 		// Check for their dependencies
@@ -165,8 +166,14 @@ public class ModuleManager {
 		}
 		if ( allDependenciesLoaded ) {
 			logger.infoTr( LocaleConstants.MANAGER_MODULE_ENABLING, description.getName(), description.getVersion(), description.getAuthor() );
-			module.setEnabled( true );
-			if ( module.isEnabled() ) {
+			enabled.add( module );
+			try {
+				module.onEnable();
+			} catch ( Exception e ) {
+				e.printStackTrace();
+				return false;
+			}
+			if ( enabled.contains( module ) ) {
 				new ModuleEnableEvent( module ).callEvent();
 			}
 		} else {
@@ -187,11 +194,11 @@ public class ModuleManager {
 	
 	public boolean disableModule( Module module ) {
 		Validate.notNull( module );
-		if ( module.isEnabled() ) {
+		if ( enabled.remove( module ) ) {
 			ModuleDescription description = module.getDescription();
 			new ModuleDisableEvent( module ).callEvent();
 			logger.infoTr( LocaleConstants.MANAGER_MODULE_DISABLING, description.getName(), description.getVersion(), description.getAuthor() );
-			module.setEnabled( false );
+			module.onDisable();
 			loader.disable( module );
 			plugin.getCommand().rebuildCommand();
 			return true;
@@ -203,6 +210,10 @@ public class ModuleManager {
 		for ( Module module : modules.values() ) {
 			disableModule( module );
 		}
+	}
+	
+	public boolean isEnabled( Module module ) {
+		return enabled.contains( module );
 	}
 	
 	public ModuleLoader getLoader() {

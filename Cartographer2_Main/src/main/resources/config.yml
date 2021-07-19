@@ -64,13 +64,13 @@ chunk:
 # It's recommended to keep them in a folder, like "images/" or something
 images:
   # The overlay image that goes on top of the map
-  overlay: "overlay.gif"
+  overlay: "images/overlay.gif"
   # The background image, very last thing that players will normally see
-  background: "background.gif"
+  background: "images/background.gif"
   # The missing map image, when a minimap does not exist for a particular map
-  missing: "missing.png"
+  missing: "images/missing.png"
   # The disabled image, when the minimap is blacklisted in a world
-  disabled: "disabled.png"
+  disabled: "images/disabled.png"
 
 # Whether or not to dither the missing map image. Works best with images of real things
 dither-missing: false

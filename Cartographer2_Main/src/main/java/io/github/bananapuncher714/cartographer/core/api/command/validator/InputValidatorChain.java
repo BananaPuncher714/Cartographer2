@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
+
 public class InputValidatorChain< T > implements InputValidator< T > {
 	protected InputValidator< T > primaryValidator;
 	protected List< InputValidator< ? > > validators = new ArrayList< InputValidator< ? > >();
@@ -18,17 +20,17 @@ public class InputValidatorChain< T > implements InputValidator< T > {
 	}
 	
 	@Override
-	public Collection< String > getTabCompletes() {
-		return primaryValidator.getTabCompletes();
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
+		return primaryValidator.getTabCompletes( sender, input );
 	}
 
 	@Override
-	public boolean isValid( String input, String[] args ) {
-		if ( !primaryValidator.isValid( input, args ) ) {
+	public boolean isValid( CommandSender sender, String input[], String[] args ) {
+		if ( !primaryValidator.isValid( sender, input, args ) ) {
 			return false;
 		}
 		for ( InputValidator< ? > validator : validators ) {
-			if ( !validator.isValid( input, args ) ) {
+			if ( !validator.isValid( sender, input, args ) ) {
 				return false;
 			}
 		}
@@ -36,7 +38,7 @@ public class InputValidatorChain< T > implements InputValidator< T > {
 	}
 
 	@Override
-	public T get( String input ) {
-		return primaryValidator.get( input );
+	public T get( CommandSender sender, String input[] ) {
+		return primaryValidator.get( sender, input );
 	}
 }

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
 import org.bstats.bukkit.Metrics;
@@ -106,7 +105,7 @@ public class Cartographer extends JavaPlugin {
 		INSTANCE = this;
 		
 		// bStats
-		Metrics metric = new Metrics( this );
+		Metrics metric = new Metrics( this, 6216 );
 		
 		PALETTE_DIR = new File( getDataFolder() + "/" + "palettes/" );
 		MODULE_DIR = new File( getDataFolder() + "/" + "modules/" );
@@ -281,10 +280,10 @@ public class Cartographer extends JavaPlugin {
 		FileUtil.saveToFile( getResource( "config.yml" ), CONFIG_FILE, false );
 		if ( !README_FILE.exists() ) {
 			FileUtil.updateConfigFromFile( CONFIG_FILE, getResource( "config.yml" ) );
-			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder(), "overlay.gif" ), false );
-			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder(), "background.gif" ), false );
-			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder(), "missing.png" ), false );
-			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder(), "disabled.png" ), false );
+			FileUtil.saveToFile( getResource( "data/images/overlay.gif" ), new File( getDataFolder(), "images/overlay.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/background.gif" ), new File( getDataFolder(), "images/background.gif" ), false );
+			FileUtil.saveToFile( getResource( "data/images/missing.png" ), new File( getDataFolder(), "images/missing.png" ), false );
+			FileUtil.saveToFile( getResource( "data/images/disabled.png" ), new File( getDataFolder(), "images/disabled.png" ), false );
 		}
 		
 		// Save the palettes because why not
@@ -319,6 +318,8 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/ko_kr.yml" ), new File( LOCALE_DIR, "ko_kr.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/pt_br.yml" ), new File( LOCALE_DIR, "pt_br.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/ro_ro.yml" ), new File( LOCALE_DIR, "ro_ro.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/vn_vn.yml" ), new File( LOCALE_DIR, "vn_vn.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/id_id.yml" ), new File( LOCALE_DIR, "id_id.yml" ), false );
 //		}
 	}
 	
@@ -461,11 +462,6 @@ public class Cartographer extends JavaPlugin {
 	}
 	
 	private void loadImages() {
-//		OVERLAY_IMAGE = FileUtil.getImageFile( getDataFolder(), "overlay" );
-//		BACKGROUND_IMAGE = FileUtil.getImageFile( getDataFolder(), "background" );
-//		MISSING_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "missing" );
-//		DISABLED_MAP_IMAGE = FileUtil.getImageFile( getDataFolder(), "disabled" );
-		
 		try {
 			if ( OVERLAY_IMAGE.exists() ) {
 				loggerInfo( LocaleConstants.CORE_ENABLE_IMAGE_OVERLAY_FOUND );
@@ -507,7 +503,6 @@ public class Cartographer extends JavaPlugin {
 					mapManager.constructNewMinimap( file.getFileName().toString() );
 				}
 			} catch ( IOException e ) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

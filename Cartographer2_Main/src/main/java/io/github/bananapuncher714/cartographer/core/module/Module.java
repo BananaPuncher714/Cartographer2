@@ -38,7 +38,6 @@ import io.github.bananapuncher714.cartographer.core.map.MapViewer;
  */
 public abstract class Module {
 	private Cartographer plugin;
-	private boolean isEnabled = false;
 	private ModuleDescription description;
 	private ModuleTracker tracker;
 	private File dataFolder;
@@ -262,28 +261,6 @@ public abstract class Module {
 	}
 	
 	/**
-	 * Set to enable or disable. You should use {@link ModuleManager#enableModule( Module )} or {@link ModuleManager#disableModule( Module )} instead.
-	 * 
-	 * @param enabled
-	 * Enabled or not.
-	 * @return
-	 * Whether or not it was successful. false indicates nothing changed.
-	 */
-	public boolean setEnabled( boolean enabled ) {
-		if ( isEnabled == enabled ) {
-			return false;
-		}
-		
-		isEnabled = enabled;
-		if ( enabled ) {
-			onEnable();
-		} else {
-			onDisable();
-		}
-		return true;
-	}
-	
-	/**
 	 * Get a resource from the jar or zip of the module file.
 	 * @param mrl
 	 * The path, starting at the base of the jar or zip. Cannot be null.
@@ -322,6 +299,24 @@ public abstract class Module {
 	}
 	
 	/**
+	 * Set to enable or disable. This is a convenience method for {@link ModuleManager#enableModule( Module )} and {@link ModuleManager#disableModule( Module )}.
+	 * 
+	 * @param enabled
+	 * Enabled or not.
+	 * @return
+	 * Whether or not it was successful. false indicates nothing changed.
+	 */
+	public final boolean setEnabled( boolean enabled ) {
+		boolean isEnabled = isEnabled();
+		if ( enabled && !isEnabled ) {
+			return plugin.getModuleManager().enableModule( this );
+		} else if ( !enabled && isEnabled ) {
+			return plugin.getModuleManager().disableModule( this );
+		}
+		return false;
+	}
+
+	/**
 	 * Get the Cartographer instance.
 	 * 
 	 * @return
@@ -342,7 +337,7 @@ public abstract class Module {
 	 * Boolean indicating enabled state, not loaded state.
 	 */
 	public final boolean isEnabled() {
-		return isEnabled;
+		return plugin.getModuleManager().isEnabled( this );
 	}
 	
 	/**

@@ -70,6 +70,10 @@ public class ModuleManager {
 	public void disableModules() {
 	}
 	
+	public boolean isEnabled( Module module ) {
+		return false;
+	}
+	
 	public ModuleLoader getLoader() {
 		return null;
 	}

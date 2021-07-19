@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.command.CommandSender;
+
 public class InputValidatorBoolean implements InputValidator< Boolean > {
 	protected Set< String > trueVals = new HashSet< String >();
 	protected Set< String > falseVals = new HashSet< String >();
@@ -24,22 +26,22 @@ public class InputValidatorBoolean implements InputValidator< Boolean > {
 	}
 	
 	@Override
-	public Collection< String > getTabCompletes() {
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
 		Set< String > combined = new HashSet< String >( trueVals );
 		combined.addAll( falseVals );
 		return combined;
 	}
 
 	@Override
-	public boolean isValid( String input, String[] args ) {
-		input = input.toLowerCase();
-		return trueVals.contains( input ) || falseVals.contains( input );
+	public boolean isValid( CommandSender sender, String input[], String[] args ) {
+		String lowercase = input[ 0 ].toLowerCase();
+		return trueVals.contains( lowercase ) || falseVals.contains( lowercase );
 	}
 
 	@Override
-	public Boolean get( String input ) {
-		input = input.toLowerCase();
-		return trueVals.contains( input );
+	public Boolean get( CommandSender sender, String input[] ) {
+		String lowercase = input[ 0 ].toLowerCase();
+		return trueVals.contains( lowercase );
 	}
 
 }

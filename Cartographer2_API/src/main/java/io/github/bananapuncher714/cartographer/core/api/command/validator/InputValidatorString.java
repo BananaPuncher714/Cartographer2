@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.command.CommandSender;
 
 public class InputValidatorString implements InputValidator< String > {
 	protected Set< String > values = new HashSet< String >();
@@ -21,17 +22,17 @@ public class InputValidatorString implements InputValidator< String > {
 	}
 	
 	@Override
-	public Collection< String > getTabCompletes() {
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
 		return values;
 	}
 
 	@Override
-	public boolean isValid( String input, String[] args ) {
-		return values.contains( input.toLowerCase() );
+	public boolean isValid( CommandSender sender, String input[], String[] args ) {
+		return values.contains( input[ 0 ].toLowerCase() );
 	}
 
 	@Override
-	public String get( String input ) {
-		return input;
+	public String get( CommandSender sender, String input[] ) {
+		return input[ 0 ];
 	}
 }

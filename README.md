@@ -32,4 +32,6 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `Vydumka` - Translator(ru_ru)
 - `jeanlorencini` - Translator(pt_br)
 - `RebelD` - Translator(ro_ro)
+- `badger_god` - Translator(vn_vn)
+- `Pettersins` - Translator(id_id)
 - `REjoin` - Supporter

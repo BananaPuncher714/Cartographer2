@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.command.CommandSender;
+
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidator;
 import io.github.bananapuncher714.cartographer.core.module.Module;
@@ -17,7 +19,7 @@ public class InputValidatorModuleUnloaded implements InputValidator< File > {
 	}
 	
 	@Override
-	public Collection< String > getTabCompletes() {
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
 		Set< String > files = new HashSet< String >();
 		for ( File file : Cartographer.getModuleDir().listFiles() ) {
 			if ( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ) ) {
@@ -38,8 +40,8 @@ public class InputValidatorModuleUnloaded implements InputValidator< File > {
 	}
 
 	@Override
-	public boolean isValid( String input, String[] args ) {
-		File file = new File( Cartographer.getModuleDir() + "/" + input.replace( "/", "" ) );
+	public boolean isValid( CommandSender sender, String[] input , String[] args ) {
+		File file = new File( Cartographer.getModuleDir() + "/" + input[ 0 ].replace( "/", "" ) );
 		if ( !( file.exists() && file.isFile() && file.getName().matches( ".*?\\.jar$" ) ) ) {
 			return false;
 		}
@@ -54,7 +56,7 @@ public class InputValidatorModuleUnloaded implements InputValidator< File > {
 	}
 
 	@Override
-	public File get( String input ) {
-		return new File( Cartographer.getModuleDir() + "/" + input.replace( "/", "" ) );
+	public File get( CommandSender sender, String[] input ) {
+		return new File( Cartographer.getModuleDir() + "/" + input[ 0 ].replace( "/", "" ) );
 	}
 }

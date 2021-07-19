@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>cartographer2_master</artifactId>
-		<version>2.15.0</version>
+		<version>2.15.1</version>
 	</parent>
 	<artifactId>cartographer2_main</artifactId>
 
@@ -16,7 +16,7 @@
 	<repositories>
 		<repository>
 			<id>CodeMC</id>
-			<url>https://repo.codemc.org/repository/maven-public</url>
+			<url>https://repo.codemc.org/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<id>placeholderapi</id>
@@ -28,12 +28,12 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<version>1.17.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>NBTEditor</artifactId>
+			<artifactId>nbteditor</artifactId>
 			<version>7.17.0</version>
 		</dependency>
 		<dependency>
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.5</version>
+			<version>2.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

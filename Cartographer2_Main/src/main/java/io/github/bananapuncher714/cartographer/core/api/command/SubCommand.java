@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.api.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,7 +17,6 @@ import io.github.bananapuncher714.cartographer.core.api.command.executor.Command
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidator;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.InputValidatorString;
 import io.github.bananapuncher714.cartographer.core.api.command.validator.sender.SenderValidator;
-import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * A build and run command framework for automatic tab completions and easy branching.
@@ -104,16 +104,12 @@ public class SubCommand {
 		return true;
 	}
 	
-	public boolean matches( String input, String[] args ) {
-		return validator == null ? true : validator.isValid( input, args );
+	public boolean matches( CommandSender sender, String input[], String[] args ) {
+		return ( validator == null ? true : validator.isValid( sender, input, args ) ) && matches( sender );
 	}
 	
-	public boolean matches( CommandSender sender, String input, String[] args ) {
-		return matches( input, args ) && matches( sender );
-	}
-	
-	public Collection< String > getTabCompletes() {
-		return validator == null ? null : validator.getTabCompletes();
+	public Collection< String > getTabCompletes( CommandSender sender, String[] input ) {
+		return validator == null ? null : validator.getTabCompletes( sender, input );
 	}
 	
 	public List< SubCommand > getSubCommands() {
@@ -128,24 +124,24 @@ public class SubCommand {
 		return senderValidators;
 	}
 	
-	public CommandResult submit( CommandSender sender, String command, String[] args, CommandParameters parameter ) {
+	public CommandResult submit( CommandSender sender, String[] command, String[] args, CommandParameters parameter ) {
 		CommandResult result = new CommandResult();
 		parameter = new CommandParameters( parameter );
 		if ( validator != null ) {
-			parameter.add( validator.get( command ) );
+			parameter.add( validator.get( sender, command ) );
 		} else {
 			parameter.add( null );
 		}
 		if ( args.length > 0 ) {
-			String arg = args[ 0 ];
-			
 			boolean found = false;
-			String[] newArgs = FailSafe.pop( args );
 			for ( SubCommand subCommand : subCommands ) {
-				if ( subCommand.matches( sender, arg, FailSafe.pop( args ) ) ) {
+				SplitCommand split = split( args, subCommand.getInputValidator().getArgumentCount() );
+				String[] input = split.getInput();
+				String[] newArgs = split.getArguments();
+				if ( subCommand.matches( sender, input, newArgs ) ) {
 					found = true;
 					
-					result.add( subCommand.submit( sender, arg, newArgs, parameter ) );
+					result.add( subCommand.submit( sender, input, newArgs, parameter ) );
 				}
 			}
 			if ( !found ) {
@@ -166,17 +162,18 @@ public class SubCommand {
 	public Collection< String > getTabCompletions( CommandSender sender, String[] args ) {
 		Set< String > tabs = new HashSet< String >();
 		if ( args.length > 0 ) {
-			String arg = args[ 0 ];
-			String[] newArgs = FailSafe.pop( args );
 			for ( SubCommand subCommand : subCommands ) {
 				if ( subCommand.matches( sender ) ) {
+					SplitCommand split = split( args, subCommand.getInputValidator().getArgumentCount() );
+					String[] input = split.getInput();
+					String[] newArgs = split.getArguments();
 					// Check if the subcommand matches the argument, and if it has subcommands of its own
-					if ( subCommand.matches( arg, newArgs ) && !subCommand.getSubCommands().isEmpty() ) {
+					if ( subCommand.matches( sender, input, newArgs ) && !subCommand.getSubCommands().isEmpty() ) {
 						tabs.addAll( subCommand.getTabCompletions( sender, newArgs ) );
-					} else if ( args.length == 1 ) {
+					} else if ( newArgs.length == 0 ) {
 						// If not, and this is the last argument, add all possible tab completes
 						// This allows for "recommendations"
-						Collection< String > completions = subCommand.getTabCompletes();
+						Collection< String > completions = subCommand.getTabCompletes( sender, input );
 						if ( completions != null ) {
 							tabs.addAll( completions );
 						}
@@ -197,15 +194,38 @@ public class SubCommand {
 	private boolean onCommand( CommandSender sender, Command command, String arg2, String[] args ) {
 		CommandParameters parameters = new CommandParameters();
 		if ( matches( sender ) ) {
-			submit( sender, command.getName(), args, parameters ).execute( sender );
+			String[] commandArr = new String[ args.length + 1 ];
+			
+			commandArr[ 0 ] = command.getName();
+			for ( int i = 1; i < commandArr.length; i++ ) {
+				commandArr[ i ] = args[ i - 1 ];
+			}
+			
+			SplitCommand split = split( commandArr, validator.getArgumentCount() );
+			submit( sender, split.getInput(), split.getArguments(), parameters ).execute( sender );
 		}
 		return false;
 	}
 	
 	private List< String > onTabComplete( CommandSender sender, Command command, String arg2, String[] args ) {
 		List< String > completions = new ArrayList< String >();
-		StringUtil.copyPartialMatches( args[ args.length - 1 ], getTabCompletions( sender, args ), completions );
+		String[] commandArr = new String[ args.length + 1 ];
+		
+		commandArr[ 0 ] = command.getName();
+		for ( int i = 1; i < commandArr.length; i++ ) {
+			commandArr[ i ] = args[ i - 1 ];
+		}
+		
+		SplitCommand split = split( commandArr, validator.getArgumentCount() );
+		StringUtil.copyPartialMatches( args[ args.length - 1 ], getTabCompletions( sender, split.getArguments() ), completions );
 		Collections.sort( completions );
 		return completions;
+	}
+	
+	protected static SplitCommand split( String[] command, int inputSize ) {
+		String[] input = command.length > 0 ? Arrays.copyOfRange( command, 0, Math.min( inputSize, command.length ) ) : new String[ 0 ];
+		String[] args = command.length > inputSize ? Arrays.copyOfRange( command, inputSize, command.length ) : new String[ 0 ];
+		
+		return new SplitCommand( input, args );
 	}
 }
