@@ -34,4 +34,5 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `RebelD` - Translator(ro_ro)
 - `badger_god` - Translator(vn_vn)
 - `Pettersins` - Translator(id_id)
+- `galaxyvietnam` - Translator(vi_vn)
 - `REjoin` - Supporter

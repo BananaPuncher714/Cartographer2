@@ -12,11 +12,11 @@
 # These locale files also support placeholdection symbolrs, if it's a message for a player.
 # To use custom colored messages, use the se(§) directly.
 # If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
-# Translated by badger_god
+# Translated by badger_god, galaxyvietnam
 name: "Tiếng Việt (VN)"
 language: "Tiếng Việt"
 location: "Việt Nam"
-locale-code: "vn_vn"
+locale-code: "vi_vn"
 messages:
   locale:
     loaded-internal-locale: "Đã tải thành công ngôn ngữ nội bộ(%s)"
@@ -59,7 +59,7 @@ messages:
     command:
       cartographer:
         reload:
-          usage: "§cSử dụng: /cartographer reload <map>"
+          usage: "§cSử dụng: /cartographer reload <bản đồ>"
           reloaded-plugin: "§bChạy lại Cartographer2 cài đặt"
           reloaded-minimap: "§bĐã chạy lại bản đồ '§e%s§b'"
         list:
@@ -67,7 +67,7 @@ messages:
           no-minimaps: "§bKhông có bản đồ nào trong danh sách!"
           list: "§bCartographer2 bản đồ (%d): %s"
         get:
-          usage: "§cSử dụng: /cartographer get <map> <player> [slot]"
+          usage: "§cSử dụng: /cartographer get <bản đồ> <người chơi> [ô đồ]"
           success-self: "Đưa cho bạn bản đồ(%s)"
           success-other: "Đưa bản đồ(%s) cho %s"
         create:
@@ -85,13 +85,13 @@ messages:
         help:
           usage: "§cSử dụng: /cartographer help"
           help-0: "§b=== Lệnh Cartographer ==="
-          help-1: "§e/cartographer reload [map]§6 - Chạy lại Cartographer2 hoặc bản đồ"
+          help-1: "§e/cartographer reload [bản đồ]§6 - Chạy lại Cartographer2 hoặc bản đồ"
           help-2: "§e/cartographer list§6 - Xem danh sách bản đồ"
-          help-3: "§e/cartographer get <map> [player] [slot]§6 - Lấy hoặc trao bản đồ cho người chơi"
-          help-4: "§e/cartographer create <map>§6 - Tạo bản đồ mới"
-          help-5: "§e/cartographer delete <map>§6 - Xóa bản đồ"
-          help-6: "§e/cartographer load <map>§6 - Mở bản đồ"
-          help-7: "§e/cartographer unload <map>§6 - Đóng bản đồ"
+          help-3: "§e/cartographer get <bản đồ> [người chơi] [ô đồ]§6 - Lấy hoặc trao bản đồ cho người chơi"
+          help-4: "§e/cartographer create <bản đồ>§6 - Tạo bản đồ mới"
+          help-5: "§e/cartographer delete <bản đồ>§6 - Xóa bản đồ"
+          help-6: "§e/cartographer load <bản đồ>§6 - Mở bản đồ"
+          help-7: "§e/cartographer unload <bản đồ>§6 - Đóng bản đồ"
           help-8: "§e/cartographer help§6 - Hiển thị lệnh của plugin"
           help-9: ""
           help-10: ""
@@ -114,7 +114,7 @@ messages:
           usage: "§cSử dụng: /cartographer module enable <module>"
           success: "§6Cho phép '§e%s§6'!"
           already-enabled: "§cMở rộng '%s' is đã chạy!"
-          error-loading: "§cKhông thể chạy mở rộng '%s', Kiểm tra server log có thêm thông tin. (Thiếu plugin yêu cầu?)"
+          error-loading: "§cKhông thể chạy mở rộng '%s', Kiểm tra log máy chủ để có thêm thông tin. (Thiếu plugin yêu cầu?)"
         disable:
           usage: "§cSử dụng: /cartographer module disable <module>"
           already-disabled: "§cMở rộng '%s' is đã tắt!"

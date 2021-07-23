@@ -57,9 +57,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>github</id>
-			<name>GitHub BananaPuncher714 Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/BananaPuncher714/Cartographer2</url>
+			<id>aaaaahhhhhhh</id>
+			<url>https://repo.aaaaahhhhhhh.com/releases</url>
 		</repository>
 	</distributionManagement>
 </project>
