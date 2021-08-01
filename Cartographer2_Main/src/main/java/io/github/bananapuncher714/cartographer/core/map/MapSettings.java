@@ -234,7 +234,7 @@ public class MapSettings {
 	
 	public double getPreviousZoom( double currentZoom ) {
 		int index = 0;
-		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {
+		while ( index < allowedZooms.size() && allowedZooms.get( index ) != currentZoom ) {
 			index++;
 		}
 		
@@ -249,7 +249,7 @@ public class MapSettings {
 	
 	public double getNextZoom( double currentZoom ) {
 		int index = 0;
-		while ( allowedZooms.get( index ) != currentZoom && index < allowedZooms.size() ) {
+		while ( index < allowedZooms.size() && allowedZooms.get( index ) != currentZoom ) {
 			index++;
 		}
 		

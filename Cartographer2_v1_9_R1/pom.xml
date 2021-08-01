@@ -7,30 +7,24 @@
 		<artifactId>cartographer2_master</artifactId>
 		<version>2.15.1</version>
 	</parent>
-	<artifactId>cartographer2_api</artifactId>
+	<artifactId>cartographer2_v1_9_r1</artifactId>
 
-	<repositories>
-		<repository>
-			<id>CodeMC</id>
-			<url>https://repo.codemc.org/repository/maven-public/</url>
-		</repository>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-	</repositories>
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
+			<artifactId>spigot</artifactId>
+			<version>1.9.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>nbteditor</artifactId>
-			<version>7.17.0</version>
+			<artifactId>cartographer2_main</artifactId>
+			<version>${master.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

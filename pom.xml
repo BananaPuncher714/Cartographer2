@@ -16,6 +16,7 @@
 	<modules>
 		<module>cartographer2_main</module>
 		<module>cartographer2_v1_8_r3</module>
+		<module>cartographer2_v1_9_r1</module>
 		<module>cartographer2_v1_9_r2</module>
 		<module>cartographer2_v1_10_r1</module>
 		<module>cartographer2_v1_11_r1</module>
