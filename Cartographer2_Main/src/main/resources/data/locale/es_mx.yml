@@ -20,7 +20,7 @@ locale-code: "es_mx"
 messages:
   locale:
     loaded-internal-locale: "Se han cargado el lenguaje con éxito (%s)"
-    loaded-locale: "Lenguaje cargado %s(%s) as %s"
+    loaded-locale: "Lenguaje cargado %s(%s) como %s"
     default-locale-changed: "Lenguaje de defecto cambiado a %s"
     error-loading-file: "No se puede cargar el archivo de lenguaje '%s'"
     invalid-locale: "¡'%s' no es un lenguaje válido!"
