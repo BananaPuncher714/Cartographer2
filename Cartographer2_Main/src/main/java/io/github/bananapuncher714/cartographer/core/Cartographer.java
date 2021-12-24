@@ -140,6 +140,7 @@ public class Cartographer extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin( this );
 			return;
 		}
+		getLogger().info( "Detected version '" + ReflectionUtil.VERSION + "'" );
 		
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			handler.inject( player );

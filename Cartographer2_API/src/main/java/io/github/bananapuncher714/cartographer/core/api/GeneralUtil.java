@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -166,4 +167,14 @@ public interface GeneralUtil {
 	 * If the block being updated is the source block.
 	 */
 	boolean updateEvent( BlockPhysicsEvent event );
+	
+	/**
+	 * Get the minimum height of a world
+	 * 
+	 * @param world
+	 * Cannot be null.
+	 * @return
+	 * The minimum height of the world, can be negative.
+	 */
+	int getMinWorldHeight( World world );
 }

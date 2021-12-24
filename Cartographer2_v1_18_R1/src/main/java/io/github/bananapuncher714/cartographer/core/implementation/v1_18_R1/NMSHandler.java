@@ -39,7 +39,7 @@ import org.bukkit.map.MapCursor.Type;
 import io.github.bananapuncher714.cartographer.core.Cartographer;
 import io.github.bananapuncher714.cartographer.core.api.GeneralUtil;
 import io.github.bananapuncher714.cartographer.core.api.PacketHandler;
-import io.github.bananapuncher714.cartographer.core.internal.Util_1_14;
+import io.github.bananapuncher714.cartographer.core.internal.Util_1_17;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.util.CrossVersionMaterial;
@@ -123,7 +123,7 @@ public class NMSHandler implements PacketHandler {
 
 	private final Map< UUID, Channel > channels = new ConcurrentHashMap< UUID, Channel >();
 	private final Set< Integer > maps = new TreeSet< Integer >();
-	private Util_1_14 util = new Util_1_14();
+	private Util_1_17 util = new Util_1_17();
 	private final String handler_name;
 	
 	private final Set< PacketPlayOutMap > whitelisted = Collections.synchronizedSet( Collections.newSetFromMap( new WeakHashMap< PacketPlayOutMap, Boolean >() ) );

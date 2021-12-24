@@ -22,30 +22,31 @@ public final class BlockUtil {
 	
 	public static int getWaterDepth( Block block ) {
 		int depth = 0;
+		int minDepth = Cartographer.getUtil().getMinWorldHeight( block.getWorld() );
 		while ( Cartographer.getUtil().isWater( block ) ) {
 			depth++;
 			block = block.getRelative( BlockFace.DOWN );
-			if ( block == null || block.getY() < 0 ) {
+			if ( block == null || block.getY() < minDepth ) {
 				return depth;
 			}
 		}
 		return depth;
 	}
 	
-	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z ) {
+	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z, int min ) {
 		// 1-2
 		// 3-4
 		// 5-6
 		// 7-9
 		// 10+
 		int originalY = y - 1;
-		while ( y > 0 && Cartographer.getUtil().isWater( chunk, x, y--, z ) );
+		while ( y > min && Cartographer.getUtil().isWater( chunk, x, y--, z ) );
 		return originalY - y;
 	}
 	
-	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip ) {
+	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip, int min ) {
 //		while ( y > 0 && ( ( skip != null && skip.contains( Cartographer.getUtil().getBlockType( chunk, x, y--, z ) ) ) || ( skip == null && Cartographer.getUtil().getBlockType( chunk, x, y--, z ).material == Material.AIR ) ) );
-		for ( ; y > 0; y-- ) {
+		for ( ; y > min; y-- ) {
 			if ( Cartographer.getUtil().isWater( chunk, x, y, z ) ) {
 				return y;
 			}
@@ -65,7 +66,7 @@ public final class BlockUtil {
 	public static int getHighestYAt( Location location, Set< CrossVersionMaterial > skip ) {
 		int y = location.getWorld().getMaxHeight();
 		location.setY( y );
-		while ( y > 0 ) {
+		while ( y > Cartographer.getUtil().getMinWorldHeight( location.getWorld() ) ) {
 			if ( skip == null ) {
 				if ( location.getBlock().getType() != Material.AIR ) {
 					return y;
@@ -84,10 +85,11 @@ public final class BlockUtil {
 	public static Block getNextHighestBlockAt( Location location, Set< CrossVersionMaterial > skip, int height ) {
 		skip.add( new CrossVersionMaterial( Material.AIR ) );
 		Location loc = location.clone();
-		if ( height > 0 && height <= loc.getWorld().getMaxHeight() ) {
+		int minHeight = Cartographer.getUtil().getMinWorldHeight( loc.getWorld() );
+		if ( height > minHeight && height <= loc.getWorld().getMaxHeight() ) {
 			loc.setY( height );
 		} else {
-			loc.setY( 1 );
+			loc.setY( minHeight );
 		}
 		Block b = loc.getBlock();
 		Block upper = b.getRelative( BlockFace.UP );

@@ -43,26 +43,28 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 	public ChunkData process( ChunkSnapshot snapshot ) {
 		int[] buffer = new int[ 16 ];
 		ChunkLocation north = new ChunkLocation( snapshot ).subtract( 0, 1 );
+		int maxHeight = north.getWorld().getMaxHeight() - 1;
+		int minHeight = Cartographer.getUtil().getMinWorldHeight( north.getWorld() );
 		ChunkSnapshot northSnapshot = cache.getChunkSnapshotAt( north );
 		// Check if the north snapshot exists for the northern border
 		if ( northSnapshot == null ) {
 			return null;
 		}
 		for ( int i = 0; i < 16; i++ ) {
-			buffer[ i ] = BlockUtil.getHighestYAt( northSnapshot, i, 255, 15, palette.getTransparentBlocks() );
+			buffer[ i ] = BlockUtil.getHighestYAt( northSnapshot, i, maxHeight, 15, palette.getTransparentBlocks(), minHeight );
 		}
 		
 		byte[] data = new byte[ 256 ];
 		
 		for ( int z = 0; z < 16; z++ ) {
 			for ( int x = 0; x < 16; x++ ) {
-				int height = BlockUtil.getHighestYAt( snapshot, x, 255, z, palette.getTransparentBlocks() );
+				int height = BlockUtil.getHighestYAt( snapshot, x, maxHeight, z, palette.getTransparentBlocks(), minHeight );
 				int prevVal = buffer[ x ];
 				buffer[ x ] = height;
 				Color color = palette.getDefaultColor();
 				if ( Cartographer.getUtil().isWater( snapshot, x, height, z ) ) {
 					// WATER RENDERING TIME
-					int depth = BlockUtil.getWaterDepth( snapshot, x, height, z );
+					int depth = BlockUtil.getWaterDepth( snapshot, x, height, z, minHeight );
 					boolean even = ( ( x + z ) & 1 ) == 0;
 					// 1-2
 					// 3-4

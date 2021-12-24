@@ -19,11 +19,11 @@ public final class BlockUtil {
 		return 0;
 	}
 	
-	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z ) {
+	public static int getWaterDepth( ChunkSnapshot chunk, int x, int y, int z, int min ) {
 		return 0;
 	}
 	
-	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip ) {
+	public static int getHighestYAt( ChunkSnapshot chunk, int x, int y, int z, Set< CrossVersionMaterial > skip, int min ) {
 		return 0;
 	}
 	

@@ -2,6 +2,7 @@ package io.github.bananapuncher714.cartographer.core.api;
 
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -103,7 +104,7 @@ public interface GeneralUtil {
 	 * @param x
 	 * X coordinate from 0 to 15.
 	 * @param y
-	 * Y coordinate from 0 to 255
+	 * Y coordinate from the min to max y.
 	 * @param z
 	 * Z coordinate from 0 to 15.
 	 * @return
@@ -129,7 +130,7 @@ public interface GeneralUtil {
 	 * @param x
 	 * Local x value from 0 to 15.
 	 * @param y
-	 * Local y value from 0 to 255.
+	 * Local y value from the min to max y.
 	 * @param z
 	 * Local z value from 0 to 15.
 	 * @return
@@ -166,4 +167,14 @@ public interface GeneralUtil {
 	 * If the block being updated is the source block.
 	 */
 	boolean updateEvent( BlockPhysicsEvent event );
+	
+	/**
+	 * Get the minimum height of a world
+	 * 
+	 * @param world
+	 * Cannot be null.
+	 * @return
+	 * The minimum height of the world, can be negative.
+	 */
+	int getMinWorldHeight( World world );
 }

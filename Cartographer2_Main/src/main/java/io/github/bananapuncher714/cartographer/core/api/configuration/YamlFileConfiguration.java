@@ -78,7 +78,8 @@ public class YamlFileConfiguration {
 		
 		comments = fetchComments( contents );
 		
-		config.loadFromString( contents );
+		config.loadFromString( contents.replaceAll( "[\t ]*?#.*?\r?\n", "" ) );
+		config.options().copyHeader( false );
 		config.options().header( null );
 	}
 	

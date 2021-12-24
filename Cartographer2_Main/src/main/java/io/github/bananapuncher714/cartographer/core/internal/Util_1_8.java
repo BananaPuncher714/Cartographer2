@@ -7,6 +7,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -135,5 +136,10 @@ public class Util_1_8 implements GeneralUtil {
 	@Override
 	public boolean updateEvent( BlockPhysicsEvent event ) {
 		return true;
+	}
+	
+	@Override
+	public int getMinWorldHeight( World world ) {
+		return 0;
 	}
 }
