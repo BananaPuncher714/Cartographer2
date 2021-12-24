@@ -92,7 +92,7 @@ public enum ChunkLoadListener implements Listener {
 				percentage += 1.0 / ( location.exists() ? loadAmount : generateAmount );
 				// Add it to the list of locations being loaded and force load it
 				beingLoaded.add( location );
-				location.load();
+				location.getChunk();
 			}
 			
 			// loading contains a queue that should be empty most of the time, unless a lot of chunks are being loaded at once

@@ -37,7 +37,7 @@ public class SimpleImage {
 		
 		if ( file.getName().endsWith( ".gif" ) ) {
 			FileInputStream stream = new FileInputStream( file );
-			GifImage image = GifDecoder.read( new FileInputStream( file ) );
+			GifImage image = GifDecoder.read( stream );
 			stream.close();
 			
 			width = image.getWidth();

@@ -32,7 +32,10 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `Vydumka` - Translator(ru_ru)
 - `jeanlorencini` - Translator(pt_br)
 - `RebelD` - Translator(ro_ro)
-- `badger_god` - Translator(vn_vn)
+- `badger_god` - Translator(vi_vn)
 - `Pettersins` - Translator(id_id)
 - `galaxyvietnam` - Translator(vi_vn)
+- `guillelego` - Translator(ca_es)
+- `foetkoYTjeW` - Translator(sk_sk)
+- `ひゆ(HIYU)` - Translator(ja_jp)
 - `REjoin` - Supporter

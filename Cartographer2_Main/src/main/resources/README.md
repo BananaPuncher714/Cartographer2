@@ -138,4 +138,7 @@ Additional settings may be added by modules.
 - `badger_god` - Translator(vi_vn)
 - `Pettersins` - Translator(id_id)
 - `galaxyvietnam` - Translator(vi_vn)
+- `guillelego` - Translator(ca_es)
+- `foetkoYTjeW` - Translator(sk_sk)
+- `ひゆ(HIYU)` - Translator(ja_jp)
 - `REjoin` - Supporter
