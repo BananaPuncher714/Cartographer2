@@ -45,6 +45,12 @@ public class BigChunkLocation {
 		z = location.getZ() >> 4;
 	}
 
+	public BigChunkLocation( String world, int x, int z ) {
+		worldName = world;
+		this.x = x;
+		this.z = z;
+	}
+	
 	/**
 	 * Get the x coordinate.
 	 * 

@@ -41,7 +41,7 @@ import io.github.bananapuncher714.cartographer.core.map.MapViewer;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 
@@ -217,7 +217,7 @@ public class CartographerRenderer extends MapRenderer {
 			Collection< MapPixel > pixels = map.getPixelsFor( player, setting );
 			Collection< WorldPixel > worldPixels = map.getWorldPixelsFor( player, setting );
 			
-			MapDataCache cache = map.getDataCache();
+			DataCache cache = map.getDataCache();
 
 			MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 			
@@ -277,6 +277,8 @@ public class CartographerRenderer extends MapRenderer {
 			}
 		}
 		
+		Map< DataCache, Set< BigChunkLocation > > toLoad = new HashMap< DataCache, Set< BigChunkLocation > >();
+		
 		// Once all the frames are done, then send
 		for ( RecursiveTask< RenderInfo > task : tasks ) {
 			try {
@@ -288,10 +290,13 @@ public class CartographerRenderer extends MapRenderer {
 				}
 				
 				// Queue the locations that need loading
-				for ( BigChunkLocation location : info.needsRender ) {
-					info.map.getDataCache().requestLoadFor( location );
+				Set< BigChunkLocation > needsLoad = toLoad.get( info.map.getDataCache() );
+				if ( needsLoad == null ) {
+					needsLoad = new HashSet< BigChunkLocation >();
+					toLoad.put( info.map.getDataCache(), needsLoad );
 				}
-
+				needsLoad.addAll( info.needsRender );
+				
 				// Send the packet
 				byte[] data = info.data;
 				MapCursor[] cursors = info.cursors;
@@ -299,6 +304,12 @@ public class CartographerRenderer extends MapRenderer {
 				plugin.getHandler().sendDataTo( id, data, cursors, uuid );
 			} catch ( InterruptedException | ExecutionException e ) {
 				e.printStackTrace();
+			}
+		}
+		
+		for ( Entry< DataCache, Set< BigChunkLocation > > entry : toLoad.entrySet() ) {
+			for ( BigChunkLocation bLoc : entry.getValue() ) {
+				entry.getKey().requestLoadFor( bLoc );
 			}
 		}
 		

@@ -13,6 +13,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 import io.github.bananapuncher714.cartographer.core.renderer.RenderInfo;
@@ -121,11 +122,11 @@ public class CustomRenderInfo extends RenderInfo {
 		this.map = map;
 	}
 
-	public MapDataCache getCache() {
+	public DataCache getCache() {
 		return cache;
 	}
 
-	public void setCache( MapDataCache cache ) {
+	public void setCache( DataCache cache ) {
 		this.cache = cache;
 	}
 

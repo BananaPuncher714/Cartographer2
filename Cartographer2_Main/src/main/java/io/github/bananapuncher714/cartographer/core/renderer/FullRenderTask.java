@@ -134,20 +134,25 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 		}
 		
 		// Calculate the information for the rotations and whatever we can right now
-		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
-		double cos = RivenMath.cos( ( float ) radians );
-		double sin = RivenMath.sin( ( float ) radians );
-		double oriX = info.setting.location.getX();
-		double oriZ = info.setting.location.getZ();
+		final double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
+		final double cos = RivenMath.cos( ( float ) radians );
+		final double sin = RivenMath.sin( ( float ) radians );
+		final double oriX = info.setting.location.getX();
+		final double oriZ = info.setting.location.getZ();
+		
+		String world = loc.getWorld().getName();
+		ChunkData lastChunkData = null;
+		int lastChunkX = 0;
+		int lastChunkZ = 0;
 		
 		int index = -1;
 		for ( int y = 0; y < 128; y++ ) {
-			double b = y - 64;
+			final double b = y - 64;
 			for ( int x = 0; x < 128; x++ ) {
-				double a = x - 64;
+				final double a = x - 64;
 				
 				index++;
-
+				
 				// Get the custom map pixel
 				int mapColor = info.upperPixelInfo[ index ];
 				// Continue if the pixel is opaque, since we know that nothing else be above this
@@ -180,34 +185,41 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 
 				// The render location comes next
 				// Calculate the x and y manually
-				double xx = a * cos - b * sin;
-				double yy = a * sin + b * cos;
-				double xVal = oriX + ( info.setting.zoomscale * xx );
-				double zVal = oriZ + ( info.setting.zoomscale * yy );
-				int blockX = ( int ) xVal;
-				int blockZ = ( int ) zVal;
-				int chunkX = blockX >> 4;
-				int chunkZ = blockZ >> 4;
+				final double xx = a * cos - b * sin;
+				final double yy = a * sin + b * cos;
+				final double xVal = oriX + ( info.setting.zoomscale * xx );
+				final double zVal = oriZ + ( info.setting.zoomscale * yy );
+				final int blockX = ( int ) Math.floor( xVal );
+				final int blockZ = ( int ) Math.floor( zVal );
+				final int chunkX = blockX >> 4;
+				final int chunkZ = blockZ >> 4;
 				
-				ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
-				int xOffset = blockX & 0xF;
-				int zOffset = blockZ & 0xF;
 				int localColor = 0;
 
-				ChunkData chunkData = info.cache.getDataAt( cLocation );
-
+				ChunkData chunkData = lastChunkData;
+				if ( chunkData == null || chunkX != lastChunkX || chunkZ != lastChunkZ ) {
+					chunkData = info.cache.getDataAt( new ChunkLocation( world, chunkX, chunkZ ) );
+				}
+				
 				if ( chunkData != null ) {
+					lastChunkData = chunkData;
+					lastChunkX = chunkX;
+					lastChunkZ = chunkZ;
+					
+					final int xOffset = blockX & 0xF;
+					final int zOffset = blockZ & 0xF;
+					
 					// TODO make this configurable per player or something. Make a player preference thing or whatnot.
 					// This is for static colors
 //	  				localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset, setting.getScale() ) );
 					// This is for dynamic colors
 					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
 				} else {
-					info.needsRender.add( new BigChunkLocation( cLocation ) );
+					info.needsRender.add( new BigChunkLocation( world, chunkX >> 4, chunkZ >> 4 ) );
 
 					localColor = loading;
 				}
-
+				
 				// First, insert any WorldPixels that may be present
 				for ( WorldPixel pixel : info.worldPixels ) {
 					if ( pixel.intersects( xVal, zVal ) ) {
@@ -222,7 +234,7 @@ public class FullRenderTask extends RecursiveTask< RenderInfo > {
 				data[ index ] = JetpImageUtil.getBestColorIncludingTransparent( mapColor );
 			}
 		}
-		
+
 		return info;
 	}
 }

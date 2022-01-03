@@ -11,7 +11,7 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
  * @author BananaPuncher714
  */
 public class SimpleChunkProcessor implements ChunkDataProvider {
-	protected MapDataCache cache;
+	protected DataCache cache;
 	protected MinimapPalette palette;
 	
 	/**
@@ -22,7 +22,7 @@ public class SimpleChunkProcessor implements ChunkDataProvider {
 	 * @param palette
 	 * A palette to get the colors for the blocks. Cannot be null.
 	 */
-	public SimpleChunkProcessor( MapDataCache cache, MinimapPalette palette ) {
+	public SimpleChunkProcessor( DataCache cache, MinimapPalette palette ) {
 	}
 	
 	@Override

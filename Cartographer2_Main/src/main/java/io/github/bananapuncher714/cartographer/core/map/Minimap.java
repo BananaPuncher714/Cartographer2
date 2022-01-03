@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -44,8 +43,7 @@ import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
-import io.github.bananapuncher714.cartographer.core.map.process.MipMapChunkDataStorage;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 public class Minimap implements ChunkNotifier {
@@ -56,7 +54,7 @@ public class Minimap implements ChunkNotifier {
 	protected final File DISABLED_IMAGE_FILE;
 	
 	protected MinimapPalette palette;
-	protected MapDataCache cache;
+	protected DataCache cache;
 	protected BigChunkQueue queue;;
 	protected File saveFile;
 	protected MapSettings settings;
@@ -75,7 +73,7 @@ public class Minimap implements ChunkNotifier {
 
 	private Set< ChunkLocation > cachedLocations = new HashSet< ChunkLocation >();
 	
-	public Minimap( String id, MinimapPalette palette, MapDataCache cache, File saveDir, MapSettings settings ) {
+	public Minimap( String id, MinimapPalette palette, DataCache cache, File saveDir, MapSettings settings ) {
 		this.id = id;
 		this.saveFile = saveDir;
 		this.palette = palette;
@@ -222,7 +220,7 @@ public class Minimap implements ChunkNotifier {
 		return palette;
 	}
 	
-	public MapDataCache getDataCache() {
+	public DataCache getDataCache() {
 		return cache;
 	}
 	

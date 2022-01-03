@@ -61,7 +61,12 @@ public class ChunkLocation {
 		this.z = z;
 		this.worldName = world.getName();
 		this.world = world;
-		
+	}
+	
+	public ChunkLocation( String world, int x, int z ) {
+		this.x = x;
+		this.z = z;
+		this.worldName = world;
 	}
 	
 	/**

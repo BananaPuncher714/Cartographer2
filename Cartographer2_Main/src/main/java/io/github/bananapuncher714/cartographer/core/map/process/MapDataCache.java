@@ -1,5 +1,7 @@
 package io.github.bananapuncher714.cartographer.core.map.process;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.Bukkit;
@@ -33,9 +36,9 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
  * 
  * @author BananaPuncher714
  */
-public class MapDataCache {
+public class MapDataCache implements DataCache {
 	protected final ExecutorService service = Executors.newFixedThreadPool( 2 );
-	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new ConcurrentHashMap< ChunkLocation, Future< ChunkData > >();
+	protected final Map< ChunkLocation, Future< ChunkData > > renderers = new HashMap< ChunkLocation, Future< ChunkData > >();
 	protected ChunkDataStorage storage;
 	protected final Map< ChunkLocation, ChunkSnapshot > chunks;
 
@@ -57,26 +60,30 @@ public class MapDataCache {
 
 	public MapDataCache( MapSettings setting ) {
 		this.setting = setting;
-		chunks = new ConcurrentHashMap< ChunkLocation, ChunkSnapshot >();
+		chunks = new HashMap< ChunkLocation, ChunkSnapshot >();
 		
 		storage = new SimpleChunkDataStorage();
 	}
 
+	@Override
 	public void setFileQueue( BigChunkQueue queue ) {
 		this.queue = queue;
 	}
 
+	@Override
 	public MapDataCache setNotifier( ChunkNotifier notifier ) {
 		this.notifier = notifier;
 		return this;
 	}
 
+	@Override
 	public ChunkNotifier getChunkNotifier() {
 		return notifier;
 	}
 
+	@Override
 	public void update() {
-		// So, first iterate through the currently rendering futures and save them if they're done
+		lock.lock();
 		for ( Iterator< Entry< ChunkLocation, Future< ChunkData > > > iterator = renderers.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< ChunkLocation, Future< ChunkData > > entry = iterator.next();
 
@@ -99,78 +106,84 @@ public class MapDataCache {
 				iterator.remove();
 			}
 		}
-
-		// Now, scan the rest of the chunks and remove whatever is fully loaded
-		lock.lock();
+		
 		for ( Iterator< Entry< ChunkLocation, ChunkSnapshot > > iterator = chunks.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry< ChunkLocation, ChunkSnapshot > entry = iterator.next();
 			ChunkLocation location = entry.getKey();
 			ChunkLocation south = new ChunkLocation( location.getWorld(), location.getX(), location.getZ() + 1 );
-			boolean updating = storage.contains( location ) || renderers.containsKey( location ) || renderers.containsKey( south );
+			// Fix this if possible
+			boolean updating = renderers.containsKey( location ) ||
+					renderers.containsKey( south ) ||
+					location.isLoaded() ||
+					ChunkLoadListener.INSTANCE.isForceLoad();
 			if ( !updating ) {
 				iterator.remove();
 			}
 		}
 		lock.unlock();
 	}
+	
 
+	@Override
 	public void setChunkDataProvider( ChunkDataProvider provider ) {
 		this.provider = provider;
 	}
 
+	@Override
 	public ChunkDataProvider getChunkDataProvider() {
 		return provider;
 	}
 
+	@Override
 	public void setChunkDataStorage( ChunkDataStorage storage ) {
 		this.storage = storage;
 	}
 	
+	@Override
 	public ChunkDataStorage getStorage() {
 		return storage;
 	}
 	
+	@Override
 	public void registerSnapshot( ChunkLocation location ) {
-		// We've just received a chunk location of a loaded chunk
-		// Register the snapshot, but only if it's required
-
-		// Absolutely do not render chunks that are not in the main world
+		byte[] arr = new byte[ 256 ];
+		Arrays.fill( arr, ( byte ) ( ThreadLocalRandom.current().nextInt( 128 ) + 5 ) );
+		
 		if ( setting.isBlacklisted( location.getWorld().getName() ) ) {
 			return;
 		}
 
-		// Now, check if we can render the location or the one south of it
 		ChunkLocation south = new ChunkLocation( location ).add( 0, 1 );
 		
-		// Check if we want to reload chunks that are already present
-		// If not, then it means we want to rely only on map updates
+		lock.lock();
 		if ( !setting.isReloadChunks() ) {
 			// Is this chunk snapshot really necessary?
 			if ( storage.contains( location ) && storage.contains( south ) ) {
+				lock.unlock();
 				return;
 			}
 		}
 		
 		// Ignore the visible player range for now
-		lock.lock();
 		chunks.put( location, location.getChunk().getChunkSnapshot() );
-		lock.unlock();
 
 		process( location, true );
 		process( south, true );
+		
+		lock.unlock();
 	}
 
+	@Override
 	public void unregisterSnapshot( ChunkLocation location ) {
-		// Remove the snapshot only if it's not getting loaded
 		ChunkLocation south = new ChunkLocation( location.getWorld(), location.getX(), location.getZ() + 1 );
-		boolean inUse = renderers.containsKey( location ) || renderers.containsKey( south ) || ChunkLoadListener.INSTANCE.isForceLoad();
-		if ( !inUse ) {
-			lock.lock();
+		lock.lock();
+		if ( !( renderers.containsKey( location ) || renderers.containsKey( south ) ) ) {
 			chunks.remove( location );
-			lock.unlock();
 		}
+		lock.unlock();
 	}
 
+	@Override
 	public boolean hasSnapshot( ChunkLocation location ) {
 		lock.lock();
 		boolean contains = chunks.containsKey( location );
@@ -178,14 +191,19 @@ public class MapDataCache {
 		return contains;
 	}
 
+	@Override
 	public ChunkData getDataAt( ChunkLocation location ) {
+		// No lock
 		return storage.get( location );
 	}
 
+	@Override
 	public boolean containsDataAt( ChunkLocation location ) {
+		// No lock
 		return storage.contains( location );
 	}
 
+	@Override
 	public ChunkSnapshot getChunkSnapshotAt( ChunkLocation location ) {
 		lock.lock();
 		ChunkSnapshot snapshot = chunks.get( location );
@@ -199,30 +217,41 @@ public class MapDataCache {
 	 * @param location
 	 * A location that requires loading
 	 */
+	@Override
 	public void addToChunkLoader( ChunkLocation location ) {
 		ChunkLoadListener.queueChunk( location );
 	}
 
+	@Override
 	public void process( ChunkLocation location, boolean force ) {
 		ChunkLocation north = new ChunkLocation( location ).subtract( 0, 1 );
-		if ( !hasSnapshot( north ) || !hasSnapshot( location ) ) {
-			return;
+		lock.lock();
+		if ( hasSnapshot( north ) && hasSnapshot( location ) ) {
+			if ( !renderers.containsKey( location ) || force ) {
+				ChunkProcessor processor = new ChunkProcessor( getChunkSnapshotAt( location ), provider );
+	
+				ChunkPreProcessEvent event = new ChunkPreProcessEvent( location, processor );
+				event.callEvent();
+				processor = event.getDataProcessor();
+	
+				Future< ChunkData > fut = renderers.put( location, service.submit( processor ) );
+				if ( fut != null && !fut.isDone() ) {
+					fut.cancel( true );
+				}
+			}
 		}
-		if ( !renderers.containsKey( location ) || force ) {
-			ChunkProcessor processor = new ChunkProcessor( getChunkSnapshotAt( location ), provider );
-
-			ChunkPreProcessEvent event = new ChunkPreProcessEvent( location, processor );
-			event.callEvent();
-			processor = event.getDataProcessor();
-
-			renderers.put( location, service.submit( processor ) );
-		}
+		lock.unlock();
 	}
 
+	@Override
 	public boolean isProcessing( ChunkLocation location ) {
-		return renderers.containsKey( location );
+		lock.lock();
+		boolean rendering = renderers.containsKey( location );
+		lock.unlock();
+		return rendering;
 	}
 
+	@Override
 	public boolean withinVisiblePlayerRange( ChunkLocation location ) {
 		int cx = location.getX() >> 4 << 8;
 		int cz = location.getZ() >> 4 << 8;
@@ -244,14 +273,21 @@ public class MapDataCache {
 		return false;
 	}
 
+	@Override
 	public void removeScannedLocation( BigChunkLocation location ) {
+		lock.lock();
 		scanned.remove( location );
+		lock.unlock();
 	}
 
+	@Override
 	public void removeChunkDataAt( ChunkLocation location ) {
+		lock.lock();
 		storage.remove( location );
+		lock.unlock();
 	}
 
+	@Override
 	public void updateLocation( Location location, MinimapPalette palette ) {
 		if ( !setting.isAutoUpdate() ) {
 			return;
@@ -261,6 +297,8 @@ public class MapDataCache {
 			return;
 		}
 
+		Set< ChunkLocation > needsUpdate = new HashSet< ChunkLocation >();
+		
 		Location south = location.clone().add( 0, 0, 1 );
 		for ( int i = -1; i < 2; i++ ) {
 			ChunkLocation chunkLoc = new ChunkLocation( south );
@@ -269,32 +307,37 @@ public class MapDataCache {
 				int index = ( south.getBlockX() - ( chunkLoc.getX() << 4 ) ) + ( south.getBlockZ() - ( chunkLoc.getZ() << 4 ) ) * 16;
 				cData.getData()[ index ] = JetpImageUtil.getBestColorIncludingTransparent( provider.process( south, palette ) );
 			} else {
-				// TODO Check if the chunk is unloaded?
-				addToChunkLoader( chunkLoc );
+				needsUpdate.add( chunkLoc );
 			}
 			south.subtract( 0, 0, 1 );
 		}
+		
+		for ( ChunkLocation loc : needsUpdate ) {
+			addToChunkLoader( loc );
+		}
 	}
 
+	@Override
 	public void updateDataAt( ChunkLocation location, ChunkData data, boolean force ) {
-		// Provide the data at the given location
 		if ( data != null ) {
 			// Check if it's within the worldborder
 			boolean withinBorders = setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location );
 			if ( withinBorders ) {
-				// Force replace?
-				if ( force || !this.storage.contains( location ) ) {
+				lock.lock();
+				if ( force || !storage.contains( location ) ) {
 					ChunkData newData = notifier != null ? notifier.onChunkLoad( location, data ) : null;
 					newData = newData == null ? data : newData;
 					
 					storage.store( location, newData );
 				}
+				lock.unlock();
 			}
 		} else {
 			throw new IllegalArgumentException( "ChunkData cannot be null!" );
 		}
 	}
 
+	@Override
 	public void updateDataAt( BigChunkLocation location, BigChunk chunk, boolean force ) {
 		int cx = location.getX() << 4;
 		int cz = location.getZ() << 4;
@@ -313,15 +356,13 @@ public class MapDataCache {
 		}
 	}
 
+	@Override
 	public void requestLoadFor( ChunkLocation location, boolean force ) {
-		// This request does not try to load it from file
-		// If forced, it will forcefully reload the location
-
-		// First, check if the location is within the worldborder
 		boolean withinBorders = setting.isRenderOutOfBorder() || Cartographer.getInstance().getDependencyManager().shouldChunkBeLoaded( location );
 		if ( withinBorders ) {
-			// Next, check if the location is already processed, or being processed
+			lock.lock();
 			boolean required = !( storage.contains( location ) || renderers.containsKey( location ) );
+			lock.unlock();
 			if ( required || force ) {
 				// We need to render the chunk
 				// For that, we need the northern chunk snapshot too
@@ -333,26 +374,21 @@ public class MapDataCache {
 		}
 	}
 
+	@Override
 	public void requestSnapshotFor( ChunkLocation location, boolean force ) {
-		// This request attempts to fetch the snapshot for a given location
-		// Check if it is already loaded first
 		lock.lock();
 		boolean required = !chunks.containsKey( location );
 		lock.unlock();
 		if ( required || force ) {
-			// We do not have the snapshot
-			// Ask the chunk loader to fetch it
 			ChunkLoadListener.queueChunk( location );
 		}
 	}
 
+	@Override
 	public void requestLoadFor( BigChunkLocation location ) {
-		// This request tries to load it from file
-		// Something is requesting that the location gets loaded
-		// Don't bother fetching the same file if we've already done it
-		
 		int cx = location.getX() << 4;
 		int cz = location.getZ() << 4;
+		lock.lock();
 		if ( !scanned.contains( location ) ) {
 			boolean attemptToLoad = false;
 			// Scan through each ChunkLocation to see if we're currently processing it
@@ -373,28 +409,23 @@ public class MapDataCache {
 						if ( queue != null ) {
 							// We have a file queue that we can try to load from
 							attemptToLoad = true;
-							if ( queue.load( location ) ) {
-								// Only include this if we've successfully queued a load
-								scanned.add( location );
-							}
 						} else {
 							requestLoadFor( chunkLocation, false );
 						}
 					}
 				}
 			}
-		} else {
-			for ( int x = 0; x < 16; x++ ) {
-				for ( int z = 0; z < 16; z++ ) {
-					ChunkLocation chunkLocation = new ChunkLocation( location.getWorld(), cx + x, cz + z );
-					if ( !( queue.isLoading( chunkLocation ) || queue.isSaving( chunkLocation ) ) ) {
-						requestLoadFor( chunkLocation, false );
-					}
+			if ( attemptToLoad ) {
+				if ( queue.load( location ) ) {
+					// Only include this if we've successfully queued a load
+					scanned.add( location );
 				}
 			}
 		}
+		lock.unlock();
 	}
-
+	
+	@Override
 	public void terminate() {
 		service.shutdown();
 	}

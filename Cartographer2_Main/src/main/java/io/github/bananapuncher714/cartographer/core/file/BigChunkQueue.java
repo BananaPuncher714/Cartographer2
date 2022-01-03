@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
 
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 
@@ -33,7 +34,7 @@ public class BigChunkQueue {
 	protected Map< BigChunkLocation, Future< BigChunk > > loading = new ConcurrentHashMap< BigChunkLocation, Future< BigChunk > >();
 	protected Map< BigChunkLocation, Future< Boolean > > saving = new ConcurrentHashMap< BigChunkLocation, Future< Boolean > >();
 	
-	protected MapDataCache cache;
+	protected DataCache cache;
 	protected Path saveLocation;
 	
 	/**
@@ -44,7 +45,7 @@ public class BigChunkQueue {
 	 * @param cache
 	 * The {@link MapDataCache} containing the data. Cannot be null.
 	 */
-	public BigChunkQueue( Path saveFile, MapDataCache cache ) {
+	public BigChunkQueue( Path saveFile, DataCache cache ) {
 		Validate.notNull( saveFile );
 		Validate.notNull( cache );
 		saveLocation = saveFile;

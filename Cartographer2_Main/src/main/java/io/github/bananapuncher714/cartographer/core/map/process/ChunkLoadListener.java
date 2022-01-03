@@ -49,6 +49,10 @@ public enum ChunkLoadListener implements Listener {
 			for ( Minimap minimap : Cartographer.getInstance().getMapManager().getMinimaps().values() ) {
 				minimap.getDataCache().registerSnapshot( location );
 			}
+			
+			if ( checkSet.remove( location ) ) {
+				loading.remove( location );
+			}
 		} else {
 			// We can load it again later, since it was probably loaded in naturally
 			loading.add( location );
@@ -79,7 +83,8 @@ public enum ChunkLoadListener implements Listener {
 		
 		double percentage = 0;
 		INSTANCE.lock.lock();
-		while ( percentage < 1 && !loading.isEmpty() ) {
+		int looped = 0;
+		while ( percentage < 1 && !loading.isEmpty() && looped++ < loading.size() ) {
 			ChunkLocation location = loading.peek();
 			
 			if ( location.isLoaded() ) {
@@ -88,16 +93,24 @@ public enum ChunkLoadListener implements Listener {
 				}
 				percentage += 1.0 / cacheAmount;
 				beingLoaded.remove( location );
+				
+				// Only remove if successfully loaded
+				loading.remove();
+				checkSet.remove( location );
 			} else if ( isForceLoad ) {
 				percentage += 1.0 / ( location.exists() ? loadAmount : generateAmount );
 				// Add it to the list of locations being loaded and force load it
 				beingLoaded.add( location );
 				location.getChunk();
+				
+				loading.remove();
+				checkSet.remove( location );
+			} else {
+				// Don't keep the loop stalled forever
+				percentage += .0004;
+				// Rotate chunks to the back of the queue
+				loading.add( loading.poll() );
 			}
-			
-			// loading contains a queue that should be empty most of the time, unless a lot of chunks are being loaded at once
-			loading.remove();
-			checkSet.remove( location );
 		}
 		INSTANCE.lock.unlock();
 	}

@@ -64,6 +64,12 @@ public class ChunkLocation {
 		
 	}
 	
+	public ChunkLocation( String world, int x, int z ) {
+		this.x = x;
+		this.z = z;
+		this.worldName = world;
+	}
+	
 	/**
 	 * Create a ChunkLocation from a Bukkit chunk.
 	 * 
@@ -166,6 +172,10 @@ public class ChunkLocation {
 		return this;
 	}
 	
+	public String getWorldName() {
+		return worldName;
+	}
+	
 	/**
 	 * Get the world.
 	 * 
@@ -233,10 +243,8 @@ public class ChunkLocation {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ( ( worldName == null ) ? 0 : worldName.hashCode() );
-		result = prime * result + ( x >> 4 );
-		result = prime * result + ( z >> 4 );
-		result = prime * result + ( x & 0xF );
-		result = prime * result + ( z & 0xF );
+		result = prime * result + x;
+		result = prime * result + z;
 		return result;
 	}
 

@@ -19,6 +19,7 @@ import io.github.bananapuncher714.cartographer.core.locale.LocaleConstants;
 import io.github.bananapuncher714.cartographer.core.map.MapSettings;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.SimpleChunkProcessor;
 import io.github.bananapuncher714.cartographer.core.renderer.CartographerRenderer;
@@ -167,7 +168,7 @@ public class MinimapManager {
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
 		
-		MapDataCache cache = new MapDataCache( settings );
+		DataCache cache = new MapDataCache( settings );
 		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
 		
 		Minimap map = new Minimap( id, settings.getPalette(), cache, dir, settings );
@@ -188,7 +189,7 @@ public class MinimapManager {
 		File config = new File( dir + "/" + "config.yml" );
 		MapSettings settings = new MapSettings( YamlConfiguration.loadConfiguration( config ) );
 		
-		MapDataCache cache = new MapDataCache( settings );
+		DataCache cache = new MapDataCache( settings );
 		cache.setChunkDataProvider( new SimpleChunkProcessor( cache, settings.getPalette() ) );
 		
 		Minimap map = new Minimap( dir.getName(), settings.getPalette(), cache, dir, settings );

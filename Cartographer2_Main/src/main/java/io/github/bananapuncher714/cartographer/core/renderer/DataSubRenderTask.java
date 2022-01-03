@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import io.github.bananapuncher714.cartographer.core.api.ChunkLocation;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
+import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.RivenMath;
 
@@ -33,11 +34,11 @@ public class DataSubRenderTask extends RecursiveTask< SubRenderInfo > {
 		
 		// Calculate the information for the rotations and whatever we can right now
 		Location loc = info.setting.location;
-		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
-		double cos = RivenMath.cos( ( float ) radians );
-		double sin = RivenMath.sin( ( float ) radians );
-		double oriX = info.setting.location.getX();
-		double oriZ = info.setting.location.getZ();
+		final double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
+		final double cos = RivenMath.cos( ( float ) radians );
+		final double sin = RivenMath.sin( ( float ) radians );
+		final double oriX = info.setting.location.getX();
+		final double oriZ = info.setting.location.getZ();
 		
 		int subIndex;
 		
@@ -80,6 +81,11 @@ public class DataSubRenderTask extends RecursiveTask< SubRenderInfo > {
 			}
 		}
 		
+		String world = loc.getWorld().getName();
+		ChunkData lastChunkData = null;
+		int lastChunkX = 0;
+		int lastChunkZ = 0;
+		
 		// Get the actual data, and background color
 		for ( int i = 0; i < length; i++ ) {
 			if ( !bitset.get( i ) ) {
@@ -89,27 +95,34 @@ public class DataSubRenderTask extends RecursiveTask< SubRenderInfo > {
 				
 				// The render location comes next
 				// Calculate the x and y manually
-				double a = ( subIndex & 127 ) - 64;
-				double b = ( subIndex >> 7 ) - 64;
-				double xx = a * cos - b * sin;
-				double yy = a * sin + b * cos;
-				double xVal = oriX + ( info.setting.zoomscale * xx );
-				double zVal = oriZ + ( info.setting.zoomscale * yy );
-				int blockX = ( int ) xVal;
-				int blockZ = ( int ) zVal;
-
-				byte chunkColor = info.cache.getStorage().getColorAt( new Location( loc.getWorld(), xVal, 0, zVal ), info.setting.getScale() );
-				// Check if chunkColor is -1 or something
+				final double a = ( subIndex & 127 ) - 64;
+				final double b = ( subIndex >> 7 ) - 64;
+				final double xx = a * cos - b * sin;
+				final double yy = a * sin + b * cos;
+				final double xVal = oriX + ( info.setting.zoomscale * xx );
+				final double zVal = oriZ + ( info.setting.zoomscale * yy );
+				final int blockX = ( int ) Math.floor( xVal );
+				final int blockZ = ( int ) Math.floor( zVal );
+				final int chunkX = blockX >> 4;
+				final int chunkZ = blockZ >> 4;
+				
+				ChunkData chunkData = lastChunkData;
+				if ( chunkData == null || chunkX != lastChunkX || chunkZ != lastChunkZ ) {
+					chunkData = info.cache.getDataAt( new ChunkLocation( world, chunkX, chunkZ ) );
+				}
 				
 				int localColor = 0;
-				if ( chunkColor != -1 ) {
-					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkColor );
-				} else {
-					int chunkX = blockX >> 4;
-					int chunkZ = blockZ >> 4;
+				if ( chunkData != null ) {
+					lastChunkData = chunkData;
+					lastChunkX = chunkX;
+					lastChunkZ = chunkZ;
 					
-					ChunkLocation cLocation = new ChunkLocation( loc.getWorld(), chunkX, chunkZ );
-					subRenderInfo.requiresRender.add( new BigChunkLocation( cLocation ) );
+					final int xOffset = blockX & 0xF;
+					final int zOffset = blockZ & 0xF;
+					
+					localColor = JetpImageUtil.getColorFromMinecraftPalette( chunkData.getDataAt( xOffset, zOffset ) );
+				} else {
+					subRenderInfo.requiresRender.add( new BigChunkLocation( world, chunkX >> 4, chunkZ >> 4 ) );
 
 					localColor = loading;
 				}

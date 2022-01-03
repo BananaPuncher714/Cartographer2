@@ -30,11 +30,11 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 		
 		// Calculate the information for the rotations and whatever we can right now
 		Location loc = info.setting.location;
-		double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
-		double cos = RivenMath.cos( ( float ) radians );
-		double sin = RivenMath.sin( ( float ) radians );
-		double oriX = info.setting.location.getX();
-		double oriZ = info.setting.location.getZ();
+		final double radians = info.setting.rotating ? Math.toRadians( loc.getYaw() + 540 ) : 0;
+		final double cos = RivenMath.cos( ( float ) radians );
+		final double sin = RivenMath.sin( ( float ) radians );
+		final double oriX = info.setting.location.getX();
+		final double oriZ = info.setting.location.getZ();
 		
 		for ( int i = 0; i < length; i++ ) {
 			int subIndex = i + index;
@@ -71,14 +71,14 @@ public class SubRenderTask extends RecursiveTask< SubRenderInfo > {
 
 			// The render location comes next
 			// Calculate the x and y manually
-			double a = ( subIndex & 127 ) - 64;
-			double b = ( subIndex >> 7 ) - 64;
-			double xx = a * cos - b * sin;
-			double yy = a * sin + b * cos;
-			double xVal = oriX + ( info.setting.zoomscale * xx );
-			double zVal = oriZ + ( info.setting.zoomscale * yy );
-			int blockX = ( int ) xVal;
-			int blockZ = ( int ) zVal;
+			final double a = ( subIndex & 127 ) - 64;
+			final double b = ( subIndex >> 7 ) - 64;
+			final double xx = a * cos - b * sin;
+			final double yy = a * sin + b * cos;
+			final double xVal = oriX + ( info.setting.zoomscale * xx );
+			final double zVal = oriZ + ( info.setting.zoomscale * yy );
+			final int blockX = ( int ) Math.floor( xVal );
+			final int blockZ = ( int ) Math.floor( zVal );
 
 			byte chunkColor = info.cache.getStorage().getColorAt( new Location( loc.getWorld(), xVal, 0, zVal ), info.setting.getScale() );
 			// Check if chunkColor is -1 or something

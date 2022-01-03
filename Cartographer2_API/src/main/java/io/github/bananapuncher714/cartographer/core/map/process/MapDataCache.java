@@ -21,7 +21,7 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
  * 
  * @author BananaPuncher714
  */
-public class MapDataCache {
+public class MapDataCache implements DataCache {
 	protected final ExecutorService service = null;
 	protected final Map< ChunkLocation, Future< ChunkData > > renderers = null;
 	protected ChunkDataStorage storage;
@@ -44,52 +44,66 @@ public class MapDataCache {
 	public MapDataCache( MapSettings setting ) {
 	}
 
+	@Override
 	public void setFileQueue( BigChunkQueue queue ) {
 	}
 
+	@Override
 	public MapDataCache setNotifier( ChunkNotifier notifier ) {
 		return null;
 	}
 
+	@Override
 	public ChunkNotifier getChunkNotifier() {
 		return null;
 	}
 
+	@Override
 	public void update() {
 	}
 
+	@Override
 	public void setChunkDataProvider( ChunkDataProvider provider ) {
 	}
 
+	@Override
 	public ChunkDataProvider getChunkDataProvider() {
 		return null;
 	}
 
+	@Override
 	public void setChunkDataStorage( ChunkDataStorage storage ) {
 	}
 	
+	@Override
 	public ChunkDataStorage getStorage() {
 		return null;
 	}
 	
+	@Override
 	public void registerSnapshot( ChunkLocation location ) {
 	}
 
+	@Override
 	public void unregisterSnapshot( ChunkLocation location ) {
 	}
 
+	@Override
 	public boolean hasSnapshot( ChunkLocation location ) {
 		return false;
 	}
 
+	@Override
 	public ChunkData getDataAt( ChunkLocation location ) {
 		return null;
 	}
 
+	@Override
 	public boolean containsDataAt( ChunkLocation location ) {
 		return false;
 	}
 
+	@Override
 	public ChunkSnapshot getChunkSnapshotAt( ChunkLocation location ) {
 		return null;
 	}
@@ -100,44 +114,57 @@ public class MapDataCache {
 	 * @param location
 	 * A location that requires loading
 	 */
+	@Override
 	public void addToChunkLoader( ChunkLocation location ) {
 	}
 
+	@Override
 	public void process( ChunkLocation location, boolean force ) {
 	}
 
+	@Override
 	public boolean isProcessing( ChunkLocation location ) {
 		return false;
 	}
 
+	@Override
 	public boolean withinVisiblePlayerRange( ChunkLocation location ) {
 		return false;
 	}
 
+	@Override
 	public void removeScannedLocation( BigChunkLocation location ) {
 	}
 
+	@Override
 	public void removeChunkDataAt( ChunkLocation location ) {
 	}
 
+	@Override
 	public void updateLocation( Location location, MinimapPalette palette ) {
 	}
 
+	@Override
 	public void updateDataAt( ChunkLocation location, ChunkData data, boolean force ) {
 	}
 
+	@Override
 	public void updateDataAt( BigChunkLocation location, BigChunk chunk, boolean force ) {
 	}
 
+	@Override
 	public void requestLoadFor( ChunkLocation location, boolean force ) {
 	}
 
+	@Override
 	public void requestSnapshotFor( ChunkLocation location, boolean force ) {
 	}
 
+	@Override
 	public void requestLoadFor( BigChunkLocation location ) {
 	}
 
+	@Override
 	public void terminate() {
 	}
 }

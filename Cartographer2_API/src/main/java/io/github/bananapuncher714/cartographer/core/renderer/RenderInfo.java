@@ -13,7 +13,7 @@ import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.WorldPixel;
 import io.github.bananapuncher714.cartographer.core.file.BigChunkLocation;
 import io.github.bananapuncher714.cartographer.core.map.Minimap;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 
 public class RenderInfo {
 	// These have to be generated
@@ -37,7 +37,7 @@ public class RenderInfo {
 	protected UUID uuid;
 	
 	protected Minimap map;
-	protected MapDataCache cache;
+	protected DataCache cache;
 	
 	protected SimpleImage overlayImage;
 	protected SimpleImage backgroundImage;

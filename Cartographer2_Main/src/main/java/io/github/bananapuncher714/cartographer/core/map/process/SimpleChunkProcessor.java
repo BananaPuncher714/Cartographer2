@@ -21,21 +21,21 @@ import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
  * @author BananaPuncher714
  */
 public class SimpleChunkProcessor implements ChunkDataProvider {
-	protected MapDataCache cache;
+	protected DataCache cache;
 	protected MinimapPalette palette;
 	
 	/**
 	 * Construct a SimpleChunkProcessor with a cache and palette.
 	 * 
-	 * @param cache
+	 * @param cache2
 	 * Cache containing other ChunkSnapshots that can be used. Cannot be null.
 	 * @param palette
 	 * A palette to get the colors for the blocks. Cannot be null.
 	 */
-	public SimpleChunkProcessor( MapDataCache cache, MinimapPalette palette ) {
-		Validate.notNull( cache );
+	public SimpleChunkProcessor( DataCache cache2, MinimapPalette palette ) {
+		Validate.notNull( cache2 );
 		Validate.notNull( palette );
-		this.cache = cache;
+		this.cache = cache2;
 		this.palette = palette;
 	}
 	

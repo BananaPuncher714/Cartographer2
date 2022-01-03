@@ -149,7 +149,7 @@ public final class JetpImageUtil {
 	}
 	
 	public static byte getBestColor( int rgb ) {
-		return COLOR_MAP[ ( rgb >> 16 & 0xFF ) >> 1 << 14 | ( rgb >> 8 & 0xFF ) >> 1 << 7 | ( rgb & 0xFF ) >> 1 ];
+		return COLOR_MAP[ ( rgb >> 17 & 0x7F ) << 14 | ( rgb >> 9 & 0x7F ) << 7 | ( rgb >> 1 & 0x7F ) ];
 	}
 
 	public static byte getBestColor( int red, int green, int blue ) {

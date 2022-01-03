@@ -16,6 +16,7 @@ import io.github.bananapuncher714.cartographer.core.map.Minimap;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapInteraction;
 import io.github.bananapuncher714.cartographer.core.map.menu.MapMenu;
 import io.github.bananapuncher714.cartographer.core.map.menu.MenuComponent;
+import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
 import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.FrameRenderTask;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
@@ -71,7 +72,7 @@ public class OverviewMenu extends MapMenu {
 		// Render the minimap
 		List< FrameRenderTask > tasks = new ArrayList< FrameRenderTask >();
 		
-		MapDataCache cache = map.getDataCache();
+		DataCache cache = map.getDataCache();
 
 		MapViewer viewer = plugin.getPlayerManager().getViewerFor( player.getUniqueId() );
 		
