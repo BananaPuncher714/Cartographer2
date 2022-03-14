@@ -6,11 +6,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.bananapuncher714</groupId>
 	<artifactId>cartographer2_master</artifactId>
-	<version>2.15.3</version>
+	<version>2.15.4</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<master.version>2.15.3</master.version>
+		<master.version>2.15.4</master.version>
 	</properties>
 
 	<modules>
@@ -27,8 +27,9 @@
 		<module>cartographer2_v1_16_r1</module>
 		<module>cartographer2_v1_16_r2</module>
 		<module>cartographer2_v1_16_r3</module>
-		<module>cartographer2_v1_18_R1</module>
 		<module>cartographer2_v1_17_r1</module>
+		<module>cartographer2_v1_18_r1</module>
+		<module>cartographer2_v1_18_r2</module>
 		<module>cartographer2</module>
 		<module>cartographer2_api</module>
 		<module>cartographer2_modulevanilla</module>

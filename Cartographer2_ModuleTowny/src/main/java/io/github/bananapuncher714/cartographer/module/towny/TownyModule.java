@@ -3,9 +3,6 @@ package io.github.bananapuncher714.cartographer.module.towny;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,13 +19,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor.Type;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -55,16 +52,6 @@ public class TownyModule extends Module implements Listener {
 	public static final SettingStateBoolean TOWNY_CLAIMS = SettingStateBoolean.of( "towny_show_claims", false, true );
 	public static final SettingStateBoolean TOWNY_PLAYERS = SettingStateBoolean.of( "towny_show_players", false, true );
 	public static final SettingStateBoolean TOWNY_SPAWN = SettingStateBoolean.of( "towny_show_spawn", false, true );
-
-	private static Method TOWN_GETTOWNBLOCKS;
-	
-	static {
-		try {
-			TOWN_GETTOWNBLOCKS = Town.class.getMethod( "getTownBlocks" );
-		} catch ( NoSuchMethodException | SecurityException e ) {
-			e.printStackTrace();
-		}
-	}
 	
 	private Map< String, Map< ChunkLocation, Set< BlockFace > > > claims = new HashMap< String, Map< ChunkLocation, Set< BlockFace > > >();
 	private Map< TownyRelation, Color > colors = new HashMap< TownyRelation, Color >();
@@ -172,9 +159,9 @@ public class TownyModule extends Module implements Listener {
 
 	private void tick() {
 		claims.clear();
-		for ( Town town : TownyAPI.getInstance().getDataSource().getTowns() ) {
+		for ( Town town : TownyUniverse.getInstance().getTowns() ) {
 			Set< ChunkLocation > chunks = new HashSet< ChunkLocation >();
-			for ( TownBlock block : getBlocks( town ) ) {
+			for ( TownBlock block : town.getTownBlocks() ) {
 				Coord coord = block.getCoord();
 				World world = block.getWorldCoord().getBukkitWorld();
 				chunks.add( new ChunkLocation( world, coord.getX(), coord.getZ() ) );
@@ -182,20 +169,10 @@ public class TownyModule extends Module implements Listener {
 			claims.put( town.getName(), ChunkBorderShader.getBorders( chunks ) );
 		}
 	}
-	
-	private Collection< TownBlock > getBlocks( Town town ) {
-		Object collection = new ArrayList< TownBlock >();
-		try {
-			collection = TOWN_GETTOWNBLOCKS.invoke( town );
-		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
-			e.printStackTrace();
-		}
-		return ( Collection< TownBlock > ) collection;
-	}
 
 	private Optional< Type > getType( Player viewer, Player target, double scale ) {
 		try {
-			Resident resident = TownyAPI.getInstance().getDataSource().getResident( viewer.getName() );
+			Resident resident = TownyUniverse.getInstance().getResident( viewer.getName() );
 			Town resTown = null;
 			if ( resident.hasTown() ) {
 				resTown = resident.getTown();
@@ -205,7 +182,7 @@ public class TownyModule extends Module implements Listener {
 				resNation = resTown.getNation();
 			}
 
-			Resident targetRes = TownyAPI.getInstance().getDataSource().getResident( target.getName() );
+			Resident targetRes = TownyUniverse.getInstance().getResident( target.getName() );
 			Town town = null;
 			if ( targetRes.hasTown() ) {
 				town = targetRes.getTown();
@@ -232,7 +209,7 @@ public class TownyModule extends Module implements Listener {
 			if ( properties != null && properties.isEnabled() && properties.getMaxZoom() <= scale ) {
 				Location targetLoc = target.getLocation();
 				UUID townUUID= TownyAPI.getInstance().getTownUUID( targetLoc );
-				Town occupying = townUUID == null ? null : TownyAPI.getInstance().getDataSource().getTown( townUUID );
+				Town occupying = townUUID == null ? null : TownyUniverse.getInstance().getTown( townUUID );
 				double range = properties.getGlobalRange();
 				if ( occupying != null && occupying.getMayor().getUUID().equals( viewer.getUniqueId() ) ) {
 					range = properties.getTownRange();
@@ -256,7 +233,7 @@ public class TownyModule extends Module implements Listener {
 		Set< ChunkBorderData > data = new HashSet< ChunkBorderData >();
 		if ( viewer.getSetting( TOWNY_CLAIMS ) ) {
 			try {
-				Resident resident = TownyAPI.getInstance().getDataSource().getResident( player.getName() );
+				Resident resident = TownyUniverse.getInstance().getResident( player.getName() );
 				Town resTown = null;
 				if ( resident.hasTown() ) {
 					resTown = resident.getTown();
@@ -267,12 +244,11 @@ public class TownyModule extends Module implements Listener {
 				}
 
 				for ( Entry< String, Map< ChunkLocation, Set< BlockFace > > > entry : claims.entrySet() ) {
-					Town town = null;
-					try {
-						town = TownyAPI.getInstance().getDataSource().getTown( entry.getKey() );
-					} catch ( NotRegisteredException e ) {
+					Town town = TownyUniverse.getInstance().getTown( entry.getKey() );
+					if ( town == null ) {
 						continue;
 					}
+					
 					Nation nation = null;
 					if ( town.hasNation() ) {
 						nation = town.getNation();

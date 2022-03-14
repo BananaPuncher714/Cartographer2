@@ -38,4 +38,6 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `guillelego` - Translator(ca_es)
 - `foetkoYTjeW` - Translator(sk_sk)
 - `ひゆ(HIYU)` - Translator(ja_jp)
+- `GMnodo` - Translator(ka_ge)
 - `REjoin` - Supporter
+- `marcelschoen` - Supporter

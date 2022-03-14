@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 
-import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -33,7 +33,7 @@ public class HomeWaypointProvider implements WorldCursorProvider {
 			Location location = setting.getLocation();
 			Resident resident;
 			try {
-				resident = TownyAPI.getInstance().getDataSource().getResident( player.getName() );
+				resident = TownyUniverse.getInstance().getResident( player.getName() );
 				if ( resident.hasTown() ) {
 					Town town = resident.getTown();
 
