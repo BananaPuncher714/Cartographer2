@@ -39,5 +39,8 @@ Cartographer 2 aims to be a better version of the original Cartographer. It is u
 - `foetkoYTjeW` - Translator(sk_sk)
 - `ひゆ(HIYU)` - Translator(ja_jp)
 - `GMnodo` - Translator(ka_ge)
+- `xorxi` - Translator(sr_sp)
+- `Elias❤` - Translator(sv_se)
+- `maniackdk` - Translator(da_dk)
 - `REjoin` - Supporter
 - `marcelschoen` - Supporter

@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.cartographer.core.implementation.v1_18_R1;
+package io.github.bananapuncher714.cartographer.core.implementation.v1_19_R1;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
@@ -27,10 +27,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.legacy.CraftLegacy;
-import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.legacy.CraftLegacy;
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
@@ -50,7 +50,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import net.minecraft.core.IRegistry;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.chat.ChatComponentText;
+import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayInBlockDig;
 import net.minecraft.network.protocol.game.PacketPlayInBlockDig.EnumPlayerDigType;
 import net.minecraft.network.protocol.game.PacketPlayInSettings;
@@ -83,7 +83,7 @@ public class NMSHandler implements PacketHandler {
 			CRAFTSERVER_SYNCCOMMANDS = CraftServer.class.getDeclaredMethod( "syncCommands" );
 			CRAFTSERVER_SYNCCOMMANDS.setAccessible( true );
 			
-			BLOCKBASE_INFO = BlockBase.class.getDeclaredField( "aP" );
+			BLOCKBASE_INFO = BlockBase.class.getDeclaredField( "aO" );
 			BLOCKBASE_INFO.setAccessible( true );
 			
 			INFO_FUNCTION = Info.class.getDeclaredField( "b" );
@@ -135,8 +135,8 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public void inject( Player player ) {
 		PlayerConnection conn = ( ( CraftPlayer ) player ).getHandle().b;
-		NetworkManager manager = conn.a;
-		Channel channel = manager.k;
+		NetworkManager manager = conn.b;
+		Channel channel = manager.m;
 		
 		if ( channel != null ) {
 			channels.put( player.getUniqueId(), channel );
@@ -150,8 +150,8 @@ public class NMSHandler implements PacketHandler {
 	@Override
 	public void uninject( Player player ) {
 		PlayerConnection conn = ( ( CraftPlayer ) player ).getHandle().b;
-		NetworkManager manager = conn.a;
-		Channel channel = manager.k;
+		NetworkManager manager = conn.b;
+		Channel channel = manager.m;
 		channels.remove( player.getUniqueId() );
 		
 		if ( channel != null ) {
@@ -170,7 +170,7 @@ public class NMSHandler implements PacketHandler {
 			for ( int index = 0; index < cursors.length; index++ ) {
 				MapCursor cursor = cursors[ index ];
 				
-				icons.add( new MapIcon( CURSOR_TYPES.get( cursor.getType() ), cursor.getX(), cursor.getY(), cursor.getDirection(), cursor.getCaption() != null ? new ChatComponentText( cursor.getCaption() ) : null ) );
+				icons.add( new MapIcon( CURSOR_TYPES.get( cursor.getType() ), cursor.getX(), cursor.getY(), cursor.getDirection(), cursor.getCaption() != null ? IChatBaseComponent.c( cursor.getCaption() ) : null ) );
 			}
 		}
 		
@@ -252,16 +252,16 @@ public class NMSHandler implements PacketHandler {
 	public MinimapPalette getVanillaPalette() {
 		MinimapPalette palette = new MinimapPalette();
 		// For some reason IRegistry.BLOCK contains only a few blocks, and it's not a consistent amount.
-		for ( Block block : IRegistry.X ) {
+		for ( Block block : IRegistry.V ) {
 			CrossVersionMaterial material = new CrossVersionMaterial( CraftLegacy.fromLegacy( CraftMagicNumbers.getMaterial( block ) ) );
-			boolean transparent = block.b_( block.n() ) == EnumRenderType.a;
+			boolean transparent = block.b_( block.m() ) == EnumRenderType.a;
 			if ( transparent ) {
 				palette.addTransparentMaterial( material );
 			} else {
 				try {
 					Info info = ( Info ) BLOCKBASE_INFO.get( block );
 					Function< IBlockData, MaterialMapColor > function = ( Function< IBlockData, MaterialMapColor > ) INFO_FUNCTION.get( info );
-					int color = function.apply( block.n() ).ak;
+					int color = function.apply( block.m() ).ak;
 					if ( color == 0 ) {
 						palette.addTransparentMaterial( material );
 					} else {

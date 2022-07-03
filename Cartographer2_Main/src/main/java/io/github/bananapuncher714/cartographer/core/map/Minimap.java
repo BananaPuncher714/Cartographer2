@@ -49,9 +49,9 @@ import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 public class Minimap implements ChunkNotifier {
 	protected final String id;
 	
-	protected final File OVERLAY_IMAGE_FILE;
-	protected final File BACKGROUND_IMAGE_FILE;
-	protected final File DISABLED_IMAGE_FILE;
+	protected final String OVERLAY_IMAGE_FILE;
+	protected final String BACKGROUND_IMAGE_FILE;
+	protected final String DISABLED_IMAGE_FILE;
 	
 	protected MinimapPalette palette;
 	protected DataCache cache;
@@ -81,9 +81,9 @@ public class Minimap implements ChunkNotifier {
 		this.queue = new BigChunkQueue( Paths.get( saveDir + "/" + "cache" ), cache );
 		this.settings = settings;
 		
-		OVERLAY_IMAGE_FILE = new File( saveDir, settings.getOverlayPath() );
-		BACKGROUND_IMAGE_FILE = new File( saveDir, settings.getBackgroundPath() );
-		DISABLED_IMAGE_FILE = new File( saveDir, settings.getBlacklistedPath() );
+		OVERLAY_IMAGE_FILE = settings.getOverlayPath();
+		BACKGROUND_IMAGE_FILE = settings.getBackgroundPath();
+		DISABLED_IMAGE_FILE = settings.getBlacklistedPath();
 		
 		cache.setFileQueue( queue );
 		cache.setNotifier( this );
@@ -117,19 +117,37 @@ public class Minimap implements ChunkNotifier {
 	
 	protected void load() {
 		try {
-			if ( OVERLAY_IMAGE_FILE.exists() ) {
-				overlay = new SimpleImage( OVERLAY_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.infoTr( LocaleConstants.MINIMAP_LOADED_OVERLAY, OVERLAY_IMAGE_FILE.getName() );
+			if ( OVERLAY_IMAGE_FILE != null && !OVERLAY_IMAGE_FILE.isEmpty() ) {
+				File overlayFile = new File( saveFile, OVERLAY_IMAGE_FILE );
+				if ( overlayFile.exists() ) {
+					overlay = new SimpleImage( overlayFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_OVERLAY, overlayFile.getName() );
+				} else if ( ( overlayFile = new File( Cartographer.getInstance().getDataFolder(), OVERLAY_IMAGE_FILE ) ).exists() ) {
+					overlay = new SimpleImage( overlayFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_OVERLAY, overlayFile.getName() );
+				}
 			}
 			
-			if ( BACKGROUND_IMAGE_FILE.exists() ) {
-				background = new SimpleImage( BACKGROUND_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.infoTr( LocaleConstants.MINIMAP_LOADED_BACKGROUND, BACKGROUND_IMAGE_FILE.getName() );
+			if ( BACKGROUND_IMAGE_FILE != null && !BACKGROUND_IMAGE_FILE.isEmpty() ) {
+				File backgroundFile = new File( saveFile, BACKGROUND_IMAGE_FILE );
+				if ( backgroundFile.exists() ) {
+					background = new SimpleImage( backgroundFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_BACKGROUND, backgroundFile.getName() );
+				} else if ( ( backgroundFile = new File( Cartographer.getInstance().getDataFolder(), BACKGROUND_IMAGE_FILE ) ).exists() ) {
+					background = new SimpleImage( backgroundFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_BACKGROUND, backgroundFile.getName() );
+				}
 			}
 			
-			if ( DISABLED_IMAGE_FILE.exists() ) {
-				disabled = new SimpleImage( DISABLED_IMAGE_FILE, 128, 128, Image.SCALE_REPLICATE );
-				logger.infoTr( LocaleConstants.MINIMAP_LOADED_DISABLED, DISABLED_IMAGE_FILE.getName() );
+			if ( DISABLED_IMAGE_FILE != null && !DISABLED_IMAGE_FILE.isEmpty() ) {
+				File disabledFile = new File( saveFile, DISABLED_IMAGE_FILE );
+				if ( disabledFile.exists() ) {
+					disabled = new SimpleImage( disabledFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_DISABLED, disabledFile.getName() );
+				} else if ( ( disabledFile = new File( Cartographer.getInstance().getDataFolder(), DISABLED_IMAGE_FILE ) ).exists() ) {
+					disabled = new SimpleImage( disabledFile, 128, 128, Image.SCALE_REPLICATE );
+					logger.infoTr( LocaleConstants.MINIMAP_LOADED_DISABLED, disabledFile.getName() );
+				}
 			}
 		} catch ( IOException e ) {
 			e.printStackTrace();

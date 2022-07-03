@@ -325,6 +325,9 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/sk_sk.yml" ), new File( LOCALE_DIR, "sk_sk.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/ja_jp.yml" ), new File( LOCALE_DIR, "ja_jp.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/ka_ge.yml" ), new File( LOCALE_DIR, "ka_ge.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/da_dk.yml" ), new File( LOCALE_DIR, "da_dk.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/sr_sp.yml" ), new File( LOCALE_DIR, "sr_sp.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/sv_se.yml" ), new File( LOCALE_DIR, "sv_se.yml" ), false );
 //		}
 	}
 	

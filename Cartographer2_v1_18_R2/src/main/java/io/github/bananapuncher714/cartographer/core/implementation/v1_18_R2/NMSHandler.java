@@ -261,7 +261,7 @@ public class NMSHandler implements PacketHandler {
 				try {
 					Info info = ( Info ) BLOCKBASE_INFO.get( block );
 					Function< IBlockData, MaterialMapColor > function = ( Function< IBlockData, MaterialMapColor > ) INFO_FUNCTION.get( info );
-					int color = function.apply( block.n() ).al;
+					int color = function.apply( block.n() ).ak;
 					if ( color == 0 ) {
 						palette.addTransparentMaterial( material );
 					} else {

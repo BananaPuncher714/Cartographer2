@@ -1,0 +1,232 @@
+# Standard givet lokal fil
+# Alle lokale filer kræver en lokal kode. Den må ikke have nogle mellemrum.
+# Navnet, sproget og lokationen er frivvilig men anbefales.
+# informationer taget fra https://minecraft.gamepedia.com/Language#Available_languages
+# beskederne i sig selv følger Java streng format.
+# Har du nogle andre ord, så lav en streg i stedet for en alene streg.
+# Eksempel:
+# tilfældig-besked-liste:
+# - "tilfældig besked 1"
+# - "tilfældig besked 2"
+# - "tilfældig besked 3"
+# disse lokaler filer kan også bruge placeholders, hvis det er en besked for en spiller.
+# For at bruge en bestemt farve brug (§) symbolet direkte.
+# hvis dette ikke virker og bare viser sig som en tilfældig karrakter, så brug denne kode \u00a7 i stedet.
+# Translated by maniackdk
+name: "Dansk (Danmark)"
+language: "Dansk"
+location: "Danmark"
+locale-code: "da_dk"
+messages:
+  locale:
+    loaded-internal-locale: "Succesfuld installeret dansk(%s)"
+    loaded-locale: "Installeret sprog %s(%s) as %s"
+    default-locale-changed: "Stanard lokal ændret til %s"
+    error-loading-file: "Uafstand til at starte lokal fil '%s'"
+    invalid-locale: "'%s' Er ikke en mulig lokal!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Tilføjet '%s' som et blokkeret lager"
+        unknown-inventory-type: "Findes ikke på lager '%s'"
+      palette:
+        creating-vanilla-palette: "Konstruere standard palet..."
+        vanilla-palette-missing: "Standard palet ikke fundet, gemmer..."
+        found-materials: "%d Materialer kortlagt for standard"
+        loading-palettes: "Henter lokale palet filer..."
+        successfully-loaded-palette: "Henter paletter '%s' successfuld!"
+        palette-folder-missing: "Palette holder ikke fundet!"
+      image:
+        overlay-found: "Overlag fundet!"
+        overlay-missing: "Overlag billede findes ikke!"
+        background-found: "Baggrund fundet!"
+        background-missing: "Baggrunds billede eksistere ikke!"
+        missing-map-found: "Forsvundet kort billede fundet!"
+        missing-map-missing: "Forsvundet kort billede findes ikke!"
+        disabled-map-found: "Deaktiveret kort billede fundet!"
+        disabled-map-missing: "Deaktiveret kort billede findes ikke!"
+      enabling-modules: "Starter moduler..."
+      loading-config: "Starter configurations filen..."
+      loading-images: "Starter billeder..."
+      loading-palettes: "Starter paletter..."
+      loading-data: "Starter minikort og data..."
+    disable:
+      disabling-modules: "Deaktivere moduler..."
+      saving-map-data-start: "Gemmer kort data. Dette kan tage lidt tid..."
+      saving-map-data-finish: "Har gemmer kort data!"
+      saving-player-data-start: "Gemmer spiller data..."
+      saving-player-data-finish: "Har gemt spiller data!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cUsage: /cartographer genhent <map>"
+          reloaded-plugin: "§bGentent Cartographer2 indstillinger"
+          reloaded-minimap: "§bGentent mini kort '§e%s§b'"
+        list:
+          usage: "§cUsage: /cartographer liste"
+          no-minimaps: "§bDer er lige nu intet mini kort aktivt!"
+          list: "§bCartographer2 Mini kort (%d): %s"
+        get:
+          usage: "§cUsage: /cartographer hent <map> <player> [slot]"
+          success-self: "Gav dig selv et mini kort(%s)"
+          success-other: "Giv et mini kort(%s) til %s"
+        create:
+          usage: "§cUsage: /cartographer skab <id>"
+          success: "§bSkabte og registrerede et nyt mini kort ved navn '§e%s§b'"
+        delete:
+          usage: "§cUsage: /cartographer slet <id>"
+          success: "§bSlettede mini kort '§e%s§b'"
+        load:
+          usage: "§cUsage: /cartographer start <id>"
+          success: "§bStartede mini kort '§e%s§b'"
+        unload:
+          usage: "§cUsage: /cartographer stop <id>"
+          success: "§bStoppede mini kort '§e%s§b'"
+        help:
+          usage: "§cUsage: /cartographer hjælp"
+          help-0: "§b=== Cartographer Commands ==="
+          help-1: "§e/cartographer genstart [map]§6 - Genstart Cartographer2 eller et mini kort"
+          help-2: "§e/cartographer liste§6 - Se alle startede mini kort"
+          help-3: "§e/cartographer giv <map> [player] [slot]§6 - Få eller giv et mini kort"
+          help-4: "§e/cartographer skab <map>§6 - Skab et ny mini kort"
+          help-5: "§e/cartographer slet <map>§6 - Slet et mini kort"
+          help-6: "§e/cartographer start <map>§6 - Start et mini kort"
+          help-7: "§e/cartographer stop <map>§6 - Stop et mini kort"
+          help-8: "§e/cartographer hjælp§6 - Hvis kommandoer"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Der er ingen moduller startet lige nu!"
+          list: "§6Cartographer2 Moduller (%d): %s" 
+        reload:
+          success: "§6Genstartede alle moduller!"
+        enable:
+          usage: "§cUsage: /cartographer modul start <module>"
+          success: "§6Startede modul '§e%s§6'!"
+          already-enabled: "§cModul '%s' er allerede startet!"
+          error-loading: "§cKan ikke starte modul '%s', Check server log for detaljer. (Missing dependencies?)"
+        disable:
+          usage: "§cUsage: /cartographer modul stoppede <module>"
+          already-disabled: "§cModul '%s' er allerede stoppet!"
+          success: "§6Stoppede modul '§e%s§6'!"
+        load:
+          usage: "§cUsage: /cartographer modul start <file>"
+          success: "§6Startede og bruger modul '§e%s§6'!"
+          error-loading: "§cKan ikke starte fil '%s', Check server log for detaljer."
+          error-enabling: "§cKan ikke starte modullet '%s', Check server log for detaljer. (Mangler afhængige filer?)"
+        unload:
+          usage: "§cUsage: /cartographer modul stoppede <module>"
+          success: "§6Stop modul '§e%s§6'!"
+          error-unloading: "§6Kunne ikke stoppe modul '§e%s§6'! Er ikke startet af Cartographer2!"
+        help:
+          usage: "§cUsage: /cartographer modul hjælp"
+          help-0: "§b=== Cartographer Modul kommandoer ==="
+          help-1: "§e/cartographer modul liste§6 - Se alle startede moduller"
+          help-2: "§e/cartographer modul genstart§6 - Genstart alle moduller"
+          help-3: "§e/cartographer modul start <module>§6 - Startede et modul"
+          help-4: "§e/cartographer modul stop <module>§6 - Stoppede et modul"
+          help-5: "§e/cartographer modul hent <module>§6 - Hentede et modul"
+          help-6: "§e/cartographer modul slut <module>§6 - Sluttede et modul"
+          help-7: "§e/cartographer modul hjælp§6 - Hvis kommandoer"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cDenne fil er allerede startet eller findes ikke!"
+        module-already-enabled-or-not-real: "§cDette modeul er allerede startet eller findes ikke!"
+        module-already-disabled-or-not-real: "§cDette modul er allerede slukket eller findes ikke!"
+        module-not-real: "§cThis module does not exist!"
+      settings:
+        set:
+          console-usage: "§cUsage: /cartographer sæt indstillinger <player> <setting> <value>"
+          success: "§aSet '%s' to §d%s§a."
+        get:
+          console-usage: "§cUsage: /cartographer hent indstillinger <player> <setting>"
+          success: "§a'%s' is set to §d%s§a."
+        setother:
+          usage: "§cUsage: /cartographer sæt andres indstillinger <player> <setting> <value>"
+          success: "§aSet '%s' to §d%s§a for §d%s§a."
+        getother:
+          usage: "§cUsage: /cartographer hent andres indstillinger <player> <setting>"
+          success: "§d%s§a has '%s' set to §d%s§a."
+        help:
+          usage: "§cUsage: /cartographer indstillinger hjælp"
+          help-0: "§b=== Cartographer indstillings kommandoer ==="
+          help-1: "§e/cartographer sæt indstillinger <property> <value>§6 - Sæt en ejendom"
+          help-2: "§e/cartographer hent indstillinger <property>§6 - hent værdien af en ejendom"
+          help-3: "§e/cartographer sæt andres indstillinger <player> <property> <value>§6 - sæt en spillers ejendom"
+          help-4: "§e/cartographer hent andres indstillinger <player> <property>§6 - hent værdien af en spillers ejendom"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cIndvalid værdi! (%s)"
+        must-provide-values: "§cDu skal give en værdi! (%s)"
+        not-implemented: "§c'%s' Er ikke blevet indstalleret endnu, kontakt udvikler for assistanse!"
+      player-not-found: "§cSpillere er ikke online!"
+      minimap-already-exists: "§cEt mini kort med det navn, findes allerede!"
+      invalid-minimap: "§cUgyldig mini kort!"
+      invalid-slot: "§cUgyldigt rille! (0-40)"
+      invalid-argument: "§cUgyldig argument!"
+      invalid-setting: "§cUgyldige indstilling!"
+      must-provide-minimap: "§cDu skal tilkendegive et mini kort!"
+      must-provide-player: "§cDu skal tilkendegive en spiller!"
+      must-provide-argument: "§cDu skal tilkendegive et argument!"
+      must-provide-setting: "§cDu skal tilkendegive en indstilling!"
+    manager:
+      minimap:
+        loading-minimap: "Henter mini kort '%s'"
+        unloading-minimap: "Stopper mini kort '%s'"
+        deleting-minimap: "Sletter mini kort '%s'"
+      module:
+        reloading-modules-start: "Genstarter moduller..."
+        reloading-modules-finish: "Færdig med at genloade moduller"
+        loading-module: "Henter %s v%s af %s"
+        unloading-module: "Slutter %s"
+        enabling-module: "Starter %s v%s af %s"
+        disabling-module: "Stopper %s v%s af %s"
+        missing-dependencies: "Kan ikke starte %s mangler afhængige filer: %s"
+    minimap:
+      default-rotation: "Standard rotation sat til %s"
+      default-showname: "Hvis navne sat til %s"
+      auto-update: "Auto updater sat til %b"
+      circular-zoom: "Circular zoom sat til %b"
+      render-out-of-border: "Randere ud af kortet med %b"
+      default-zoom: "Standard zoom sat til %f"
+      allowed-zooms: "Tilladte zoom: %s"
+      whitelisted-worlds: "Godkendte verdener: %s"
+      blacklisted-worlds: "Sort listede verdener: %s"
+      loaded-overlay: "Henter overlags billede '%s'"
+      loaded-background: "Henter baggrunds billede '%s'"
+      loaded-disabled: "Henter slukkede billeder '%s'"
+    unsupported-version: "Denne version(%s) er ikke supported lige nu!"
+    disabling-plugin: "Stopper plugin..."

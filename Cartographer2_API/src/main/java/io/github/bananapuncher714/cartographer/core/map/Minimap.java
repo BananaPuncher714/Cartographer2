@@ -28,15 +28,14 @@ import io.github.bananapuncher714.cartographer.core.map.palette.MinimapPalette;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkData;
 import io.github.bananapuncher714.cartographer.core.map.process.ChunkNotifier;
 import io.github.bananapuncher714.cartographer.core.map.process.DataCache;
-import io.github.bananapuncher714.cartographer.core.map.process.MapDataCache;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
 
 public class Minimap implements ChunkNotifier {
 	protected final String id = null;
 	
-	protected final File OVERLAY_IMAGE_FILE = null;
-	protected final File BACKGROUND_IMAGE_FILE = null;
-	protected final File DISABLED_IMAGE_FILE = null;
+	protected final String OVERLAY_IMAGE_FILE = null;
+	protected final String BACKGROUND_IMAGE_FILE = null;
+	protected final String DISABLED_IMAGE_FILE = null;
 	
 	protected MinimapPalette palette;
 	protected DataCache cache;

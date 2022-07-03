@@ -1,0 +1,232 @@
+# Default provided locale file
+# Svi local fajlovi zahtevaju locale-code. To ne bi trebalo da sadrži bilo kakve razmake.
+# Naziv, jezik, i lokacija su proizvoljni, ali preporučeni.
+# Informacije uzete od https://minecraft.gamepedia.com/Language#Available_languages
+# Same poruke prate regularni Java string formatting.
+# Ako želite da imate svoje unikatne poruke, napravite string listu umesto jednog stringa.
+# Kao na primer:
+# nasumična-poruka:
+# - "Nasumična poruka 1"
+# - "Nasumična poruka 2"
+# - "Nasumična poruka 3"
+# Lokalni fajlovi takođe podržavaju placeholdere, ako je to poruka za igrača.
+# Da koristite unikatne boje u porukama, koristite sekciju simbol(§) directly.
+# Ako to ne bude radilo, i prikaže neke nasumične karaktere-simbole, onda umesto toga koristite kod \u00a7.
+# Translated by xorxi
+name: "Српски/Srpski"
+language: "Srpski Latinica"
+location: "Србија"
+locale-code: "sr_sp"
+messages:
+  locale:
+    loaded-internal-locale: "Uspešno učitan internal locale(%s)"
+    loaded-locale: "Učitan jezik %s(%s) as %s"
+    default-locale-changed: "Uobičajeni locale promenjen je u %s"
+    error-loading-file: "Nije bilo moguće učitati locale fajl '%s'"
+    invalid-locale: "'%s' nije validni locale!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Dodat je '%s' kao zabranjeni inventar."
+        unknown-inventory-type: "Ne postoji takav tip inventara '%s'"
+      palette:
+        creating-vanilla-palette: "Konstruisanje Vanilla palete..."
+        vanilla-palette-missing: "Vanilla paletta nije pronađena, čuvanje..."
+        found-materials: "%d materijal zabeležen za vanillu"
+        loading-palettes: "Učitavanje paleti..."
+        successfully-loaded-palette: "Paleta '%s' je uspešno učitana!"
+        palette-folder-missing: "Fajl palete nije pronađen!"
+      image:
+        overlay-found: "Prekrivajući sloj je detektovan!"
+        overlay-missing: "Prekrivajući sloj ne postoji!"
+        background-found: "Pozadina detektovana!"
+        background-missing: "Pozadinska slika ne postoji!"
+        missing-map-found: "Mapa koja nedostaje je pronađena!"
+        missing-map-missing: "Slika mape je nepostojeća!"
+        disabled-map-found: "Pronađena je isključena slika mape!"
+        disabled-map-missing: "Isključena slika mape ne postoji!"
+      enabling-modules: "Omogućavanje modula..."
+      loading-config: "Učitavanje configa..."
+      loading-images: "Učitavanje slika..."
+      loading-palettes: "Učitavanje paleti..."
+      loading-data: "Učitavanje mini mapi i podataka..."
+    disable:
+      disabling-modules: "Isključivanje modula..."
+      saving-map-data-start: "Čuvanje podataka mape. Ovo može potrajati..."
+      saving-map-data-finish: "Završeno je čuvanje podataka mape!"
+      saving-player-data-start: "Čuvanje podataka igrača..."
+      saving-player-data-finish: "Završeno je čuvanje podataka igrača!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cKorišćenje: /cartographer reload <map>"
+          reloaded-plugin: "§bPodešavanja Cartographer2 su ponovo učitana"
+          reloaded-minimap: "§bMini mapa '§e%s§b' je ponovo učitana"
+        list:
+          usage: "§cKorišćenje: /cartographer list"
+          no-minimaps: "§bTrenutno nema učitanih Mini Mapi!"
+          list: "§bLista Cartographer2 Mini Mape (%d): %s"
+        get:
+          usage: "§cKorišćenje: /cartographer get <map> <player> [slot]"
+          success-self: "Dali ste sebi mini mapu (%s)"
+          success-other: "Dali ste mini mapu(%s) igraču %s"
+        create:
+          usage: "§cKorišćenje: /cartographer create <id>"
+          success: "§bNapravljena je i registrovana nova mini mapa sa ID-jem '§e%s§b'"
+        delete:
+          usage: "§cKorišćenje: /cartographer delete <id>"
+          success: "§bObrisana je mini mapa pod nazivom '§e%s§b'"
+        load:
+          usage: "§cKorišćenje: /cartographer load <id>"
+          success: "§bUčitana je mini mapa pod nazivom '§e%s§b'"
+        unload:
+          usage: "§cKorišćenje: /cartographer unload <id>"
+          success: "§bDeaktivirana je mini mapa pod nazicom '§e%s§b'"
+        help:
+          usage: "§cKorišćenje: /cartographer help"
+          help-0: "§b=== Cartographer Komande ==="
+          help-1: "§e/cartographer reload [map]§6 - Ponovo učitava Cartographer2 ili mini mapu"
+          help-2: "§e/cartographer list§6 - Prikazuje sve učitane mini mape"
+          help-3: "§e/cartographer get <map> [player] [slot]§6 - Uzmi ili daj (nekom drugom) mini mapu"
+          help-4: "§e/cartographer create <map>§6 - Napravi novu mini mapu"
+          help-5: "§e/cartographer delete <map>§6 - Obriši mini mapu"
+          help-6: "§e/cartographer load <map>§6 - Učitaj mini mapu"
+          help-7: "§e/cartographer unload <map>§6 - Deaktiviraj mini mapu"
+          help-8: "§e/cartographer help§6 - Prikaži sve dostupne komande"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Trenutno nema učitanih modula!"
+          list: "§6Lista Cartographer2 Modula (%d): %s" 
+        reload:
+          success: "§6Svi moduli su ponovo učitani!"
+        enable:
+          usage: "§cKorišćenje: /cartographer module enable <module>"
+          success: "§6Aktivirali ste modul pod nazivom '§e%s§6'!"
+          already-enabled: "§cModul '%s' je već učitan!"
+          error-loading: "§cNije moguće učitati modul '%s', Za detalje proverite server log. (Nedostaju razlozi?)"
+        disable:
+          usage: "§cKorišćenje: /cartographer module disable <module>"
+          already-disabled: "§cModul '%s' je vec deaktiviran!"
+          success: "§6Modul pod nazivom '§e%s§6' je uspešno deaktiviran!"
+        load:
+          usage: "§cKorišćenje: /cartographer module load <file>"
+          success: "§6Uspešno je učitan i omogućen modul pod nazivom '§e%s§6'!"
+          error-loading: "§cFajl '%s' ne može da se učita, Za detalje proverite server log."
+          error-enabling: "§cModul '%s' ne može da se učita, Za detalje proverite server log. (Nedostaju razlozi?)"
+        unload:
+          usage: "§cKorišćenje: /cartographer module unload <module>"
+          success: "§6Modul '§e%s§6' je uspešno deaktiviran!"
+          error-unloading: "§6Modul '§e%s§6' nije moguće učitati! Cartographer2 ga nije učitao!"
+        help:
+          usage: "§cKorišćenje: /cartographer module help"
+          help-0: "§b=== Cartographer Modul Komande ==="
+          help-1: "§e/cartographer module list§6 - Prikazuje sve učitane module"
+          help-2: "§e/cartographer module reload§6 - Ponovo učitava sve module"
+          help-3: "§e/cartographer module enable <module>§6 - Aktivira određeni modul"
+          help-4: "§e/cartographer module disable <module>§6 - Deaktivira određeni modul"
+          help-5: "§e/cartographer module load <module>§6 - Učitava određeni modul"
+          help-6: "§e/cartographer module unload <module>§6 - Deočitava određeni modul"
+          help-7: "§e/cartographer module help§6 - Prikazuje sve dostupne komande"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cOvaj fajl je već učitan ili ne postoji!"
+        module-already-enabled-or-not-real: "§cOvaj modul je već učitan ili ne postoji!"
+        module-already-disabled-or-not-real: "§cOvaj modul je već deaktiviran ili ne postoji!"
+        module-not-real: "§cOvaj modul ne postoji!"
+      settings:
+        set:
+          console-usage: "§cKorišćenje: /cartographer settings set <player> <setting> <value>"
+          success: "§aPodesili ste '%s' na §d%s§a."
+        get:
+          console-usage: "§cUsage: /cartographer settings get <player> <setting>"
+          success: "§aPodešavanje '%s' je podešeno na §d%s§a."
+        setother:
+          usage: "§cKorišćenje: /cartographer settings setother <player> <setting> <value>"
+          success: "§aIgraču '%s' je §d%s§a podešen na §d%s§a."
+        getother:
+          usage: "§cKorišćenje: /cartographer settings getother <player> <setting>"
+          success: "§d%s§a ima '%s' podešeno na §d%s§a."
+        help:
+          usage: "§cKorišćenje: /cartographer settings help"
+          help-0: "§b=== Cartographer Komande Podešavanja ==="
+          help-1: "§e/cartographer settings set <property> <value>§6 - Podesi određenu opciju"
+          help-2: "§e/cartographer settings get <property>§6 - Pogledaj kako je podešena određena opcija"
+          help-3: "§e/cartographer settings setother <player> <property> <value>§6 - Podesi određenu opciju drugom igraču"
+          help-4: "§e/cartographer settings getother <player> <property>§6 - Pogledaj podešavanje određene opcije drugog igrača"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cNeispravna vrednost! (%s)"
+        must-provide-values: "§cMorate navesti vrednost! (%s)"
+        not-implemented: "§c'%s' još uvek nije ubačena! Molimo vas, kontaktirajte dvelopera za pomoć!"
+      player-not-found: "§cOvaj igrač nije aktivan trenutno!"
+      minimap-already-exists: "§cMini mapa sa tim ID već postoji!"
+      invalid-minimap: "§cNeispravna Mini Mapa!"
+      invalid-slot: "§cNeispravna slot! (0-40)"
+      invalid-argument: "§cNeispravan argument!"
+      invalid-setting: "§cNeispravno podešavanje!"
+      must-provide-minimap: "§cMorate navesti naziv mini mape!"
+      must-provide-player: "§cMorate navesti ime igrača!"
+      must-provide-argument: "§cMorate navesti validan argument!"
+      must-provide-setting: "§cMorate navesti validno podešavanje!"
+    manager:
+      minimap:
+        loading-minimap: "Očitavanje Mini Mape '%s'"
+        unloading-minimap: "Deočitavanje Mini Mape '%s'"
+        deleting-minimap: "Brisanje Mini Mape '%s'"
+      module:
+        reloading-modules-start: "Ponovno učitavanje modula..."
+        reloading-modules-finish: "Ponovno učitavanje modula je završeno"
+        loading-module: "Učitavanje %s v%s by %s"
+        unloading-module: "Deučitavanje %s"
+        enabling-module: "Aktiviranje %s v%s by %s"
+        disabling-module: "Deaktiviranje %s v%s by %s"
+        missing-dependencies: "Nije moguće učitati %s jer fali: %s"
+    minimap:
+      default-rotation: "Default rotacija je podešena na %s"
+      default-showname: "Showname je podešen na %s"
+      auto-update: "Auto update je podešen na %b"
+      circular-zoom: "Circular zoom je podešen na %b"
+      render-out-of-border: "Prikazivanje izvan bordera je podešeno na %b"
+      default-zoom: "Default zoom je podešen na %f"
+      allowed-zooms: "Dozvoljeni zoom-ovi: %s"
+      whitelisted-worlds: "Dozvoljeni svetovi: %s"
+      blacklisted-worlds: "Zabranjeni svetovi: %s"
+      loaded-overlay: "Učitana prekrivajuća slika '%s'"
+      loaded-background: "Učitana pozadinska slika '%s'"
+      loaded-disabled: "Učitana deaktivirana slika '%s'"
+    unsupported-version: "Ovaj verzija(%s) još uvek nije podržana!"
+    disabling-plugin: "Deaktiviranje plugina..."
