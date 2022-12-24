@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.module.vanilla.providers;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -22,7 +21,6 @@ public class CursorConverterEntity implements CursorConverter {
 	
 	@Override
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
-		Validate.isTrue( convertable( object ) );
 		Entity tracking = ( Entity ) object;
 		String name = tracking.getCustomName();
 		if ( name == null || name.isEmpty() ) {

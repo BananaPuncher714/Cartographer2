@@ -2,7 +2,6 @@ package io.github.bananapuncher714.cartographer.module.vanilla.providers;
 
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
 
@@ -22,7 +21,6 @@ public class CursorConverterPlayer implements CursorConverter {
 	
 	@Override
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
-		Validate.isTrue( convertable( object ) );
 		Player tracking = ( Player ) object;
 		if ( visibility != CursorVisibility.NONE ) {
 			return new WorldCursor( showName ? tracking.getName() : null, tracking.getLocation(), icon, visibility == CursorVisibility.FULL );

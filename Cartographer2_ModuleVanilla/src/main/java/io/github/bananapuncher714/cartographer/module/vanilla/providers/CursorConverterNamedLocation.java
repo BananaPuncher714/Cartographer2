@@ -1,6 +1,5 @@
 package io.github.bananapuncher714.cartographer.module.vanilla.providers;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor.Type;
@@ -27,7 +26,6 @@ public class CursorConverterNamedLocation implements CursorConverter {
 
 	@Override
 	public WorldCursor convert( Object object, Player player, PlayerSetting settings ) {
-		Validate.isTrue( convertable( object ) );
 		NamedLocation location = ( NamedLocation ) object;
 		
 		Location playerLoc = settings.getLocation();

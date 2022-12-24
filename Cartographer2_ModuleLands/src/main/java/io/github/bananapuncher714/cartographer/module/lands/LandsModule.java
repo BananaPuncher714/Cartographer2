@@ -127,7 +127,7 @@ public class LandsModule extends Module implements Listener {
 				Collection< ChunkCoordinate > coords = land.getChunks( world );
 				if ( coords != null ) {
 					for ( ChunkCoordinate coordinate : coords ) {
-						locations.add( new ChunkLocation( coordinate.getWorld(), coordinate.getX(), coordinate.getZ() ) );
+						locations.add( new ChunkLocation( world, coordinate.getX(), coordinate.getZ() ) );
 					}
 				}
 			}

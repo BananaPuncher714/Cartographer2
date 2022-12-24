@@ -27,9 +27,9 @@ public class DefaultPlayerCursorProvider implements WorldCursorProvider {
 		
 		boolean nameVisible = Cartographer.getInstance().getSettings().isShownameByDefault();
 		if ( map.getSettings().getShowName() != BooleanOption.UNSET ) {
-			nameVisible = map.getSettings().getRotation().isTrue();
-		} else if ( viewer.getSetting( MapViewer.ROTATE ) != BooleanOption.UNSET ) {
-			nameVisible = viewer.getSetting( MapViewer.ROTATE ).isTrue();
+			nameVisible = map.getSettings().getShowName().isTrue();
+		} else if ( viewer.getSetting( MapViewer.SHOWNAME ) != BooleanOption.UNSET ) {
+			nameVisible = viewer.getSetting( MapViewer.SHOWNAME ).isTrue();
 		}
 		
 		cursors.add( new WorldCursor( nameVisible ? player.getName() : null, setting.getLocation(), Type.WHITE_POINTER, true ) );
