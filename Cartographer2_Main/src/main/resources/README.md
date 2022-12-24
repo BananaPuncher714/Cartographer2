@@ -145,5 +145,6 @@ Additional settings may be added by modules.
 - `xorxi` - Translator(sr_sp)
 - `Elias❤` - Translator(sv_se)
 - `maniackdk` - Translator(da_dk)
+- `trikop` - Translator(nb_no)
 - `REjoin` - Supporter
 - `marcelschoen` - Supporter
