@@ -45,7 +45,7 @@ public final class JetpImageUtil {
 			dither( rgb, width );
 			long end = System.nanoTime();
 			float passed = ( end - start ) / 1000000.0f;
-			System.out.printf( "Took %fms%n", passed );
+//			System.out.printf( "Took %fms%n", passed );
 		}
 	}
 
@@ -65,7 +65,7 @@ public final class JetpImageUtil {
 				Color color = MapPalette.getColor( ( byte ) i );
 				colors.add( color.getRGB() );
 			} catch ( IndexOutOfBoundsException e ) {
-				System.out.println( "Captured " + ( i - 1 ) + " colors!" );
+//				System.out.println( "Captured " + ( i - 1 ) + " colors!" );
 				largest = i - 1;
 				break;
 			}

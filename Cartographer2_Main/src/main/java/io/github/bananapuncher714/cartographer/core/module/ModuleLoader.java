@@ -77,7 +77,7 @@ public class ModuleLoader {
 		
 		try {
 			// Cache this sometime
-			ModuleClassLoader loader = new ModuleClassLoader( description, Bukkit.class.getClassLoader() );
+			ModuleClassLoader loader = new ModuleClassLoader( description, Cartographer.class.getClassLoader() );
 			classLoaders.put( loader.getModule(), loader );
 			
 			return loader.getModule();
