@@ -7,8 +7,7 @@
 		<artifactId>cartographer2_master</artifactId>
 		<version>2.15.8</version>
 	</parent>
-	<artifactId>cartographer2_moduleguilds</artifactId>
-	<version>1.0.0</version>
+	<artifactId>cartographer2_v1_20_r1</artifactId>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
@@ -17,20 +16,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<artifactId>spigot</artifactId>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
-			<artifactId>cartographer2_api</artifactId>
+			<artifactId>cartographer2_main</artifactId>
 			<version>${master.version}</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>me.glaremasters</groupId>
-			<artifactId>guilds</artifactId>
-			<version>3.5.5.6-DEV</version>
 		</dependency>
 	</dependencies>
 </project>
