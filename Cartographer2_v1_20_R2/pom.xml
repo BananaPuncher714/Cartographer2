@@ -5,7 +5,7 @@
     <artifactId>cartographer2_master</artifactId>
     <version>2.15.9</version>
   </parent>
-  <artifactId>cartographer2_v1_19_r1</artifactId>
+  <artifactId>cartographer2_v1_20_r2</artifactId>
   
   	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.19.2-R0.1-SNAPSHOT</version>
+			<version>1.20.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
