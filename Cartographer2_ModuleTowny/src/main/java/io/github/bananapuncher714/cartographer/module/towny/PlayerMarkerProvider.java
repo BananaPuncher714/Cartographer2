@@ -33,14 +33,14 @@ public class PlayerMarkerProvider implements WorldCursorProvider {
 		if ( viewer.getSetting( TownyModule.TOWNY_PLAYERS ) ) {
 			Location location = setting.getLocation();
 			for ( Player target : location.getWorld().getPlayers() ) {
-				if ( player != target && !( target.isSneaking() || target.hasPotionEffect( PotionEffectType.INVISIBILITY ) ) ) {
+//				if ( player != target && !( target.isSneaking() || target.hasPotionEffect( PotionEffectType.INVISIBILITY ) ) ) {
 					Location targetLoc = target.getLocation();
 					Optional< Type > type = supplier.getIconFor( player, target, setting.getScale() );
 					if ( type.isPresent() ) {
 						WorldCursor cursor = new WorldCursor( name ? target.getName() : null, targetLoc, type.get(), false );
 						cursors.add( cursor );
 					}
-				}
+//				}
 			}
 		}
 		

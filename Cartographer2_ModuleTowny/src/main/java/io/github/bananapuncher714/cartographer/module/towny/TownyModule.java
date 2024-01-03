@@ -206,7 +206,7 @@ public class TownyModule extends Module implements Listener {
 			}
 
 			CursorProperties properties = icons.get( relation );
-			if ( properties != null && properties.isEnabled() && properties.getMaxZoom() <= scale ) {
+			if ( properties != null && properties.isEnabled() && scale <= properties.getMaxZoom() ) {
 				Location targetLoc = target.getLocation();
 				UUID townUUID= TownyAPI.getInstance().getTownUUID( targetLoc );
 				Town occupying = townUUID == null ? null : TownyUniverse.getInstance().getTown( townUUID );
