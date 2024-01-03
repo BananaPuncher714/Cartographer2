@@ -8,7 +8,7 @@
 		<version>2.15.10</version>
 	</parent>
 	<artifactId>cartographer2_moduletowny</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
