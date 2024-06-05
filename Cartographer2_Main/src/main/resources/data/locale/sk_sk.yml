@@ -27,7 +27,7 @@ messages:
   core:
     enable:
       config:
-        added-blacklisted-inventory: "Inventar '§f%s§e' bol pridaný na čiernu listinu."
+        added-blacklisted-inventory: "Inventár '§f%s§e' bol pridaný na čiernu listinu."
         unknown-inventory-type: "Tento typ inventára neexistuje '§f%s§e'"
       palette:
         creating-vanilla-palette: "Vytváram palety pre Vanillu..."
@@ -42,9 +42,9 @@ messages:
         background-found: "Bolo zistené pozadie!"
         background-missing: "Obrázok na pozadie neexistuje!"
         missing-map-found: "Bolo najdené chybanie obraz map!"
-        missing-map-missing: "Chýbací obrázok mapy neexistuje!"
+        missing-map-missing: "Daný obrázok mapy neexistuje!"
         disabled-map-found: "Bolo nájdené deaktivovaný obraz mapy!"
-        disabled-map-missing: "Zakázaný obraz mapy neexistuje!"
+        disabled-map-missing: "Daný obraz mapy neexistuje!"
       enabling-modules: "Zapínanie modulov..."
       loading-config: "Načítam config.yml..."
       loading-images: "Načítam obrázky..."
@@ -86,13 +86,13 @@ messages:
           usage: "§ePoužitie: &c /cartographer help"
           help-0: "§c=== Dostupné Príkazy pre minimapu ==="
           help-9: ""
-          help-1: "§c/cartographer reload [mapa]§f - §eZnovu načíta plugin minimap."
+          help-1: "§c/cartographer reload [mapa]§f - §eZnovu načíta plugin pre minimapu."
           help-2: "§c/cartographer list§f - §eUkáže všetky načítané/vytvorené minimapy."
           help-3: "§c/cartographer get <mapa> [hráč] [hodnota]§f - §eDá hráčovi minimapu."
           help-4: "§c/cartographer create <mapa>§f - §eVytvorí novú minimapu."
           help-5: "§c/cartographer delete <mapa>§f - §eZmaže minimapu."
           help-6: "§c/cartographer load <mapa>§f - §eNačíta mapu."
-          help-7: "§c/cartographer unload <mapa>§f - §eZrusí načítanu minimapu."
+          help-7: "§c/cartographer unload <mapa>§f - §eZruší načítanu minimapu."
           help-8: "§c/cartographer help§f - §eZobrazí príkazy."
           help-9: ""
           help-10: ""
@@ -110,7 +110,7 @@ messages:
           no-modules: "§eMomentálne nie sú načítané žiadne moduly!"
           list: "§eModule (%d): §f%s" 
         reload:
-          success: "§eModuly boly znovu načítané!"
+          success: "§eModuly boli znovu načítané!"
         enable:
           usage: "§ePoužitie: &c /cartographer module enable <modul>"
           success: "§ePovolenie modulu '§f%s§e'!"
