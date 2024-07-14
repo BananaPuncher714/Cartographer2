@@ -27,7 +27,7 @@ import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 
 public class MinimapManager {
-	private static final Object[] MAP_ID = { "io", "github", "bananapuncher714", "cartographer", "map-id" };
+	private static final Object[] MAP_ID = { NBTEditor.CUSTOM_DATA, "io", "github", "bananapuncher714", "cartographer", "map-id" };
 	
 	protected Cartographer plugin;
 	protected Map< String, Minimap > minimaps = new ConcurrentHashMap< String, Minimap >();

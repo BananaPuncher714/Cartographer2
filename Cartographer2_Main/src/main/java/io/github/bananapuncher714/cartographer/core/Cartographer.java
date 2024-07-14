@@ -40,6 +40,7 @@ import io.github.bananapuncher714.cartographer.core.renderer.CartographerRendere
 import io.github.bananapuncher714.cartographer.core.util.FileUtil;
 import io.github.bananapuncher714.cartographer.core.util.JetpImageUtil;
 import io.github.bananapuncher714.cartographer.core.util.ReflectionUtil;
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 
 public class Cartographer extends JavaPlugin {
 	private static Cartographer INSTANCE;
@@ -135,12 +136,12 @@ public class Cartographer extends JavaPlugin {
 		
 		handler = ReflectionUtil.getNewPacketHandlerInstance();
 		if ( handler == null ) {
-			loggerSevere( LocaleConstants.CORE_UNSUPPORTED_VERSION, ReflectionUtil.VERSION );
+			loggerSevere( LocaleConstants.CORE_UNSUPPORTED_VERSION, NBTEditor.getMinecraftVersion() );
 			loggerSevere( LocaleConstants.CORE_PLUGIN_DISABLE );
 			Bukkit.getPluginManager().disablePlugin( this );
 			return;
 		}
-		getLogger().info( "Detected version '" + ReflectionUtil.VERSION + "'" );
+		getLogger().info( "Detected version '" + NBTEditor.getMinecraftVersion() + "'" );
 		
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			handler.inject( player );

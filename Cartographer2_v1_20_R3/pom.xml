@@ -5,9 +5,9 @@
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>cartographer2_master</artifactId>
-		<version>2.15.10</version>
+		<version>2.15.11</version>
 	</parent>
-	<artifactId>Cartographer2_v1_20_R3</artifactId>
+	<artifactId>cartographer2_v1_20_r3</artifactId>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
