@@ -30,7 +30,7 @@ cursors:
 # Options for displaying other players
 players:
   enabled: true
-  icon: WHITE_POINTER
+  icon: PLAYER WHITE_POINTER
   range: 512
   default-visibility: PARTIAL
   show-name: true
@@ -259,194 +259,194 @@ entity:
     item: AIR
 
   VILLAGER:
-    icon: BLUE_POINTER
+    icon: BLUE_MARKER BLUE_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   WANDERING_TRADER:
-    icon: BLUE_POINTER
+    icon: BLUE_MARKER BLUE_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
 
   BAT:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   CAT:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   CHICKEN:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   COD:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   COW:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   DONKEY:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   FOX:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   HORSE:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   MUSHROOM_COW:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   MULE:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   OCELOT:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   PARROT:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   PIG:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   POLAR_BEAR:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   RABBIT:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   SALMON:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   SHEEP:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   SKELETON_HORSE:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   SNOWMAN:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   SQUID:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   STRIDER:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   TROPICAL_FISH:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   TURTLE:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   BEE:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   DOLPHIN:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   IRON_GOLEM:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   LLAMA:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   PANDA:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   PUFFERFISH:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true
     item: AIR
   WOLF:
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     range: 64
     default-visibility: PARTIAL
     show-name: true

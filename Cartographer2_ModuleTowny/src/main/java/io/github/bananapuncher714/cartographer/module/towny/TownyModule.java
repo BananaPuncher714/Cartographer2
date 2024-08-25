@@ -3,9 +3,14 @@ package io.github.bananapuncher714.cartographer.module.towny;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -22,6 +27,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -128,7 +134,7 @@ public class TownyModule extends Module implements Listener {
 
 		showName = config.getBoolean( "show-name" );
 
-		homeType = FailSafe.getEnum( Type.class, config.getString( "home-icon" ).split( "\\s+") );
+		homeType = getType( config.getString( "home-icon" ).split( "\\s+") );
 		
 		try {
 			configuration.save();
@@ -141,7 +147,7 @@ public class TownyModule extends Module implements Listener {
 		CursorProperties properties = new CursorProperties();
 		
 		properties.setEnabled( section.getBoolean( "enabled" ) );
-		properties.setType( FailSafe.getEnum( Type.class, section.getString( "icon" ).split( "\\s+" ) ) );
+		properties.setType( getType( section.getString( "icon" ).split( "\\s+" ) ) );
 		properties.setGlobalRange( section.getDouble( "global-range" ) );
 		properties.setTownRange( section.getDouble( "town-range" ) );
 		properties.setMaxZoom( section.getDouble( "max-zoom", 16 ) );
@@ -280,6 +286,25 @@ public class TownyModule extends Module implements Listener {
 
 		return data;
 	}
+	
+   private static Type getType( String[] types ) {
+        try {
+            Method values = Type.class.getMethod( "values" );
+            Method name = Type.class.getMethod( "name" );
+            Type[] constants = ( Type[] ) values.invoke( Type.class );
+            if ( types == null || types.length == 0 ) return constants[ 0 ];
+            if ( types[ 0 ].equals( "RED_MARKER" ) ) types[ 0 ] = "TARGET_POINT";
+            for ( Type t : constants ) {
+                if ( name.invoke( t ).equals( types[ 0 ] ) ) {
+                    return t;
+                }
+            }
+            return getType( FailSafe.pop( types ) );
+        } catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 	public enum TownyRelation {
 		NEUTRAL, MEMBER_TOWN, ALLIED_TOWN, MEMBER_NATION, ALLIED_NATION, ENEMY_NATION;

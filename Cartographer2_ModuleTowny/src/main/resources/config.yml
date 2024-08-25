@@ -19,31 +19,31 @@ show-name: true
 player:
   neutral:
     enabled: true
-    icon: WHITE_POINTER
+    icon: PLAYER WHITE_POINTER
     global-range: 50
     town-range: 1000
     max-zoom: 16
   member_town: 
     enabled: true
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     global-range: 150
     town-range: 1000
     max-zoom: 16
   allied_town:
     enabled: true
-    icon: GREEN_POINTER
+    icon: FRAME GREEN_POINTER
     global-range: 100
     town-range: 1000
     max-zoom: 16
   member_nation:
     enabled: true
-    icon: BLUE_POINTER
+    icon: BLUE_MARKER BLUE_POINTER
     global-range: 150
     town-range: 1000
     max-zoom: 16
   allied_nation:
     enabled: true
-    icon: BLUE_POINTER
+    icon: BLUE_MARKER BLUE_POINTER
     global-range: 100
     town-range: 1000
     max-zoom: 16

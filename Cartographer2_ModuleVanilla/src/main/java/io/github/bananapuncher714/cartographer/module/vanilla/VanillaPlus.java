@@ -2,7 +2,10 @@ package io.github.bananapuncher714.cartographer.module.vanilla;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapCursor.Type;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -160,7 +164,7 @@ public class VanillaPlus extends Module {
 				
 				if ( provider != null ) {
 					String iconTypes = cursorSection.getString( key + ".icon" );
-					Type type = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
+					Type type = getType( iconTypes.split( "\\s+" ) );
 					CursorVisibility visibility = FailSafe.getEnum( CursorVisibility.class, cursorSection.getString( key + ".default-visibility" ) );
 					boolean showName = cursorSection.getBoolean( key + ".show-name" );
 					String displayName = ChatColor.translateAlternateColorCodes( '&', cursorSection.getString( key + ".display-name" ) );
@@ -178,7 +182,7 @@ public class VanillaPlus extends Module {
 		if ( config.contains( "players" ) ) {
 			playerEnabled = config.getBoolean( "players.enabled" );
 			String iconTypes = config.getString( "players.icon" );
-			Type type = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
+			Type type = getType( iconTypes.split( "\\s+" ) );
 			CursorVisibility visibility = FailSafe.getEnum( CursorVisibility.class, config.getString( "players.default-visibility" ) );
 			boolean showName = config.getBoolean( "players.show-name" );
 			double range = config.getDouble( "players.range" );
@@ -206,7 +210,7 @@ public class VanillaPlus extends Module {
 					continue;
 				}
 				String iconTypes = section.getString( key + ".icon" );
-				Type icon = FailSafe.getEnum( Type.class, iconTypes.split( "\\s+" ) );
+				Type icon = getType( iconTypes.split( "\\s+" ) );
 				double range = section.getDouble( key + ".range" );
 				CursorVisibility visibility = FailSafe.getEnum( CursorVisibility.class, section.getString( key + ".default-visibility" ) );
 				boolean showName = section.getBoolean( key + ".show-name" );
@@ -364,5 +368,24 @@ public class VanillaPlus extends Module {
 	
 	public boolean hasEntityCursors() {
 		return hasEntities;
+	}
+	
+	private static Type getType( String[] types ) {
+        try {
+            Method values = Type.class.getMethod( "values" );
+            Method name = Type.class.getMethod( "name" );
+            Type[] constants = ( Type[] ) values.invoke( Type.class );
+            if ( types == null || types.length == 0 ) return constants[ 0 ];
+            if ( types[ 0 ].equals( "RED_MARKER" ) ) types[ 0 ] = "TARGET_POINT";
+            for ( Type t : constants ) {
+                if ( name.invoke( t ).equals( types[ 0 ] ) ) {
+                    return t;
+                }
+            }
+            return getType( FailSafe.pop( types ) );
+        } catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+        return null;
 	}
 }

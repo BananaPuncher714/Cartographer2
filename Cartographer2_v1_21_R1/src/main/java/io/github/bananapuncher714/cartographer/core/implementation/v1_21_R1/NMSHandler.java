@@ -137,7 +137,6 @@ public class NMSHandler implements PacketHandler {
         CURSOR_TYPES.put( MapCursor.Type.JUNGLE_TEMPLE, MapDecorationTypes.G );
         CURSOR_TYPES.put( MapCursor.Type.SWAMP_HUT, MapDecorationTypes.H );
         CURSOR_TYPES.put( MapCursor.Type.TRIAL_CHAMBERS, MapDecorationTypes.I );
-        
     }
 
     private final Map< UUID, Channel > channels = new ConcurrentHashMap< UUID, Channel >();

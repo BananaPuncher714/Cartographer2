@@ -17,7 +17,7 @@ public final class FailSafe {
 	 * The enum with the name provided, or the first enum available.
 	 */
 	@SuppressWarnings("unchecked")
-	public static < T extends Enum<?> > T getEnum( Class< T > clazz, String... values ) {
+	public static < T extends Enum< ? > > T getEnum( Class< T > clazz, String... values ) {
 		if ( !clazz.isEnum() ) return null;
 		T[] constants = clazz.getEnumConstants();
 		if ( values == null || values.length == 0 ) return constants[ 0 ];

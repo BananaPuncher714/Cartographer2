@@ -8,7 +8,7 @@
 		<version>2.15.11</version>
 	</parent>
 	<artifactId>cartographer2_moduletowny</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.palmergames.bukkit.towny</groupId>
 			<artifactId>towny</artifactId>
-			<version>0.98.0.0</version>
+			<version>0.100.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
