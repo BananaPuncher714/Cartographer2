@@ -2,6 +2,8 @@ package io.github.bananapuncher714.cartographer.module.factionsuuid;
 
 import java.awt.Color;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,7 +101,7 @@ public class FactionsUUIDModule extends Module implements Listener {
 
 		for ( String key : config.getConfigurationSection( "player" ).getKeys( false ) ) {
 			Relation status = FailSafe.getEnum( Relation.class, key.toLowerCase(), key.toUpperCase() );
-			Type type = FailSafe.getEnum( Type.class, config.getString( "player." + key ) );
+			Type type = getType( config.getString( "player." + key ).split( "\\s+" ) );
 
 			icons.put( status, type );
 		}
@@ -107,7 +109,7 @@ public class FactionsUUIDModule extends Module implements Listener {
 		playerRange = config.getInt( "player-range" );
 		showName = config.getBoolean( "show-name" );
 
-		homeType = FailSafe.getEnum( Type.class, config.getString( "home-icon" ) );
+		homeType = getType( config.getString( "home-icon" ).split( "\\s+" ) );
 	}
 
 	@EventHandler
@@ -173,6 +175,25 @@ public class FactionsUUIDModule extends Module implements Listener {
 
 		return data;
 	}
+	
+   private static Type getType( String[] types ) {
+        try {
+            Method values = Type.class.getMethod( "values" );
+            Method name = Type.class.getMethod( "name" );
+            Type[] constants = ( Type[] ) values.invoke( Type.class );
+            if ( types == null || types.length == 0 ) return constants[ 0 ];
+            if ( types[ 0 ].equals( "RED_MARKER" ) ) types[ 0 ] = "TARGET_POINT";
+            for ( Type t : constants ) {
+                if ( name.invoke( t ).equals( types[ 0 ] ) ) {
+                    return t;
+                }
+            }
+            return getType( FailSafe.pop( types ) );
+        } catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 	public enum FactionStatus {
 		WARZONE, SAFEZONE, SELF, ALLY, ENEMY, NEUTRAL, TRUCE;

@@ -38,8 +38,10 @@ public class PlayerMarkerProvider implements WorldCursorProvider {
 					Location targetLoc = target.getLocation();
 					if ( targetLoc.distanceSquared( location ) < rangeSquared ) {
 						Type type = supplier.getIconFor( player, target );
-						WorldCursor cursor = new WorldCursor( name ? target.getName() : null, targetLoc, type, false );
-						cursors.add( cursor );
+						if ( type != null ) {
+    						WorldCursor cursor = new WorldCursor( name ? target.getName() : null, targetLoc, type, false );
+    						cursors.add( cursor );
+						}
 					}
 				}
 			}

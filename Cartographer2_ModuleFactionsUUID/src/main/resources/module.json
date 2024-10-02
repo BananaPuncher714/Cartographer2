@@ -2,7 +2,7 @@
     "name": "FactionsUUID",
 	"main": "io.github.bananapuncher714.cartographer.module.factionsuuid.FactionsUUIDModule",
 	"description": "Adds Cartographer2 integration with FactionsUUID",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "BananaPuncher714",
 	"website": "aaaaahhhhhhh.com",
 	"depend": [ "Factions" ]
