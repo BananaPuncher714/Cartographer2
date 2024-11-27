@@ -142,7 +142,7 @@ public class CartographerRenderer extends MapRenderer {
 				} else {
 					byte[] data = menu.getDisplay();
 					
-					Type type = FailSafe.getEnum( Type.class, "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
+					Type type = FailSafe.getType( "SMALL_WHITE_CIRCLE", "WHITE_CIRCLE", "WHITE_CROSS" );
 					
 					int x = ( int ) Math.max( -128, Math.min( 127, setting.getCursorX() ) );
 					int y = ( int ) Math.max( -128, Math.min( 127, setting.getCursorY() ) );

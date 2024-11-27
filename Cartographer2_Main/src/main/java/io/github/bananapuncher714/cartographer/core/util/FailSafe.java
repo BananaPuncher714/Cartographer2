@@ -1,5 +1,10 @@
 package io.github.bananapuncher714.cartographer.core.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.bukkit.map.MapCursor.Type;
+
 /**
  * Utility methods to prevent null values.
  * 
@@ -28,6 +33,25 @@ public final class FailSafe {
 		}
 		return getEnum( clazz, pop( values ) );
 	}
+	
+   public static Type getType( String... types ) {
+        try {
+            Method values = Type.class.getMethod( "values" );
+            Method name = Type.class.getMethod( "name" );
+            Type[] constants = ( Type[] ) values.invoke( Type.class );
+            if ( types == null || types.length == 0 ) return constants[ 0 ];
+            if ( types[ 0 ].equals( "RED_MARKER" ) ) types[ 0 ] = "TARGET_POINT";
+            for ( Type t : constants ) {
+                if ( name.invoke( t ).equals( types[ 0 ] ) ) {
+                    return t;
+                }
+            }
+            return getType( FailSafe.pop( types ) );
+        } catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 	
 	public static String[] pop( String[] array ) {
 		String[] array2 = new String[ Math.max( 0, array.length - 1 ) ];

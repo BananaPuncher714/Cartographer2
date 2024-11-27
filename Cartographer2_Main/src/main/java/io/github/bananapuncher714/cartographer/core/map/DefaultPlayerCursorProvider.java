@@ -12,6 +12,7 @@ import io.github.bananapuncher714.cartographer.core.api.BooleanOption;
 import io.github.bananapuncher714.cartographer.core.api.WorldCursor;
 import io.github.bananapuncher714.cartographer.core.api.map.WorldCursorProvider;
 import io.github.bananapuncher714.cartographer.core.renderer.PlayerSetting;
+import io.github.bananapuncher714.cartographer.core.util.FailSafe;
 
 /**
  * Draw the player on the map.
@@ -32,7 +33,7 @@ public class DefaultPlayerCursorProvider implements WorldCursorProvider {
 			nameVisible = viewer.getSetting( MapViewer.SHOWNAME ).isTrue();
 		}
 		
-		cursors.add( new WorldCursor( nameVisible ? player.getName() : null, setting.getLocation(), Type.WHITE_POINTER, true ) );
+		cursors.add( new WorldCursor( nameVisible ? player.getName() : null, setting.getLocation(), FailSafe.getType( "WHITE_CURSOR", "PLAYER" ), true ) );
 		return cursors;
 	}
 

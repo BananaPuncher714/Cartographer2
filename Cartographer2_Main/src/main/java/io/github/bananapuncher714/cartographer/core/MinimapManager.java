@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +44,7 @@ public class MinimapManager {
 	}
 	
 	public boolean isMinimapItem( ItemStack item ) {
-		return NBTEditor.getString( item, MAP_ID ) != null;
+		return item != null && item.getType() != Material.AIR && NBTEditor.getString( item, MAP_ID ) != null;
 	}
 	
 	public ItemStack getItemFor( Minimap map ) {

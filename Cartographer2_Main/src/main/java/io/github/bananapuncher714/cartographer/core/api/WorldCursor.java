@@ -9,6 +9,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.map.MapCursor.Type;
 
+import io.github.bananapuncher714.cartographer.core.util.FailSafe;
+
 public class WorldCursor {
 	protected String name;
 	protected final Location location;
@@ -41,7 +43,7 @@ public class WorldCursor {
 	 * The current location of whatever the cursor is tracking. Cannot be null.
 	 */
 	public WorldCursor( Location location ) {
-		this( null, location, Type.WHITE_POINTER, true );
+		this( null, location, FailSafe.getType( "WHITE_CURSOR", "PLAYER" ), true );
 	}
 	
 	/**
