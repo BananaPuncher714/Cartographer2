@@ -1,0 +1,228 @@
+# The messages themselves follow regular Java string formatting.
+# If you want to have random messages, make a string list instead of a single string.
+# For example:
+# random-message-list:
+# - "Random message 1"
+# - "Random message 2"
+# - "Random message 3"
+# These locale files also support placeholders, if it's a message for a player.
+# To use custom colored messages, use the section symbol(§) directly.
+# If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
+# Translated by: manowark
+name: "Українська (Ukrayins'ka)"
+language: "Ukrainian"
+location: "Ukraine"
+locale-code: "uk_ua"
+messages:
+  locale:
+    loaded-internal-locale: "Внутрішню локаль (%s) успішно завантажено"
+    loaded-locale: "Мову %s(%s) завантажено як %s"
+    default-locale-changed: "Дефолтну локаль змінено на %s"
+    error-loading-file: "Не вдалося завантажити файл локалі '%s'"
+    invalid-locale: "'%s' не є допустимою локаллю!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "Додано '%s' до чорного списку інвентарів"
+        unknown-inventory-type: "Тип інвентаря '%s' не знайдено"
+      palette:
+        creating-vanilla-palette: "Створення ванільної палітри..."
+        vanilla-palette-missing: "Ванільна палітра не знайдена, збереження..."
+        found-materials: "%d матеріалів зіставлено зі ванільною палітрою"
+        loading-palettes: "Завантаження локальних файлів палітр..."
+        successfully-loaded-palette: "Палітру '%s' успішно завантажено!"
+        palette-folder-missing: "Директорію з палітрами не знайдено!"
+      image:
+        overlay-found: "Виявлено оверлей!"
+        overlay-missing: "Зображення оверлея не існує!"
+        background-found: "Фон виявлено!"
+        background-missing: "Фонове зображення не існує!"
+        missing-map-found: "Виявлено зображення відсутньої мапи!"
+        missing-map-missing: "Зображення відсутньої мапи не існує!"
+        disabled-map-found: "Виявлено зображення вимкненої мапи!"
+        disabled-map-missing: "Зображення вимкненої мапи не існує!"
+      enabling-modules: "Увімкнення модулів..."
+      loading-config: "Завантаження конфігурації..."
+      loading-images: "Завантаження зображень..."
+      loading-palettes: "Завантаження палітр..."
+      loading-data: "Завантаження мінімап та даних..."
+    disable:
+      disabling-modules: "Вимкнення модулів..."
+      saving-map-data-start: "Збереження даних мапи. Це може зайняти певний час..."
+      saving-map-data-finish: "Збереження даних мапи завершено!"
+      saving-player-data-start: "Збереження даних гравця..."
+      saving-player-data-finish: "Збереження даних гравця завершено!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cВикористання: /cartographer reload <мапа>"
+          reloaded-plugin: "§bНалаштування Cartographer2 перезавантажено"
+          reloaded-minimap: "§bМінімапу '§e%s§b' перезавантажено"
+        list:
+          usage: "§cВикористання: /cartographer list"
+          no-minimaps: "§bНаразі немає завантажених мінімап!"
+          list: "§bCartographer2 Мінімапи (%d): %s"
+        get:
+          usage: "§cВикористання: /cartographer get <мапа> <гравець> [слот]"
+          success-self: "Ви надали собі мінімапу (%s)"
+          success-other: "Мінімапа (%s) надана гравцю %s"
+        create:
+          usage: "§cВикористання: /cartographer create <ідентифікатор>"
+          success: "§bСтворено та зареєстровано нову мінімапу з ідентифікатором '§e%s§b'"
+        delete:
+          usage: "§cВикористання: /cartographer delete <ідентифікатор>"
+          success: "§bМінімапу '§e%s§b' видалено"
+        load:
+          usage: "§cВикористання: /cartographer load <ідентифікатор>"
+          success: "§bМінімапу '§e%s§b' завантажено"
+        unload:
+          usage: "§cВикористання: /cartographer unload <ідентифікатор>"
+          success: "§bМінімапу '§e%s§b' вивантажено"
+        help:
+          usage: "§cВикористання: /cartographer help"
+          help-0: "§b=== Команди Cartographer ==="
+          help-1: "§e/cartographer reload [мапа]§6 - Перезавантажити Cartographer2 або мінімапу"
+          help-2: "§e/cartographer list§6 - Переглянути всі завантажені мінімапи"
+          help-3: "§e/cartographer get <мапа> [гравець] [слот]§6 - Отримати або видати мінімапу"
+          help-4: "§e/cartographer create <мапа>§6 - Створити нову мінімапу"
+          help-5: "§e/cartographer delete <мапа>§6 - Видалити мінімапу"
+          help-6: "§e/cartographer load <мапа>§6 - Завантажити мінімапу"
+          help-7: "§e/cartographer unload <мапа>§6 - Вивантажити мінімапу"
+          help-8: "§e/cartographer help§6 - Показати команди"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Наразі немає завантажених модулів!"
+          list: "§6Модулі Cartographer2 (%d): %s"
+        reload:
+          success: "§6Усі модулі перезавантажено!"
+        enable:
+          usage: "§cВикористання: /cartographer module enable <модуль>"
+          success: "§6Модуль '§e%s§6' увімкнено!"
+          already-enabled: "§cМодуль '%s' вже увімкнено!"
+          error-loading: "§cНе вдалося завантажити модуль '%s'. Перевірте лог сервера. (Можливо, бракує якихось залежностей?)"
+        disable:
+          usage: "§cВикористання: /cartographer module disable <модуль>"
+          already-disabled: "§cМодуль '%s' вже вимкнено!"
+          success: "§6Модуль '§e%s§6' вимкнено!"
+        load:
+          usage: "§cВикористання: /cartographer module load <файл>"
+          success: "§6Модуль '§e%s§6' завантажено та увімкнено!"
+          error-loading: "§cНе вдалося завантажити файл '%s'. Перевірте лог сервера."
+          error-enabling: "§cНе вдалося увімкнути модуль '%s'. Перевірте лог сервера. (Можливо, бракує якихось залежностей?)"
+        unload:
+          usage: "§cВикористання: /cartographer module unload <модуль>"
+          success: "§6Модуль '§e%s§6' вивантажено!"
+          error-unloading: "§6Не вдалося вивантажити модуль '§e%s§6'! Його не було завантажено в Cartographer2!"
+        help:
+          usage: "§cВикористання: /cartographer module help"
+          help-0: "§b=== Команди модулів Cartographer ==="
+          help-1: "§e/cartographer module list§6 - Переглянути всі завантажені модулі"
+          help-2: "§e/cartographer module reload§6 - Перезавантажити всі модулі"
+          help-3: "§e/cartographer module enable <модуль>§6 - Увімкнути модуль"
+          help-4: "§e/cartographer module disable <модуль>§6 - Вимкнути модуль"
+          help-5: "§e/cartographer module load <модуль>§6 - Завантажити модуль"
+          help-6: "§e/cartographer module unload <модуль>§6 - Вивантажити модуль"
+          help-7: "§e/cartographer module help§6 - Показати команди"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cЦей файл вже завантажено або він не існує!"
+        module-already-enabled-or-not-real: "§cЦей модуль вже увімкнено або не існує!"
+        module-already-disabled-or-not-real: "§cЦей модуль вже вимкнено або не існує!"
+        module-not-real: "§cЦей модуль не існує!"
+      settings:
+        set:
+          console-usage: "§cВикористання: /cartographer settings set <гравець> <налаштування> <значення>"
+          success: "§aВстановлено '%s' у §d%s§a."
+        get:
+          console-usage: "§cВикористання: /cartographer settings get <гарвець> <налаштування>"
+          success: "§a'%s' має значення §d%s§a."
+        setother:
+          usage: "§cВикористання: /cartographer settings setother <гравець> <налаштування> <значення>"
+          success: "§aВстановлено '%s' у §d%s§a для §d%s§a."
+        getother:
+          usage: "§cВикористання: /cartographer settings getother <гравець> <налаштування>"
+          success: "§d%s§a має налаштування '%s' встановлене у §d%s§a."
+        help:
+          usage: "§cВикористання: /cartographer settings help"
+          help-0: "§b=== Команди налаштувань Cartographer ==="
+          help-1: "§e/cartographer settings set <властивість> <значення>§6 - Встановити властивість"
+          help-2: "§e/cartographer settings get <властивість>§6 - Отримати значення властивості"
+          help-3: "§e/cartographer settings setother <гравець> <властивість> <value>§6 - Встановити властивість іншого гравця"
+          help-4: "§e/cartographer settings getother <гравець> <властивість>§6 - Отримати значення властивості іншого гравця"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cНеправильне значення! (%s)"
+        must-provide-values: "§cНеобхідно вказати значення! (%s)"
+        not-implemented: "§c'%s' ще не реалізовано! Зверніться до розробників."
+      player-not-found: "§cЦього гравця немає онлайн!"
+      minimap-already-exists: "§cМінімапа з таким ідентифікатором вже існує!"
+      invalid-minimap: "§cНеправильна мінімапа!"
+      invalid-slot: "§cНеправильний слот! (0-40)"
+      invalid-argument: "§cНеправильний аргумент!"
+      invalid-setting: "§cНеправильне налаштування!"
+      must-provide-minimap: "§cПотрібно вказати мінімапу!"
+      must-provide-player: "§cПотрібно вказати гравця!"
+      must-provide-argument: "§cПотрібно вказати аргумент!"
+      must-provide-setting: "§cПотрібно вказати налаштування!"
+    manager:
+      minimap:
+        loading-minimap: "Завантаження мінімапи '%s'"
+        unloading-minimap: "Вивантаження мінімапи '%s'"
+        deleting-minimap: "Видалення мінімапи '%s'"
+      module:
+        reloading-modules-start: "Перезавантаження модулів..."
+        reloading-modules-finish: "Перезавантаження модулів завершено"
+        loading-module: "Завантаження %s v%s від %s"
+        unloading-module: "Вивантаження %s"
+        enabling-module: "Увімкнення %s v%s від %s"
+        disabling-module: "Вимкнення %s v%s від %s"
+        missing-dependencies: "Не вдалося увімкнути %s через відсутні залежності: %s"
+    minimap:
+      default-rotation: "Обертання за замовчуванням встановлено на %s"
+      default-showname: "Відображення імені встановлено на %s"
+      auto-update: "Автоматичне оновлення встановлено на %b"
+      circular-zoom: "Кругове масштабування встановлено на %b"
+      render-out-of-border: "Візуалізація за межами встановлена на %b"
+      default-zoom: "Масштаб за замовчуванням встановлено на %f"
+      allowed-zooms: "Дозволені масштаби: %s"
+      whitelisted-worlds: "Списки дозволених світів: %s"
+      blacklisted-worlds: "Списки заборонених світів: %s"
+      loaded-overlay: "Зображення оверлею '%s' завантажено"
+      loaded-background: "Фонове зображення '%s' завантажено"
+      loaded-disabled: "Зображення вимкнення '%s' завантажено"
+    unsupported-version: "Ця версія (%s) наразі не підтримується!"
+    disabling-plugin: "Вимкнення плагіна..."
