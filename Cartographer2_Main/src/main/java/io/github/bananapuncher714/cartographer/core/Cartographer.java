@@ -319,6 +319,7 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/ru_ru.yml" ), new File( LOCALE_DIR, "ru_ru.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/ko_kr.yml" ), new File( LOCALE_DIR, "ko_kr.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/pt_br.yml" ), new File( LOCALE_DIR, "pt_br.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/pt_pt.yml" ), new File( LOCALE_DIR, "pt_pt.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/ro_ro.yml" ), new File( LOCALE_DIR, "ro_ro.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/vi_vn.yml" ), new File( LOCALE_DIR, "vi_vn.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/id_id.yml" ), new File( LOCALE_DIR, "id_id.yml" ), false );
@@ -330,6 +331,10 @@ public class Cartographer extends JavaPlugin {
 			FileUtil.saveToFile( getResource( "data/locale/sr_sp.yml" ), new File( LOCALE_DIR, "sr_sp.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/sv_se.yml" ), new File( LOCALE_DIR, "sv_se.yml" ), false );
 			FileUtil.saveToFile( getResource( "data/locale/nb_no.yml" ), new File( LOCALE_DIR, "nb_no.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/ar_sa.yml" ), new File( LOCALE_DIR, "ar_sa.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/lv_lv.yml" ), new File( LOCALE_DIR, "lv_lv.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/lt_lt.yml" ), new File( LOCALE_DIR, "lt_lt.yml" ), false );
+			FileUtil.saveToFile( getResource( "data/locale/pt_pt.yml" ), new File( LOCALE_DIR, "pt_pt.yml" ), false );
 //		}
 	}
 	

@@ -1,0 +1,109 @@
+# Translated by Abood_8001
+name: "العربية (الكويت)"
+language: "العربية"
+location: "الكويت"
+locale-code: "ar_sa"
+messages:
+  locale:
+    loaded-internal-locale: "تم تحميل اللغة الداخلية بنجاح (%s)"
+    loaded-locale: "تم تحميل اللغة %s (%s) بنجاح"
+    default-locale-changed: "تم تغيير اللغة الافتراضية لـ %s"
+    error-loading-file: "فيه مشكلة في تحميل ملف اللغة '%s'"
+    invalid-locale: "اللغة '%s' مو صالحة!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "تم إضافة '%s' لقائمة الجرد المحظورة"
+        unknown-inventory-type: "نوع الجرد '%s' مو معروف"
+      palette:
+        creating-vanilla-palette: "قاعدين نبيّن اللوحة الأصلية..."
+        vanilla-palette-missing: "ما لقينا اللوحة الأصلية، قاعدين نحفظها..."
+        found-materials: "لقينا %d مادة للوحة الأصلية"
+        loading-palettes: "قاعدين نحمّل ملفات اللوحات..."
+        successfully-loaded-palette: "تم تحميل اللوحة '%s' بنجاح!"
+        palette-folder-missing: "مجلد اللوحات مو موجود!"
+      image:
+        overlay-found: "لقينا التراكب!"
+        overlay-missing: "صورة التراكب مو موجودة!"
+        background-found: "لقينا الخلفية!"
+        background-missing: "صورة الخلفية مو موجودة!"
+        missing-map-found: "لقينا صورة الخريطة المفقودة!"
+        missing-map-missing: "صورة الخريطة المفقودة مو موجودة!"
+        disabled-map-found: "لقينا صورة الخريطة المعطلة!"
+        disabled-map-missing: "صورة الخريطة المعطلة مو موجودة!"
+      enabling-modules: "قاعدين نفعل الوحدات..."
+      loading-config: "قاعدين نحمّل الإعدادات..."
+      loading-images: "قاعدين نحمّل الصور..."
+      loading-palettes: "قاعدين نحمّل اللوحات..."
+      loading-data: "قاعدين نحمّل البيانات والخرائط..."
+    disable:
+      disabling-modules: "قاعدين نوقف الوحدات..."
+      saving-map-data-start: "قاعدين نحفظ بيانات الخريطة. هذا بيأخذ وقت..."
+      saving-map-data-finish: "تم حفظ بيانات الخريطة!"
+      saving-player-data-start: "قاعدين نحفظ بيانات اللاعبين..."
+      saving-player-data-finish: "تم حفظ بيانات اللاعبين!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cطريقة الاستخدام: /cartographer reload <خريطة>"
+          reloaded-plugin: "§bتم إعادة تحميل إعدادات Cartographer2"
+          reloaded-minimap: "§bتم إعادة تحميل الخريطة المصغرة '§e%s§b'"
+        list:
+          usage: "§cطريقة الاستخدام: /cartographer list"
+          no-minimaps: "§bما في خرائط مصغرة محمّلة حالياً!"
+          list: "§bخرائط Cartographer2 المصغرة (%d): %s"
+        get:
+          usage: "§cطريقة الاستخدام: /cartographer get <خريطة> <لاعب> [مكان]"
+          success-self: "أعطيت نفسك خريطة مصغرة (%s)"
+          success-other: "أعطيت خريطة مصغرة (%s) للاعب %s"
+        create:
+          usage: "§cطريقة الاستخدام: /cartographer create <معرف>"
+          success: "§bتم إنشاء وتسجيل خريطة مصغرة جديدة بمعرف '§e%s§b'"
+        delete:
+          usage: "§cطريقة الاستخدام: /cartographer delete <معرف>"
+          success: "§bتم حذف الخريطة المصغرة '§e%s§b'"
+        load:
+          usage: "§cطريقة الاستخدام: /cartographer load <معرف>"
+          success: "§bتم تحميل الخريطة المصغرة '§e%s§b'"
+        unload:
+          usage: "§cطريقة الاستخدام: /cartographer unload <معرف>"
+          success: "§bتم إيقاف الخريطة المصغرة '§e%s§b'"
+        help:
+          usage: "§cطريقة الاستخدام: /cartographer help"
+          help-0: "§b=== أوامر Cartographer ==="
+          help-1: "§e/cartographer reload [خريطة]§6 - إعادة تحميل Cartographer2 أو خريطة مصغرة"
+          help-2: "§e/cartographer list§6 - عرض الخرائط المصغرة المحمّلة"
+          help-3: "§e/cartographer get <خريطة> [لاعب] [مكان]§6 - اعطِ أو خذ خريطة مصغرة"
+          help-4: "§e/cartographer create <خريطة>§6 - إنشاء خريطة مصغرة جديدة"
+          help-5: "§e/cartographer delete <خريطة>§6 - حذف خريطة مصغرة"
+          help-6: "§e/cartographer load <خريطة>§6 - تحميل خريطة مصغرة"
+          help-7: "§e/cartographer unload <خريطة>§6 - إيقاف خريطة مصغرة"
+          help-8: "§e/cartographer help§6 - عرض الأوامر"
+    manager:
+      minimap:
+        loading-minimap: "قاعدين نحمّل الخريطة المصغرة '%s'"
+        unloading-minimap: "قاعدين نوقف الخريطة المصغرة '%s'"
+        deleting-minimap: "قاعدين نحذف الخريطة المصغرة '%s'"
+      module:
+        reloading-modules-start: "قاعدين نعيد تحميل الوحدات..."
+        reloading-modules-finish: "تم إعادة تحميل الوحدات"
+        loading-module: "قاعدين نحمل الوحدة %s v%s من %s"
+        unloading-module: "قاعدين نوقف الوحدة %s"
+        enabling-module: "قاعدين نفعل الوحدة %s v%s من %s"
+        disabling-module: "قاعدين نوقف الوحدة %s v%s من %s"
+        missing-dependencies: "ما نقدر نفعل الوحدة %s بسبب نقص الاعتمادات: %s"
+    minimap:
+      default-rotation: "تم تعيين التدوير الافتراضي لـ %s"
+      default-showname: "تم تعيين إظهار الاسم لـ %s"
+      auto-update: "تم تعيين التحديث التلقائي لـ %b"
+      circular-zoom: "تم تعيين التكبير الدائري لـ %b"
+      render-out-of-border: "تم تعيين الرؤية خارج الحدود لـ %b"
+      default-zoom: "تم تعيين التكبير الافتراضي لـ %f"
+      allowed-zooms: "التكبيرات المسموحة: %s"
+      whitelisted-worlds: "العوالم المسموحة: %s"
+      blacklisted-worlds: "العوالم المحظورة: %s"
+      loaded-overlay: "تم تحميل صورة التراكب '%s'"
+      loaded-background: "تم تحميل صورة الخلفية '%s'"
+      loaded-disabled: "تم تحميل صورة الخريطة المعطلة '%s'"
+    unsupported-version: "النسخة (%s) غير مدعومة حالياً!"
+    disabling-plugin: "جاري إيقاف الإضافة..."

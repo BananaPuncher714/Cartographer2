@@ -1,0 +1,232 @@
+# Default provided locale file
+# All local files require a locale-code. It should not have any whitespaces.
+# The name, language, and location are optional, but recommended.
+# Information taken from https://minecraft.gamepedia.com/Language#Available_languages
+# The messages themselves follow regular Java string formatting.
+# If you want to have random messages, make a string list instead of a single string.
+# For example:
+# random-message-list:
+# - "Random message 1"
+# - "Random message 2"
+# - "Random message 3"
+# These locale files also support placeholders, if it's a message for a player.
+# To use custom colored messages, use the section symbol(§) directly.
+# If that doesn't work, and shows up with some random character, then use the code \u00a7 instead.
+# Translated by Tenitrex
+name: "Lietuvių (LT)"
+language: "Lietuvių Lietuva"
+location: "Lithuania"
+locale-code: "lt_lt"
+messages:
+  locale:
+    loaded-internal-locale: "Vietovės (%s) paketas sėkmingai įkeltas"
+    loaded-locale: "Naudojami kalbos paketai > %s(%s) iš %s"
+    default-locale-changed: "Numatytasis kalbos paketas pakeistas į %s"
+    error-loading-file: "Nepavyko įkeltį '%s' kalbos paketo!"
+    invalid-locale: "Blogas '%s' kalbos paketas!"
+  core:
+    enable:
+      config:
+        added-blacklisted-inventory: "'%s' įtrauka į inventoriaus juodajį sąrašą"
+        unknown-inventory-type: "Blogas '%s' inventoriaus tipas"
+      palette:
+        creating-vanilla-palette: "Sukonfigūruojama numatytoji žaidimo paletė..."
+        vanilla-palette-missing: "Numatytoji žaidimo paletė nerasta, išsaugoma..."
+        found-materials: "%d ingredientai prisikirti prie numatytojų"
+        loading-palettes: "Įkeliami numatytos paletės failai..."
+        successfully-loaded-palette: "Paletė '%s' sėkmingai įkelta!"
+        palette-folder-missing: "Paletės aplankas nerastas!"
+      image:
+        overlay-found: "Aptiktas atvaizdo perdengimas!"
+        overlay-missing: "Trūksta perdengiančio atvaizdo!"
+        background-found: "Fonas aptiktas!"
+        background-missing: "Trūksta fono atvaizdo!"
+        missing-map-found: "Aptikta trūkstama žemėlapio dalis!"
+        missing-map-missing: "Trūkstama žemėlapio dalis neegzistuoja!"
+        disabled-map-found: "Aptikta neprieinama žemėlapio dalis"
+        disabled-map-missing: "Neprieinama žemėlapio dalis neegzistuoja!"
+      enabling-modules: "Įjungiami moduliai..."
+      loading-config: "Įkeliami nustatymai..."
+      loading-images: "Įkeliami atvaizdai..."
+      loading-palettes: "Įkeliamios paletės..."
+      loading-data: "Įkeliami mini žemėlapiai ir kiti duomenys..."
+    disable:
+      disabling-modules: "Išjungiami moduliai..."
+      saving-map-data-start: "Išsaugomi žemėlapio duomenys. Gali šiek tiek užtrukti..."
+      saving-map-data-finish: "Žemėlaio duomenų išsaugojimas baigtas!"
+      saving-player-data-start: "Išsaugojami žaidėjo duomenys..."
+      saving-player-data-finish: "Žaidėjo duomenų išsaugojimas baigtas!"
+    command:
+      cartographer:
+        reload:
+          usage: "§cNaudojimas > /cartographer reload <žemėlapis>"
+          reloaded-plugin: "§bCartographer2 nustatymai perkauti"
+          reloaded-minimap: "'§e%s§b' §bmini žemėlapis perkrautas"
+        list:
+          usage: "§cNaudojimas > /cartographer list"
+          no-minimaps: "§bšiuo metu nėra jokių įkeltų mini žemėlapių!"
+          list: "§bCartographer2 Mini Žemėlapiai (%d)> %s"
+        get:
+          usage: "§cNaudojimas > /cartographer get <žemėlapis> <žaidėjas> [langelis]"
+          success-self: "Ką tik sau įteikei (%s) žemėlapį"
+          success-other: "(%s) ką tik įteikė žemėlapį %s"
+        create:
+          usage: "§cNaudojimas > /cartographer create <numeris>"
+          success: "§bSukurtas ir užregistruotas mini žemėlapis numeriu '§e%s§b'"
+        delete:
+          usage: "§cNaudojimas > /cartographer delete <numeris>"
+          success: "§bPašalintas mini žemėlapis '§e%s§b'"
+        load:
+          usage: "§cNaudojimas > /cartographer load <numeris>"
+          success: "§bĮkeltas mini žemėlapis '§e%s§b'"
+        unload:
+          usage: "§cNaudojimas > /cartographer unload <numeris>"
+          success: "§bIškeltas mini žemėlapis '§e%s§b'"
+        help:
+          usage: "§cNaudojimas > /cartographer help"
+          help-0: "§b=== Cartographer Komandos ==="
+          help-1: "§e/cartographer reload [žemėlapis]§6 - Perkrauti Cartographer2 arba žemėlapį"
+          help-2: "§e/cartographer list§6 - Peržvelgti visus įkeltus žemėlapius"
+          help-3: "§e/cartographer get <žemėlapis> [žaidėjas] [langelis]§6 - Gauti arba įteikti žemėlapį"
+          help-4: "§e/cartographer create <žemėlapis>§6 - Sukurti naują žemėlapį"
+          help-5: "§e/cartographer delete <žemėlapis>§6 - Pašalinti žemėlapį"
+          help-6: "§e/cartographer load <žemėlapis>§6 - Įkelti žemėlapį"
+          help-7: "§e/cartographer unload <žemėlapis>§6 - Iškelti žemėlapį"
+          help-8: "§e/cartographer help§6 - Parodyti komandas"
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+      module:
+        list:
+          no-modules: "§6Šiuo metu nėra aktyvių modulių!"
+          list: "§6Cartographer2 Moduliai (%d) > %s" 
+        reload:
+          success: "§6Perkrauti visus modulius!"
+        enable:
+          usage: "§cNaudojimas > /cartographer module enable <modulis>"
+          success: "§6Modulis '§e%s§6' įkeltas!"
+          already-enabled: "§cModulis '%s' jau aktyvus!"
+          error-loading: "§cNepavyko įkelti '%s' modulio, Peržvelkite serverio ataskaitos žurnalą dėl detalesnės informacijos. (Trūksta privalomų papildinių?)"
+        disable:
+          usage: "§cNaudojimas > /cartographer module disable <modulis>"
+          already-disabled: "§cModulis '%s' jau yra išjungtas!"
+          success: "§6Modulis '§e%s§6' §6išjungtas!"
+        load:
+          usage: "§cNaudojimas > /cartographer module load <failas>"
+          success: "§6Modulis '§e%s§6' §6įkeltas ir įjungtas!"
+          error-loading: "§cNepavyko įkelti failo '%s', Peržvelkite serverio ataskaitos žurnalą dėl detalesnės informacijos."
+          error-enabling: "§cNepavyko įkelti modulio '%s', Peržvelkite serverio ataskaitos žurnalą dėl detalesnės informacijos. (Trūksta privalomų papildinių?)"
+        unload:
+          usage: "§cžNaudojimas > /cartographer module unload <modulis>"
+          success: "§6Modulis '§e%s§6' iškeltas!"
+          error-unloading: "§6Nepavyko iškelti modulio '§e%s§6'! Modulis nebuvo įkeltas su Cartographer2!"
+        help:
+          usage: "§cNaudojimas > /cartographer module help"
+          help-0: "§b=== Cartographer Modulio Komandos ==="
+          help-1: "§e/cartographer module list§6 - Peržvelgti visus sukeltus modulius"
+          help-2: "§e/cartographer module reload§6 - Perkrauti visus modulius"
+          help-3: "§e/cartographer module enable <modulis>§6 - įjungti modulį"
+          help-4: "§e/cartographer module disable <modulis>§6 - Išjungti modulį"
+          help-5: "§e/cartographer module load <modulis>§6 - Įkelti modulį"
+          help-6: "§e/cartographer module unload <modulis>§6 - Iškelti modulį"
+          help-7: "§e/cartographer module help§6 - Parodyti komandas"
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        file-already-loaded-or-not-real: "§cŠis failas jau įkeltas ir neegzistuoja!"
+        module-already-enabled-or-not-real: "§cŠis modulis jau įjungtas ir neegzistuoja!"
+        module-already-disabled-or-not-real: "§cŠis modulis jau išjungtas ir neegzistuoja!"
+        module-not-real: "§cŠis modulis neegzistuoja!"
+      settings:
+        set:
+          console-usage: "§cNaudojimas > /cartographer settings set <žaidėjas> <konfigūracija> <reikšmė>"
+          success: "§a'%s' nustatyta į §d%s§a."
+        get:
+          console-usage: "§cNaudojimas > /cartographer settings get <žaidėjas> <konfigūracija>"
+          success: "§a'%s' nustatyta į §d%s§a."
+        setother:
+          usage: "§cNaudojimas > /cartographer settings setother <žaidėjas> <konfigūracija> <reikšmė>"
+          success: "§d%s §ažaidejui konfigūracija §d'%s' §apakeista į §d%s§a."
+        getother:
+          usage: "§cNaudojimas > /cartographer settings getother <žaidėjas> <konfigūracija>"
+          success: "§d%s§a konfigūracija '%s' pakeista į §d%s§a."
+        help:
+          usage: "§cNaudojimas > /cartographer settings help"
+          help-0: "§b=== Cartographer Nustatymų Komandos ==="
+          help-1: "§e/cartographer settings set <tipas> <reikšmė>§6 - Nustatyti tipą"
+          help-2: "§e/cartographer settings get <tipas>§6 - Sužinoti konfigūracijos tipo reikšmę"
+          help-3: "§e/cartographer settings setother <žaidėjas> <tipas> <reikšmė>§6 - Nustatyti žaidėjo tipą"
+          help-4: "§e/cartographer settings getother <žaidėjas> <tipas>§6 - Sužinoti žaidėjo tipo reikšmę"
+          help-5: ""
+          help-6: ""
+          help-7: ""
+          help-8: ""
+          help-9: ""
+          help-10: ""
+          help-11: ""
+          help-12: ""
+          help-13: ""
+          help-14: ""
+          help-15: ""
+          help-16: ""
+          help-17: ""
+          help-18: ""
+          help-19: ""
+        invalid-value: "§cBlogas reikšmė! (%s)"
+        must-provide-values: "§cPrivalote įvesti reikšmę! (%s)"
+        not-implemented: "§c'%s' duomenys kol kas nėra sukonfigūruoti! Prašome susisiekti su administracija dėl pagalbos!"
+      player-not-found: "§cŠis žaidėjas neprisijungęs!"
+      minimap-already-exists: "§cMini žemėlapis su šiuo id jau sukurtas!"
+      invalid-minimap: "§cBlogas mini žemėlapis!"
+      invalid-slot: "§cBlogas langelis! (0-40)"
+      invalid-argument: "§cNetinkamas argumementas!"
+      invalid-setting: "§cNetinkama konfigūracija!"
+      must-provide-minimap: "§cPrivalote pateikti mini žemėlapį!"
+      must-provide-player: "§cPrivalote pateikti žaidėją!"
+      must-provide-argument: "§cPrivalote pateikti argumentą!"
+      must-provide-setting: "§cPrivalote pateikti konfigūraciją!"
+    manager:
+      minimap:
+        loading-minimap: "Įkeliamas žemėlapis pavadinimu '%s'"
+        unloading-minimap: "Iškeliamas žemėlapis pavadinimu '%s'"
+        deleting-minimap: "Pašalinamas žemėlapis pavadinimu '%s'"
+      module:
+        reloading-modules-start: "Perkraunami moduliai..."
+        reloading-modules-finish: "Modulių perkrovimas užbaigtas"
+        loading-module: "Įkeliama %s v%s pagal %s pageidavimą"
+        unloading-module: "Iškeliama %s pagal pageidavimą"
+        enabling-module: "Įjungiamas %s v%s pagal %s pageidavimą"
+        disabling-module: "Išjungiamas %s v%s pagal %s pageidavimą"
+        missing-dependencies: "Nepavyko įjungti %s dėl trūkstamų privalomų papildinių > %s"
+    minimap:
+      default-rotation: "Numatytasis sukimasis pakeistas į %s"
+      default-showname: "Pavadinimo rodymas pakeistas į %s"
+      auto-update: "Automatinis atnaujinimas pakeistas į %b"
+      circular-zoom: "Apvalusis priartinimas pakeistas į %b"
+      render-out-of-border: "Atvaizdavimas už kraštinės pakeistas į %b"
+      default-zoom: "Numatytasis priartinimas pakeistas %f"
+      allowed-zooms: "Leidžiami priartinimai > %s"
+      whitelisted-worlds: "Leidžiami pasauliai > %s"
+      blacklisted-worlds: "Neleidžiami pasauliai > %s"
+      loaded-overlay: "Įkeltas perdengiantis atvaizdas '%s'"
+      loaded-background: "Įkeltas fono atvaizdas '%s'"
+      loaded-disabled: "Įkeltas Išjungiamas atvaizdas '%s'"
+    unsupported-version: "Ši versija (%s) šiuo metu nepalaikoma!"
+    disabling-plugin: "Papildinys išjungiamas..."
