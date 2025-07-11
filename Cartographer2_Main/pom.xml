@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.bananapuncher714</groupId>
 		<artifactId>cartographer2_master</artifactId>
-		<version>2.15.14</version>
+		<version>2.15.15</version>
 	</parent>
 	<artifactId>cartographer2_main</artifactId>
 
@@ -20,7 +20,8 @@
 		</repository>
 		<repository>
 			<id>placeholderapi</id>
-			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>
+				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 	</repositories>
 
@@ -28,13 +29,13 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.21.5-R0.1-SNAPSHOT</version>
+			<version>1.21.7-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
 			<artifactId>nbteditor</artifactId>
-			<version>7.19.8</version>
+			<version>7.19.9</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wimbli.WorldBorder</groupId>
@@ -66,11 +67,13 @@
 					<relocations>
 						<relocation>
 							<pattern>org.bstats</pattern>
-							<shadedPattern>io.github.bananapuncher714.cartographer.bstats</shadedPattern>
+							<shadedPattern>
+								io.github.bananapuncher714.cartographer.bstats</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>io.github.bananapuncher714.nbteditor</pattern>
-							<shadedPattern>io.github.bananapuncher714.cartographer.nbteditor</shadedPattern>
+							<shadedPattern>
+								io.github.bananapuncher714.cartographer.nbteditor</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
