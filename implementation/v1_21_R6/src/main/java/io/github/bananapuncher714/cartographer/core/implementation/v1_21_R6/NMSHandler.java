@@ -78,6 +78,7 @@ public class NMSHandler implements PacketHandler {
     private static Map< MapCursor.Type, Holder<MapDecorationType> > CURSOR_TYPES = new HashMap< MapCursor.Type, Holder<MapDecorationType> >();
     private static Field SIMPLECOMMANDMAP_COMMANDS;
     private static Method CRAFTSERVER_SYNCCOMMANDS;
+    private static Method GET_TPS;
     private static Field BLOCKBASE_INFO;
     private static Field INFO_FUNCTION;
     private static Field NETWORK_MANAGER;
@@ -100,6 +101,11 @@ public class NMSHandler implements PacketHandler {
             NETWORK_MANAGER.setAccessible( true );
         } catch ( Exception exception ) {
             exception.printStackTrace();
+        }
+            
+        try {
+            GET_TPS = Bukkit.class.getDeclaredMethod( "getTPS" );
+        } catch ( Exception exception ) {
         }
 
         CURSOR_TYPES.put( MapCursor.Type.PLAYER, MapDecorationTypes.a );
@@ -310,7 +316,17 @@ public class NMSHandler implements PacketHandler {
 
     @Override
     public double getTPS() {
-        return MinecraftServer.getServer().recentTps[ 0 ];
+        if ( GET_TPS != null ) {
+            try {
+                return ( ( double[] ) GET_TPS.invoke( null ) )[ 0 ];
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            return 20;
+        } else {
+            // Spigot
+            return MinecraftServer.getServer().recentTps[ 0 ];
+        }
     }
 
     @Override
