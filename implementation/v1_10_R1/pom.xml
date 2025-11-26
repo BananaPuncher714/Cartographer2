@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.github.bananapuncher714</groupId>
+		<artifactId>cartographer2-implementation</artifactId>
+		<version>2</version>
+	</parent>
+	<artifactId>cartographer2-implementation-v1_10_r1</artifactId>
+	<version>1.0.0</version>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.10.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.bananapuncher714</groupId>
+			<artifactId>cartographer2-core</artifactId>
+			<version>2</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.1</version>
+				<configuration>
+					<release>8</release>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

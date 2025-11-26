@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.github.bananapuncher714</groupId>
+		<artifactId>cartographer2-addon</artifactId>
+		<version>2</version>
+	</parent>
+	<artifactId>cartographer2-addon-worldguard-master</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<modules>
+		<module>api</module>
+		<module>implementation</module>
+		<module>module</module>
+	</modules>
+</project>

@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+    <parent>
+    <groupId>io.github.bananapuncher714</groupId>
+    <artifactId>cartographer2-master</artifactId>
+    <version>2</version>
+  </parent>
+  <artifactId>cartographer2-addon</artifactId>
+  <version>2</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>experimental</module>
+    <module>factions-uuid</module>
+    <module>grief-prevention</module>
+    <module>guilds</module>
+    <module>lands</module>
+    <module>residence</module>
+    <module>towny</module>
+    <module>vanilla-plus</module>
+    <module>world-viewer</module>
+    <module>worldguard</module>
+	</modules>
+</project>

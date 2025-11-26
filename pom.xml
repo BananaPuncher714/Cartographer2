@@ -5,55 +5,16 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.bananapuncher714</groupId>
-	<artifactId>cartographer2_master</artifactId>
-	<version>2.15.15</version>
+	<artifactId>cartographer2-master</artifactId>
+	<version>2</version>
 	<packaging>pom</packaging>
 
-	<properties>
-		<master.version>2.15.15</master.version>
-	</properties>
-
 	<modules>
-		<module>cartographer2_main</module>
-		<module>cartographer2_v1_8_r3</module>
-		<module>cartographer2_v1_9_r1</module>
-		<module>cartographer2_v1_9_r2</module>
-		<module>cartographer2_v1_10_r1</module>
-		<module>cartographer2_v1_11_r1</module>
-		<module>cartographer2_v1_12_r1</module>
-		<module>cartographer2_v1_13_r2</module>
-		<module>cartographer2_v1_14_r1</module>
-		<module>cartographer2_v1_15_r1</module>
-		<module>cartographer2_v1_16_r1</module>
-		<module>cartographer2_v1_16_r2</module>
-		<module>cartographer2_v1_16_r3</module>
-		<module>cartographer2_v1_17_r1</module>
-		<module>cartographer2_v1_18_r1</module>
-		<module>cartographer2_v1_18_r2</module>
-		<module>cartographer2_v1_19_r1</module>
-		<module>cartographer2_v1_19_r2</module>
-		<module>cartographer2_v1_19_r3</module>
-		<module>cartographer2_v1_20_r1</module>
-		<module>cartographer2_v1_20_r2</module>
-		<module>cartographer2_v1_20_r3</module>
-		<module>cartographer2_v1_20_r4</module>
-		<module>cartographer2_v1_21_r1</module>
-		<module>cartographer2_v1_21_r2</module>
-		<module>cartographer2_v1_21_r3</module>
-		<module>cartographer2_v1_21_r4</module>
-		<module>cartographer2_v1_21_r5</module>
-		<module>cartographer2</module>
-		<module>cartographer2_api</module>
-		<module>cartographer2_modulevanilla</module>
-		<module>cartographer2_moduleexperimental</module>
-		<module>cartographer2_moduleworldviewer</module>
-		<module>cartographer2_modulefactionsuuid</module>
-		<module>cartographer2_moduletowny</module>
-		<module>cartographer2_moduleresidence</module>
-		<module>cartographer2_moduleguilds</module>
-		<module>cartographer2_moduleworldguard_master</module>
-		<module>cartographer2_modulelands</module>
-		<module>cartographer2_modulegriefprevention</module>
+		<module>addon</module>
+		<module>api</module>
+		<module>core</module>
+		<module>implementation</module>
+		<module>plugin</module>
 	</modules>
 
 	<build>
