@@ -30,13 +30,13 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>26.2-R0.1-SNAPSHOT</version>
+			<version>26.3-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bananapuncher714</groupId>
 			<artifactId>nbteditor</artifactId>
-			<version>8.0.1</version>
+			<version>8.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wimbli.WorldBorder</groupId>
